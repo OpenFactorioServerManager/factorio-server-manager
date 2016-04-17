@@ -1,0 +1,22 @@
+{
+  "name": "factorio-mod-manager",
+  "version": "0.1.0",
+  "description": "Factorio Mod Manager UI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mitch Roote <mitch@r00t.ca>",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "webpack": "^1.13.0"
+  }
+}
