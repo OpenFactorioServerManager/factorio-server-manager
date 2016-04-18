@@ -13,7 +13,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "hello world")
 }
 
-func ListMods(w http.ResponseWriter, r *http.Request) {
+func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 	mods := listInstalledMods()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
@@ -45,5 +45,27 @@ func ToggleMod(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(m); err != nil {
 		log.Printf("Error in toggle mod: %s", err)
 	}
+}
 
+func ListMods(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+	m, err := parseModList()
+	if err != nil {
+		log.Printf("Could not parse mod list: %s", err)
+	}
+
+	if err := json.NewEncoder(w).Encode(m); err != nil {
+		log.Printf("Error listing mods: %s", err)
+	}
+
+}
+
+func ListSaves(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	saves := listSaves()
+
+	if err := json.NewEncoder(w).Encode(saves); err != nil {
+		log.Printf("Error listing saves: %s", err)
+	}
 }

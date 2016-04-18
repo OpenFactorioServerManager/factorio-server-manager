@@ -23,6 +23,7 @@ func listInstalledMods() []string {
 	files, err := ioutil.ReadDir(modDir)
 	if err != nil {
 		log.Printf("Error listing installed mods")
+		return result
 	}
 	for _, f := range files {
 		if f.Name() == "mod-list.json" {

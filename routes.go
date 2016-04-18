@@ -36,6 +36,11 @@ var routes = Routes{
 		"/",
 		Index,
 	}, {
+		"ListInstalledMods",
+		"GET",
+		"/mods/list/installed",
+		ListInstalledMods,
+	}, {
 		"ListMods",
 		"GET",
 		"/mods/list",
@@ -45,5 +50,10 @@ var routes = Routes{
 		"GET",
 		"/mods/toggle/{mod}",
 		ToggleMod,
+	}, {
+		"ListSaves",
+		"GET",
+		"/saves/list",
+		ListSaves,
 	},
 }
