@@ -14,10 +14,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
-	mods := listInstalledMods()
-
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+
+	mods := listInstalledMods()
 
 	if err := json.NewEncoder(w).Encode(mods); err != nil {
 		log.Printf("Error in list mods: %s", err)
@@ -67,5 +66,19 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewEncoder(w).Encode(saves); err != nil {
 		log.Printf("Error listing saves: %s", err)
+	}
+}
+
+func LogTail(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	logLines, err := tailLog(config.FactorioLog)
+	if err != nil {
+		log.Printf("Could not tail %s: %s", config.FactorioLog, err)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(logLines); err != nil {
+		log.Printf("Error tailing logfile", err)
 	}
 }

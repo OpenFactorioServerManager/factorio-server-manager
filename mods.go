@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 )
@@ -16,6 +15,7 @@ type Mod struct {
 	Enabled bool   `json:"enabled,string"`
 }
 
+// List mods installed in the factorio/mods directory
 func listInstalledMods() []string {
 	modDir := config.FactorioDir + "/mods"
 	result := []string{}
@@ -35,6 +35,8 @@ func listInstalledMods() []string {
 	return result
 }
 
+// Parses mod-list.json file in factorio/mods
+// returns ModList struct
 func parseModList() (ModList, error) {
 	var mods ModList
 	modListFile := config.FactorioDir + "/mods/mod-list.json"
@@ -52,9 +54,9 @@ func parseModList() (ModList, error) {
 	}
 
 	return mods, nil
-
 }
 
+// Toggles Enabled boolean on each Mod in mod-list.json file
 func (m *ModList) toggleMod(name string) error {
 	found := false
 
@@ -69,16 +71,16 @@ func (m *ModList) toggleMod(name string) error {
 		}
 	}
 
-	if found == false {
-		err := fmt.Errorf("Mod with name %s not found", name)
-		return err
+	if found {
+		m.save()
+		log.Printf("Mod: %s was toggled", name)
 	}
-
-	m.save()
 
 	return nil
 }
 
+// Saves ModList object to mod-list.json file
+// Overwrites old file
 func (m ModList) save() error {
 	modListFile := config.FactorioDir + "/mods/mod-list.json"
 	b, _ := json.MarshalIndent(m, "", "    ")

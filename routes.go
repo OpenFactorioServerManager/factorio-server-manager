@@ -55,5 +55,10 @@ var routes = Routes{
 		"GET",
 		"/saves/list",
 		ListSaves,
+	}, {
+		"TailLog",
+		"GET",
+		"/log/tail",
+		LogTail,
 	},
 }

@@ -5,6 +5,7 @@ import (
 	"log"
 )
 
+// Lists save files in factorio/saves
 func listSaves() []string {
 	saveDir := config.FactorioDir + "/saves"
 	result := []string{}
