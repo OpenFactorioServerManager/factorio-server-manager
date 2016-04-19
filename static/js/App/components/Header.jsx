@@ -12,7 +12,7 @@ class Header extends React.Component {
 
                 <nav className="navbar navbar-static-top" role="navigation">
                 <a href="#" className="sidebar-toggle" data-toggle="offcanvas" role="button">
-                    <span className="sr-only">Toggle navigation</span>
+                <span className="sr-only">Toggle navigation</span>
                 </a>
                 <div className="navbar-custom-menu">
                     <ul className="nav navbar-nav">

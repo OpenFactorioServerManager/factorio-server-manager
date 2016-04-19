@@ -1,9 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Router from 'react-router';
+import {Router, Route, browserHistory, IndexRoute} from 'react-router';
 import App from './App/App.jsx';
+import ModsContent from './App/components/ModsContent.jsx';
+import LogsContent from './App/components/LogsContent.jsx';
+import SavesContent from './App/components/SavesContent.jsx';
+import Index from './App/components/Index.jsx';
 
-ReactDOM.render(
-    <App />,
-    document.getElementById('app')
-);
+ReactDOM.render((
+    <Router history={browserHistory}>
+        <Route path="/" component={App}>
+            <IndexRoute component={Index}/>
+            <Route path="/mods" component={ModsContent}/> 
+            <Route path="/logs" component={LogsContent}/> 
+            <Route path="/saves" component={SavesContent}/> 
+        </Route>
+    </Router>
+), document.getElementById('app'))
+

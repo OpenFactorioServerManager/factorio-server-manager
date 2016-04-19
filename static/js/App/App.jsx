@@ -1,8 +1,7 @@
 import React from 'react';
-import {RouteHandler} from 'react-router';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
-import ModsContent from './components/ModsContent.jsx';
+//import ModsContent from './components/ModsContent.jsx';
 
 
 class App extends React.Component {
@@ -14,7 +13,7 @@ class App extends React.Component {
 
             <Sidebar />
 
-            <ModsContent />
+            {this.props.children}
 
             <footer className="main-footer">
                 <div className="pull-right hidden-xs">

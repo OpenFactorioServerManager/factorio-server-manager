@@ -16,26 +16,32 @@ type Route struct {
 type Routes []Route
 
 func NewRouter() *mux.Router {
-	router := mux.NewRouter().StrictSlash(true)
+	r := mux.NewRouter().StrictSlash(true)
 
-	for _, route := range routes {
-		router.
+	// API subrouter
+	// Serves all REST handlers prefixed with /api
+	s := r.PathPrefix("/api").Subrouter()
+	for _, route := range apiRoutes {
+		s.
 			Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
 			Handler(route.HandlerFunc)
 	}
 
-	return router
+	// Serves the frontend application from the app directory
+	// Uses basic file server to server index.html and Javascript application
+	r.
+		PathPrefix("/").
+		Methods("GET").
+		Name("Index").
+		Handler(http.FileServer(http.Dir("./app/")))
+
+	return r
 }
 
-var routes = Routes{
+var apiRoutes = Routes{
 	Route{
-		"Index",
-		"GET",
-		"/",
-		Index,
-	}, {
 		"ListInstalledMods",
 		"GET",
 		"/mods/list/installed",

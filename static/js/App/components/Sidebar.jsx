@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router';
 
 class Sidebar extends React.Component {
     render() {
@@ -13,7 +14,7 @@ class Sidebar extends React.Component {
                     </div>
                     <div className="pull-left info">
                     <p>Factorio Server Manager</p>
-                    <a href="#"><i className="fa fa-circle text-success"></i> Online</a>
+                    <a href="#"><i className="fa fa-circle text-success"></i>Server Online</a>
                     </div>
                 </div>
 
@@ -29,12 +30,13 @@ class Sidebar extends React.Component {
 
                 <ul className="sidebar-menu">
                     <li className="header">MENU</li>
-                    <li className="active"><a href="#"><i className="fa fa-link"></i> <span>Saves</span></a></li>
-                    <li><a href="#"><i className="fa fa-link"></i> <span>Logs</span></a></li>
+                    <li><Link to="/mods" activeClassName="active"><i className="fa fa-link"></i><span>Mods</span></Link></li>
+                    <li><Link to="/logs" activeClassName="active"><i className="fa fa-link"></i> <span>Logs</span></Link></li>
+                    <li><Link to="/saves" activeClassName="active"><i className="fa fa-link"></i> <span>Saves</span></Link></li>
                     <li className="treeview">
                     <a href="#"><i className="fa fa-link"></i> <span>Mods</span> <i className="fa fa-angle-left pull-right"></i></a>
                     <ul className="treeview-menu">
-                        <li><a href="#">Server Mods</a></li>
+                        <li>Server Mods</li>
                         <li><a href="#">Get Mods</a></li>
                     </ul>
                     </li>

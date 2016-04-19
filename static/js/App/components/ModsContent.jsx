@@ -6,7 +6,7 @@ class ModsContent extends React.Component {
             <div className="content-wrapper">
                 <section className="content-header">
                 <h1>
-                    Page Header
+                    Mods
                     <small>Optional description</small>
                 </h1>
                 <ol className="breadcrumb">
