@@ -82,3 +82,16 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error tailing logfile", err)
 	}
 }
+
+func DLSave(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/octet-stream")
+
+	vars := mux.Vars(r)
+	save := vars["save"]
+	saveName := config.FactorioSavesDir + "/" + save
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", save))
+	log.Printf("%s", saveName)
+
+	http.ServeFile(w, r, saveName)
+}

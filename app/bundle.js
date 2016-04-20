@@ -1,537 +1,4 @@
 /******/ (function(modules) { // webpackBootstrap
-/******/ 	var parentHotUpdateCallback = this["webpackHotUpdate"];
-/******/ 	this["webpackHotUpdate"] = 
-/******/ 	function webpackHotUpdateCallback(chunkId, moreModules) { // eslint-disable-line no-unused-vars
-/******/ 		hotAddUpdateChunk(chunkId, moreModules);
-/******/ 		if(parentHotUpdateCallback) parentHotUpdateCallback(chunkId, moreModules);
-/******/ 	}
-/******/ 	
-/******/ 	function hotDownloadUpdateChunk(chunkId) { // eslint-disable-line no-unused-vars
-/******/ 		var head = document.getElementsByTagName("head")[0];
-/******/ 		var script = document.createElement("script");
-/******/ 		script.type = "text/javascript";
-/******/ 		script.charset = "utf-8";
-/******/ 		script.src = __webpack_require__.p + "" + chunkId + "." + hotCurrentHash + ".hot-update.js";
-/******/ 		head.appendChild(script);
-/******/ 	}
-/******/ 	
-/******/ 	function hotDownloadManifest(callback) { // eslint-disable-line no-unused-vars
-/******/ 		if(typeof XMLHttpRequest === "undefined")
-/******/ 			return callback(new Error("No browser support"));
-/******/ 		try {
-/******/ 			var request = new XMLHttpRequest();
-/******/ 			var requestPath = __webpack_require__.p + "" + hotCurrentHash + ".hot-update.json";
-/******/ 			request.open("GET", requestPath, true);
-/******/ 			request.timeout = 10000;
-/******/ 			request.send(null);
-/******/ 		} catch(err) {
-/******/ 			return callback(err);
-/******/ 		}
-/******/ 		request.onreadystatechange = function() {
-/******/ 			if(request.readyState !== 4) return;
-/******/ 			if(request.status === 0) {
-/******/ 				// timeout
-/******/ 				callback(new Error("Manifest request to " + requestPath + " timed out."));
-/******/ 			} else if(request.status === 404) {
-/******/ 				// no update available
-/******/ 				callback();
-/******/ 			} else if(request.status !== 200 && request.status !== 304) {
-/******/ 				// other failure
-/******/ 				callback(new Error("Manifest request to " + requestPath + " failed."));
-/******/ 			} else {
-/******/ 				// success
-/******/ 				try {
-/******/ 					var update = JSON.parse(request.responseText);
-/******/ 				} catch(e) {
-/******/ 					callback(e);
-/******/ 					return;
-/******/ 				}
-/******/ 				callback(null, update);
-/******/ 			}
-/******/ 		};
-/******/ 	}
-
-/******/ 	
-/******/ 	
-/******/ 	// Copied from https://github.com/facebook/react/blob/bef45b0/src/shared/utils/canDefineProperty.js
-/******/ 	var canDefineProperty = false;
-/******/ 	try {
-/******/ 		Object.defineProperty({}, "x", {
-/******/ 			get: function() {}
-/******/ 		});
-/******/ 		canDefineProperty = true;
-/******/ 	} catch(x) {
-/******/ 		// IE will fail on defineProperty
-/******/ 	}
-/******/ 	
-/******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "1c8e0311cd05bfca88b2"; // eslint-disable-line no-unused-vars
-/******/ 	var hotCurrentModuleData = {};
-/******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
-/******/ 	
-/******/ 	function hotCreateRequire(moduleId) { // eslint-disable-line no-unused-vars
-/******/ 		var me = installedModules[moduleId];
-/******/ 		if(!me) return __webpack_require__;
-/******/ 		var fn = function(request) {
-/******/ 			if(me.hot.active) {
-/******/ 				if(installedModules[request]) {
-/******/ 					if(installedModules[request].parents.indexOf(moduleId) < 0)
-/******/ 						installedModules[request].parents.push(moduleId);
-/******/ 					if(me.children.indexOf(request) < 0)
-/******/ 						me.children.push(request);
-/******/ 				} else hotCurrentParents = [moduleId];
-/******/ 			} else {
-/******/ 				console.warn("[HMR] unexpected require(" + request + ") from disposed module " + moduleId);
-/******/ 				hotCurrentParents = [];
-/******/ 			}
-/******/ 			return __webpack_require__(request);
-/******/ 		};
-/******/ 		for(var name in __webpack_require__) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(__webpack_require__, name)) {
-/******/ 				if(canDefineProperty) {
-/******/ 					Object.defineProperty(fn, name, (function(name) {
-/******/ 						return {
-/******/ 							configurable: true,
-/******/ 							enumerable: true,
-/******/ 							get: function() {
-/******/ 								return __webpack_require__[name];
-/******/ 							},
-/******/ 							set: function(value) {
-/******/ 								__webpack_require__[name] = value;
-/******/ 							}
-/******/ 						};
-/******/ 					}(name)));
-/******/ 				} else {
-/******/ 					fn[name] = __webpack_require__[name];
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		function ensure(chunkId, callback) {
-/******/ 			if(hotStatus === "ready")
-/******/ 				hotSetStatus("prepare");
-/******/ 			hotChunksLoading++;
-/******/ 			__webpack_require__.e(chunkId, function() {
-/******/ 				try {
-/******/ 					callback.call(null, fn);
-/******/ 				} finally {
-/******/ 					finishChunkLoading();
-/******/ 				}
-/******/ 	
-/******/ 				function finishChunkLoading() {
-/******/ 					hotChunksLoading--;
-/******/ 					if(hotStatus === "prepare") {
-/******/ 						if(!hotWaitingFilesMap[chunkId]) {
-/******/ 							hotEnsureUpdateChunk(chunkId);
-/******/ 						}
-/******/ 						if(hotChunksLoading === 0 && hotWaitingFiles === 0) {
-/******/ 							hotUpdateDownloaded();
-/******/ 						}
-/******/ 					}
-/******/ 				}
-/******/ 			});
-/******/ 		}
-/******/ 		if(canDefineProperty) {
-/******/ 			Object.defineProperty(fn, "e", {
-/******/ 				enumerable: true,
-/******/ 				value: ensure
-/******/ 			});
-/******/ 		} else {
-/******/ 			fn.e = ensure;
-/******/ 		}
-/******/ 		return fn;
-/******/ 	}
-/******/ 	
-/******/ 	function hotCreateModule(moduleId) { // eslint-disable-line no-unused-vars
-/******/ 		var hot = {
-/******/ 			// private stuff
-/******/ 			_acceptedDependencies: {},
-/******/ 			_declinedDependencies: {},
-/******/ 			_selfAccepted: false,
-/******/ 			_selfDeclined: false,
-/******/ 			_disposeHandlers: [],
-/******/ 	
-/******/ 			// Module API
-/******/ 			active: true,
-/******/ 			accept: function(dep, callback) {
-/******/ 				if(typeof dep === "undefined")
-/******/ 					hot._selfAccepted = true;
-/******/ 				else if(typeof dep === "function")
-/******/ 					hot._selfAccepted = dep;
-/******/ 				else if(typeof dep === "object")
-/******/ 					for(var i = 0; i < dep.length; i++)
-/******/ 						hot._acceptedDependencies[dep[i]] = callback;
-/******/ 				else
-/******/ 					hot._acceptedDependencies[dep] = callback;
-/******/ 			},
-/******/ 			decline: function(dep) {
-/******/ 				if(typeof dep === "undefined")
-/******/ 					hot._selfDeclined = true;
-/******/ 				else if(typeof dep === "number")
-/******/ 					hot._declinedDependencies[dep] = true;
-/******/ 				else
-/******/ 					for(var i = 0; i < dep.length; i++)
-/******/ 						hot._declinedDependencies[dep[i]] = true;
-/******/ 			},
-/******/ 			dispose: function(callback) {
-/******/ 				hot._disposeHandlers.push(callback);
-/******/ 			},
-/******/ 			addDisposeHandler: function(callback) {
-/******/ 				hot._disposeHandlers.push(callback);
-/******/ 			},
-/******/ 			removeDisposeHandler: function(callback) {
-/******/ 				var idx = hot._disposeHandlers.indexOf(callback);
-/******/ 				if(idx >= 0) hot._disposeHandlers.splice(idx, 1);
-/******/ 			},
-/******/ 	
-/******/ 			// Management API
-/******/ 			check: hotCheck,
-/******/ 			apply: hotApply,
-/******/ 			status: function(l) {
-/******/ 				if(!l) return hotStatus;
-/******/ 				hotStatusHandlers.push(l);
-/******/ 			},
-/******/ 			addStatusHandler: function(l) {
-/******/ 				hotStatusHandlers.push(l);
-/******/ 			},
-/******/ 			removeStatusHandler: function(l) {
-/******/ 				var idx = hotStatusHandlers.indexOf(l);
-/******/ 				if(idx >= 0) hotStatusHandlers.splice(idx, 1);
-/******/ 			},
-/******/ 	
-/******/ 			//inherit from previous dispose call
-/******/ 			data: hotCurrentModuleData[moduleId]
-/******/ 		};
-/******/ 		return hot;
-/******/ 	}
-/******/ 	
-/******/ 	var hotStatusHandlers = [];
-/******/ 	var hotStatus = "idle";
-/******/ 	
-/******/ 	function hotSetStatus(newStatus) {
-/******/ 		hotStatus = newStatus;
-/******/ 		for(var i = 0; i < hotStatusHandlers.length; i++)
-/******/ 			hotStatusHandlers[i].call(null, newStatus);
-/******/ 	}
-/******/ 	
-/******/ 	// while downloading
-/******/ 	var hotWaitingFiles = 0;
-/******/ 	var hotChunksLoading = 0;
-/******/ 	var hotWaitingFilesMap = {};
-/******/ 	var hotRequestedFilesMap = {};
-/******/ 	var hotAvailibleFilesMap = {};
-/******/ 	var hotCallback;
-/******/ 	
-/******/ 	// The update info
-/******/ 	var hotUpdate, hotUpdateNewHash;
-/******/ 	
-/******/ 	function toModuleId(id) {
-/******/ 		var isNumber = (+id) + "" === id;
-/******/ 		return isNumber ? +id : id;
-/******/ 	}
-/******/ 	
-/******/ 	function hotCheck(apply, callback) {
-/******/ 		if(hotStatus !== "idle") throw new Error("check() is only allowed in idle status");
-/******/ 		if(typeof apply === "function") {
-/******/ 			hotApplyOnUpdate = false;
-/******/ 			callback = apply;
-/******/ 		} else {
-/******/ 			hotApplyOnUpdate = apply;
-/******/ 			callback = callback || function(err) {
-/******/ 				if(err) throw err;
-/******/ 			};
-/******/ 		}
-/******/ 		hotSetStatus("check");
-/******/ 		hotDownloadManifest(function(err, update) {
-/******/ 			if(err) return callback(err);
-/******/ 			if(!update) {
-/******/ 				hotSetStatus("idle");
-/******/ 				callback(null, null);
-/******/ 				return;
-/******/ 			}
-/******/ 	
-/******/ 			hotRequestedFilesMap = {};
-/******/ 			hotAvailibleFilesMap = {};
-/******/ 			hotWaitingFilesMap = {};
-/******/ 			for(var i = 0; i < update.c.length; i++)
-/******/ 				hotAvailibleFilesMap[update.c[i]] = true;
-/******/ 			hotUpdateNewHash = update.h;
-/******/ 	
-/******/ 			hotSetStatus("prepare");
-/******/ 			hotCallback = callback;
-/******/ 			hotUpdate = {};
-/******/ 			var chunkId = 0;
-/******/ 			{ // eslint-disable-line no-lone-blocks
-/******/ 				/*globals chunkId */
-/******/ 				hotEnsureUpdateChunk(chunkId);
-/******/ 			}
-/******/ 			if(hotStatus === "prepare" && hotChunksLoading === 0 && hotWaitingFiles === 0) {
-/******/ 				hotUpdateDownloaded();
-/******/ 			}
-/******/ 		});
-/******/ 	}
-/******/ 	
-/******/ 	function hotAddUpdateChunk(chunkId, moreModules) { // eslint-disable-line no-unused-vars
-/******/ 		if(!hotAvailibleFilesMap[chunkId] || !hotRequestedFilesMap[chunkId])
-/******/ 			return;
-/******/ 		hotRequestedFilesMap[chunkId] = false;
-/******/ 		for(var moduleId in moreModules) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
-/******/ 				hotUpdate[moduleId] = moreModules[moduleId];
-/******/ 			}
-/******/ 		}
-/******/ 		if(--hotWaitingFiles === 0 && hotChunksLoading === 0) {
-/******/ 			hotUpdateDownloaded();
-/******/ 		}
-/******/ 	}
-/******/ 	
-/******/ 	function hotEnsureUpdateChunk(chunkId) {
-/******/ 		if(!hotAvailibleFilesMap[chunkId]) {
-/******/ 			hotWaitingFilesMap[chunkId] = true;
-/******/ 		} else {
-/******/ 			hotRequestedFilesMap[chunkId] = true;
-/******/ 			hotWaitingFiles++;
-/******/ 			hotDownloadUpdateChunk(chunkId);
-/******/ 		}
-/******/ 	}
-/******/ 	
-/******/ 	function hotUpdateDownloaded() {
-/******/ 		hotSetStatus("ready");
-/******/ 		var callback = hotCallback;
-/******/ 		hotCallback = null;
-/******/ 		if(!callback) return;
-/******/ 		if(hotApplyOnUpdate) {
-/******/ 			hotApply(hotApplyOnUpdate, callback);
-/******/ 		} else {
-/******/ 			var outdatedModules = [];
-/******/ 			for(var id in hotUpdate) {
-/******/ 				if(Object.prototype.hasOwnProperty.call(hotUpdate, id)) {
-/******/ 					outdatedModules.push(toModuleId(id));
-/******/ 				}
-/******/ 			}
-/******/ 			callback(null, outdatedModules);
-/******/ 		}
-/******/ 	}
-/******/ 	
-/******/ 	function hotApply(options, callback) {
-/******/ 		if(hotStatus !== "ready") throw new Error("apply() is only allowed in ready status");
-/******/ 		if(typeof options === "function") {
-/******/ 			callback = options;
-/******/ 			options = {};
-/******/ 		} else if(options && typeof options === "object") {
-/******/ 			callback = callback || function(err) {
-/******/ 				if(err) throw err;
-/******/ 			};
-/******/ 		} else {
-/******/ 			options = {};
-/******/ 			callback = callback || function(err) {
-/******/ 				if(err) throw err;
-/******/ 			};
-/******/ 		}
-/******/ 	
-/******/ 		function getAffectedStuff(module) {
-/******/ 			var outdatedModules = [module];
-/******/ 			var outdatedDependencies = {};
-/******/ 	
-/******/ 			var queue = outdatedModules.slice();
-/******/ 			while(queue.length > 0) {
-/******/ 				var moduleId = queue.pop();
-/******/ 				var module = installedModules[moduleId];
-/******/ 				if(!module || module.hot._selfAccepted)
-/******/ 					continue;
-/******/ 				if(module.hot._selfDeclined) {
-/******/ 					return new Error("Aborted because of self decline: " + moduleId);
-/******/ 				}
-/******/ 				if(moduleId === 0) {
-/******/ 					return;
-/******/ 				}
-/******/ 				for(var i = 0; i < module.parents.length; i++) {
-/******/ 					var parentId = module.parents[i];
-/******/ 					var parent = installedModules[parentId];
-/******/ 					if(parent.hot._declinedDependencies[moduleId]) {
-/******/ 						return new Error("Aborted because of declined dependency: " + moduleId + " in " + parentId);
-/******/ 					}
-/******/ 					if(outdatedModules.indexOf(parentId) >= 0) continue;
-/******/ 					if(parent.hot._acceptedDependencies[moduleId]) {
-/******/ 						if(!outdatedDependencies[parentId])
-/******/ 							outdatedDependencies[parentId] = [];
-/******/ 						addAllToSet(outdatedDependencies[parentId], [moduleId]);
-/******/ 						continue;
-/******/ 					}
-/******/ 					delete outdatedDependencies[parentId];
-/******/ 					outdatedModules.push(parentId);
-/******/ 					queue.push(parentId);
-/******/ 				}
-/******/ 			}
-/******/ 	
-/******/ 			return [outdatedModules, outdatedDependencies];
-/******/ 		}
-/******/ 	
-/******/ 		function addAllToSet(a, b) {
-/******/ 			for(var i = 0; i < b.length; i++) {
-/******/ 				var item = b[i];
-/******/ 				if(a.indexOf(item) < 0)
-/******/ 					a.push(item);
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// at begin all updates modules are outdated
-/******/ 		// the "outdated" status can propagate to parents if they don't accept the children
-/******/ 		var outdatedDependencies = {};
-/******/ 		var outdatedModules = [];
-/******/ 		var appliedUpdate = {};
-/******/ 		for(var id in hotUpdate) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(hotUpdate, id)) {
-/******/ 				var moduleId = toModuleId(id);
-/******/ 				var result = getAffectedStuff(moduleId);
-/******/ 				if(!result) {
-/******/ 					if(options.ignoreUnaccepted)
-/******/ 						continue;
-/******/ 					hotSetStatus("abort");
-/******/ 					return callback(new Error("Aborted because " + moduleId + " is not accepted"));
-/******/ 				}
-/******/ 				if(result instanceof Error) {
-/******/ 					hotSetStatus("abort");
-/******/ 					return callback(result);
-/******/ 				}
-/******/ 				appliedUpdate[moduleId] = hotUpdate[moduleId];
-/******/ 				addAllToSet(outdatedModules, result[0]);
-/******/ 				for(var moduleId in result[1]) {
-/******/ 					if(Object.prototype.hasOwnProperty.call(result[1], moduleId)) {
-/******/ 						if(!outdatedDependencies[moduleId])
-/******/ 							outdatedDependencies[moduleId] = [];
-/******/ 						addAllToSet(outdatedDependencies[moduleId], result[1][moduleId]);
-/******/ 					}
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// Store self accepted outdated modules to require them later by the module system
-/******/ 		var outdatedSelfAcceptedModules = [];
-/******/ 		for(var i = 0; i < outdatedModules.length; i++) {
-/******/ 			var moduleId = outdatedModules[i];
-/******/ 			if(installedModules[moduleId] && installedModules[moduleId].hot._selfAccepted)
-/******/ 				outdatedSelfAcceptedModules.push({
-/******/ 					module: moduleId,
-/******/ 					errorHandler: installedModules[moduleId].hot._selfAccepted
-/******/ 				});
-/******/ 		}
-/******/ 	
-/******/ 		// Now in "dispose" phase
-/******/ 		hotSetStatus("dispose");
-/******/ 		var queue = outdatedModules.slice();
-/******/ 		while(queue.length > 0) {
-/******/ 			var moduleId = queue.pop();
-/******/ 			var module = installedModules[moduleId];
-/******/ 			if(!module) continue;
-/******/ 	
-/******/ 			var data = {};
-/******/ 	
-/******/ 			// Call dispose handlers
-/******/ 			var disposeHandlers = module.hot._disposeHandlers;
-/******/ 			for(var j = 0; j < disposeHandlers.length; j++) {
-/******/ 				var cb = disposeHandlers[j];
-/******/ 				cb(data);
-/******/ 			}
-/******/ 			hotCurrentModuleData[moduleId] = data;
-/******/ 	
-/******/ 			// disable module (this disables requires from this module)
-/******/ 			module.hot.active = false;
-/******/ 	
-/******/ 			// remove module from cache
-/******/ 			delete installedModules[moduleId];
-/******/ 	
-/******/ 			// remove "parents" references from all children
-/******/ 			for(var j = 0; j < module.children.length; j++) {
-/******/ 				var child = installedModules[module.children[j]];
-/******/ 				if(!child) continue;
-/******/ 				var idx = child.parents.indexOf(moduleId);
-/******/ 				if(idx >= 0) {
-/******/ 					child.parents.splice(idx, 1);
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// remove outdated dependency from module children
-/******/ 		for(var moduleId in outdatedDependencies) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(outdatedDependencies, moduleId)) {
-/******/ 				var module = installedModules[moduleId];
-/******/ 				var moduleOutdatedDependencies = outdatedDependencies[moduleId];
-/******/ 				for(var j = 0; j < moduleOutdatedDependencies.length; j++) {
-/******/ 					var dependency = moduleOutdatedDependencies[j];
-/******/ 					var idx = module.children.indexOf(dependency);
-/******/ 					if(idx >= 0) module.children.splice(idx, 1);
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// Not in "apply" phase
-/******/ 		hotSetStatus("apply");
-/******/ 	
-/******/ 		hotCurrentHash = hotUpdateNewHash;
-/******/ 	
-/******/ 		// insert new code
-/******/ 		for(var moduleId in appliedUpdate) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(appliedUpdate, moduleId)) {
-/******/ 				modules[moduleId] = appliedUpdate[moduleId];
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// call accept handlers
-/******/ 		var error = null;
-/******/ 		for(var moduleId in outdatedDependencies) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(outdatedDependencies, moduleId)) {
-/******/ 				var module = installedModules[moduleId];
-/******/ 				var moduleOutdatedDependencies = outdatedDependencies[moduleId];
-/******/ 				var callbacks = [];
-/******/ 				for(var i = 0; i < moduleOutdatedDependencies.length; i++) {
-/******/ 					var dependency = moduleOutdatedDependencies[i];
-/******/ 					var cb = module.hot._acceptedDependencies[dependency];
-/******/ 					if(callbacks.indexOf(cb) >= 0) continue;
-/******/ 					callbacks.push(cb);
-/******/ 				}
-/******/ 				for(var i = 0; i < callbacks.length; i++) {
-/******/ 					var cb = callbacks[i];
-/******/ 					try {
-/******/ 						cb(outdatedDependencies);
-/******/ 					} catch(err) {
-/******/ 						if(!error)
-/******/ 							error = err;
-/******/ 					}
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// Load self accepted modules
-/******/ 		for(var i = 0; i < outdatedSelfAcceptedModules.length; i++) {
-/******/ 			var item = outdatedSelfAcceptedModules[i];
-/******/ 			var moduleId = item.module;
-/******/ 			hotCurrentParents = [moduleId];
-/******/ 			try {
-/******/ 				__webpack_require__(moduleId);
-/******/ 			} catch(err) {
-/******/ 				if(typeof item.errorHandler === "function") {
-/******/ 					try {
-/******/ 						item.errorHandler(err);
-/******/ 					} catch(err) {
-/******/ 						if(!error)
-/******/ 							error = err;
-/******/ 					}
-/******/ 				} else if(!error)
-/******/ 					error = err;
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// handle errors in accept handlers and self accepted module load
-/******/ 		if(error) {
-/******/ 			hotSetStatus("fail");
-/******/ 			return callback(error);
-/******/ 		}
-/******/ 	
-/******/ 		hotSetStatus("idle");
-/******/ 		callback(null, outdatedModules);
-/******/ 	}
-
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -546,14 +13,11 @@
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
-/******/ 			loaded: false,
-/******/ 			hot: hotCreateModule(moduleId),
-/******/ 			parents: hotCurrentParents,
-/******/ 			children: []
+/******/ 			loaded: false
 /******/ 		};
 
 /******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, hotCreateRequire(moduleId));
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -572,11 +36,8 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 
-/******/ 	// __webpack_hash__
-/******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
-
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(0)(0);
+/******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -599,19 +60,19 @@
 
 	var _App2 = _interopRequireDefault(_App);
 
-	var _ModsContent = __webpack_require__(228);
+	var _ModsContent = __webpack_require__(230);
 
 	var _ModsContent2 = _interopRequireDefault(_ModsContent);
 
-	var _LogsContent = __webpack_require__(229);
+	var _LogsContent = __webpack_require__(234);
 
 	var _LogsContent2 = _interopRequireDefault(_LogsContent);
 
-	var _SavesContent = __webpack_require__(230);
+	var _SavesContent = __webpack_require__(236);
 
 	var _SavesContent2 = _interopRequireDefault(_SavesContent);
 
-	var _Index = __webpack_require__(231);
+	var _Index = __webpack_require__(239);
 
 	var _Index2 = _interopRequireDefault(_Index);
 
@@ -624,7 +85,9 @@
 	        _reactRouter.Route,
 	        { path: '/', component: _App2.default },
 	        _react2.default.createElement(_reactRouter.IndexRoute, { component: _Index2.default }),
-	        _react2.default.createElement(_reactRouter.Route, { path: '/mods', component: _ModsContent2.default }),
+	        _react2.default.createElement(_reactRouter.Route, { path: '/mods',
+	            component: _ModsContent2.default
+	        }),
 	        _react2.default.createElement(_reactRouter.Route, { path: '/logs', component: _LogsContent2.default }),
 	        _react2.default.createElement(_reactRouter.Route, { path: '/saves', component: _SavesContent2.default })
 	    )
@@ -26011,6 +25474,14 @@
 
 	var _Sidebar2 = _interopRequireDefault(_Sidebar);
 
+	var _Footer = __webpack_require__(228);
+
+	var _Footer2 = _interopRequireDefault(_Footer);
+
+	var _HiddenSidebar = __webpack_require__(229);
+
+	var _HiddenSidebar2 = _interopRequireDefault(_HiddenSidebar);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -26019,15 +25490,13 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	//import ModsContent from './components/ModsContent.jsx';
-
 	var App = function (_React$Component) {
 	    _inherits(App, _React$Component);
 
-	    function App() {
+	    function App(props) {
 	        _classCallCheck(this, App);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(App).apply(this, arguments));
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
 	    }
 
 	    _createClass(App, [{
@@ -26039,159 +25508,8 @@
 	                _react2.default.createElement(_Header2.default, null),
 	                _react2.default.createElement(_Sidebar2.default, null),
 	                this.props.children,
-	                _react2.default.createElement(
-	                    'footer',
-	                    { className: 'main-footer' },
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'pull-right hidden-xs' },
-	                        'Anything you want'
-	                    ),
-	                    _react2.default.createElement(
-	                        'strong',
-	                        null,
-	                        'Copyright © 2015 ',
-	                        _react2.default.createElement(
-	                            'a',
-	                            { href: '#' },
-	                            'Company'
-	                        ),
-	                        '.'
-	                    ),
-	                    ' All rights reserved.'
-	                ),
-	                _react2.default.createElement(
-	                    'aside',
-	                    { className: 'control-sidebar control-sidebar-dark' },
-	                    _react2.default.createElement(
-	                        'ul',
-	                        { className: 'nav nav-tabs nav-justified control-sidebar-tabs' },
-	                        _react2.default.createElement(
-	                            'li',
-	                            { className: 'active' },
-	                            _react2.default.createElement(
-	                                'a',
-	                                { href: '#control-sidebar-home-tab', 'data-toggle': 'tab' },
-	                                _react2.default.createElement('i', { className: 'fa fa-home' })
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'li',
-	                            null,
-	                            _react2.default.createElement(
-	                                'a',
-	                                { href: '#control-sidebar-settings-tab', 'data-toggle': 'tab' },
-	                                _react2.default.createElement('i', { className: 'fa fa-gears' })
-	                            )
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'tab-content' },
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'tab-pane active', id: 'control-sidebar-home-tab' },
-	                            _react2.default.createElement(
-	                                'h3',
-	                                { className: 'control-sidebar-heading' },
-	                                'Recent Activity'
-	                            ),
-	                            _react2.default.createElement(
-	                                'ul',
-	                                { className: 'control-sidebar-menu' },
-	                                _react2.default.createElement(
-	                                    'li',
-	                                    null,
-	                                    _react2.default.createElement(
-	                                        'a',
-	                                        { href: 'javascript::;' },
-	                                        _react2.default.createElement('i', { className: 'menu-icon fa fa-birthday-cake bg-red' }),
-	                                        _react2.default.createElement(
-	                                            'div',
-	                                            { className: 'menu-info' },
-	                                            _react2.default.createElement(
-	                                                'h4',
-	                                                { className: 'control-sidebar-subheading' },
-	                                                'Langdon\'s Birthday'
-	                                            ),
-	                                            _react2.default.createElement(
-	                                                'p',
-	                                                null,
-	                                                'Will be 23 on April 24th'
-	                                            )
-	                                        )
-	                                    )
-	                                )
-	                            ),
-	                            _react2.default.createElement(
-	                                'h3',
-	                                { className: 'control-sidebar-heading' },
-	                                'Tasks Progress'
-	                            ),
-	                            _react2.default.createElement(
-	                                'ul',
-	                                { className: 'control-sidebar-menu' },
-	                                _react2.default.createElement(
-	                                    'li',
-	                                    null,
-	                                    _react2.default.createElement(
-	                                        'a',
-	                                        { href: 'javascript::;' },
-	                                        _react2.default.createElement(
-	                                            'h4',
-	                                            { className: 'control-sidebar-subheading' },
-	                                            'Custom Template Design',
-	                                            _react2.default.createElement(
-	                                                'span',
-	                                                { className: 'label label-danger pull-right' },
-	                                                '70%'
-	                                            )
-	                                        ),
-	                                        _react2.default.createElement(
-	                                            'div',
-	                                            { className: 'progress progress-xxs' },
-	                                            _react2.default.createElement('div', { className: 'progress-bar progress-bar-danger', style: { width: "70%" } })
-	                                        )
-	                                    )
-	                                )
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'tab-pane', id: 'control-sidebar-stats-tab' },
-	                            'Stats Tab Content'
-	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'tab-pane', id: 'control-sidebar-settings-tab' },
-	                            _react2.default.createElement(
-	                                'form',
-	                                { method: 'post' },
-	                                _react2.default.createElement(
-	                                    'h3',
-	                                    { className: 'control-sidebar-heading' },
-	                                    'General Settings'
-	                                ),
-	                                _react2.default.createElement(
-	                                    'div',
-	                                    { className: 'form-group' },
-	                                    _react2.default.createElement(
-	                                        'label',
-	                                        { className: 'control-sidebar-subheading' },
-	                                        'Report panel usage',
-	                                        _react2.default.createElement('input', { type: 'checkbox', className: 'pull-right' })
-	                                    ),
-	                                    _react2.default.createElement(
-	                                        'p',
-	                                        null,
-	                                        'Some information about this general settings option'
-	                                    )
-	                                )
-	                            )
-	                        )
-	                    )
-	                ),
-	                _react2.default.createElement('div', { className: 'control-sidebar-bg' })
+	                _react2.default.createElement(_Footer2.default, null),
+	                _react2.default.createElement(_HiddenSidebar2.default, null)
 	            );
 	        }
 	    }]);
@@ -26205,7 +25523,7 @@
 /* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -26216,6 +25534,8 @@
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(166);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26235,196 +25555,96 @@
 	    }
 
 	    _createClass(Header, [{
-	        key: "render",
+	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
-	                "header",
-	                { className: "main-header" },
+	                'header',
+	                { className: 'main-header' },
 	                _react2.default.createElement(
-	                    "a",
-	                    { href: "/", className: "logo" },
+	                    _reactRouter.IndexLink,
+	                    { className: 'logo', to: '/' },
 	                    _react2.default.createElement(
-	                        "span",
-	                        { className: "logo-mini" },
+	                        'span',
+	                        { className: 'logo-lg' },
 	                        _react2.default.createElement(
-	                            "b",
+	                            'b',
 	                            null,
-	                            "F"
+	                            'Factorio'
 	                        ),
-	                        "SM"
-	                    ),
-	                    _react2.default.createElement(
-	                        "span",
-	                        { className: "logo-lg" },
-	                        _react2.default.createElement(
-	                            "b",
-	                            null,
-	                            "Factorio"
-	                        ),
-	                        "SM"
+	                        'SM'
 	                    )
 	                ),
 	                _react2.default.createElement(
-	                    "nav",
-	                    { className: "navbar navbar-static-top", role: "navigation" },
+	                    'nav',
+	                    { className: 'navbar navbar-static-top', role: 'navigation' },
 	                    _react2.default.createElement(
-	                        "a",
-	                        { href: "#", className: "sidebar-toggle", "data-toggle": "offcanvas", role: "button" },
+	                        'a',
+	                        { href: '#', className: 'sidebar-toggle', 'data-toggle': 'offcanvas', role: 'button' },
 	                        _react2.default.createElement(
-	                            "span",
-	                            { className: "sr-only" },
-	                            "Toggle navigation"
+	                            'span',
+	                            { className: 'sr-only' },
+	                            'Toggle navigation'
 	                        )
 	                    ),
 	                    _react2.default.createElement(
-	                        "div",
-	                        { className: "navbar-custom-menu" },
+	                        'div',
+	                        { className: 'navbar-custom-menu' },
 	                        _react2.default.createElement(
-	                            "ul",
-	                            { className: "nav navbar-nav" },
+	                            'ul',
+	                            { className: 'nav navbar-nav' },
 	                            _react2.default.createElement(
-	                                "li",
-	                                { className: "dropdown notifications-menu" },
+	                                'li',
+	                                { className: 'dropdown notifications-menu' },
 	                                _react2.default.createElement(
-	                                    "a",
-	                                    { href: "#", className: "dropdown-toggle", "data-toggle": "dropdown" },
-	                                    _react2.default.createElement("i", { className: "fa fa-bell-o" }),
+	                                    'a',
+	                                    { href: '#', className: 'dropdown-toggle', 'data-toggle': 'dropdown' },
+	                                    _react2.default.createElement('i', { className: 'fa fa-bell-o' }),
 	                                    _react2.default.createElement(
-	                                        "span",
-	                                        { className: "label label-warning" },
-	                                        "10"
+	                                        'span',
+	                                        { className: 'label label-warning' },
+	                                        '10'
 	                                    )
 	                                ),
 	                                _react2.default.createElement(
-	                                    "ul",
-	                                    { className: "dropdown-menu" },
+	                                    'ul',
+	                                    { className: 'dropdown-menu' },
 	                                    _react2.default.createElement(
-	                                        "li",
-	                                        { className: "header" },
-	                                        "You have 10 notifications"
+	                                        'li',
+	                                        { className: 'header' },
+	                                        'You have 10 notifications'
 	                                    ),
 	                                    _react2.default.createElement(
-	                                        "li",
+	                                        'li',
 	                                        null,
 	                                        _react2.default.createElement(
-	                                            "ul",
-	                                            { className: "menu" },
+	                                            'ul',
+	                                            { className: 'menu' },
 	                                            _react2.default.createElement(
-	                                                "a",
-	                                                { href: "#" },
-	                                                _react2.default.createElement("i", { className: "fa fa-users text-aqua" }),
-	                                                " 5 new members joined today"
+	                                                'a',
+	                                                { href: '#' },
+	                                                _react2.default.createElement('i', { className: 'fa fa-users text-aqua' }),
+	                                                ' 5 new members joined today'
 	                                            )
 	                                        )
 	                                    ),
 	                                    _react2.default.createElement(
-	                                        "li",
-	                                        { className: "footer" },
+	                                        'li',
+	                                        { className: 'footer' },
 	                                        _react2.default.createElement(
-	                                            "a",
-	                                            { href: "#" },
-	                                            "View all"
+	                                            'a',
+	                                            { href: '#' },
+	                                            'View all'
 	                                        )
 	                                    )
 	                                )
 	                            ),
 	                            _react2.default.createElement(
-	                                "li",
-	                                { className: "dropdown user user-menu" },
-	                                _react2.default.createElement(
-	                                    "a",
-	                                    { href: "#", className: "dropdown-toggle", "data-toggle": "dropdown" },
-	                                    _react2.default.createElement("img", { src: "./dist/dist/img/user2-160x160.jpg", className: "user-image", alt: "User Image" }),
-	                                    _react2.default.createElement(
-	                                        "span",
-	                                        { className: "hidden-xs" },
-	                                        "Alexander Pierce"
-	                                    )
-	                                ),
-	                                _react2.default.createElement(
-	                                    "ul",
-	                                    { className: "dropdown-menu" },
-	                                    _react2.default.createElement(
-	                                        "li",
-	                                        { className: "user-header" },
-	                                        _react2.default.createElement("img", { src: "./dist/dist/img/user2-160x160.jpg", className: "img-circle", alt: "User Image" }),
-	                                        _react2.default.createElement(
-	                                            "p",
-	                                            null,
-	                                            "Alexander Pierce - Web Developer",
-	                                            _react2.default.createElement(
-	                                                "small",
-	                                                null,
-	                                                "Member since Nov. 2012"
-	                                            )
-	                                        )
-	                                    ),
-	                                    _react2.default.createElement(
-	                                        "li",
-	                                        { className: "user-body" },
-	                                        _react2.default.createElement(
-	                                            "div",
-	                                            { className: "row" },
-	                                            _react2.default.createElement(
-	                                                "div",
-	                                                { className: "col-xs-4 text-center" },
-	                                                _react2.default.createElement(
-	                                                    "a",
-	                                                    { href: "#" },
-	                                                    "Followers"
-	                                                )
-	                                            ),
-	                                            _react2.default.createElement(
-	                                                "div",
-	                                                { className: "col-xs-4 text-center" },
-	                                                _react2.default.createElement(
-	                                                    "a",
-	                                                    { href: "#" },
-	                                                    "Sales"
-	                                                )
-	                                            ),
-	                                            _react2.default.createElement(
-	                                                "div",
-	                                                { className: "col-xs-4 text-center" },
-	                                                _react2.default.createElement(
-	                                                    "a",
-	                                                    { href: "#" },
-	                                                    "Friends"
-	                                                )
-	                                            )
-	                                        )
-	                                    ),
-	                                    _react2.default.createElement(
-	                                        "li",
-	                                        { className: "user-footer" },
-	                                        _react2.default.createElement(
-	                                            "div",
-	                                            { className: "pull-left" },
-	                                            _react2.default.createElement(
-	                                                "a",
-	                                                { href: "#", className: "btn btn-default btn-flat" },
-	                                                "Profile"
-	                                            )
-	                                        ),
-	                                        _react2.default.createElement(
-	                                            "div",
-	                                            { className: "pull-right" },
-	                                            _react2.default.createElement(
-	                                                "a",
-	                                                { href: "#", className: "btn btn-default btn-flat" },
-	                                                "Sign out"
-	                                            )
-	                                        )
-	                                    )
-	                                )
-	                            ),
-	                            _react2.default.createElement(
-	                                "li",
+	                                'li',
 	                                null,
 	                                _react2.default.createElement(
-	                                    "a",
-	                                    { href: "#", "data-toggle": "control-sidebar" },
-	                                    _react2.default.createElement("i", { className: "fa fa-gears" })
+	                                    'a',
+	                                    { href: '#', 'data-toggle': 'control-sidebar' },
+	                                    _react2.default.createElement('i', { className: 'fa fa-gears' })
 	                                )
 	                            )
 	                        )
@@ -26576,41 +25796,6 @@
 	                                    'Saves'
 	                                )
 	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'li',
-	                            { className: 'treeview' },
-	                            _react2.default.createElement(
-	                                'a',
-	                                { href: '#' },
-	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
-	                                ' ',
-	                                _react2.default.createElement(
-	                                    'span',
-	                                    null,
-	                                    'Mods'
-	                                ),
-	                                ' ',
-	                                _react2.default.createElement('i', { className: 'fa fa-angle-left pull-right' })
-	                            ),
-	                            _react2.default.createElement(
-	                                'ul',
-	                                { className: 'treeview-menu' },
-	                                _react2.default.createElement(
-	                                    'li',
-	                                    null,
-	                                    'Server Mods'
-	                                ),
-	                                _react2.default.createElement(
-	                                    'li',
-	                                    null,
-	                                    _react2.default.createElement(
-	                                        'a',
-	                                        { href: '#' },
-	                                        'Get Mods'
-	                                    )
-	                                )
-	                            )
 	                        )
 	                    )
 	                )
@@ -26647,63 +25832,46 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ModsContent = function (_React$Component) {
-	    _inherits(ModsContent, _React$Component);
+	var Footer = function (_React$Component) {
+	    _inherits(Footer, _React$Component);
 
-	    function ModsContent() {
-	        _classCallCheck(this, ModsContent);
+	    function Footer() {
+	        _classCallCheck(this, Footer);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(ModsContent).apply(this, arguments));
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Footer).apply(this, arguments));
 	    }
 
-	    _createClass(ModsContent, [{
+	    _createClass(Footer, [{
 	        key: "render",
 	        value: function render() {
 	            return _react2.default.createElement(
-	                "div",
-	                { className: "content-wrapper" },
+	                "footer",
+	                { className: "main-footer" },
 	                _react2.default.createElement(
-	                    "section",
-	                    { className: "content-header" },
-	                    _react2.default.createElement(
-	                        "h1",
-	                        null,
-	                        "Mods",
-	                        _react2.default.createElement(
-	                            "small",
-	                            null,
-	                            "Optional description"
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        "ol",
-	                        { className: "breadcrumb" },
-	                        _react2.default.createElement(
-	                            "li",
-	                            null,
-	                            _react2.default.createElement(
-	                                "a",
-	                                { href: "#" },
-	                                _react2.default.createElement("i", { className: "fa fa-dashboard" }),
-	                                " Level"
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            "li",
-	                            { className: "active" },
-	                            "Here"
-	                        )
-	                    )
+	                    "div",
+	                    { className: "pull-right hidden-xs" },
+	                    "Anything you want!!!!!!"
 	                ),
-	                _react2.default.createElement("section", { className: "content" })
+	                _react2.default.createElement(
+	                    "strong",
+	                    null,
+	                    "Copyright © 2015 ",
+	                    _react2.default.createElement(
+	                        "a",
+	                        { href: "#" },
+	                        "Company"
+	                    ),
+	                    "."
+	                ),
+	                " All rights reserved."
 	            );
 	        }
 	    }]);
 
-	    return ModsContent;
+	    return Footer;
 	}(_react2.default.Component);
 
-	exports.default = ModsContent;
+	exports.default = Footer;
 
 /***/ },
 /* 229 */
@@ -26729,66 +25897,441 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var LogsContent = function (_React$Component) {
-	    _inherits(LogsContent, _React$Component);
+	var HiddenSidebar = function (_React$Component) {
+	    _inherits(HiddenSidebar, _React$Component);
 
-	    function LogsContent() {
-	        _classCallCheck(this, LogsContent);
+	    function HiddenSidebar() {
+	        _classCallCheck(this, HiddenSidebar);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(LogsContent).apply(this, arguments));
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(HiddenSidebar).apply(this, arguments));
 	    }
 
-	    _createClass(LogsContent, [{
+	    _createClass(HiddenSidebar, [{
 	        key: "render",
 	        value: function render() {
 	            return _react2.default.createElement(
-	                "div",
-	                { className: "content-wrapper" },
+	                "aside",
+	                { className: "control-sidebar control-sidebar-dark" },
 	                _react2.default.createElement(
-	                    "section",
-	                    { className: "content-header" },
+	                    "ul",
+	                    { className: "nav nav-tabs nav-justified control-sidebar-tabs" },
 	                    _react2.default.createElement(
-	                        "h1",
-	                        null,
-	                        "Logs",
+	                        "li",
+	                        { className: "active" },
 	                        _react2.default.createElement(
-	                            "small",
-	                            null,
-	                            "Optional description"
+	                            "a",
+	                            { href: "#control-sidebar-home-tab", "data-toggle": "tab" },
+	                            _react2.default.createElement("i", { className: "fa fa-home" })
 	                        )
 	                    ),
 	                    _react2.default.createElement(
-	                        "ol",
-	                        { className: "breadcrumb" },
+	                        "li",
+	                        null,
 	                        _react2.default.createElement(
-	                            "li",
-	                            null,
-	                            _react2.default.createElement(
-	                                "a",
-	                                { href: "#" },
-	                                _react2.default.createElement("i", { className: "fa fa-dashboard" }),
-	                                " Level"
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            "li",
-	                            { className: "active" },
-	                            "Here"
+	                            "a",
+	                            { href: "#control-sidebar-settings-tab", "data-toggle": "tab" },
+	                            _react2.default.createElement("i", { className: "fa fa-gears" })
 	                        )
 	                    )
 	                ),
-	                _react2.default.createElement("section", { className: "content" })
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "tab-content" },
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "tab-pane active", id: "control-sidebar-home-tab" },
+	                        _react2.default.createElement(
+	                            "h3",
+	                            { className: "control-sidebar-heading" },
+	                            "Recent Activity"
+	                        ),
+	                        _react2.default.createElement(
+	                            "ul",
+	                            { className: "control-sidebar-menu" },
+	                            _react2.default.createElement(
+	                                "li",
+	                                null,
+	                                _react2.default.createElement(
+	                                    "a",
+	                                    { href: "javascript::;" },
+	                                    _react2.default.createElement("i", { className: "menu-icon fa fa-birthday-cake bg-red" }),
+	                                    _react2.default.createElement(
+	                                        "div",
+	                                        { className: "menu-info" },
+	                                        _react2.default.createElement(
+	                                            "h4",
+	                                            { className: "control-sidebar-subheading" },
+	                                            "Langdon's Birthday"
+	                                        ),
+	                                        _react2.default.createElement(
+	                                            "p",
+	                                            null,
+	                                            "Will be 23 on April 24th"
+	                                        )
+	                                    )
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            "h3",
+	                            { className: "control-sidebar-heading" },
+	                            "Tasks Progress"
+	                        ),
+	                        _react2.default.createElement(
+	                            "ul",
+	                            { className: "control-sidebar-menu" },
+	                            _react2.default.createElement(
+	                                "li",
+	                                null,
+	                                _react2.default.createElement(
+	                                    "a",
+	                                    { href: "javascript::;" },
+	                                    _react2.default.createElement(
+	                                        "h4",
+	                                        { className: "control-sidebar-subheading" },
+	                                        "Custom Template Design",
+	                                        _react2.default.createElement(
+	                                            "span",
+	                                            { className: "label label-danger pull-right" },
+	                                            "70%"
+	                                        )
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        "div",
+	                                        { className: "progress progress-xxs" },
+	                                        _react2.default.createElement("div", { className: "progress-bar progress-bar-danger", style: { width: "70%" } })
+	                                    )
+	                                )
+	                            )
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "tab-pane", id: "control-sidebar-stats-tab" },
+	                        "Stats Tab Content"
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "tab-pane", id: "control-sidebar-settings-tab" },
+	                        _react2.default.createElement(
+	                            "form",
+	                            { method: "post" },
+	                            _react2.default.createElement(
+	                                "h3",
+	                                { className: "control-sidebar-heading" },
+	                                "General Settings"
+	                            ),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "form-group" },
+	                                _react2.default.createElement(
+	                                    "label",
+	                                    { className: "control-sidebar-subheading" },
+	                                    "Report panel usage",
+	                                    _react2.default.createElement("input", { type: "checkbox", className: "pull-right" })
+	                                ),
+	                                _react2.default.createElement(
+	                                    "p",
+	                                    null,
+	                                    "Some information about this general settings option"
+	                                )
+	                            )
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement("div", { className: "control-sidebar-bg" })
 	            );
 	        }
 	    }]);
 
-	    return LogsContent;
+	    return HiddenSidebar;
 	}(_react2.default.Component);
 
-	exports.default = LogsContent;
+	exports.default = HiddenSidebar;
 
 /***/ },
 /* 230 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _ListMods = __webpack_require__(231);
+
+	var _ListMods2 = _interopRequireDefault(_ListMods);
+
+	var _InstalledMods = __webpack_require__(233);
+
+	var _InstalledMods2 = _interopRequireDefault(_InstalledMods);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ModsContent = function (_React$Component) {
+	    _inherits(ModsContent, _React$Component);
+
+	    function ModsContent(props) {
+	        _classCallCheck(this, ModsContent);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ModsContent).call(this, props));
+
+	        _this.componentDidMount = _this.componentDidMount.bind(_this);
+	        _this.toggleMod = _this.toggleMod.bind(_this);
+	        _this.state = {
+	            installedMods: [],
+	            listMods: []
+	        };
+	        return _this;
+	    }
+
+	    _createClass(ModsContent, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.loadModList();
+	            this.loadInstalledModList();
+	        }
+	    }, {
+	        key: 'loadModList',
+	        value: function loadModList() {
+	            var _this2 = this;
+
+	            $.ajax({
+	                url: "/api/mods/list",
+	                dataType: "json",
+	                success: function success(data) {
+	                    _this2.setState({ listMods: data.mods });
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('api/mods/list', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'loadInstalledModList',
+	        value: function loadInstalledModList() {
+	            var _this3 = this;
+
+	            $.ajax({
+	                url: "/api/mods/list/installed",
+	                dataType: "json",
+	                success: function success(data) {
+	                    _this3.setState({ installedMods: data });
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('api/mods/list', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'toggleMod',
+	        value: function toggleMod(modName) {
+	            var _this4 = this;
+
+	            $.ajax({
+	                url: "/api/mods/toggle/" + modName,
+	                dataType: "json",
+	                success: function success(data) {
+	                    _this4.setState({ listMods: data.mods });
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('api/mods/toggle', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'content-wrapper' },
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content-header' },
+	                    _react2.default.createElement(
+	                        'h1',
+	                        null,
+	                        'Mods',
+	                        _react2.default.createElement(
+	                            'small',
+	                            null,
+	                            'Manage your mods'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'ol',
+	                        { className: 'breadcrumb' },
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                'a',
+	                                { href: '#' },
+	                                _react2.default.createElement('i', { className: 'fa fa-dashboard' }),
+	                                ' Level'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            { className: 'active' },
+	                            'Here'
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content', style: { height: "100%" } },
+	                    _react2.default.createElement(_InstalledMods2.default, this.state),
+	                    _react2.default.createElement(_ListMods2.default, _extends({}, this.state, {
+	                        toggleMod: this.toggleMod
+	                    }))
+	                )
+	            );
+	        }
+	    }]);
+
+	    return ModsContent;
+	}(_react2.default.Component);
+
+	exports.default = ModsContent;
+
+/***/ },
+/* 231 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Mod = __webpack_require__(232);
+
+	var _Mod2 = _interopRequireDefault(_Mod);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ModList = function (_React$Component) {
+	    _inherits(ModList, _React$Component);
+
+	    function ModList() {
+	        _classCallCheck(this, ModList);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(ModList).apply(this, arguments));
+	    }
+
+	    _createClass(ModList, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            console.log(this.props.listMods);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'box' },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'box-header' },
+	                    _react2.default.createElement(
+	                        'h3',
+	                        { className: 'box-title' },
+	                        'Manage Mods'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'box-body' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'table-responsive' },
+	                        _react2.default.createElement(
+	                            'table',
+	                            { className: 'table table-striped' },
+	                            _react2.default.createElement(
+	                                'thead',
+	                                null,
+	                                _react2.default.createElement(
+	                                    'tr',
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Name'
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Status'
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Toggle Status'
+	                                    )
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                'tbody',
+	                                null,
+	                                this.props.listMods.map(function (mod, i) {
+	                                    return _react2.default.createElement(_Mod2.default, _extends({
+	                                        key: i,
+	                                        mod: mod
+	                                    }, _this2.props));
+	                                })
+	                            )
+	                        )
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return ModList;
+	}(_react2.default.Component);
+
+	ModList.propTypes = {
+	    listMods: _react2.default.PropTypes.array.isRequired,
+	    toggleMod: _react2.default.PropTypes.func.isRequired
+	};
+
+	exports.default = ModList;
+
+/***/ },
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -26811,55 +26354,490 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var SavesContent = function (_React$Component) {
-	    _inherits(SavesContent, _React$Component);
+	var Mod = function (_React$Component) {
+	    _inherits(Mod, _React$Component);
 
-	    function SavesContent() {
-	        _classCallCheck(this, SavesContent);
+	    function Mod() {
+	        _classCallCheck(this, Mod);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(SavesContent).apply(this, arguments));
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Mod).apply(this, arguments));
 	    }
 
-	    _createClass(SavesContent, [{
+	    _createClass(Mod, [{
+	        key: "togglePress",
+	        value: function togglePress(e) {
+	            e.preventDefault();
+	            console.log(this.refs.modName);
+	            var node = this.refs.modName;
+	            var modName = node.name;
+	            this.props.toggleMod(modName);
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            if (this.props.mod.enabled === "false") {
+	                this.modStatus = _react2.default.createElement(
+	                    "span",
+	                    { className: "label label-danger" },
+	                    "Disabled"
+	                );
+	            } else {
+	                this.modStatus = _react2.default.createElement(
+	                    "span",
+	                    { className: "label label-success" },
+	                    "Enabled"
+	                );
+	            }
+	            return _react2.default.createElement(
+	                "tr",
+	                null,
+	                _react2.default.createElement(
+	                    "td",
+	                    null,
+	                    this.props.mod.name
+	                ),
+	                _react2.default.createElement(
+	                    "td",
+	                    null,
+	                    this.modStatus
+	                ),
+	                _react2.default.createElement(
+	                    "td",
+	                    null,
+	                    _react2.default.createElement(
+	                        "form",
+	                        { onSubmit: this.togglePress.bind(this) },
+	                        _react2.default.createElement("input", { className: "btn btn-default btn-sm",
+	                            ref: "modName",
+	                            type: "submit",
+	                            value: "Toggle",
+	                            name: this.props.mod.name
+	                        })
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Mod;
+	}(_react2.default.Component);
+
+	Mod.propTypes = {
+	    mod: _react2.default.PropTypes.object.isRequired,
+	    toggleMod: _react2.default.PropTypes.func.isRequired
+	};
+
+	exports.default = Mod;
+
+/***/ },
+/* 233 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var InstalledMods = function (_React$Component) {
+	    _inherits(InstalledMods, _React$Component);
+
+	    function InstalledMods() {
+	        _classCallCheck(this, InstalledMods);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(InstalledMods).apply(this, arguments));
+	    }
+
+	    _createClass(InstalledMods, [{
 	        key: "render",
 	        value: function render() {
 	            return _react2.default.createElement(
 	                "div",
-	                { className: "content-wrapper" },
+	                { className: "box" },
 	                _react2.default.createElement(
-	                    "section",
-	                    { className: "content-header" },
+	                    "div",
+	                    { className: "box-header" },
 	                    _react2.default.createElement(
-	                        "h1",
-	                        null,
-	                        "Saves",
-	                        _react2.default.createElement(
-	                            "small",
+	                        "h3",
+	                        { className: "box-title" },
+	                        "Installed Mods"
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "box-body" },
+	                    this.props.installedMods.map(function (mod, i) {
+	                        return _react2.default.createElement(
+	                            "p",
 	                            null,
-	                            "Optional description"
+	                            mod
+	                        );
+	                    })
+	                )
+	            );
+	        }
+	    }]);
+
+	    return InstalledMods;
+	}(_react2.default.Component);
+
+	InstalledMods.propTypes = {
+	    installedMods: _react2.default.PropTypes.array.isRequired
+	};
+
+	exports.default = InstalledMods;
+
+/***/ },
+/* 234 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _LogLines = __webpack_require__(235);
+
+	var _LogLines2 = _interopRequireDefault(_LogLines);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var LogsContent = function (_React$Component) {
+	    _inherits(LogsContent, _React$Component);
+
+	    function LogsContent(props) {
+	        _classCallCheck(this, LogsContent);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(LogsContent).call(this, props));
+
+	        _this.componentDidMount = _this.componentDidMount.bind(_this);
+	        _this.getLastLog = _this.getLastLog.bind(_this);
+	        _this.state = {
+	            log: []
+	        };
+	        return _this;
+	    }
+
+	    _createClass(LogsContent, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.getLastLog();
+	        }
+	    }, {
+	        key: 'getLastLog',
+	        value: function getLastLog() {
+	            var _this2 = this;
+
+	            $.ajax({
+	                url: "/api/log/tail",
+	                dataType: "json",
+	                success: function success(data) {
+	                    _this2.setState({ log: data });
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('api/mods/list', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'content-wrapper' },
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content-header' },
+	                    _react2.default.createElement(
+	                        'h1',
+	                        null,
+	                        'Logs',
+	                        _react2.default.createElement(
+	                            'small',
+	                            null,
+	                            'Optional description'
 	                        )
 	                    ),
 	                    _react2.default.createElement(
-	                        "ol",
-	                        { className: "breadcrumb" },
+	                        'ol',
+	                        { className: 'breadcrumb' },
 	                        _react2.default.createElement(
-	                            "li",
+	                            'li',
 	                            null,
 	                            _react2.default.createElement(
-	                                "a",
-	                                { href: "#" },
-	                                _react2.default.createElement("i", { className: "fa fa-dashboard" }),
-	                                " Level"
+	                                'a',
+	                                { href: '#' },
+	                                _react2.default.createElement('i', { className: 'fa fa-dashboard' }),
+	                                ' Level'
 	                            )
 	                        ),
 	                        _react2.default.createElement(
-	                            "li",
-	                            { className: "active" },
-	                            "Here"
+	                            'li',
+	                            { className: 'active' },
+	                            'Here'
 	                        )
 	                    )
 	                ),
-	                _react2.default.createElement("section", { className: "content" })
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content' },
+	                    _react2.default.createElement(_LogLines2.default, _extends({
+	                        getLastLog: this.getLastLog
+	                    }, this.state))
+	                )
+	            );
+	        }
+	    }]);
+
+	    return LogsContent;
+	}(_react2.default.Component);
+
+	exports.default = LogsContent;
+
+/***/ },
+/* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var LogLines = function (_React$Component) {
+	    _inherits(LogLines, _React$Component);
+
+	    function LogLines() {
+	        _classCallCheck(this, LogLines);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(LogLines).apply(this, arguments));
+	    }
+
+	    _createClass(LogLines, [{
+	        key: "updateLog",
+	        value: function updateLog() {
+	            this.props.getLastLog();
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            this.props.log.reverse();
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "box" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "box-header" },
+	                    _react2.default.createElement(
+	                        "h3",
+	                        { className: "box-title" },
+	                        "Factorio Log"
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "box-body" },
+	                    _react2.default.createElement("input", { className: "btn btn-default", type: "button", onClick: this.updateLog.bind(this), value: "Refresh" }),
+	                    _react2.default.createElement(
+	                        "h5",
+	                        null,
+	                        "Latest log line at the top"
+	                    ),
+	                    _react2.default.createElement(
+	                        "samp",
+	                        null,
+	                        this.props.log.map(function (line, i) {
+	                            return _react2.default.createElement(
+	                                "p",
+	                                { key: i },
+	                                line
+	                            );
+	                        })
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return LogLines;
+	}(_react2.default.Component);
+
+	LogLines.propTypes = {
+	    log: _react2.default.PropTypes.array.isRequired,
+	    getLastLog: _react2.default.PropTypes.func.isRequired
+	};
+
+	exports.default = LogLines;
+
+/***/ },
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _SavesList = __webpack_require__(237);
+
+	var _SavesList2 = _interopRequireDefault(_SavesList);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SavesContent = function (_React$Component) {
+	    _inherits(SavesContent, _React$Component);
+
+	    function SavesContent(props) {
+	        _classCallCheck(this, SavesContent);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SavesContent).call(this, props));
+
+	        _this.dlSave = _this.dlSave.bind(_this);
+	        _this.state = {
+	            saves: []
+	        };
+	        return _this;
+	    }
+
+	    _createClass(SavesContent, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.getSaves();
+	        }
+	    }, {
+	        key: 'getSaves',
+	        value: function getSaves() {
+	            var _this2 = this;
+
+	            $.ajax({
+	                url: "/api/saves/list",
+	                dataType: "json",
+	                success: function success(data) {
+	                    _this2.setState({ saves: data });
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('api/mods/list', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'dlSave',
+	        value: function dlSave(saveName) {
+	            $.ajax({
+	                url: "/api/saves/dl/" + saveName,
+	                dataType: "json",
+	                success: function success(data) {
+	                    console.log("Downloading save: " + saveName);
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('api/mods/list', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'content-wrapper' },
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content-header' },
+	                    _react2.default.createElement(
+	                        'h1',
+	                        null,
+	                        'Saves',
+	                        _react2.default.createElement(
+	                            'small',
+	                            null,
+	                            'Optional description'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'ol',
+	                        { className: 'breadcrumb' },
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                'a',
+	                                { href: '#' },
+	                                _react2.default.createElement('i', { className: 'fa fa-dashboard' }),
+	                                ' Level'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            { className: 'active' },
+	                            'Here'
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content' },
+	                    _react2.default.createElement(_SavesList2.default, _extends({}, this.state, {
+	                        dlSave: this.dlSave
+	                    }))
+	                )
 	            );
 	        }
 	    }]);
@@ -26870,7 +26848,191 @@
 	exports.default = SavesContent;
 
 /***/ },
-/* 231 */
+/* 237 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Save = __webpack_require__(238);
+
+	var _Save2 = _interopRequireDefault(_Save);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SavesList = function (_React$Component) {
+	    _inherits(SavesList, _React$Component);
+
+	    function SavesList() {
+	        _classCallCheck(this, SavesList);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(SavesList).apply(this, arguments));
+	    }
+
+	    _createClass(SavesList, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'box' },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'box-header' },
+	                    _react2.default.createElement(
+	                        'h3',
+	                        { className: 'box-title' },
+	                        'Save Files'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'box-body' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'table-responsive' },
+	                        _react2.default.createElement(
+	                            'table',
+	                            { className: 'table table-striped' },
+	                            _react2.default.createElement(
+	                                'thead',
+	                                null,
+	                                _react2.default.createElement(
+	                                    'tr',
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Filname'
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Last Modified Time'
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Filesize'
+	                                    )
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                'tbody',
+	                                null,
+	                                this.props.saves.map(function (save, i) {
+	                                    return _react2.default.createElement(_Save2.default, {
+	                                        key: i,
+	                                        save: save
+	                                    });
+	                                })
+	                            )
+	                        )
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return SavesList;
+	}(_react2.default.Component);
+
+	SavesList.propTypes = {
+	    saves: _react2.default.PropTypes.array.isRequired,
+	    dlSave: _react2.default.PropTypes.func.isRequired
+	};
+
+	exports.default = SavesList;
+
+/***/ },
+/* 238 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Save = function (_React$Component) {
+	    _inherits(Save, _React$Component);
+
+	    function Save() {
+	        _classCallCheck(this, Save);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Save).apply(this, arguments));
+	    }
+
+	    _createClass(Save, [{
+	        key: 'render',
+	        value: function render() {
+	            var saveSize = parseFloat(this.props.save.size / 1024 / 1024).toFixed(3);
+	            var saveLastMod = Date.parse(this.props.save.last_mod);
+	            var date = new Date(saveLastMod);
+	            var dateFmt = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+
+	            return _react2.default.createElement(
+	                'tr',
+	                null,
+	                _react2.default.createElement(
+	                    'td',
+	                    null,
+	                    this.props.save.name
+	                ),
+	                _react2.default.createElement(
+	                    'td',
+	                    null,
+	                    dateFmt
+	                ),
+	                _react2.default.createElement(
+	                    'td',
+	                    null,
+	                    saveSize,
+	                    ' MB'
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Save;
+	}(_react2.default.Component);
+
+	Save.propTypes = {
+	    save: _react2.default.PropTypes.object.isRequired
+	};
+
+	exports.default = Save;
+
+/***/ },
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

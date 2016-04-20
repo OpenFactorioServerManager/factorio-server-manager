@@ -22,17 +22,15 @@ func NewRouter() *mux.Router {
 	// Serves all REST handlers prefixed with /api
 	s := r.PathPrefix("/api").Subrouter()
 	for _, route := range apiRoutes {
-		s.
-			Methods(route.Method).
+		s.Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
 			Handler(route.HandlerFunc)
 	}
 
 	// Serves the frontend application from the app directory
-	// Uses basic file server to server index.html and Javascript application
-	r.
-		PathPrefix("/").
+	// Uses basic file server to serve index.html and Javascript application
+	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
 		Handler(http.FileServer(http.Dir("./app/")))
@@ -40,6 +38,8 @@ func NewRouter() *mux.Router {
 	return r
 }
 
+// Defines all API REST endpoints
+// All routes are prefixed with /api
 var apiRoutes = Routes{
 	Route{
 		"ListInstalledMods",
@@ -61,6 +61,11 @@ var apiRoutes = Routes{
 		"GET",
 		"/saves/list",
 		ListSaves,
+	}, {
+		"DlSave",
+		"GET",
+		"/saves/dl/{save}",
+		DLSave,
 	}, {
 		"LogTail",
 		"GET",

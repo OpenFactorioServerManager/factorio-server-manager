@@ -1,27 +1,8 @@
 import React from 'react';
-import Header from './components/Header.jsx';
-import Sidebar from './components/Sidebar.jsx';
-//import ModsContent from './components/ModsContent.jsx';
 
-
-class App extends React.Component {
+class HiddenSidebar extends React.Component {
     render() {
         return(
-            <div className="wrapper">
-
-            <Header />
-
-            <Sidebar />
-
-            {this.props.children}
-
-            <footer className="main-footer">
-                <div className="pull-right hidden-xs">
-                Anything you want
-                </div>
-                <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.
-            </footer>
-
             <aside className="control-sidebar control-sidebar-dark">
                 <ul className="nav nav-tabs nav-justified control-sidebar-tabs">
                 <li className="active"><a href="#control-sidebar-home-tab" data-toggle="tab"><i className="fa fa-home"></i></a></li>
@@ -79,11 +60,10 @@ class App extends React.Component {
                     </form>
                 </div>
                 </div>
-            </aside>
             <div className="control-sidebar-bg"></div>
-        </div>
+            </aside>
         )
     }
 }
 
-export default App
+export default HiddenSidebar

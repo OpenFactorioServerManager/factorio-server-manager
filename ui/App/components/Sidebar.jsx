@@ -33,13 +33,6 @@ class Sidebar extends React.Component {
                     <li><Link to="/mods" activeClassName="active"><i className="fa fa-link"></i><span>Mods</span></Link></li>
                     <li><Link to="/logs" activeClassName="active"><i className="fa fa-link"></i> <span>Logs</span></Link></li>
                     <li><Link to="/saves" activeClassName="active"><i className="fa fa-link"></i> <span>Saves</span></Link></li>
-                    <li className="treeview">
-                    <a href="#"><i className="fa fa-link"></i> <span>Mods</span> <i className="fa fa-angle-left pull-right"></i></a>
-                    <ul className="treeview-menu">
-                        <li>Server Mods</li>
-                        <li><a href="#">Get Mods</a></li>
-                    </ul>
-                    </li>
                 </ul>
                 </section>
             </aside>

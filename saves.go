@@ -3,12 +3,19 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"time"
 )
 
+type Save struct {
+	Name    string    `json:"name"`
+	LastMod time.Time `json:"last_mod"`
+	Size    int64     `json:"size"`
+}
+
 // Lists save files in factorio/saves
-func listSaves() []string {
+func listSaves() []Save {
 	saveDir := config.FactorioDir + "/saves"
-	result := []string{}
+	result := []Save{}
 
 	files, err := ioutil.ReadDir(saveDir)
 	if err != nil {
@@ -17,7 +24,8 @@ func listSaves() []string {
 	}
 
 	for _, f := range files {
-		result = append(result, f.Name())
+		save := Save{f.Name(), f.ModTime(), f.Size()}
+		result = append(result, save)
 	}
 
 	return result

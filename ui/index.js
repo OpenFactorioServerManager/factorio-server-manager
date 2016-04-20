@@ -11,7 +11,9 @@ ReactDOM.render((
     <Router history={browserHistory}>
         <Route path="/" component={App}>
             <IndexRoute component={Index}/>
-            <Route path="/mods" component={ModsContent}/> 
+            <Route path="/mods" 
+                   component={ModsContent}
+            /> 
             <Route path="/logs" component={LogsContent}/> 
             <Route path="/saves" component={SavesContent}/> 
         </Route>

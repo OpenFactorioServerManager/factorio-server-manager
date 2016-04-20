@@ -2,9 +2,7 @@ Factorio Server Manager
 
 A tool for managing both local and remote Factorio servers.
 
-
 Backend is built as a REST api via the Go application.  It also acts as the webserver to serve the front end react application
-
 
 All api actions are accessible with the /api route.
 

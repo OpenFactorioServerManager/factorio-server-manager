@@ -56,9 +56,10 @@ func parseModList() (ModList, error) {
 	return mods, nil
 }
 
-// Toggles Enabled boolean on each Mod in mod-list.json file
+// Toggles Enabled boolean for mod specified in name parameter in mod-list.json file
 func (m *ModList) toggleMod(name string) error {
 	found := false
+	status := false
 
 	for i := range m.Mods {
 		if m.Mods[i].Name == name {
@@ -67,13 +68,14 @@ func (m *ModList) toggleMod(name string) error {
 				m.Mods[i].Enabled = false
 			} else {
 				m.Mods[i].Enabled = true
+				status = true
 			}
 		}
 	}
 
 	if found {
 		m.save()
-		log.Printf("Mod: %s was toggled", name)
+		log.Printf("Mod: %s was toggled to %v", name, status)
 	}
 
 	return nil
@@ -92,3 +94,5 @@ func (m ModList) save() error {
 
 	return nil
 }
+
+//TODO Add method to allow downloading all installed mods in zip file
