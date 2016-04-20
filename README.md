@@ -1,6 +1,9 @@
-Factorio Server Manager
+#Factorio Server Manager
 
 A tool for managing both local and remote Factorio servers.
+
+![Factorio Server Manager Screenshot](http://i.imgur.com/EbRM03Z.png "Factorio Server Manager")
+
 
 Backend is built as a REST api via the Go application.  It also acts as the webserver to serve the front end react application
 
