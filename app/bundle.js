@@ -25855,15 +25855,15 @@
 	                _react2.default.createElement(
 	                    "strong",
 	                    null,
-	                    "Copyright © 2015 ",
+	                    "Copyright © 2016 ",
 	                    _react2.default.createElement(
 	                        "a",
 	                        { href: "#" },
-	                        "Company"
+	                        "Mitch Roote"
 	                    ),
 	                    "."
 	                ),
-	                " All rights reserved."
+	                " MIT License."
 	            );
 	        }
 	    }]);
@@ -26928,6 +26928,11 @@
 	                                        'th',
 	                                        null,
 	                                        'Filesize'
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Download'
 	                                    )
 	                                )
 	                            ),
@@ -26962,7 +26967,7 @@
 /* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -26992,7 +26997,24 @@
 	    }
 
 	    _createClass(Save, [{
-	        key: 'render',
+	        key: "downloadSave",
+	        value: function downloadSave(e) {
+	            e.preventDefault();
+	            var node = this.refs.saveName;
+	            var saveName = node.name;
+	            $.ajax({
+	                url: "/api/saves/dl/" + saveName,
+	                dataType: "json",
+	                success: function success(data) {
+	                    console.log(data);
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('api/mods/list', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
+	        key: "render",
 	        value: function render() {
 	            var saveSize = parseFloat(this.props.save.size / 1024 / 1024).toFixed(3);
 	            var saveLastMod = Date.parse(this.props.save.last_mod);
@@ -27000,23 +27022,37 @@
 	            var dateFmt = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
 	            return _react2.default.createElement(
-	                'tr',
+	                "tr",
 	                null,
 	                _react2.default.createElement(
-	                    'td',
+	                    "td",
 	                    null,
 	                    this.props.save.name
 	                ),
 	                _react2.default.createElement(
-	                    'td',
+	                    "td",
 	                    null,
 	                    dateFmt
 	                ),
 	                _react2.default.createElement(
-	                    'td',
+	                    "td",
 	                    null,
 	                    saveSize,
-	                    ' MB'
+	                    " MB"
+	                ),
+	                _react2.default.createElement(
+	                    "td",
+	                    null,
+	                    _react2.default.createElement(
+	                        "form",
+	                        { onSubmit: this.downloadSave.bind(this) },
+	                        _react2.default.createElement("input", { className: "btn btn-default btn-sm",
+	                            ref: "saveName",
+	                            type: "submit",
+	                            value: "Download Save",
+	                            name: this.props.save.name
+	                        })
+	                    )
 	                )
 	            );
 	        }

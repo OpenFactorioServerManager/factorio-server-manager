@@ -17,6 +17,7 @@ class SavesList extends React.Component {
                                     <th>Filname</th>
                                     <th>Last Modified Time</th>
                                     <th>Filesize</th>
+                                    <th>Download</th>
                                 </tr>
                             </thead>
                             <tbody>

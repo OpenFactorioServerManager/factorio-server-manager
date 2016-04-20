@@ -96,3 +96,4 @@ func (m ModList) save() error {
 }
 
 //TODO Add method to allow downloading all installed mods in zip file
+//TODO Add method for uploading new mods
