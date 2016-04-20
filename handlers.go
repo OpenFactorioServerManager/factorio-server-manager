@@ -13,6 +13,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "hello world")
 }
 
+// Returns JSON response of all mods installed in factorio/mods
 func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
@@ -23,6 +24,8 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Toggles mod passed in through mod variable
+// Updates mod-list.json file to toggle the enabled status of mods
 func ToggleMod(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
@@ -31,7 +34,7 @@ func ToggleMod(w http.ResponseWriter, r *http.Request) {
 
 	m, err := parseModList()
 	if err != nil {
-		log.Printf("Could parse mod list: %s", err)
+		log.Printf("Could not parse mod list: %s", err)
 		return
 	}
 
@@ -46,8 +49,10 @@ func ToggleMod(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Returns JSON response of all mods in the mod-list.json file
 func ListMods(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
 	m, err := parseModList()
 	if err != nil {
 		log.Printf("Could not parse mod list: %s", err)
@@ -59,6 +64,7 @@ func ListMods(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Lists all save files in the factorio/saves directory
 func ListSaves(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
@@ -69,6 +75,7 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Returns last lines of the factorio-current.log file
 func LogTail(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
@@ -91,7 +98,7 @@ func DLSave(w http.ResponseWriter, r *http.Request) {
 	saveName := config.FactorioSavesDir + "/" + save
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", save))
-	log.Printf("%s", saveName)
+	log.Printf("%s downloading: %s", r.Host, saveName)
 
 	http.ServeFile(w, r, saveName)
 }

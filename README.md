@@ -28,33 +28,55 @@ Example:
 
 ```
 
-## Building the server
+## Development
 The backend is built as a REST API via the Go web application.  
 
 It also acts as the webserver to serve the front end react application
 
-All api actions are accessible with the /api route.  The frontend is accessible with the root url.
+All api actions are accessible with the /api route.  The frontend is accessible from /.
 
 ### Requirements
 + Go 1.6
 + NodeJS 4.2.6
 
-###Building Go backend
+#### Building the Go backend
+Go Application which manages the Factorio server.
+
+API requests for managing the Factorio server are sent to /api.
+
+The frontend code is served by a HTTP file server running on /.
+```
 git clone https://github.com/MajorMJR/factorio-server-manager.git
 cd factorio-server-manager
 go build
+```
 
-###building React frontend
-install nodejs (use nvm)
-cd static/js
-npm install
-npm run build
+#### Building the React frontend
+Frontend is built using React and the AdminLTE CSS framework. See app/dist/ for AdminLTE included files and license.
+
+The root of the UI application is served at app/index.html.  Run the npm build script and the Go application during development to get live rebuilding of the UI code.
+
+All necessary CSS and Javascript files are included for running the UI.
+
+Transpiled bundle.js application is output to app/bundle.js, 'npm run build' script starts webpack to build the React application for development
+```
+ install nodejs (use nvm)
+ cd ui/
+ npm install
+ npm run build
+ Start factorio-server-manager binary in another terminal
+```
+
+## Contributing
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
 
 ## Authors
 
 * **Mitch Roote** - [roote.me](https://roote.me)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 

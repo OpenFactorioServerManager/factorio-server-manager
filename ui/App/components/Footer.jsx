@@ -7,7 +7,7 @@ class Footer extends React.Component {
                 <div className="pull-right hidden-xs">
                 Anything you want!!!!!!
                 </div>
-                <strong>Copyright &copy; 2016 <a href="#">Mitch Roote</a>.</strong> MIT License.
+                <strong>Copyright &copy; 2016 <a href="https://roote.me">Mitch Roote</a>.</strong> MIT License.
             </footer>
         )
     }
