@@ -26093,6 +26093,7 @@
 
 	        _this.componentDidMount = _this.componentDidMount.bind(_this);
 	        _this.toggleMod = _this.toggleMod.bind(_this);
+	        _this.loadInstalledModList = _this.loadInstalledModList.bind(_this);
 	        _this.state = {
 	            installedMods: [],
 	            listMods: []
@@ -26196,7 +26197,9 @@
 	                _react2.default.createElement(
 	                    'section',
 	                    { className: 'content', style: { height: "100%" } },
-	                    _react2.default.createElement(_InstalledMods2.default, this.state),
+	                    _react2.default.createElement(_InstalledMods2.default, _extends({}, this.state, {
+	                        loadInstalledModList: this.loadInstalledModList
+	                    })),
 	                    _react2.default.createElement(_ListMods2.default, _extends({}, this.state, {
 	                        toggleMod: this.toggleMod
 	                    }))
@@ -26250,11 +26253,6 @@
 	    }
 
 	    _createClass(ModList, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            console.log(this.props.listMods);
-	        }
-	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var _this2 = this;
@@ -26274,6 +26272,11 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'box-body' },
+	                    _react2.default.createElement(
+	                        'h4',
+	                        null,
+	                        'Upload Mod'
+	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'table-responsive' },
@@ -26433,7 +26436,7 @@
 /* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -26463,30 +26466,150 @@
 	    }
 
 	    _createClass(InstalledMods, [{
-	        key: "render",
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.uploadFile = this.uploadFile.bind(this);
+	            this.removeMod = this.removeMod.bind(this);
+	        }
+	    }, {
+	        key: 'updateInstalledMods',
+	        value: function updateInstalledMods() {
+	            this.props.loadInstalledModList();
+	        }
+	    }, {
+	        key: 'uploadFile',
+	        value: function uploadFile(e) {
+	            var fd = new FormData();
+	            fd.append('modfile', this.refs.file.files[0]);
+
+	            $.ajax({
+	                url: "/api/mods/upload",
+	                type: "POST",
+	                data: fd,
+	                processData: false,
+	                contentType: false,
+	                success: function success(data) {
+	                    alert(data);
+	                }
+	            });
+	            e.preventDefault();
+	            this.updateInstalledMods();
+	        }
+	    }, {
+	        key: 'removeMod',
+	        value: function removeMod(i) {
+	            $.ajax({
+	                url: "/api/mods/rm/" + this.props.installedMods[i],
+	                success: function success(data) {
+	                    alert(data);
+	                }
+	            });
+	            this.updateInstalledMods();
+	        }
+	    }, {
+	        key: 'render',
 	        value: function render() {
+	            var _this2 = this;
+
 	            return _react2.default.createElement(
-	                "div",
-	                { className: "box" },
+	                'div',
+	                { className: 'box' },
 	                _react2.default.createElement(
-	                    "div",
-	                    { className: "box-header" },
+	                    'div',
+	                    { className: 'box-header' },
 	                    _react2.default.createElement(
-	                        "h3",
-	                        { className: "box-title" },
-	                        "Installed Mods"
+	                        'h3',
+	                        { className: 'box-title' },
+	                        'Installed Mods'
 	                    )
 	                ),
 	                _react2.default.createElement(
-	                    "div",
-	                    { className: "box-body" },
-	                    this.props.installedMods.map(function (mod, i) {
-	                        return _react2.default.createElement(
-	                            "p",
+	                    'div',
+	                    { className: 'box-body' },
+	                    _react2.default.createElement(
+	                        'form',
+	                        { ref: 'uploadForm', className: 'form', encType: 'multipart/form-data' },
+	                        _react2.default.createElement(
+	                            'fieldset',
 	                            null,
-	                            mod
-	                        );
-	                    })
+	                            _react2.default.createElement(
+	                                'span',
+	                                { className: 'btn btn-default btn-file' },
+	                                _react2.default.createElement('input', { ref: 'file', type: 'file', name: 'modfile', id: 'modfile' })
+	                            ),
+	                            _react2.default.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'table-responsive' },
+	                        _react2.default.createElement(
+	                            'table',
+	                            { className: 'table table-striped' },
+	                            _react2.default.createElement(
+	                                'thead',
+	                                null,
+	                                _react2.default.createElement(
+	                                    'tr',
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Mod Name'
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Download'
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'th',
+	                                        null,
+	                                        'Delete'
+	                                    )
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                'tbody',
+	                                null,
+	                                this.props.installedMods.map(function (mod, i) {
+	                                    var saveLocation = "/api/mods/dl/" + mod;
+	                                    return _react2.default.createElement(
+	                                        'tr',
+	                                        { key: i },
+	                                        _react2.default.createElement(
+	                                            'td',
+	                                            null,
+	                                            mod
+	                                        ),
+	                                        _react2.default.createElement(
+	                                            'td',
+	                                            null,
+	                                            _react2.default.createElement(
+	                                                'a',
+	                                                { className: 'btn btn-default', href: saveLocation },
+	                                                'Download'
+	                                            )
+	                                        ),
+	                                        _react2.default.createElement(
+	                                            'td',
+	                                            null,
+	                                            _react2.default.createElement(
+	                                                'button',
+	                                                {
+	                                                    className: 'btn btn-danger btn-small',
+	                                                    ref: 'modInput',
+	                                                    type: 'button',
+	                                                    onClick: _this2.removeMod.bind(_this2, i) },
+	                                                _react2.default.createElement('i', { className: 'fa fa-trash' }),
+	                                                '  Delete'
+	                                            )
+	                                        )
+	                                    );
+	                                })
+	                            )
+	                        )
+	                    )
 	                )
 	            );
 	        }
@@ -26496,7 +26619,8 @@
 	}(_react2.default.Component);
 
 	InstalledMods.propTypes = {
-	    installedMods: _react2.default.PropTypes.array.isRequired
+	    installedMods: _react2.default.PropTypes.array.isRequired,
+	    loadInstalledModList: _react2.default.PropTypes.func.isRequired
 	};
 
 	exports.default = InstalledMods;
@@ -26751,6 +26875,7 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SavesContent).call(this, props));
 
 	        _this.dlSave = _this.dlSave.bind(_this);
+	        _this.getSaves = _this.getSaves.bind(_this);
 	        _this.state = {
 	            saves: []
 	        };
@@ -26835,7 +26960,8 @@
 	                    'section',
 	                    { className: 'content' },
 	                    _react2.default.createElement(_SavesList2.default, _extends({}, this.state, {
-	                        dlSave: this.dlSave
+	                        dlSave: this.dlSave,
+	                        getSaves: this.getSaves
 	                    }))
 	                )
 	            );
@@ -26878,15 +27004,58 @@
 	var SavesList = function (_React$Component) {
 	    _inherits(SavesList, _React$Component);
 
-	    function SavesList() {
+	    function SavesList(props) {
 	        _classCallCheck(this, SavesList);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(SavesList).apply(this, arguments));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SavesList).call(this, props));
+
+	        _this.updateSavesList = _this.updateSavesList.bind(_this);
+	        _this.uploadFile = _this.uploadFile.bind(_this);
+	        _this.removeSave = _this.removeSave.bind(_this);
+	        return _this;
 	    }
 
 	    _createClass(SavesList, [{
+	        key: 'updateSavesList',
+	        value: function updateSavesList() {
+	            this.props.getSaves();
+	        }
+	    }, {
+	        key: 'uploadFile',
+	        value: function uploadFile(e) {
+	            var fd = new FormData();
+	            fd.append('savefile', this.refs.file.files[0]);
+
+	            $.ajax({
+	                url: "/api/saves/upload",
+	                type: "POST",
+	                data: fd,
+	                processData: false,
+	                contentType: false,
+	                success: function success(data) {
+	                    alert(data);
+	                }
+	            });
+	            e.preventDefault();
+	            this.updateSavesList();
+	        }
+	    }, {
+	        key: 'removeSave',
+	        value: function removeSave(saveName, e) {
+	            console.log(e, saveName);
+	            $.ajax({
+	                url: "/api/saves/rm/" + saveName,
+	                success: function success(data) {
+	                    alert(data);
+	                }
+	            });
+	            this.updateSavesList();
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var _this2 = this;
+
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'box' },
@@ -26902,6 +27071,20 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'box-body' },
+	                    _react2.default.createElement(
+	                        'form',
+	                        { ref: 'uploadForm', className: 'form', encType: 'multipart/form-data' },
+	                        _react2.default.createElement(
+	                            'fieldset',
+	                            null,
+	                            _react2.default.createElement(
+	                                'span',
+	                                { className: 'btn btn-default btn-file' },
+	                                _react2.default.createElement('input', { ref: 'file', type: 'file', name: 'modfile', id: 'modfile' })
+	                            ),
+	                            _react2.default.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
+	                        )
+	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'table-responsive' },
@@ -26942,7 +27125,10 @@
 	                                this.props.saves.map(function (save, i) {
 	                                    return _react2.default.createElement(_Save2.default, {
 	                                        key: i,
-	                                        save: save
+	                                        saves: _this2.props.saves,
+	                                        index: i,
+	                                        save: save,
+	                                        removeSave: _this2.removeSave
 	                                    });
 	                                })
 	                            )
@@ -26958,7 +27144,8 @@
 
 	SavesList.propTypes = {
 	    saves: _react2.default.PropTypes.array.isRequired,
-	    dlSave: _react2.default.PropTypes.func.isRequired
+	    dlSave: _react2.default.PropTypes.func.isRequired,
+	    getSaves: _react2.default.PropTypes.func.isRequired
 	};
 
 	exports.default = SavesList;
@@ -27032,6 +27219,20 @@
 	                        { className: 'btn btn-default', href: saveLocation },
 	                        'Download'
 	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'td',
+	                    null,
+	                    _react2.default.createElement(
+	                        'button',
+	                        {
+	                            className: 'btn btn-danger btn-small',
+	                            ref: 'saveInput',
+	                            type: 'button',
+	                            onClick: this.props.removeSave.bind(this, this.props.saves[this.props.index].name) },
+	                        _react2.default.createElement('i', { className: 'fa fa-trash' }),
+	                        '  Delete'
+	                    )
 	                )
 	            );
 	        }
@@ -27041,7 +27242,10 @@
 	}(_react2.default.Component);
 
 	Save.propTypes = {
-	    save: _react2.default.PropTypes.object.isRequired
+	    save: _react2.default.PropTypes.object.isRequired,
+	    saves: _react2.default.PropTypes.array.isRequired,
+	    index: _react2.default.PropTypes.number.isRequired,
+	    removeSave: _react2.default.PropTypes.func.isRequired
 	};
 
 	exports.default = Save;

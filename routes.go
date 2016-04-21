@@ -30,6 +30,19 @@ func NewRouter() *mux.Router {
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
+	// Routes match the ones defined in React application
+	r.Path("/mods").
+		Methods("GET").
+		Name("Mods").
+		Handler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/"))))
+	r.Path("/saves").
+		Methods("GET").
+		Name("Saves").
+		Handler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/"))))
+	r.Path("/logs").
+		Methods("GET").
+		Name("Logs").
+		Handler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/"))))
 	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
@@ -57,6 +70,21 @@ var apiRoutes = Routes{
 		"/mods/toggle/{mod}",
 		ToggleMod,
 	}, {
+		"UploadMod",
+		"POST",
+		"/mods/upload",
+		UploadMod,
+	}, {
+		"RemoveMod",
+		"GET",
+		"/mods/rm/{mod}",
+		RemoveMod,
+	}, {
+		"DownloadMod",
+		"GET",
+		"/mods/dl/{mod}",
+		DownloadMod,
+	}, {
 		"ListSaves",
 		"GET",
 		"/saves/list",
@@ -66,6 +94,16 @@ var apiRoutes = Routes{
 		"GET",
 		"/saves/dl/{save}",
 		DLSave,
+	}, {
+		"UploadSave",
+		"POST",
+		"/saves/upload",
+		UploadSave,
+	}, {
+		"RemoveSave",
+		"GET",
+		"/saves/rm/{save}",
+		RemoveSave,
 	}, {
 		"LogTail",
 		"GET",

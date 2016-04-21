@@ -5,6 +5,7 @@ class SavesContent extends React.Component {
     constructor(props) {
         super(props);
         this.dlSave = this.dlSave.bind(this);
+        this.getSaves = this.getSaves.bind(this);
         this.state = {
             saves: []
         }
@@ -59,6 +60,7 @@ class SavesContent extends React.Component {
                 <SavesList 
                     {...this.state}
                     dlSave={this.dlSave}
+                    getSaves={this.getSaves}
                 />
 
 

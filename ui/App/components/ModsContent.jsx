@@ -7,6 +7,7 @@ class ModsContent extends React.Component {
         super(props);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.toggleMod = this.toggleMod.bind(this);
+        this.loadInstalledModList = this.loadInstalledModList.bind(this);
         this.state = {
             installedMods: [],
             listMods: []
@@ -75,6 +76,7 @@ class ModsContent extends React.Component {
 
                     <InstalledMods 
                         {...this.state}
+                        loadInstalledModList={this.loadInstalledModList}
                     />
                     <ModList
                         {...this.state}

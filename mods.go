@@ -2,8 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"strings"
 )
 
 type ModList struct {
@@ -16,14 +20,13 @@ type Mod struct {
 }
 
 // List mods installed in the factorio/mods directory
-func listInstalledMods() []string {
-	modDir := config.FactorioDir + "/mods"
+func listInstalledMods(modDir string) ([]string, error) {
 	result := []string{}
 
 	files, err := ioutil.ReadDir(modDir)
 	if err != nil {
 		log.Printf("Error listing installed mods")
-		return result
+		return result, err
 	}
 	for _, f := range files {
 		if f.Name() == "mod-list.json" {
@@ -32,7 +35,39 @@ func listInstalledMods() []string {
 		result = append(result, f.Name())
 	}
 
-	return result
+	return result, nil
+}
+
+func rmMod(modName string) error {
+	removed := false
+	if modName == "" {
+		return errors.New("No mod name provided.")
+	}
+	installedMods, err := listInstalledMods(config.FactorioModsDir)
+	if err != nil {
+		log.Printf("Error in remove mod list: %s", err)
+		return err
+	}
+
+	for _, mod := range installedMods {
+		log.Printf("Checking if %s in %s", mod, modName)
+		if strings.Contains(mod, modName) {
+			err := os.Remove(config.FactorioModsDir + "/" + mod)
+			if err != nil {
+				log.Printf("Error removing mod %s: %s", mod, err)
+				return err
+			}
+			log.Printf("Removed mod: %s", mod)
+			removed = true
+		}
+	}
+
+	if !removed {
+		log.Printf("Did not remove mod: %s", modName)
+		return errors.New(fmt.Sprintf("Did not remove mod: %s", modName))
+	}
+
+	return nil
 }
 
 // Parses mod-list.json file in factorio/mods

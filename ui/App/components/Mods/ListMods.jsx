@@ -2,10 +2,6 @@ import React from 'react';
 import Mod from './Mod.jsx'
 
 class ModList extends React.Component {
-    componentDidMount() {
-        console.log(this.props.listMods);
-    }
-
     render() {
         return(
             <div className="box">
@@ -14,6 +10,7 @@ class ModList extends React.Component {
                 </div>
                 
                 <div className="box-body">
+                    <h4>Upload Mod</h4>
                     <div className="table-responsive">
                     <table className="table table-striped">
                         <thead>
