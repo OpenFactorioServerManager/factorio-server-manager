@@ -109,5 +109,10 @@ var apiRoutes = Routes{
 		"GET",
 		"/log/tail",
 		LogTail,
+	}, {
+		"LoadConfig",
+		"GET",
+		"/config/get",
+		LoadConfig,
 	},
 }

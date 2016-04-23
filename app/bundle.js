@@ -85,9 +85,7 @@
 	        _reactRouter.Route,
 	        { path: '/', component: _App2.default },
 	        _react2.default.createElement(_reactRouter.IndexRoute, { component: _Index2.default }),
-	        _react2.default.createElement(_reactRouter.Route, { path: '/mods',
-	            component: _ModsContent2.default
-	        }),
+	        _react2.default.createElement(_reactRouter.Route, { path: '/mods', component: _ModsContent2.default }),
 	        _react2.default.createElement(_reactRouter.Route, { path: '/logs', component: _LogsContent2.default }),
 	        _react2.default.createElement(_reactRouter.Route, { path: '/saves', component: _SavesContent2.default })
 	    )
@@ -26273,11 +26271,6 @@
 	                    'div',
 	                    { className: 'box-body' },
 	                    _react2.default.createElement(
-	                        'h4',
-	                        null,
-	                        'Upload Mod'
-	                    ),
-	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'table-responsive' },
 	                        _react2.default.createElement(
@@ -26527,16 +26520,17 @@
 	                    'div',
 	                    { className: 'box-body' },
 	                    _react2.default.createElement(
+	                        'h4',
+	                        null,
+	                        'Upload Mod'
+	                    ),
+	                    _react2.default.createElement(
 	                        'form',
 	                        { ref: 'uploadForm', className: 'form', encType: 'multipart/form-data' },
 	                        _react2.default.createElement(
 	                            'fieldset',
 	                            null,
-	                            _react2.default.createElement(
-	                                'span',
-	                                { className: 'btn btn-default btn-file' },
-	                                _react2.default.createElement('input', { ref: 'file', type: 'file', name: 'modfile', id: 'modfile' })
-	                            ),
+	                            _react2.default.createElement('input', { className: 'btn btn-default', ref: 'file', type: 'file', name: 'modfile', id: 'modfile' }),
 	                            _react2.default.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
 	                        )
 	                    ),
@@ -27042,7 +27036,6 @@
 	    }, {
 	        key: 'removeSave',
 	        value: function removeSave(saveName, e) {
-	            console.log(e, saveName);
 	            $.ajax({
 	                url: "/api/saves/rm/" + saveName,
 	                success: function success(data) {
@@ -27072,17 +27065,39 @@
 	                    'div',
 	                    { className: 'box-body' },
 	                    _react2.default.createElement(
-	                        'form',
-	                        { ref: 'uploadForm', className: 'form', encType: 'multipart/form-data' },
+	                        'div',
+	                        { className: 'box' },
 	                        _react2.default.createElement(
-	                            'fieldset',
-	                            null,
+	                            'div',
+	                            { className: 'box-header' },
 	                            _react2.default.createElement(
-	                                'span',
-	                                { className: 'btn btn-default btn-file' },
-	                                _react2.default.createElement('input', { ref: 'file', type: 'file', name: 'modfile', id: 'modfile' })
-	                            ),
-	                            _react2.default.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
+	                                'h4',
+	                                { className: 'box-title' },
+	                                'Upload Save File'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'box-body' },
+	                            _react2.default.createElement(
+	                                'form',
+	                                { ref: 'uploadForm', className: 'form-inline', encType: 'multipart/form-data' },
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'form-group' },
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        { 'for': 'savefile' },
+	                                        'Upload Save File...'
+	                                    ),
+	                                    _react2.default.createElement('input', { className: 'form-control btn btn-default', ref: 'file', type: 'file', name: 'savefile', id: 'savefile' })
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'form-group' },
+	                                    _react2.default.createElement('input', { className: 'form-control btn btn-default', type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
+	                                )
+	                            )
 	                        )
 	                    ),
 	                    _react2.default.createElement(

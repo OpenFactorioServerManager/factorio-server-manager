@@ -10,7 +10,6 @@ class ModList extends React.Component {
                 </div>
                 
                 <div className="box-body">
-                    <h4>Upload Mod</h4>
                     <div className="table-responsive">
                     <table className="table table-striped">
                         <thead>

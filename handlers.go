@@ -84,10 +84,8 @@ func UploadMod(w http.ResponseWriter, r *http.Request) {
 		r.ParseMultipartForm(32 << 20)
 		file, header, err := r.FormFile("modfile")
 		if err != nil {
-			json.NewEncoder(w).Encode(err.Error())
-			log.Printf("%+v", file)
-			log.Printf("%+v", header)
-			log.Printf("Error in formfile")
+			log.Printf("No mod filename provided for upload: %s", err)
+			json.NewEncoder(w).Encode("No mod file provided.")
 			return
 		}
 		defer file.Close()
@@ -224,6 +222,8 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Deletes provided save
+//TODO sanitize
 func RemoveSave(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
@@ -232,7 +232,7 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 
 	err := rmSave(saveName)
 	if err == nil {
-		// No error returned means save was removed
+		// save was removed
 		resp := fmt.Sprintf("Removed save: %s", saveName)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error removing save %s", err)
@@ -244,7 +244,6 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error removing save: %s", err)
 		}
-		return
 	}
 }
 
@@ -261,4 +260,23 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(logLines); err != nil {
 		log.Printf("Error tailing logfile", err)
 	}
+}
+
+// Return JSON response of config.ini file
+func LoadConfig(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	configContents, err := loadConfig(config.FactorioConfigFile)
+	if err != nil {
+		log.Printf("Could not retrieve config.ini: %s", err)
+		resp := "Error getting config.ini"
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error tailing logfile", err)
+		}
+		return
+	}
+	if _, err := w.Write(configContents); err != nil {
+		log.Printf("Error encoding config.ini response: %s", err)
+	}
+	log.Printf("Sent config.ini response")
 }

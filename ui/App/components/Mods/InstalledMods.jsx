@@ -39,7 +39,6 @@ class InstalledMods extends React.Component {
     }
 
     render() {
-
         return(
             <div className="box">
                 <div className="box-header">
@@ -47,11 +46,10 @@ class InstalledMods extends React.Component {
                 </div>
                      
                 <div className="box-body">
+                    <h4>Upload Mod</h4>
                     <form ref="uploadForm" className="form" encType='multipart/form-data'>
                     <fieldset>
-                        <span className="btn btn-default btn-file">
-                            <input ref="file" type="file" name="modfile" id="modfile" />
-                        </span>
+                        <input className="btn btn-default" ref="file" type="file" name="modfile" id="modfile" />
 
                         <input type="button" ref="button" value="Upload" onClick={this.uploadFile} />
                     </fieldset>

@@ -7,21 +7,23 @@ import (
 )
 
 type Config struct {
-	FactorioDir      string
-	FactorioSavesDir string
-	FactorioModsDir  string
-	FactorioLog      string
-	ServerIP         string
-	ServerPort       string
-	MaxUploadSize    int64
+	FactorioDir        string
+	FactorioSavesDir   string
+	FactorioModsDir    string
+	FactorioConfigFile string
+	FactorioLog        string
+	ServerIP           string
+	ServerPort         string
+	MaxUploadSize      int64
 }
 
 var config Config
 
 func loadFlags() {
-	factorioDir := flag.String("dir", "./", "Specify location of Factorio config directory.")
+	factorioDir := flag.String("dir", "./", "Specify location of Factorio directory.")
 	factorioIP := flag.String("host", "0.0.0.0", "Specify IP for webserver to listen on.")
 	factorioPort := flag.String("port", "8080", "Specify a port for the server.")
+	factorioConfigFile := flag.String("config", "config/config.ini", "Specify location of Factorio config.ini file")
 	factorioMaxUpload := flag.Int64("max-upload", 100000, "Maximum filesize for uploaded files.")
 
 	flag.Parse()
@@ -29,11 +31,11 @@ func loadFlags() {
 	config.FactorioDir = *factorioDir
 	config.FactorioSavesDir = config.FactorioDir + "/saves"
 	config.FactorioModsDir = config.FactorioDir + "/mods"
+	config.FactorioConfigFile = config.FactorioDir + "/" + *factorioConfigFile
 	config.ServerIP = *factorioIP
 	config.ServerPort = *factorioPort
 	config.FactorioLog = config.FactorioDir + "/factorio-current.log"
 	config.MaxUploadSize = *factorioMaxUpload
-	log.Printf(config.FactorioSavesDir)
 }
 
 func main() {

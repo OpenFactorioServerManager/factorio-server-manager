@@ -43,15 +43,17 @@ func rmMod(modName string) error {
 	if modName == "" {
 		return errors.New("No mod name provided.")
 	}
+	// Get list of installed mods
 	installedMods, err := listInstalledMods(config.FactorioModsDir)
 	if err != nil {
 		log.Printf("Error in remove mod list: %s", err)
 		return err
 	}
 
+	// Check if provided mod matches one thats installed else return err
 	for _, mod := range installedMods {
-		log.Printf("Checking if %s in %s", mod, modName)
 		if strings.Contains(mod, modName) {
+			log.Printf("Removing mod: %s", mod)
 			err := os.Remove(config.FactorioModsDir + "/" + mod)
 			if err != nil {
 				log.Printf("Error removing mod %s: %s", mod, err)

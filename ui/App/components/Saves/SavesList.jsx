@@ -32,7 +32,6 @@ class SavesList extends React.Component {
     }
 
     removeSave(saveName, e) {
-        console.log(e, saveName);
         $.ajax({
             url: "/api/saves/rm/" + saveName,
             success: (data) => {
@@ -48,17 +47,24 @@ class SavesList extends React.Component {
                 <div className="box-header">
                     <h3 className="box-title">Save Files</h3>
                 </div>
-
+                
                 <div className="box-body">
-                    <form ref="uploadForm" className="form" encType='multipart/form-data'>
-                    <fieldset>
-                        <span className="btn btn-default btn-file">
-                            <input ref="file" type="file" name="modfile" id="modfile" />
-                        </span>
-
-                        <input type="button" ref="button" value="Upload" onClick={this.uploadFile} />
-                    </fieldset>
-                    </form>
+                    <div className="box">
+                        <div className="box-header">
+                            <h4 className="box-title">Upload Save File</h4>
+                        </div>
+                        <div className="box-body">
+                            <form ref="uploadForm" className="form-inline" encType='multipart/form-data'>
+                                <div className="form-group">
+                                    <label for="savefile">Upload Save File...</label>
+                                    <input className="form-control btn btn-default" ref="file" type="file" name="savefile" id="savefile" />
+                                </div>
+                                <div className="form-group">
+                                    <input className="form-control btn btn-default" type="button" ref="button" value="Upload" onClick={this.uploadFile} />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
                     <div className="table-responsive">
                         <table className="table table-striped">
