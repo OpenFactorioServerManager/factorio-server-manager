@@ -17,8 +17,11 @@ class App extends React.Component {
                 <Header />
 
                 <Sidebar />
-
-                {this.props.children}
+                
+                {React.cloneElement(
+                    this.props.children,
+                    {message: ""}
+                )}
 
                 <Footer />
 

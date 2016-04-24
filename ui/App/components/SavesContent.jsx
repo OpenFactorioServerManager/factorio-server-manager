@@ -20,7 +20,7 @@ class SavesContent extends React.Component {
             url: "/api/saves/list",
             dataType: "json",
             success: (data) => {
-                this.setState({saves: data})
+                this.setState({saves: data.data})
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/list', status, err.toString());
@@ -47,7 +47,7 @@ class SavesContent extends React.Component {
                 <section className="content-header">
                 <h1>
                     Saves
-                    <small>Optional description</small>
+                    <small>Factorio Save Files</small>
                 </h1>
                 <ol className="breadcrumb">
                     <li><a href="#"><i className="fa fa-dashboard"></i> Level</a></li>

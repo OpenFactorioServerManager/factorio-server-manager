@@ -72,7 +72,11 @@
 
 	var _SavesContent2 = _interopRequireDefault(_SavesContent);
 
-	var _Index = __webpack_require__(239);
+	var _ConfigContent = __webpack_require__(239);
+
+	var _ConfigContent2 = _interopRequireDefault(_ConfigContent);
+
+	var _Index = __webpack_require__(241);
 
 	var _Index2 = _interopRequireDefault(_Index);
 
@@ -87,7 +91,8 @@
 	        _react2.default.createElement(_reactRouter.IndexRoute, { component: _Index2.default }),
 	        _react2.default.createElement(_reactRouter.Route, { path: '/mods', component: _ModsContent2.default }),
 	        _react2.default.createElement(_reactRouter.Route, { path: '/logs', component: _LogsContent2.default }),
-	        _react2.default.createElement(_reactRouter.Route, { path: '/saves', component: _SavesContent2.default })
+	        _react2.default.createElement(_reactRouter.Route, { path: '/saves', component: _SavesContent2.default }),
+	        _react2.default.createElement(_reactRouter.Route, { path: '/config', component: _ConfigContent2.default })
 	    )
 	), document.getElementById('app'));
 
@@ -25505,7 +25510,7 @@
 	                { className: 'wrapper' },
 	                _react2.default.createElement(_Header2.default, null),
 	                _react2.default.createElement(_Sidebar2.default, null),
-	                this.props.children,
+	                _react2.default.cloneElement(this.props.children, { message: "" }),
 	                _react2.default.createElement(_Footer2.default, null),
 	                _react2.default.createElement(_HiddenSidebar2.default, null)
 	            );
@@ -25794,6 +25799,21 @@
 	                                    'Saves'
 	                                )
 	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                _reactRouter.Link,
+	                                { to: '/config', activeClassName: 'active' },
+	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
+	                                ' ',
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    null,
+	                                    'Configuration'
+	                                )
+	                            )
 	                        )
 	                    )
 	                )
@@ -25845,11 +25865,7 @@
 	            return _react2.default.createElement(
 	                "footer",
 	                { className: "main-footer" },
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "pull-right hidden-xs" },
-	                    "Anything you want!!!!!!"
-	                ),
+	                _react2.default.createElement("div", { className: "pull-right hidden-xs" }),
 	                _react2.default.createElement(
 	                    "strong",
 	                    null,
@@ -26114,7 +26130,7 @@
 	                url: "/api/mods/list",
 	                dataType: "json",
 	                success: function success(data) {
-	                    _this2.setState({ listMods: data.mods });
+	                    _this2.setState({ listMods: data.data.mods });
 	                },
 	                error: function error(xhr, status, err) {
 	                    console.log('api/mods/list', status, err.toString());
@@ -26130,7 +26146,7 @@
 	                url: "/api/mods/list/installed",
 	                dataType: "json",
 	                success: function success(data) {
-	                    _this3.setState({ installedMods: data });
+	                    _this3.setState({ installedMods: data.data });
 	                },
 	                error: function error(xhr, status, err) {
 	                    console.log('api/mods/list', status, err.toString());
@@ -26146,7 +26162,7 @@
 	                url: "/api/mods/toggle/" + modName,
 	                dataType: "json",
 	                success: function success(data) {
-	                    _this4.setState({ listMods: data.mods });
+	                    _this4.setState({ listMods: data.data.mods });
 	                },
 	                error: function error(xhr, status, err) {
 	                    console.log('api/mods/toggle', status, err.toString());
@@ -26194,7 +26210,7 @@
 	                ),
 	                _react2.default.createElement(
 	                    'section',
-	                    { className: 'content', style: { height: "100%" } },
+	                    { className: 'content' },
 	                    _react2.default.createElement(_InstalledMods2.default, _extends({}, this.state, {
 	                        loadInstalledModList: this.loadInstalledModList
 	                    })),
@@ -26472,6 +26488,9 @@
 	    }, {
 	        key: 'uploadFile',
 	        value: function uploadFile(e) {
+	            var _this2 = this;
+
+	            e.preventDefault();
 	            var fd = new FormData();
 	            fd.append('modfile', this.refs.file.files[0]);
 
@@ -26482,11 +26501,13 @@
 	                processData: false,
 	                contentType: false,
 	                success: function success(data) {
-	                    alert(data);
+	                    var response = JSON.parse(data);
+	                    console.log(response.success);
+	                    if (response.success === true) {
+	                        _this2.updateInstalledMods();
+	                    }
 	                }
 	            });
-	            e.preventDefault();
-	            this.updateInstalledMods();
 	        }
 	    }, {
 	        key: 'removeMod',
@@ -26502,7 +26523,7 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this2 = this;
+	            var _this3 = this;
 
 	            return _react2.default.createElement(
 	                'div',
@@ -26526,12 +26547,21 @@
 	                    ),
 	                    _react2.default.createElement(
 	                        'form',
-	                        { ref: 'uploadForm', className: 'form', encType: 'multipart/form-data' },
+	                        { ref: 'uploadForm', className: 'form-inline', encType: 'multipart/form-data' },
 	                        _react2.default.createElement(
-	                            'fieldset',
-	                            null,
-	                            _react2.default.createElement('input', { className: 'btn btn-default', ref: 'file', type: 'file', name: 'modfile', id: 'modfile' }),
-	                            _react2.default.createElement('input', { type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
+	                            'div',
+	                            { className: 'form-group' },
+	                            _react2.default.createElement(
+	                                'label',
+	                                { 'for': 'modfile' },
+	                                'Upload Mod File...'
+	                            ),
+	                            _react2.default.createElement('input', { className: 'form-control btn btn-default', ref: 'file', type: 'file', name: 'modfile', id: 'modfile' })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'form-group' },
+	                            _react2.default.createElement('input', { className: 'form-control btn btn-default', type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
 	                        )
 	                    ),
 	                    _react2.default.createElement(
@@ -26594,7 +26624,7 @@
 	                                                    className: 'btn btn-danger btn-small',
 	                                                    ref: 'modInput',
 	                                                    type: 'button',
-	                                                    onClick: _this2.removeMod.bind(_this2, i) },
+	                                                    onClick: _this3.removeMod.bind(_this3, i) },
 	                                                _react2.default.createElement('i', { className: 'fa fa-trash' }),
 	                                                '  Delete'
 	                                            )
@@ -26679,7 +26709,7 @@
 	                url: "/api/log/tail",
 	                dataType: "json",
 	                success: function success(data) {
-	                    _this2.setState({ log: data });
+	                    _this2.setState({ log: data.data });
 	                },
 	                error: function error(xhr, status, err) {
 	                    console.log('api/mods/list', status, err.toString());
@@ -26702,7 +26732,7 @@
 	                        _react2.default.createElement(
 	                            'small',
 	                            null,
-	                            'Optional description'
+	                            'Analyze Factorio Logs'
 	                        )
 	                    ),
 	                    _react2.default.createElement(
@@ -26890,7 +26920,7 @@
 	                url: "/api/saves/list",
 	                dataType: "json",
 	                success: function success(data) {
-	                    _this2.setState({ saves: data });
+	                    _this2.setState({ saves: data.data });
 	                },
 	                error: function error(xhr, status, err) {
 	                    console.log('api/mods/list', status, err.toString());
@@ -26927,7 +26957,7 @@
 	                        _react2.default.createElement(
 	                            'small',
 	                            null,
-	                            'Optional description'
+	                            'Factorio Save Files'
 	                        )
 	                    ),
 	                    _react2.default.createElement(
@@ -27199,13 +27229,18 @@
 	    }
 
 	    _createClass(Save, [{
+	        key: 'hours12',
+	        value: function hours12(date) {
+	            return (date.getHours() + 24) % 12 || 12;
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var saveLocation = "/api/saves/dl/" + this.props.save.name;
 	            var saveSize = parseFloat(this.props.save.size / 1024 / 1024).toFixed(3);
 	            var saveLastMod = Date.parse(this.props.save.last_mod);
 	            var date = new Date(saveLastMod);
-	            var dateFmt = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+	            var dateFmt = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay() + '   ' + this.hours12(date) + ':' + date.getMinutes() + ':' + date.getSeconds();
 
 	            return _react2.default.createElement(
 	                'tr',
@@ -27267,6 +27302,254 @@
 
 /***/ },
 /* 239 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Settings = __webpack_require__(240);
+
+	var _Settings2 = _interopRequireDefault(_Settings);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ConfigContent = function (_React$Component) {
+	    _inherits(ConfigContent, _React$Component);
+
+	    function ConfigContent(props) {
+	        _classCallCheck(this, ConfigContent);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ConfigContent).call(this, props));
+
+	        _this.getConfig = _this.getConfig.bind(_this);
+	        _this.state = {
+	            config: {}
+	        };
+	        return _this;
+	    }
+
+	    _createClass(ConfigContent, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.getConfig();
+	        }
+	    }, {
+	        key: 'getConfig',
+	        value: function getConfig() {
+	            var _this2 = this;
+
+	            $.ajax({
+	                url: "/api/config",
+	                dataType: "json",
+	                success: function success(data) {
+	                    _this2.setState({ config: data.data });
+	                    console.log(_this2.state.config);
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('/api/config/get', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'content-wrapper' },
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content-header' },
+	                    _react2.default.createElement(
+	                        'h1',
+	                        null,
+	                        'Config',
+	                        _react2.default.createElement(
+	                            'small',
+	                            null,
+	                            'Manage server configuration'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'ol',
+	                        { className: 'breadcrumb' },
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                'a',
+	                                { href: '#' },
+	                                _react2.default.createElement('i', { className: 'fa fa-dashboard' }),
+	                                ' Level'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            { className: 'active' },
+	                            'Here'
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'box' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'box-header' },
+	                            _react2.default.createElement(
+	                                'h3',
+	                                { className: 'box-title' },
+	                                'Manage Server Configuration'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'box-body' },
+	                            Object.keys(this.state.config).map(function (key) {
+	                                var conf = this.state.config[key];
+	                                return _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'settings-section', key: key },
+	                                    _react2.default.createElement(
+	                                        'h3',
+	                                        null,
+	                                        key
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'div',
+	                                        { className: 'table-responsive' },
+	                                        _react2.default.createElement(
+	                                            'table',
+	                                            { className: 'table table-striped' },
+	                                            _react2.default.createElement(
+	                                                'thead',
+	                                                null,
+	                                                _react2.default.createElement(
+	                                                    'tr',
+	                                                    null,
+	                                                    _react2.default.createElement(
+	                                                        'th',
+	                                                        null,
+	                                                        'Setting name'
+	                                                    ),
+	                                                    _react2.default.createElement(
+	                                                        'th',
+	                                                        null,
+	                                                        'Setting value'
+	                                                    )
+	                                                )
+	                                            ),
+	                                            _react2.default.createElement(_Settings2.default, {
+	                                                section: key,
+	                                                config: conf
+	                                            })
+	                                        )
+	                                    )
+	                                );
+	                            }, this)
+	                        )
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return ConfigContent;
+	}(_react2.default.Component);
+
+	exports.default = ConfigContent;
+
+/***/ },
+/* 240 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Settings = function (_React$Component) {
+	    _inherits(Settings, _React$Component);
+
+	    function Settings(props) {
+	        _classCallCheck(this, Settings);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Settings).call(this, props));
+	    }
+
+	    _createClass(Settings, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'tbody',
+	                null,
+	                Object.keys(this.props.config).map(function (key) {
+	                    console.log(typeof key === 'undefined' ? 'undefined' : _typeof(key));
+	                    return _react2.default.createElement(
+	                        'tr',
+	                        { key: key },
+	                        _react2.default.createElement(
+	                            'td',
+	                            null,
+	                            key
+	                        ),
+	                        _react2.default.createElement(
+	                            'td',
+	                            null,
+	                            this.props.config[key]
+	                        )
+	                    );
+	                }, this)
+	            );
+	        }
+	    }]);
+
+	    return Settings;
+	}(_react2.default.Component);
+
+	Settings.propTypes = {
+	    section: _react2.default.PropTypes.string.isRequired,
+	    config: _react2.default.PropTypes.object.isRequired
+	};
+
+	exports.default = Settings;
+
+/***/ },
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

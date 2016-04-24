@@ -33,6 +33,7 @@ class Sidebar extends React.Component {
                     <li><Link to="/mods" activeClassName="active"><i className="fa fa-link"></i><span>Mods</span></Link></li>
                     <li><Link to="/logs" activeClassName="active"><i className="fa fa-link"></i> <span>Logs</span></Link></li>
                     <li><Link to="/saves" activeClassName="active"><i className="fa fa-link"></i> <span>Saves</span></Link></li>
+                    <li><Link to="/config" activeClassName="active"><i className="fa fa-link"></i> <span>Configuration</span></Link></li>
                 </ul>
                 </section>
             </aside>

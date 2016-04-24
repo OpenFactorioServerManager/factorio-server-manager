@@ -20,7 +20,7 @@ class LogsContent extends React.Component {
             url: "/api/log/tail",
             dataType: "json",
             success: (data) => {
-                this.setState({log: data})
+                this.setState({log: data.data})
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/list', status, err.toString());
@@ -34,7 +34,7 @@ class LogsContent extends React.Component {
                 <section className="content-header">
                 <h1>
                     Logs
-                    <small>Optional description</small>
+                    <small>Analyze Factorio Logs</small>
                 </h1>
                 <ol className="breadcrumb">
                     <li><a href="#"><i className="fa fa-dashboard"></i> Level</a></li>

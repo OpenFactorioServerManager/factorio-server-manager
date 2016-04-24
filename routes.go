@@ -43,6 +43,10 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Logs").
 		Handler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/"))))
+	r.Path("/config").
+		Methods("GET").
+		Name("Config").
+		Handler(http.StripPrefix("/config", http.FileServer(http.Dir("./app/"))))
 	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
@@ -112,7 +116,7 @@ var apiRoutes = Routes{
 	}, {
 		"LoadConfig",
 		"GET",
-		"/config/get",
+		"/config",
 		LoadConfig,
 	},
 }

@@ -1,13 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 
 	"github.com/go-ini/ini"
 )
 
-func loadConfig(filename string) ([]byte, error) {
+func loadConfig(filename string) (map[string]map[string]string, error) {
 	log.Printf("Loading config file: %s", filename)
 	cfg, err := ini.Load(filename)
 	if err != nil {
@@ -29,11 +28,6 @@ func loadConfig(filename string) ([]byte, error) {
 		result[sectionName] = s.KeysHash()
 	}
 	log.Printf("Encoding config.ini to JSON")
-	resp, err := json.Marshal(result)
-	if err != nil {
-		log.Printf("Error marshaling config.ini to JSON: %s", err)
-		return nil, err
-	}
 
-	return resp, nil
+	return result, nil
 }

@@ -1,13 +1,15 @@
 import React from 'react';
 
 class Save extends React.Component {
+    hours12(date) { return (date.getHours() + 24) % 12 || 12; }
+
     render() {
         let saveLocation = "/api/saves/dl/" + this.props.save.name 
         let saveSize = parseFloat(this.props.save.size / 1024 / 1024).toFixed(3)
         let saveLastMod = Date.parse(this.props.save.last_mod);
         let date = new Date(saveLastMod)
-        let dateFmt = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay() + ' '
-            + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        let dateFmt = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay() + '   '
+            + this.hours12(date) + ':' + date.getMinutes() + ':' + date.getSeconds();
 
         return(
             <tr>

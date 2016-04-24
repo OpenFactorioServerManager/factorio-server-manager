@@ -11,6 +11,7 @@ class InstalledMods extends React.Component {
     }
 
     uploadFile(e) {
+        e.preventDefault();
         var fd = new FormData();
         fd.append('modfile', this.refs.file.files[0]);
 
@@ -21,11 +22,13 @@ class InstalledMods extends React.Component {
             processData: false,
             contentType: false,
             success: (data) => {
-                alert(data)
+                var response = JSON.parse(data)
+                console.log(response.success);
+                if (response.success === true) {
+                    this.updateInstalledMods();
+                }
             }
         });
-        e.preventDefault();
-        this.updateInstalledMods();
     }
 
     removeMod(i) {
@@ -47,12 +50,14 @@ class InstalledMods extends React.Component {
                      
                 <div className="box-body">
                     <h4>Upload Mod</h4>
-                    <form ref="uploadForm" className="form" encType='multipart/form-data'>
-                    <fieldset>
-                        <input className="btn btn-default" ref="file" type="file" name="modfile" id="modfile" />
-
-                        <input type="button" ref="button" value="Upload" onClick={this.uploadFile} />
-                    </fieldset>
+                    <form ref="uploadForm" className="form-inline" encType='multipart/form-data'>
+                        <div className="form-group">
+                            <label for="modfile">Upload Mod File...</label>
+                            <input className="form-control btn btn-default" ref="file" type="file" name="modfile" id="modfile" />
+                        </div>
+                        <div className="form-group">
+                            <input className="form-control btn btn-default" type="button" ref="button" value="Upload" onClick={this.uploadFile} />
+                        </div>
                     </form>
                     
                     <div className="table-responsive">

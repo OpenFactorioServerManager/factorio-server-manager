@@ -11,23 +11,39 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type JSONResponse struct {
+	Success bool        `json:"success"`
+	Data    interface{} `json:"data,string"`
+}
+
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "hello world")
 }
 
 // Returns JSON response of all mods installed in factorio/mods
 func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	modDir := config.FactorioDir + "/mods"
 
-	mods, err := listInstalledMods(modDir)
+	resp.Data, err = listInstalledMods(modDir)
 	if err != nil {
-		log.Printf("Error in ListInstalledMods handler: %s", err)
+		resp.Data = fmt.Sprintf("Error in ListInstalledMods handler: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in list mods: %s", err)
+		}
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(mods); err != nil {
+	resp.Success = true
+
+	fmt.Printf("%+v", resp)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error in list mods: %s", err)
 	}
 }
@@ -35,6 +51,11 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 // Toggles mod passed in through mod variable
 // Updates mod-list.json file to toggle the enabled status of mods
 func ToggleMod(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	vars := mux.Vars(r)
@@ -42,41 +63,66 @@ func ToggleMod(w http.ResponseWriter, r *http.Request) {
 
 	m, err := parseModList()
 	if err != nil {
-		log.Printf("Could not parse mod list: %s", err)
+		resp.Data = fmt.Sprintf("Could not parse mod list: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in list mods: %s", err)
+		}
 		return
 	}
 
 	err = m.toggleMod(modName)
 	if err != nil {
-		log.Printf("Could not toggle mod: %s error: %s", modName, err)
+		resp.Data = fmt.Sprintf("Could not toggle mod: %s error: %s", modName, err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in list mods: %s", err)
+		}
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(m); err != nil {
+	resp.Success = true
+	resp.Data = m
+
+	if err = json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error in toggle mod: %s", err)
 	}
 }
 
 // Returns JSON response of all mods in the mod-list.json file
 func ListMods(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	m, err := parseModList()
-	if err != nil {
-		log.Printf("Could not parse mod list: %s", err)
+	var err error
+	resp := JSONResponse{
+		Success: false,
 	}
 
-	if err := json.NewEncoder(w).Encode(m); err != nil {
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	resp.Data, err = parseModList()
+	if err != nil {
+		resp.Data = fmt.Sprintf("Could not parse mod list: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in list mods: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error listing mods: %s", err)
 	}
 }
 
 // Uploads mod to the mods directory
 func UploadMod(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	switch r.Method {
 	case "GET":
-		resp := "Unsupported method"
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
+		resp.Data = "Unsupported method"
+		if err = json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error listing mods: %s", err)
 		}
 	case "POST":
@@ -92,7 +138,8 @@ func UploadMod(w http.ResponseWriter, r *http.Request) {
 
 		out, err := os.Create(config.FactorioModsDir + "/" + header.Filename)
 		if err != nil {
-			json.NewEncoder(w).Encode(err.Error())
+			resp.Data = err.Error()
+			json.NewEncoder(w).Encode(resp)
 			log.Printf("Error in out")
 			return
 		}
@@ -100,12 +147,14 @@ func UploadMod(w http.ResponseWriter, r *http.Request) {
 
 		_, err = io.Copy(out, file)
 		if err != nil {
-			json.NewEncoder(w).Encode(err.Error())
+			resp.Data = err.Error()
+			json.NewEncoder(w).Encode(resp)
 			log.Printf("Error in io copy")
 			return
 		}
 		log.Printf("Uploaded mod file: %s", header.Filename)
-		resp := "File '" + header.Filename + "' submitted successfully"
+		resp.Data = "File '" + header.Filename + "' submitted successfully"
+		resp.Success = true
 		json.NewEncoder(w).Encode(resp)
 
 	default:
@@ -114,21 +163,27 @@ func UploadMod(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveMod(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	vars := mux.Vars(r)
 	modName := vars["mod"]
 
-	err := rmMod(modName)
+	err = rmMod(modName)
 	if err == nil {
 		// No error returned means mod was removed
-		resp := fmt.Sprintf("Removed mod: %s", modName)
+		resp.Data = fmt.Sprintf("Removed mod: %s", modName)
+		resp.Success = true
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error removing mod: %s", err)
 		}
 	} else {
 		log.Printf("Error in remove mod handler: %s", err)
-		resp := fmt.Sprintf("Error in remove mod handler: %s", err)
+		resp.Data = fmt.Sprintf("Error in remove mod handler: %s", err)
 
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error removing mod: %s", err)
@@ -152,17 +207,27 @@ func DownloadMod(w http.ResponseWriter, r *http.Request) {
 
 // Lists all save files in the factorio/saves directory
 func ListSaves(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	saveDir := config.FactorioDir + "/saves"
 
-	saves, err := listSaves(saveDir)
+	resp.Data, err = listSaves(saveDir)
 	if err != nil {
-		log.Printf("Error in ListSaves handler: %s", err)
+		resp.Data = fmt.Sprintf("Error listing save files: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error listing saves: %s", err)
+		}
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(saves); err != nil {
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error listing saves: %s", err)
 	}
 }
@@ -181,10 +246,16 @@ func DLSave(w http.ResponseWriter, r *http.Request) {
 }
 
 func UploadSave(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	switch r.Method {
 	case "GET":
-		resp := "Unsupported method"
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
+		resp.Data = "Unsupported method"
+		resp.Success = false
+		if err = json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error listing mods: %s", err)
 		}
 	case "POST":
@@ -192,17 +263,19 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 		r.ParseMultipartForm(32 << 20)
 		file, header, err := r.FormFile("savefile")
 		if err != nil {
-			json.NewEncoder(w).Encode(err.Error())
-			log.Printf("%+v", file)
-			log.Printf("%+v", header)
-			log.Printf("Error in formfile")
+			resp.Success = false
+			resp.Data = err.Error()
+			json.NewEncoder(w).Encode(resp)
+			log.Printf("Error in upload save formfile: %s", err.Error())
 			return
 		}
 		defer file.Close()
 
 		out, err := os.Create(config.FactorioSavesDir + "/" + header.Filename)
 		if err != nil {
-			json.NewEncoder(w).Encode(err.Error())
+			resp.Success = false
+			resp.Data = err.Error()
+			json.NewEncoder(w).Encode(resp)
 			log.Printf("Error in out: %s", err)
 			return
 		}
@@ -210,12 +283,15 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 
 		_, err = io.Copy(out, file)
 		if err != nil {
-			json.NewEncoder(w).Encode(err.Error())
+			resp.Success = false
+			resp.Data = err.Error()
+			json.NewEncoder(w).Encode(resp)
 			log.Printf("Error in io copy: %s", err)
 			return
 		}
 		log.Printf("Uploaded save file: %s", header.Filename)
-		resp := "File '" + header.Filename + "' uploaded successfully"
+		resp.Data = "File '" + header.Filename + "' uploaded successfully"
+		resp.Success = true
 		json.NewEncoder(w).Encode(resp)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -223,23 +299,28 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 }
 
 // Deletes provided save
-//TODO sanitize
 func RemoveSave(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	vars := mux.Vars(r)
 	saveName := vars["save"]
 
-	err := rmSave(saveName)
+	err = rmSave(saveName)
 	if err == nil {
 		// save was removed
-		resp := fmt.Sprintf("Removed save: %s", saveName)
+		resp.Data = fmt.Sprintf("Removed save: %s", saveName)
+		resp.Success = true
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error removing save %s", err)
 		}
 	} else {
 		log.Printf("Error in remove save handler: %s", err)
-		resp := fmt.Sprintf("Error in remove save handler: %s", err)
+		resp.Data = fmt.Sprintf("Error in remove save handler: %s", err)
 
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error removing save: %s", err)
@@ -249,34 +330,54 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 
 // Returns last lines of the factorio-current.log file
 func LogTail(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	logLines, err := tailLog(config.FactorioLog)
+	resp.Data, err = tailLog(config.FactorioLog)
 	if err != nil {
-		log.Printf("Could not tail %s: %s", config.FactorioLog, err)
+		resp.Data = fmt.Sprintf("Could not tail %s: %s", config.FactorioLog, err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Could not tail %s: %s", config.FactorioLog, err)
+		}
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(logLines); err != nil {
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error tailing logfile", err)
 	}
 }
 
 // Return JSON response of config.ini file
 func LoadConfig(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	configContents, err := loadConfig(config.FactorioConfigFile)
 	if err != nil {
 		log.Printf("Could not retrieve config.ini: %s", err)
-		resp := "Error getting config.ini"
+		resp.Data = "Error getting config.ini"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error tailing logfile", err)
 		}
 		return
 	}
-	if _, err := w.Write(configContents); err != nil {
-		log.Printf("Error encoding config.ini response: %s", err)
+
+	resp.Data = configContents
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error encoding config file JSON reponse: ", err)
 	}
+
 	log.Printf("Sent config.ini response")
 }

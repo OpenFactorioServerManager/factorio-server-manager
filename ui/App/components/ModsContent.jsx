@@ -24,7 +24,7 @@ class ModsContent extends React.Component {
             url: "/api/mods/list",
             dataType: "json",
             success: (data) => {
-                this.setState({listMods: data.mods})
+                this.setState({listMods: data.data.mods})
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/list', status, err.toString());
@@ -37,7 +37,7 @@ class ModsContent extends React.Component {
             url: "/api/mods/list/installed",
             dataType: "json",
             success: (data) => {
-                this.setState({installedMods: data})
+                this.setState({installedMods: data.data})
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/list', status, err.toString());
@@ -50,7 +50,7 @@ class ModsContent extends React.Component {
             url: "/api/mods/toggle/" + modName,
             dataType: "json",
             success: (data) => {
-                this.setState({listMods: data.mods})
+                this.setState({listMods: data.data.mods})
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/toggle', status, err.toString());
@@ -72,7 +72,7 @@ class ModsContent extends React.Component {
                 </ol>
                 </section>
 
-                <section className="content" style={{height: "100%"}}>
+                <section className="content">
 
                     <InstalledMods 
                         {...this.state}

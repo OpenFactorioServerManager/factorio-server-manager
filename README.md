@@ -15,12 +15,18 @@ This tool runs on a Factorio server and allows management of saves, mods and man
 Run the server and  specify the directory of your Factorio server installation and the interface to run the HTTP server on.
 ```
 Usage of ./factorio-server-manager:
+  -bin string
+        Location of Factorio Server binary file (default "bin/x64/factorio")
+  -config string
+        Specify location of Factorio config.ini file (default "config/config.ini")
   -dir string
-        Specify location of Factorio config directory. (default "./")
+        Specify location of Factorio directory. (default "./")
   -host string
         Specify IP for webserver to listen on. (default "0.0.0.0")
+  -max-upload int
+        Maximum filesize for uploaded files. (default 100000)
   -port string
-        Specify a port for the server (default "8080")
+        Specify a port for the server. (default "8080")
 
 Example:
 
