@@ -9,7 +9,6 @@ class Settings extends React.Component {
         return(
             <tbody>
             {Object.keys(this.props.config).map(function(key) {
-                console.log(typeof key);
                 return(
                     <tr key={key}>
                         <td>{key}</td>

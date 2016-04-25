@@ -42,7 +42,6 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 
 	resp.Success = true
 
-	fmt.Printf("%+v", resp)
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error in list mods: %s", err)
 	}
@@ -325,6 +324,43 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error removing save: %s", err)
 		}
+	}
+}
+
+// Launches Factorio server binary with --create flag to create save
+// Url must include save name for creation of savefile
+func CreateSaveHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	vars := mux.Vars(r)
+	saveName := vars["save"]
+
+	if saveName == "" {
+		log.Printf("Error creating save, no name provided: %s", err)
+		resp.Data = "No save name provided."
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error encoding save handler response: %s", err)
+		}
+		return
+	}
+
+	cmdOut, err := createSave(saveName)
+	if err != nil {
+		log.Printf("Error creating save: %s", err)
+		resp.Data = "Error creating savefile."
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error encoding save handler response: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+	resp.Data = fmt.Sprintf("Save %s created successfully. Command output: \n%s", saveName, cmdOut)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error encoding save response: %s", err)
 	}
 }
 

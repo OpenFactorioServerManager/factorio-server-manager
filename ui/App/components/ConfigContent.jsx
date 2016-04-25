@@ -27,6 +27,7 @@ class ConfigContent extends React.Component {
             }
         });
     }
+
     render() {
         return(
             <div className="content-wrapper">

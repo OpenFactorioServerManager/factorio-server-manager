@@ -109,6 +109,11 @@ var apiRoutes = Routes{
 		"/saves/rm/{save}",
 		RemoveSave,
 	}, {
+		"CreateSave",
+		"GET",
+		"/saves/create/{save}",
+		CreateSaveHandler,
+	}, {
 		"LogTail",
 		"GET",
 		"/log/tail",

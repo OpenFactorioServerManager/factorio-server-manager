@@ -1,5 +1,7 @@
 import React from 'react';
 import SavesList from './Saves/SavesList.jsx';
+import CreateSave from './Saves/CreateSave.jsx';
+import UploadSave from './Saves/UploadSave.jsx';
 
 class SavesContent extends React.Component {
     constructor(props) {
@@ -56,6 +58,18 @@ class SavesContent extends React.Component {
                 </section>
 
                 <section className="content">
+                <div className="row">
+                    <div className="col-md-6">
+                        <CreateSave 
+                            getSaves={this.getSaves}
+                        />
+                    </div>
+                    <div className="col-md-6">
+                        <UploadSave 
+                            getSaves={this.getSaves}
+                        />
+                    </div>
+                </div>
 
                 <SavesList 
                     {...this.state}

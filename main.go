@@ -34,7 +34,7 @@ func loadFlags() {
 	config.FactorioSavesDir = config.FactorioDir + "/saves"
 	config.FactorioModsDir = config.FactorioDir + "/mods"
 	config.FactorioConfigFile = config.FactorioDir + "/" + *factorioConfigFile
-	config.FactorioBinary = config.FactorioDir + *factorioBinary
+	config.FactorioBinary = config.FactorioDir + "/" + *factorioBinary
 	config.ServerIP = *factorioIP
 	config.ServerPort = *factorioPort
 	config.FactorioLog = config.FactorioDir + "/factorio-current.log"

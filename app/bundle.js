@@ -72,11 +72,11 @@
 
 	var _SavesContent2 = _interopRequireDefault(_SavesContent);
 
-	var _ConfigContent = __webpack_require__(239);
+	var _ConfigContent = __webpack_require__(241);
 
 	var _ConfigContent2 = _interopRequireDefault(_ConfigContent);
 
-	var _Index = __webpack_require__(241);
+	var _Index = __webpack_require__(243);
 
 	var _Index2 = _interopRequireDefault(_Index);
 
@@ -26882,6 +26882,14 @@
 
 	var _SavesList2 = _interopRequireDefault(_SavesList);
 
+	var _CreateSave = __webpack_require__(239);
+
+	var _CreateSave2 = _interopRequireDefault(_CreateSave);
+
+	var _UploadSave = __webpack_require__(240);
+
+	var _UploadSave2 = _interopRequireDefault(_UploadSave);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -26983,6 +26991,24 @@
 	                _react2.default.createElement(
 	                    'section',
 	                    { className: 'content' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'row' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'col-md-6' },
+	                            _react2.default.createElement(_CreateSave2.default, {
+	                                getSaves: this.getSaves
+	                            })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'col-md-6' },
+	                            _react2.default.createElement(_UploadSave2.default, {
+	                                getSaves: this.getSaves
+	                            })
+	                        )
+	                    ),
 	                    _react2.default.createElement(_SavesList2.default, _extends({}, this.state, {
 	                        dlSave: this.dlSave,
 	                        getSaves: this.getSaves
@@ -27034,7 +27060,6 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SavesList).call(this, props));
 
 	        _this.updateSavesList = _this.updateSavesList.bind(_this);
-	        _this.uploadFile = _this.uploadFile.bind(_this);
 	        _this.removeSave = _this.removeSave.bind(_this);
 	        return _this;
 	    }
@@ -27043,25 +27068,6 @@
 	        key: 'updateSavesList',
 	        value: function updateSavesList() {
 	            this.props.getSaves();
-	        }
-	    }, {
-	        key: 'uploadFile',
-	        value: function uploadFile(e) {
-	            var fd = new FormData();
-	            fd.append('savefile', this.refs.file.files[0]);
-
-	            $.ajax({
-	                url: "/api/saves/upload",
-	                type: "POST",
-	                data: fd,
-	                processData: false,
-	                contentType: false,
-	                success: function success(data) {
-	                    alert(data);
-	                }
-	            });
-	            e.preventDefault();
-	            this.updateSavesList();
 	        }
 	    }, {
 	        key: 'removeSave',
@@ -27094,42 +27100,6 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'box-body' },
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'box' },
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'box-header' },
-	                            _react2.default.createElement(
-	                                'h4',
-	                                { className: 'box-title' },
-	                                'Upload Save File'
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'box-body' },
-	                            _react2.default.createElement(
-	                                'form',
-	                                { ref: 'uploadForm', className: 'form-inline', encType: 'multipart/form-data' },
-	                                _react2.default.createElement(
-	                                    'div',
-	                                    { className: 'form-group' },
-	                                    _react2.default.createElement(
-	                                        'label',
-	                                        { 'for': 'savefile' },
-	                                        'Upload Save File...'
-	                                    ),
-	                                    _react2.default.createElement('input', { className: 'form-control btn btn-default', ref: 'file', type: 'file', name: 'savefile', id: 'savefile' })
-	                                ),
-	                                _react2.default.createElement(
-	                                    'div',
-	                                    { className: 'form-group' },
-	                                    _react2.default.createElement('input', { className: 'form-control btn btn-default', type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
-	                                )
-	                            )
-	                        )
-	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'table-responsive' },
@@ -27304,6 +27274,137 @@
 /* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var CreateSave = function (_React$Component) {
+	    _inherits(CreateSave, _React$Component);
+
+	    function CreateSave(props) {
+	        _classCallCheck(this, CreateSave);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(CreateSave).call(this, props));
+
+	        _this.createSaveFile = _this.createSaveFile.bind(_this);
+	        _this.updateSavesList = _this.updateSavesList.bind(_this);
+	        _this.state = {
+	            loading: false
+	        };
+	        return _this;
+	    }
+
+	    _createClass(CreateSave, [{
+	        key: "updateSavesList",
+	        value: function updateSavesList() {
+	            this.props.getSaves();
+	        }
+	    }, {
+	        key: "createSaveFile",
+	        value: function createSaveFile(e) {
+	            var _this2 = this;
+
+	            this.setState({ loading: true });
+	            $.ajax({
+	                url: "/api/saves/create/" + this.refs.savename.value,
+	                dataType: "json",
+	                success: function success(data) {
+	                    console.log(data);
+	                    if (data.success === true) {
+	                        alert(data.data);
+	                        _this2.updateSavesList();
+	                        _this2.setState({ loading: false });
+	                    } else {
+	                        alert(data.data);
+	                        document.getElementById('uploadsave').removeChild(loading);
+	                        _this2.setState({ loading: false });
+	                    }
+	                }
+	            });
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            var loadingOverlay;
+	            if (this.state.loading) {
+	                loadingOverlay = _react2.default.createElement(
+	                    "div",
+	                    { className: "overlay" },
+	                    _react2.default.createElement("i", { className: "fa fa-refresh fa-spin" })
+	                );
+	            } else {
+	                loadingOverlay = "";
+	            }
+
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "box", id: "uploadsave" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "box-header" },
+	                    _react2.default.createElement(
+	                        "h4",
+	                        { className: "box-title" },
+	                        "Create Save File"
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "box-body" },
+	                    _react2.default.createElement(
+	                        "form",
+	                        null,
+	                        _react2.default.createElement(
+	                            "div",
+	                            { className: "form-group" },
+	                            _react2.default.createElement(
+	                                "label",
+	                                { "for": "savefile" },
+	                                "Enter Savefile Name... "
+	                            ),
+	                            _react2.default.createElement("input", { className: "form-control", ref: "savename", type: "text", name: "savefile", id: "savefilename" })
+	                        ),
+	                        _react2.default.createElement(
+	                            "div",
+	                            { className: "form-group" },
+	                            _react2.default.createElement("input", { className: "form-control btn btn-default", type: "button", ref: "button", value: "Create", onClick: this.createSaveFile })
+	                        )
+	                    )
+	                ),
+	                loadingOverlay
+	            );
+	        }
+	    }]);
+
+	    return CreateSave;
+	}(_react2.default.Component);
+
+	CreateSave.propTypes = {
+	    getSaves: _react2.default.PropTypes.func.isRequired
+	};
+
+	exports.default = CreateSave;
+
+/***/ },
+/* 240 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -27316,7 +27417,119 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Settings = __webpack_require__(240);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var UploadSave = function (_React$Component) {
+	    _inherits(UploadSave, _React$Component);
+
+	    function UploadSave(props) {
+	        _classCallCheck(this, UploadSave);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(UploadSave).call(this, props));
+
+	        _this.updateSavesList = _this.updateSavesList.bind(_this);
+	        _this.uploadFile = _this.uploadFile.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(UploadSave, [{
+	        key: 'updateSavesList',
+	        value: function updateSavesList() {
+	            this.props.getSaves();
+	        }
+	    }, {
+	        key: 'uploadFile',
+	        value: function uploadFile(e) {
+	            var fd = new FormData();
+	            fd.append('savefile', this.refs.file.files[0]);
+
+	            $.ajax({
+	                url: "/api/saves/upload",
+	                type: "POST",
+	                data: fd,
+	                processData: false,
+	                contentType: false,
+	                success: function success(data) {
+	                    alert(data);
+	                }
+	            });
+	            e.preventDefault();
+	            this.updateSavesList();
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'box' },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'box-header' },
+	                    _react2.default.createElement(
+	                        'h4',
+	                        { className: 'box-title' },
+	                        'Upload Save File'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'box-body' },
+	                    _react2.default.createElement(
+	                        'form',
+	                        { ref: 'uploadForm', className: 'form-inline', encType: 'multipart/form-data' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'form-group' },
+	                            _react2.default.createElement(
+	                                'label',
+	                                { 'for': 'savefile' },
+	                                'Upload Save File...'
+	                            ),
+	                            _react2.default.createElement('input', { className: 'form-control btn btn-default', ref: 'file', type: 'file', name: 'savefile', id: 'savefile' })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'form-group' },
+	                            _react2.default.createElement('input', { className: 'form-control btn btn-default', type: 'button', ref: 'button', value: 'Upload', onClick: this.uploadFile })
+	                        )
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return UploadSave;
+	}(_react2.default.Component);
+
+	UploadSave.propTypes = {
+	    getSaves: _react2.default.PropTypes.func.isRequired
+	};
+
+	exports.default = UploadSave;
+
+/***/ },
+/* 241 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Settings = __webpack_require__(242);
 
 	var _Settings2 = _interopRequireDefault(_Settings);
 
@@ -27477,7 +27690,7 @@
 	exports.default = ConfigContent;
 
 /***/ },
-/* 240 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27485,8 +27698,6 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -27518,7 +27729,6 @@
 	                'tbody',
 	                null,
 	                Object.keys(this.props.config).map(function (key) {
-	                    console.log(typeof key === 'undefined' ? 'undefined' : _typeof(key));
 	                    return _react2.default.createElement(
 	                        'tr',
 	                        { key: key },
@@ -27549,7 +27759,7 @@
 	exports.default = Settings;
 
 /***/ },
-/* 241 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
