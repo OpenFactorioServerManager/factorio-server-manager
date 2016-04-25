@@ -3,7 +3,7 @@
 ###A tool for managing dedicated Factorio servers.
 This tool runs on a Factorio server and allows management of saves, mods and many other features.
 
-![Factorio Server Manager Screenshot](http://i.imgur.com/EbRM03Z.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](http://i.imgur.com/wZqOuBZ.png "Factorio Server Manager")
 
 ## Installation
 1. Clone the repository
