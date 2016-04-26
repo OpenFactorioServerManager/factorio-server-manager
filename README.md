@@ -3,13 +3,18 @@
 ###A tool for managing dedicated Factorio servers.
 This tool runs on a Factorio server and allows management of saves, mods and many other features.
 
-![Factorio Server Manager Screenshot](http://i.imgur.com/EbRM03Z.png "Factorio Server Manager")
+## Manage save files
+![Factorio Server Manager Screenshot](http://i.imgur.com/wZqOuBZ.png "Factorio Server Manager")
+
+## Manage mods
+![Factorio Server Manager Screenshot](http://i.imgur.com/45ab48W.png "Factorio Server Manager")
 
 ## Installation
-1. Clone the repository
-  * ```git clone https://github.com/MajorMJR/factorio-server-manager.git```
+1. Download the latest release
+  * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
 2. Run the server binary file
   * ```./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1 ```
+3. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Usage
 Run the server and  specify the directory of your Factorio server installation and the interface to run the HTTP server on.
