@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -416,4 +418,135 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Sent config.ini response")
+}
+
+func StartServer(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	if FactorioServ.Running {
+		resp.Data = "Factorio server is already running"
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error encoding JSON response: ", err)
+		}
+		return
+	}
+
+	switch r.Method {
+	case "GET":
+		log.Printf("GET not supported for startserver handler")
+		resp.Data = "Unsupported method"
+		resp.Success = false
+		if err = json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error listing mods: %s", err)
+		}
+	case "POST":
+		log.Printf("Starting Factorio server.")
+
+		// TODO get form parameters for starting server
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error in starting factorio server handler body: %s", err)
+			return
+		}
+		log.Printf("Starting Factorio server with settings: %v", string(body))
+
+		err = json.Unmarshal(body, &FactorioServ)
+		if err != nil {
+			log.Printf("Error unmarshaling server settings JSON: %s", err)
+			return
+		}
+
+		go func() {
+			err = FactorioServ.Run()
+			if err != nil {
+				log.Printf("Error starting Factorio server: %s", err)
+				resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
+				if err := json.NewEncoder(w).Encode(resp); err != nil {
+					log.Printf("Error encoding config file JSON reponse: ", err)
+				}
+				return
+			}
+		}()
+
+		if FactorioServ.Running {
+			log.Printf("Factorio server started on port: %s", FactorioServ.Port)
+		}
+
+		resp.Data = fmt.Sprintf("Factorio server started on port: %s", FactorioServ.Port)
+		resp.Success = true
+
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error encoding config file JSON reponse: ", err)
+		}
+	}
+}
+
+func StopServer(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	if FactorioServ.Running {
+		err := FactorioServ.Stop()
+		if err != nil {
+			log.Printf("Error in stop server handler: %s", err)
+			resp.Data = fmt.Sprintf("Error in stop server handler: %s", err)
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error encoding config file JSON reponse: ", err)
+			}
+			return
+		}
+		log.Printf("Stopped Factorio server.")
+		resp.Success = true
+		resp.Data = fmt.Sprintf("Factorio server stopped")
+	} else {
+		resp.Data = "Factorio server is not running"
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error encoding config file JSON reponse: ", err)
+		}
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error encoding config file JSON reponse: ", err)
+	}
+}
+
+func RunningServer(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	if FactorioServ.Running {
+		log.Printf("Creating server status response")
+		resp.Success = true
+		status := map[string]string{}
+		status["status"] = "running"
+		status["port"] = strconv.Itoa(FactorioServ.Port)
+		status["savefile"] = FactorioServ.Savefile
+		resp.Data = status
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error encoding config file JSON reponse: ", err)
+		}
+		log.Printf("Server status sent with data: %+v", resp.Data)
+	} else {
+		log.Printf("Server not running, creating status response")
+		resp.Success = true
+		status := map[string]string{}
+		status["status"] = "stopped"
+		resp.Data = status
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error encoding config file JSON reponse: ", err)
+		}
+	}
 }

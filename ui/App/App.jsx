@@ -8,6 +8,35 @@ import HiddenSidebar from './components/HiddenSidebar.jsx';
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.facServStatus = this.facServStatus.bind(this);
+        this.getSaves = this.getSaves.bind(this);
+        this.state = {
+            serverRunning: "stopped",
+            saves: [],
+        }
+    }
+
+    facServStatus() {
+        $.ajax({
+            url: "/api/server/status",
+            dataType: "json",
+            success: (data) => {
+                this.setState({serverRunning: data.data.status})
+            }
+        })
+    }
+
+    getSaves() {
+        $.ajax({
+            url: "/api/saves/list",
+            dataType: "json",
+            success: (data) => {
+                this.setState({saves: data.data})
+            },
+            error: (xhr, status, err) => {
+                console.log('api/mods/list', status, err.toString());
+            }
+        })
     }
 
     render() {
@@ -16,11 +45,17 @@ class App extends React.Component {
 
                 <Header />
 
-                <Sidebar />
+                <Sidebar 
+                    serverStatus={this.facServStatus}
+                    serverRunning={this.state.serverRunning}
+                />
                 
                 {React.cloneElement(
                     this.props.children,
-                    {message: ""}
+                    {message: "",
+                     facServerStatus: this.facServStatus,
+                     saves: this.state.saves,
+                     getSaves: this.getSaves}
                 )}
 
                 <Footer />

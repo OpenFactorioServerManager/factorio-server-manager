@@ -25499,18 +25499,61 @@
 	    function App(props) {
 	        _classCallCheck(this, App);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props));
+
+	        _this.facServStatus = _this.facServStatus.bind(_this);
+	        _this.getSaves = _this.getSaves.bind(_this);
+	        _this.state = {
+	            serverRunning: "stopped",
+	            saves: []
+	        };
+	        return _this;
 	    }
 
 	    _createClass(App, [{
+	        key: 'facServStatus',
+	        value: function facServStatus() {
+	            var _this2 = this;
+
+	            $.ajax({
+	                url: "/api/server/status",
+	                dataType: "json",
+	                success: function success(data) {
+	                    _this2.setState({ serverRunning: data.data.status });
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'getSaves',
+	        value: function getSaves() {
+	            var _this3 = this;
+
+	            $.ajax({
+	                url: "/api/saves/list",
+	                dataType: "json",
+	                success: function success(data) {
+	                    _this3.setState({ saves: data.data });
+	                },
+	                error: function error(xhr, status, err) {
+	                    console.log('api/mods/list', status, err.toString());
+	                }
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'wrapper' },
 	                _react2.default.createElement(_Header2.default, null),
-	                _react2.default.createElement(_Sidebar2.default, null),
-	                _react2.default.cloneElement(this.props.children, { message: "" }),
+	                _react2.default.createElement(_Sidebar2.default, {
+	                    serverStatus: this.facServStatus,
+	                    serverRunning: this.state.serverRunning
+	                }),
+	                _react2.default.cloneElement(this.props.children, { message: "",
+	                    facServerStatus: this.facServStatus,
+	                    saves: this.state.saves,
+	                    getSaves: this.getSaves }),
 	                _react2.default.createElement(_Footer2.default, null),
 	                _react2.default.createElement(_HiddenSidebar2.default, null)
 	            );
@@ -25691,18 +25734,34 @@
 	var Sidebar = function (_React$Component) {
 	    _inherits(Sidebar, _React$Component);
 
-	    function Sidebar() {
+	    function Sidebar(props) {
 	        _classCallCheck(this, Sidebar);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Sidebar).apply(this, arguments));
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Sidebar).call(this, props));
 	    }
 
 	    _createClass(Sidebar, [{
 	        key: 'render',
 	        value: function render() {
+	            if (this.props.serverRunning === "running") {
+	                var serverStatus = _react2.default.createElement(
+	                    _reactRouter.IndexLink,
+	                    { to: '/' },
+	                    _react2.default.createElement('i', { className: 'fa fa-circle text-success' }),
+	                    'Server Online'
+	                );
+	            } else {
+	                var serverStatus = _react2.default.createElement(
+	                    _reactRouter.IndexLink,
+	                    { to: '/' },
+	                    _react2.default.createElement('i', { className: 'fa fa-circle text-danger' }),
+	                    'Server Offline'
+	                );
+	            }
+
 	            return _react2.default.createElement(
 	                'aside',
-	                { className: 'main-sidebar' },
+	                { className: 'main-sidebar', style: { height: "100%" } },
 	                _react2.default.createElement(
 	                    'section',
 	                    { className: 'sidebar' },
@@ -25722,12 +25781,7 @@
 	                                null,
 	                                'Factorio Server Manager'
 	                            ),
-	                            _react2.default.createElement(
-	                                'a',
-	                                { href: '#' },
-	                                _react2.default.createElement('i', { className: 'fa fa-circle text-success' }),
-	                                'Server Online'
-	                            )
+	                            serverStatus
 	                        )
 	                    ),
 	                    _react2.default.createElement(
@@ -25755,6 +25809,20 @@
 	                            'li',
 	                            { className: 'header' },
 	                            'MENU'
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                _reactRouter.IndexLink,
+	                                { to: '/', activeClassName: 'active' },
+	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    null,
+	                                    'Server Control'
+	                                )
+	                            )
 	                        ),
 	                        _react2.default.createElement(
 	                            'li',
@@ -25823,6 +25891,11 @@
 
 	    return Sidebar;
 	}(_react2.default.Component);
+
+	Sidebar.propTypes = {
+	    serverStatus: _react2.default.PropTypes.func.isRequired,
+	    serverRunning: _react2.default.PropTypes.string.isRequired
+	};
 
 	exports.default = Sidebar;
 
@@ -26907,33 +26980,13 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SavesContent).call(this, props));
 
 	        _this.dlSave = _this.dlSave.bind(_this);
-	        _this.getSaves = _this.getSaves.bind(_this);
-	        _this.state = {
-	            saves: []
-	        };
 	        return _this;
 	    }
 
 	    _createClass(SavesContent, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            this.getSaves();
-	        }
-	    }, {
-	        key: 'getSaves',
-	        value: function getSaves() {
-	            var _this2 = this;
-
-	            $.ajax({
-	                url: "/api/saves/list",
-	                dataType: "json",
-	                success: function success(data) {
-	                    _this2.setState({ saves: data.data });
-	                },
-	                error: function error(xhr, status, err) {
-	                    console.log('api/mods/list', status, err.toString());
-	                }
-	            });
+	            this.props.getSaves();
 	        }
 	    }, {
 	        key: 'dlSave',
@@ -26998,20 +27051,21 @@
 	                            'div',
 	                            { className: 'col-md-6' },
 	                            _react2.default.createElement(_CreateSave2.default, {
-	                                getSaves: this.getSaves
+	                                getSaves: this.props.getSaves
 	                            })
 	                        ),
 	                        _react2.default.createElement(
 	                            'div',
 	                            { className: 'col-md-6' },
 	                            _react2.default.createElement(_UploadSave2.default, {
-	                                getSaves: this.getSaves
+	                                getSaves: this.props.getSaves
 	                            })
 	                        )
 	                    ),
 	                    _react2.default.createElement(_SavesList2.default, _extends({}, this.state, {
+	                        saves: this.props.saves,
 	                        dlSave: this.dlSave,
-	                        getSaves: this.getSaves
+	                        getSaves: this.props.getSaves
 	                    }))
 	                )
 	            );
@@ -27762,6 +27816,110 @@
 /* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _ServerCtl = __webpack_require__(244);
+
+	var _ServerCtl2 = _interopRequireDefault(_ServerCtl);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Index = function (_React$Component) {
+	    _inherits(Index, _React$Component);
+
+	    function Index(props) {
+	        _classCallCheck(this, Index);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Index).call(this, props));
+	    }
+
+	    _createClass(Index, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.props.facServerStatus();
+	            this.props.getSaves();
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {
+	            this.props.facServerStatus();
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'content-wrapper', style: { height: "100%" } },
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content-header' },
+	                    _react2.default.createElement(
+	                        'h1',
+	                        null,
+	                        'Index',
+	                        _react2.default.createElement(
+	                            'small',
+	                            null,
+	                            'Optional description'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'ol',
+	                        { className: 'breadcrumb' },
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                'a',
+	                                { href: '#' },
+	                                _react2.default.createElement('i', { className: 'fa fa-dashboard' }),
+	                                ' Level'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            { className: 'active' },
+	                            'Here'
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'content' },
+	                    _react2.default.createElement(_ServerCtl2.default, {
+	                        saves: this.props.saves,
+	                        getSaves: this.props.getSaves
+	                    })
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Index;
+	}(_react2.default.Component);
+
+	exports.default = Index;
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -27782,63 +27940,319 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var Index = function (_React$Component) {
-	    _inherits(Index, _React$Component);
+	var ServerCtl = function (_React$Component) {
+	    _inherits(ServerCtl, _React$Component);
 
-	    function Index() {
-	        _classCallCheck(this, Index);
+	    function ServerCtl(props) {
+	        _classCallCheck(this, ServerCtl);
 
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Index).apply(this, arguments));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ServerCtl).call(this, props));
+
+	        _this.startServer = _this.startServer.bind(_this);
+	        _this.incrementAutosave = _this.incrementAutosave.bind(_this);
+	        _this.decrementAutosave = _this.decrementAutosave.bind(_this);
+
+	        _this.incrementAutosaveSlots = _this.incrementAutosaveSlots.bind(_this);
+	        _this.decrementAutosaveSlots = _this.decrementAutosaveSlots.bind(_this);
+
+	        _this.incrementPort = _this.incrementPort.bind(_this);
+	        _this.decrementPort = _this.decrementPort.bind(_this);
+
+	        _this.incrementLatency = _this.incrementLatency.bind(_this);
+	        _this.decrementLatency = _this.decrementLatency.bind(_this);
+
+	        _this.toggleAllowCmd = _this.toggleAllowCmd.bind(_this);
+	        _this.toggleP2P = _this.toggleP2P.bind(_this);
+	        _this.toggleAutoPause = _this.toggleAutoPause.bind(_this);
+
+	        _this.state = {
+	            latency: 100,
+	            autosaveInterval: 5,
+	            autosaveSlots: 10,
+	            port: 34197,
+	            disallowCmd: false,
+	            peer2peer: false,
+	            autoPause: false
+	        };
+	        return _this;
 	    }
 
-	    _createClass(Index, [{
+	    _createClass(ServerCtl, [{
+	        key: "startServer",
+	        value: function startServer(e) {
+	            var serverSettings = {
+	                latency: Number(this.refs.latency.value),
+	                autosave_interval: Number(this.refs.autosaveInterval.value),
+	                autosave_slots: Number(this.refs.autosaveSlots.value),
+	                port: Number(this.refs.port.value),
+	                disallow_cmd: this.refs.allowCmd.checked,
+	                peer2peer: this.refs.p2p.checked,
+	                auto_pause: this.refs.autoPause.checked
+	            };
+	            console.log(serverSettings);
+	            $.ajax({
+	                type: "POST",
+	                url: "/api/server/start",
+	                dataType: "json",
+	                data: JSON.stringify(serverSettings),
+	                success: function success(resp) {
+	                    alert(resp);
+	                }
+	            });
+	            e.preventDefault();
+	        }
+	    }, {
+	        key: "incrementAutosave",
+	        value: function incrementAutosave() {
+	            var saveInterval = this.state.autosaveInterval + 1;
+	            this.setState({ autosaveInterval: saveInterval });
+	        }
+	    }, {
+	        key: "decrementAutosave",
+	        value: function decrementAutosave() {
+	            var saveInterval = this.state.autosaveInterval - 1;
+	            this.setState({ autosaveInterval: saveInterval });
+	        }
+	    }, {
+	        key: "incrementAutosaveSlots",
+	        value: function incrementAutosaveSlots() {
+	            var saveSlots = this.state.autosaveSlots + 1;
+	            this.setState({ autosaveSlots: saveSlots });
+	        }
+	    }, {
+	        key: "decrementAutosaveSlots",
+	        value: function decrementAutosaveSlots() {
+	            var saveSlots = this.state.autosaveSlots - 1;
+	            this.setState({ autosaveSlots: saveSlots });
+	        }
+	    }, {
+	        key: "incrementPort",
+	        value: function incrementPort() {
+	            var port = this.state.port + 1;
+	            this.setState({ port: port });
+	        }
+	    }, {
+	        key: "decrementPort",
+	        value: function decrementPort() {
+	            var port = this.state.port - 1;
+	            this.setState({ port: port });
+	        }
+	    }, {
+	        key: "incrementLatency",
+	        value: function incrementLatency() {
+	            var latency = this.state.latency + 1;
+	            this.setState({ latency: latency });
+	        }
+	    }, {
+	        key: "decrementLatency",
+	        value: function decrementLatency() {
+	            var latency = this.state.latency - 1;
+	            this.setState({ latency: latency });
+	        }
+	    }, {
+	        key: "toggleAllowCmd",
+	        value: function toggleAllowCmd() {
+	            var cmd = !this.state.disallowCmd;
+	            this.setState({ disallowCmd: cmd });
+	        }
+	    }, {
+	        key: "toggleP2P",
+	        value: function toggleP2P() {
+	            var p2p = !this.state.peer2peer;
+	            this.setState({ peer2peer: p2p });
+	        }
+	    }, {
+	        key: "toggleAutoPause",
+	        value: function toggleAutoPause() {
+	            var pause = !this.state.autoPause;
+	            this.setState({ autoPause: pause });
+	        }
+	    }, {
 	        key: "render",
 	        value: function render() {
 	            return _react2.default.createElement(
 	                "div",
-	                { className: "content-wrapper" },
+	                { className: "box" },
 	                _react2.default.createElement(
-	                    "section",
-	                    { className: "content-header" },
+	                    "div",
+	                    { className: "box-header" },
 	                    _react2.default.createElement(
-	                        "h1",
-	                        null,
-	                        "Index",
-	                        _react2.default.createElement(
-	                            "small",
-	                            null,
-	                            "Optional description"
-	                        )
-	                    ),
+	                        "h3",
+	                        { className: "box-title" },
+	                        "Server Control"
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "box-body" },
 	                    _react2.default.createElement(
-	                        "ol",
-	                        { className: "breadcrumb" },
+	                        "form",
+	                        { action: "", onSubmit: this.startServer },
 	                        _react2.default.createElement(
-	                            "li",
-	                            null,
+	                            "label",
+	                            { "for": "latency" },
+	                            "Server latency setting (ms)"
+	                        ),
+	                        _react2.default.createElement(
+	                            "div",
+	                            { id: "latency", className: "input-group" },
+	                            _react2.default.createElement("input", { ref: "latency", name: "latency", id: "latency", type: "text", className: "form-control", onchange: this.state.latency, value: this.state.latency, placeholder: this.state.latency }),
 	                            _react2.default.createElement(
-	                                "a",
-	                                { href: "#" },
-	                                _react2.default.createElement("i", { className: "fa fa-dashboard" }),
-	                                " Level"
+	                                "div",
+	                                { className: "input-group-btn" },
+	                                _react2.default.createElement(
+	                                    "button",
+	                                    { type: "button", className: "btn btn-primary", onClick: this.incrementLatency },
+	                                    _react2.default.createElement("i", { className: "fa fa-arrow-up" })
+	                                ),
+	                                _react2.default.createElement(
+	                                    "button",
+	                                    { type: "button", className: "btn btn-primary", onClick: this.decrementLatency },
+	                                    _react2.default.createElement("i", { className: "fa fa-arrow-down" })
+	                                )
 	                            )
 	                        ),
 	                        _react2.default.createElement(
-	                            "li",
-	                            { className: "active" },
-	                            "Here"
+	                            "label",
+	                            { "for": "autosaveInterval" },
+	                            "Autosave Interval (mins)"
+	                        ),
+	                        _react2.default.createElement(
+	                            "div",
+	                            { id: "autosaveInterval", className: "input-group" },
+	                            _react2.default.createElement("input", { ref: "autosaveInterval", name: "autosaveInterval", id: "autosaveInterval", type: "text", className: "form-control", onchange: this.state.autosaveInterval, value: this.state.autosaveInterval, placeholder: this.state.autosaveInterval }),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "input-group-btn" },
+	                                _react2.default.createElement(
+	                                    "button",
+	                                    { type: "button", className: "btn btn-primary", onClick: this.incrementAutosave },
+	                                    _react2.default.createElement("i", { className: "fa fa-arrow-up" })
+	                                ),
+	                                _react2.default.createElement(
+	                                    "button",
+	                                    { type: "button", className: "btn btn-primary", onClick: this.decrementAutosave },
+	                                    _react2.default.createElement("i", { className: "fa fa-arrow-down" })
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            "label",
+	                            { "for": "autosaveSlots" },
+	                            "Autosave Slots"
+	                        ),
+	                        _react2.default.createElement(
+	                            "div",
+	                            { id: "autosaveSlots", className: "input-group" },
+	                            _react2.default.createElement("input", { ref: "autosaveSlots", name: "autosaveSlots", id: "autosaveSlots", type: "text", className: "form-control", onChange: this.state.autosaveSlots, value: this.state.autosaveSlots, placeholder: this.state.autosaveSlots }),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "input-group-btn" },
+	                                _react2.default.createElement(
+	                                    "button",
+	                                    { type: "button", className: "btn btn-primary", onClick: this.incrementAutosaveSlots },
+	                                    _react2.default.createElement("i", { className: "fa fa-arrow-up" })
+	                                ),
+	                                _react2.default.createElement(
+	                                    "button",
+	                                    { type: "button", className: "btn btn-primary", onClick: this.decrementAutosaveSlots },
+	                                    _react2.default.createElement("i", { className: "fa fa-arrow-down" })
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            "label",
+	                            { "for": "port" },
+	                            "Factorio Server Port"
+	                        ),
+	                        _react2.default.createElement(
+	                            "div",
+	                            { id: "port", className: "input-group" },
+	                            _react2.default.createElement("input", { ref: "port", name: "port", id: "port", type: "text", className: "form-control", onChange: this.state.port, value: this.state.port, placeholder: this.state.port }),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { className: "input-group-btn" },
+	                                _react2.default.createElement(
+	                                    "button",
+	                                    { type: "button", className: "btn btn-primary", onClick: this.incrementPort },
+	                                    _react2.default.createElement("i", { className: "fa fa-arrow-up" })
+	                                ),
+	                                _react2.default.createElement(
+	                                    "button",
+	                                    { type: "button", className: "btn btn-primary", onClick: this.decrementPort },
+	                                    _react2.default.createElement("i", { className: "fa fa-arrow-down" })
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            "div",
+	                            { "class": "form-group" },
+	                            _react2.default.createElement(
+	                                "div",
+	                                { "class": "checkbox" },
+	                                _react2.default.createElement("input", { ref: "autoPause", type: "checkbox", onClick: this.toggleAutoPause }),
+	                                _react2.default.createElement(
+	                                    "label",
+	                                    null,
+	                                    "Auto Pause when no players connected"
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { "class": "checkbox" },
+	                                _react2.default.createElement("input", { ref: "p2p", type: "checkbox", onClick: this.toggleP2P }),
+	                                _react2.default.createElement(
+	                                    "label",
+	                                    null,
+	                                    "Peer to peer connection method"
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                "div",
+	                                { "class": "checkbox" },
+	                                _react2.default.createElement("input", { ref: "allowCmd", type: "checkbox", onClick: this.toggleAllowCmd }),
+	                                _react2.default.createElement(
+	                                    "label",
+	                                    null,
+	                                    "Allow commands on the server"
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            "div",
+	                            { "class": "form-group" },
+	                            _react2.default.createElement(
+	                                "select",
+	                                { ref: "savefile", "class": "form-control" },
+	                                this.props.saves.map(function (save, i) {
+	                                    return _react2.default.createElement(
+	                                        "option",
+	                                        { key: save.name, value: save.name },
+	                                        save.name
+	                                    );
+	                                })
+	                            ),
+	                            _react2.default.createElement(
+	                                "label",
+	                                null,
+	                                "Select Save File"
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            "button",
+	                            { className: "btn btn-block btn-success", type: "submit" },
+	                            "Start Factorio Server"
 	                        )
 	                    )
-	                ),
-	                _react2.default.createElement("section", { className: "content" })
+	                )
 	            );
 	        }
 	    }]);
 
-	    return Index;
+	    return ServerCtl;
 	}(_react2.default.Component);
 
-	exports.default = Index;
+	exports.default = ServerCtl;
 
 /***/ }
 /******/ ]);

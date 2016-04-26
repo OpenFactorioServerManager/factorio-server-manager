@@ -1,9 +1,24 @@
 import React from 'react';
+import ServerCtl from './ServerCtl/ServerCtl.jsx';
 
 class Index extends React.Component {
+    constructor(props) {
+        super(props);
+
+    }
+
+    componentDidMount() {
+        this.props.facServerStatus();
+        this.props.getSaves();
+    }
+
+    componentWillUnmount() {
+        this.props.facServerStatus();
+    }
+
     render() {
         return(
-            <div className="content-wrapper">
+            <div className="content-wrapper" style={{height: "100%"}}>
                 <section className="content-header">
                 <h1>
                     Index
@@ -16,6 +31,11 @@ class Index extends React.Component {
                 </section>
 
                 <section className="content">
+
+                <ServerCtl 
+                    saves={this.props.saves}
+                    getSaves={this.props.getSaves}
+                />
 
 
                 </section>

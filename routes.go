@@ -19,7 +19,7 @@ func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 
 	// API subrouter
-	// Serves all REST handlers prefixed with /api
+	// Serves all JSON REST handlers prefixed with /api
 	s := r.PathPrefix("/api").Subrouter()
 	for _, route := range apiRoutes {
 		s.Methods(route.Method).
@@ -123,5 +123,25 @@ var apiRoutes = Routes{
 		"GET",
 		"/config",
 		LoadConfig,
+	}, {
+		"StartServer",
+		"GET",
+		"/server/start",
+		StartServer,
+	}, {
+		"StartServer",
+		"POST",
+		"/server/start",
+		StartServer,
+	}, {
+		"StopServer",
+		"GET",
+		"/server/stop",
+		StopServer,
+	}, {
+		"RunningServer",
+		"GET",
+		"/server/status",
+		RunningServer,
 	},
 }

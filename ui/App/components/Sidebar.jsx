@@ -1,10 +1,22 @@
 import React from 'react';
-import {Link} from 'react-router';
+import {Link, IndexLink} from 'react-router';
 
 class Sidebar extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
+        if (this.props.serverRunning === "running") {
+            var serverStatus = 
+                <IndexLink to="/"><i className="fa fa-circle text-success"></i>Server Online</IndexLink>
+        } else {
+            var serverStatus = 
+                <IndexLink to="/"><i className="fa fa-circle text-danger"></i>Server Offline</IndexLink>
+        }
+
         return(
-            <aside className="main-sidebar">
+            <aside className="main-sidebar" style={{height: "100%"}}>
 
                 <section className="sidebar">
 
@@ -14,7 +26,9 @@ class Sidebar extends React.Component {
                     </div>
                     <div className="pull-left info">
                     <p>Factorio Server Manager</p>
-                    <a href="#"><i className="fa fa-circle text-success"></i>Server Online</a>
+
+                    {serverStatus}
+
                     </div>
                 </div>
 
@@ -30,6 +44,7 @@ class Sidebar extends React.Component {
 
                 <ul className="sidebar-menu">
                     <li className="header">MENU</li>
+                    <li><IndexLink to="/" activeClassName="active"><i className="fa fa-link"></i><span>Server Control</span></IndexLink></li>
                     <li><Link to="/mods" activeClassName="active"><i className="fa fa-link"></i><span>Mods</span></Link></li>
                     <li><Link to="/logs" activeClassName="active"><i className="fa fa-link"></i> <span>Logs</span></Link></li>
                     <li><Link to="/saves" activeClassName="active"><i className="fa fa-link"></i> <span>Saves</span></Link></li>
@@ -39,6 +54,11 @@ class Sidebar extends React.Component {
             </aside>
         )
     }
+}
+
+Sidebar.propTypes = {
+    serverStatus: React.PropTypes.func.isRequired,
+    serverRunning: React.PropTypes.string.isRequired,
 }
 
 export default Sidebar

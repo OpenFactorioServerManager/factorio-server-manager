@@ -18,7 +18,10 @@ type Config struct {
 	MaxUploadSize      int64
 }
 
-var config Config
+var (
+	config       Config
+	FactorioServ *FactorioServer
+)
 
 func loadFlags() {
 	factorioDir := flag.String("dir", "./", "Specify location of Factorio directory.")
@@ -43,6 +46,10 @@ func loadFlags() {
 
 func main() {
 	loadFlags()
+
+	FactorioServ = initFactorio()
+	FactorioServ.Port = 12345
+	FactorioServ.Savefile = "testingsaves"
 
 	router := NewRouter()
 
