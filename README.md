@@ -23,7 +23,7 @@ This tool runs on a Factorio server and allows management of the Factorio server
   * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
 2. Download the Factorio Standalone server and install to a known directory. 
 3. Run the server binary file, use the --dir flag to point the management server to your Factorio installation.
-  * ```./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1 ```
+  * ```./factorio-server-manager --dir /home/user/.factorio ```
 4. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Usage
