@@ -475,7 +475,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		}()
 
 		if FactorioServ.Running {
-			log.Printf("Factorio server started on port: %s", FactorioServ.Port)
+			log.Printf("Factorio server started on port: %d", FactorioServ.Port)
 		}
 
 		resp.Data = fmt.Sprintf("Factorio server started on port: %s", FactorioServ.Port)

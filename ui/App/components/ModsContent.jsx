@@ -1,4 +1,5 @@
 import React from 'react';
+import {IndexLink} from 'react-router';
 import ModList from './Mods/ListMods.jsx';
 import InstalledMods from './Mods/InstalledMods.jsx';
 
@@ -67,7 +68,7 @@ class ModsContent extends React.Component {
                     <small>Manage your mods</small>
                 </h1>
                 <ol className="breadcrumb">
-                    <li><a href="#"><i className="fa fa-dashboard"></i> Level</a></li>
+                    <li><IndexLink to="/"><i className="fa fa-dashboard"></i> Level</IndexLink></li>
                     <li className="active">Here</li>
                 </ol>
                 </section>

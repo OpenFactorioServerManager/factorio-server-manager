@@ -10,8 +10,10 @@ class App extends React.Component {
         super(props);
         this.facServStatus = this.facServStatus.bind(this);
         this.getSaves = this.getSaves.bind(this);
+        this.getStatus = this.getStatus.bind(this);
         this.state = {
             serverRunning: "stopped",
+            serverStatus: {},
             saves: [],
         }
     }
@@ -39,9 +41,22 @@ class App extends React.Component {
         })
     }
 
+    getStatus() {
+        $.ajax({
+            url: "/api/server/status",
+            dataType: "json",
+            success: (data) => {
+                this.setState({serverStatus: data.data})
+            },
+            error: (xhr, status, err) => {
+                console.log('api/server/status', status, err.toString());
+            }
+        })
+    }
+
     render() {
         return(
-            <div className="wrapper">
+            <div className="wrapper" style={{height: "100%"}}>
 
                 <Header />
 
@@ -53,7 +68,9 @@ class App extends React.Component {
                 {React.cloneElement(
                     this.props.children,
                     {message: "",
-                     facServerStatus: this.facServStatus,
+                     facServStatus: this.facServStatus,
+                     serverStatus: this.state.serverStatus,
+                     getStatus: this.getStatus,
                      saves: this.state.saves,
                      getSaves: this.getSaves}
                 )}

@@ -114,6 +114,7 @@ func (f *FactorioServer) Stop() error {
 	err := f.Cmd.Process.Signal(syscall.SIGINT)
 	if err != nil {
 		log.Printf("Error sending SIGINT to Factorio process: %s", err)
+		return err
 	}
 
 	f.Running = false

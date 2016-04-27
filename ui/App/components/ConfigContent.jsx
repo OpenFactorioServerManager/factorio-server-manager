@@ -49,29 +49,32 @@ class ConfigContent extends React.Component {
                         </div>
                         
                         <div className="box-body">
-    
-                        {Object.keys(this.state.config).map(function(key) {
-                            var conf = this.state.config[key]
-                            return(
-                                <div className="settings-section" key={key}>
-                                <h3>{key}</h3>
-                                    <div className="table-responsive">
-                                    <table className="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Setting name</th>
-                                                <th>Setting value</th>
-                                            </tr>
-                                        </thead>
-                                            <Settings
-                                                section={key}
-                                                config={conf}    
-                                            />
-                                    </table>
+                        <div className="row">
+                            <div className="col-md-4">
+                            {Object.keys(this.state.config).map(function(key) {
+                                var conf = this.state.config[key]
+                                return(
+                                    <div className="settings-section" key={key}>
+                                    <h3>{key}</h3>
+                                        <div className="table-responsive">
+                                        <table className="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Setting name</th>
+                                                    <th>Setting value</th>
+                                                </tr>
+                                            </thead>
+                                                <Settings
+                                                    section={key}
+                                                    config={conf}    
+                                                />
+                                        </table>
+                                        </div>
                                     </div>
-                                </div>
-                            )
-                        }, this)}
+                                )
+                            }, this)}
+                            </div>
+                        </div>
                         </div>
                     </div>
                 </section>

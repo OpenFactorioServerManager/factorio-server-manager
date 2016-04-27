@@ -16,9 +16,9 @@ class Sidebar extends React.Component {
         }
 
         return(
-            <aside className="main-sidebar" style={{height: "100%"}}>
+            <aside className="main-sidebar">
 
-                <section className="sidebar">
+                <section className="sidebar" style={{height: "100%"}}>
 
                 <div className="user-panel">
                     <div className="pull-left image">
@@ -51,6 +51,7 @@ class Sidebar extends React.Component {
                     <li><Link to="/config" activeClassName="active"><i className="fa fa-link"></i> <span>Configuration</span></Link></li>
                 </ul>
                 </section>
+                <div style={{height: "100%"}}></div>
             </aside>
         )
     }

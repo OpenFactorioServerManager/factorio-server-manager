@@ -28,9 +28,13 @@ body {
 }
 /* Layout */
 .wrapper {
-  min-height: 100%;
+  /*min-height: 100%;
   position: relative;
-  overflow: hidden;
+  overflow: hidden;*/
+  width: 100%;
+  min-height: 100%;
+  height: auto !important;
+  position: absolute;
 }
 .wrapper:before,
 .wrapper:after {
@@ -98,6 +102,7 @@ body {
   min-height: 100%;
   background-color: #ecf0f5;
   z-index: 800;
+  height: auto !important;
 }
 .main-footer {
   background: #fff;
