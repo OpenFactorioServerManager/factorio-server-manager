@@ -14,27 +14,9 @@ class Header extends React.Component {
                 </a>
                 <div className="navbar-custom-menu">
                     <ul className="nav navbar-nav">
-
-                    <li className="dropdown notifications-menu">
-                        <a href="#" className="dropdown-toggle" data-toggle="dropdown">
-                        <i className="fa fa-bell-o"></i>
-                        <span className="label label-warning">10</span>
-                        </a>
-                        <ul className="dropdown-menu">
-                        <li className="header">You have 10 notifications</li>
                         <li>
-                            <ul className="menu">
-                                <a href="#">
-                                <i className="fa fa-users text-aqua"></i> 5 new members joined today
-                                </a>
-                            </ul>
+                            <a href="#" data-toggle="control-sidebar"><i className="fa fa-gears"></i></a>
                         </li>
-                        <li className="footer"><a href="#">View all</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#" data-toggle="control-sidebar"><i className="fa fa-gears"></i></a>
-                    </li>
                     </ul>
                 </div>
                 </nav>

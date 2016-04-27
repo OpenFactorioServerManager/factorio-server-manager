@@ -33,7 +33,9 @@ class ServerCtl extends React.Component {
     }
 
     startServer(e) {
+        e.preventDefault();
         let serverSettings = {
+            savefile: this.refs.savefile.value,
             latency: Number(this.refs.latency.value), 
             autosave_interval: Number(this.refs.autosaveInterval.value),
             autosave_slots: Number(this.refs.autosaveSlots.value),
@@ -55,7 +57,6 @@ class ServerCtl extends React.Component {
                 alert(resp.data)
             }
         })
-        e.preventDefault();
     }
 
     stopServer(e) {

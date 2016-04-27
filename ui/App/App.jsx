@@ -77,7 +77,9 @@ class App extends React.Component {
 
                 <Footer />
 
-                <HiddenSidebar />
+                <HiddenSidebar 
+                    serverStatus={this.state.serverStatus}
+                />
 
             </div>
         )

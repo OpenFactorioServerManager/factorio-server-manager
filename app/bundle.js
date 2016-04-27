@@ -60,23 +60,23 @@
 
 	var _App2 = _interopRequireDefault(_App);
 
-	var _ModsContent = __webpack_require__(230);
+	var _ModsContent = __webpack_require__(226);
 
 	var _ModsContent2 = _interopRequireDefault(_ModsContent);
 
-	var _LogsContent = __webpack_require__(234);
+	var _LogsContent = __webpack_require__(230);
 
 	var _LogsContent2 = _interopRequireDefault(_LogsContent);
 
-	var _SavesContent = __webpack_require__(236);
+	var _SavesContent = __webpack_require__(232);
 
 	var _SavesContent2 = _interopRequireDefault(_SavesContent);
 
-	var _ConfigContent = __webpack_require__(241);
+	var _ConfigContent = __webpack_require__(237);
 
 	var _ConfigContent2 = _interopRequireDefault(_ConfigContent);
 
-	var _Index = __webpack_require__(243);
+	var _Index = __webpack_require__(239);
 
 	var _Index2 = _interopRequireDefault(_Index);
 
@@ -25469,19 +25469,19 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Header = __webpack_require__(226);
+	var _Header = __webpack_require__(242);
 
 	var _Header2 = _interopRequireDefault(_Header);
 
-	var _Sidebar = __webpack_require__(227);
+	var _Sidebar = __webpack_require__(243);
 
 	var _Sidebar2 = _interopRequireDefault(_Sidebar);
 
-	var _Footer = __webpack_require__(228);
+	var _Footer = __webpack_require__(244);
 
 	var _Footer2 = _interopRequireDefault(_Footer);
 
-	var _HiddenSidebar = __webpack_require__(229);
+	var _HiddenSidebar = __webpack_require__(245);
 
 	var _HiddenSidebar2 = _interopRequireDefault(_HiddenSidebar);
 
@@ -25575,7 +25575,9 @@
 	                    saves: this.state.saves,
 	                    getSaves: this.getSaves }),
 	                _react2.default.createElement(_Footer2.default, null),
-	                _react2.default.createElement(_HiddenSidebar2.default, null)
+	                _react2.default.createElement(_HiddenSidebar2.default, {
+	                    serverStatus: this.state.serverStatus
+	                })
 	            );
 	        }
 	    }]);
@@ -25595,578 +25597,6 @@
 	    value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRouter = __webpack_require__(166);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Header = function (_React$Component) {
-	    _inherits(Header, _React$Component);
-
-	    function Header() {
-	        _classCallCheck(this, Header);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Header).apply(this, arguments));
-	    }
-
-	    _createClass(Header, [{
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'header',
-	                { className: 'main-header' },
-	                _react2.default.createElement(
-	                    _reactRouter.IndexLink,
-	                    { className: 'logo', to: '/' },
-	                    _react2.default.createElement(
-	                        'span',
-	                        { className: 'logo-lg' },
-	                        _react2.default.createElement(
-	                            'b',
-	                            null,
-	                            'Factorio'
-	                        ),
-	                        'SM'
-	                    )
-	                ),
-	                _react2.default.createElement(
-	                    'nav',
-	                    { className: 'navbar navbar-static-top', role: 'navigation' },
-	                    _react2.default.createElement(
-	                        'a',
-	                        { href: '#', className: 'sidebar-toggle', 'data-toggle': 'offcanvas', role: 'button' },
-	                        _react2.default.createElement(
-	                            'span',
-	                            { className: 'sr-only' },
-	                            'Toggle navigation'
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'navbar-custom-menu' },
-	                        _react2.default.createElement(
-	                            'ul',
-	                            { className: 'nav navbar-nav' },
-	                            _react2.default.createElement(
-	                                'li',
-	                                { className: 'dropdown notifications-menu' },
-	                                _react2.default.createElement(
-	                                    'a',
-	                                    { href: '#', className: 'dropdown-toggle', 'data-toggle': 'dropdown' },
-	                                    _react2.default.createElement('i', { className: 'fa fa-bell-o' }),
-	                                    _react2.default.createElement(
-	                                        'span',
-	                                        { className: 'label label-warning' },
-	                                        '10'
-	                                    )
-	                                ),
-	                                _react2.default.createElement(
-	                                    'ul',
-	                                    { className: 'dropdown-menu' },
-	                                    _react2.default.createElement(
-	                                        'li',
-	                                        { className: 'header' },
-	                                        'You have 10 notifications'
-	                                    ),
-	                                    _react2.default.createElement(
-	                                        'li',
-	                                        null,
-	                                        _react2.default.createElement(
-	                                            'ul',
-	                                            { className: 'menu' },
-	                                            _react2.default.createElement(
-	                                                'a',
-	                                                { href: '#' },
-	                                                _react2.default.createElement('i', { className: 'fa fa-users text-aqua' }),
-	                                                ' 5 new members joined today'
-	                                            )
-	                                        )
-	                                    ),
-	                                    _react2.default.createElement(
-	                                        'li',
-	                                        { className: 'footer' },
-	                                        _react2.default.createElement(
-	                                            'a',
-	                                            { href: '#' },
-	                                            'View all'
-	                                        )
-	                                    )
-	                                )
-	                            ),
-	                            _react2.default.createElement(
-	                                'li',
-	                                null,
-	                                _react2.default.createElement(
-	                                    'a',
-	                                    { href: '#', 'data-toggle': 'control-sidebar' },
-	                                    _react2.default.createElement('i', { className: 'fa fa-gears' })
-	                                )
-	                            )
-	                        )
-	                    )
-	                )
-	            );
-	        }
-	    }]);
-
-	    return Header;
-	}(_react2.default.Component);
-
-	exports.default = Header;
-
-/***/ },
-/* 227 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRouter = __webpack_require__(166);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Sidebar = function (_React$Component) {
-	    _inherits(Sidebar, _React$Component);
-
-	    function Sidebar(props) {
-	        _classCallCheck(this, Sidebar);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Sidebar).call(this, props));
-	    }
-
-	    _createClass(Sidebar, [{
-	        key: 'render',
-	        value: function render() {
-	            if (this.props.serverRunning === "running") {
-	                var serverStatus = _react2.default.createElement(
-	                    _reactRouter.IndexLink,
-	                    { to: '/' },
-	                    _react2.default.createElement('i', { className: 'fa fa-circle text-success' }),
-	                    'Server Online'
-	                );
-	            } else {
-	                var serverStatus = _react2.default.createElement(
-	                    _reactRouter.IndexLink,
-	                    { to: '/' },
-	                    _react2.default.createElement('i', { className: 'fa fa-circle text-danger' }),
-	                    'Server Offline'
-	                );
-	            }
-
-	            return _react2.default.createElement(
-	                'aside',
-	                { className: 'main-sidebar' },
-	                _react2.default.createElement(
-	                    'section',
-	                    { className: 'sidebar', style: { height: "100%" } },
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'user-panel' },
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'pull-left image' },
-	                            _react2.default.createElement('img', { src: './dist/dist/img/factorio.jpg', className: 'img-circle', alt: 'User Image' })
-	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'pull-left info' },
-	                            _react2.default.createElement(
-	                                'p',
-	                                null,
-	                                'Factorio Server Manager'
-	                            ),
-	                            serverStatus
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        'form',
-	                        { action: '#', method: 'get', className: 'sidebar-form' },
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'input-group' },
-	                            _react2.default.createElement('input', { type: 'text', name: 'q', className: 'form-control', placeholder: 'Search...' }),
-	                            _react2.default.createElement(
-	                                'span',
-	                                { className: 'input-group-btn' },
-	                                _react2.default.createElement(
-	                                    'button',
-	                                    { type: 'submit', name: 'search', id: 'search-btn', className: 'btn btn-flat' },
-	                                    _react2.default.createElement('i', { className: 'fa fa-search' })
-	                                )
-	                            )
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        'ul',
-	                        { className: 'sidebar-menu' },
-	                        _react2.default.createElement(
-	                            'li',
-	                            { className: 'header' },
-	                            'MENU'
-	                        ),
-	                        _react2.default.createElement(
-	                            'li',
-	                            null,
-	                            _react2.default.createElement(
-	                                _reactRouter.IndexLink,
-	                                { to: '/', activeClassName: 'active' },
-	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
-	                                _react2.default.createElement(
-	                                    'span',
-	                                    null,
-	                                    'Server Control'
-	                                )
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'li',
-	                            null,
-	                            _react2.default.createElement(
-	                                _reactRouter.Link,
-	                                { to: '/mods', activeClassName: 'active' },
-	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
-	                                _react2.default.createElement(
-	                                    'span',
-	                                    null,
-	                                    'Mods'
-	                                )
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'li',
-	                            null,
-	                            _react2.default.createElement(
-	                                _reactRouter.Link,
-	                                { to: '/logs', activeClassName: 'active' },
-	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
-	                                ' ',
-	                                _react2.default.createElement(
-	                                    'span',
-	                                    null,
-	                                    'Logs'
-	                                )
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'li',
-	                            null,
-	                            _react2.default.createElement(
-	                                _reactRouter.Link,
-	                                { to: '/saves', activeClassName: 'active' },
-	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
-	                                ' ',
-	                                _react2.default.createElement(
-	                                    'span',
-	                                    null,
-	                                    'Saves'
-	                                )
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'li',
-	                            null,
-	                            _react2.default.createElement(
-	                                _reactRouter.Link,
-	                                { to: '/config', activeClassName: 'active' },
-	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
-	                                ' ',
-	                                _react2.default.createElement(
-	                                    'span',
-	                                    null,
-	                                    'Configuration'
-	                                )
-	                            )
-	                        )
-	                    )
-	                ),
-	                _react2.default.createElement('div', { style: { height: "100%" } })
-	            );
-	        }
-	    }]);
-
-	    return Sidebar;
-	}(_react2.default.Component);
-
-	Sidebar.propTypes = {
-	    serverStatus: _react2.default.PropTypes.func.isRequired,
-	    serverRunning: _react2.default.PropTypes.string.isRequired
-	};
-
-	exports.default = Sidebar;
-
-/***/ },
-/* 228 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Footer = function (_React$Component) {
-	    _inherits(Footer, _React$Component);
-
-	    function Footer() {
-	        _classCallCheck(this, Footer);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Footer).apply(this, arguments));
-	    }
-
-	    _createClass(Footer, [{
-	        key: "render",
-	        value: function render() {
-	            return _react2.default.createElement(
-	                "footer",
-	                { className: "main-footer" },
-	                _react2.default.createElement("div", { className: "pull-right hidden-xs" }),
-	                _react2.default.createElement(
-	                    "strong",
-	                    null,
-	                    "Copyright © 2016 ",
-	                    _react2.default.createElement(
-	                        "a",
-	                        { href: "https://roote.me" },
-	                        "Mitch Roote"
-	                    ),
-	                    "."
-	                ),
-	                " MIT License."
-	            );
-	        }
-	    }]);
-
-	    return Footer;
-	}(_react2.default.Component);
-
-	exports.default = Footer;
-
-/***/ },
-/* 229 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var HiddenSidebar = function (_React$Component) {
-	    _inherits(HiddenSidebar, _React$Component);
-
-	    function HiddenSidebar() {
-	        _classCallCheck(this, HiddenSidebar);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(HiddenSidebar).apply(this, arguments));
-	    }
-
-	    _createClass(HiddenSidebar, [{
-	        key: "render",
-	        value: function render() {
-	            return _react2.default.createElement(
-	                "aside",
-	                { className: "control-sidebar control-sidebar-dark" },
-	                _react2.default.createElement(
-	                    "ul",
-	                    { className: "nav nav-tabs nav-justified control-sidebar-tabs" },
-	                    _react2.default.createElement(
-	                        "li",
-	                        { className: "active" },
-	                        _react2.default.createElement(
-	                            "a",
-	                            { href: "#control-sidebar-home-tab", "data-toggle": "tab" },
-	                            _react2.default.createElement("i", { className: "fa fa-home" })
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        "li",
-	                        null,
-	                        _react2.default.createElement(
-	                            "a",
-	                            { href: "#control-sidebar-settings-tab", "data-toggle": "tab" },
-	                            _react2.default.createElement("i", { className: "fa fa-gears" })
-	                        )
-	                    )
-	                ),
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "tab-content" },
-	                    _react2.default.createElement(
-	                        "div",
-	                        { className: "tab-pane active", id: "control-sidebar-home-tab" },
-	                        _react2.default.createElement(
-	                            "h3",
-	                            { className: "control-sidebar-heading" },
-	                            "Recent Activity"
-	                        ),
-	                        _react2.default.createElement(
-	                            "ul",
-	                            { className: "control-sidebar-menu" },
-	                            _react2.default.createElement(
-	                                "li",
-	                                null,
-	                                _react2.default.createElement(
-	                                    "a",
-	                                    { href: "javascript::;" },
-	                                    _react2.default.createElement("i", { className: "menu-icon fa fa-birthday-cake bg-red" }),
-	                                    _react2.default.createElement(
-	                                        "div",
-	                                        { className: "menu-info" },
-	                                        _react2.default.createElement(
-	                                            "h4",
-	                                            { className: "control-sidebar-subheading" },
-	                                            "Langdon's Birthday"
-	                                        ),
-	                                        _react2.default.createElement(
-	                                            "p",
-	                                            null,
-	                                            "Will be 23 on April 24th"
-	                                        )
-	                                    )
-	                                )
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            "h3",
-	                            { className: "control-sidebar-heading" },
-	                            "Tasks Progress"
-	                        ),
-	                        _react2.default.createElement(
-	                            "ul",
-	                            { className: "control-sidebar-menu" },
-	                            _react2.default.createElement(
-	                                "li",
-	                                null,
-	                                _react2.default.createElement(
-	                                    "a",
-	                                    { href: "javascript::;" },
-	                                    _react2.default.createElement(
-	                                        "h4",
-	                                        { className: "control-sidebar-subheading" },
-	                                        "Custom Template Design",
-	                                        _react2.default.createElement(
-	                                            "span",
-	                                            { className: "label label-danger pull-right" },
-	                                            "70%"
-	                                        )
-	                                    ),
-	                                    _react2.default.createElement(
-	                                        "div",
-	                                        { className: "progress progress-xxs" },
-	                                        _react2.default.createElement("div", { className: "progress-bar progress-bar-danger", style: { width: "70%" } })
-	                                    )
-	                                )
-	                            )
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        "div",
-	                        { className: "tab-pane", id: "control-sidebar-stats-tab" },
-	                        "Stats Tab Content"
-	                    ),
-	                    _react2.default.createElement(
-	                        "div",
-	                        { className: "tab-pane", id: "control-sidebar-settings-tab" },
-	                        _react2.default.createElement(
-	                            "form",
-	                            { method: "post" },
-	                            _react2.default.createElement(
-	                                "h3",
-	                                { className: "control-sidebar-heading" },
-	                                "General Settings"
-	                            ),
-	                            _react2.default.createElement(
-	                                "div",
-	                                { className: "form-group" },
-	                                _react2.default.createElement(
-	                                    "label",
-	                                    { className: "control-sidebar-subheading" },
-	                                    "Report panel usage",
-	                                    _react2.default.createElement("input", { type: "checkbox", className: "pull-right" })
-	                                ),
-	                                _react2.default.createElement(
-	                                    "p",
-	                                    null,
-	                                    "Some information about this general settings option"
-	                                )
-	                            )
-	                        )
-	                    )
-	                ),
-	                _react2.default.createElement("div", { className: "control-sidebar-bg" })
-	            );
-	        }
-	    }]);
-
-	    return HiddenSidebar;
-	}(_react2.default.Component);
-
-	exports.default = HiddenSidebar;
-
-/***/ },
-/* 230 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -26177,11 +25607,11 @@
 
 	var _reactRouter = __webpack_require__(166);
 
-	var _ListMods = __webpack_require__(231);
+	var _ListMods = __webpack_require__(227);
 
 	var _ListMods2 = _interopRequireDefault(_ListMods);
 
-	var _InstalledMods = __webpack_require__(233);
+	var _InstalledMods = __webpack_require__(229);
 
 	var _InstalledMods2 = _interopRequireDefault(_InstalledMods);
 
@@ -26324,7 +25754,7 @@
 	exports.default = ModsContent;
 
 /***/ },
-/* 231 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26341,7 +25771,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Mod = __webpack_require__(232);
+	var _Mod = __webpack_require__(228);
 
 	var _Mod2 = _interopRequireDefault(_Mod);
 
@@ -26439,7 +25869,7 @@
 	exports.default = ModList;
 
 /***/ },
-/* 232 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -26538,7 +25968,7 @@
 	exports.default = Mod;
 
 /***/ },
-/* 233 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26746,7 +26176,7 @@
 	exports.default = InstalledMods;
 
 /***/ },
-/* 234 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26763,7 +26193,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _LogLines = __webpack_require__(235);
+	var _LogLines = __webpack_require__(231);
 
 	var _LogLines2 = _interopRequireDefault(_LogLines);
 
@@ -26868,7 +26298,7 @@
 	exports.default = LogsContent;
 
 /***/ },
-/* 235 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -26957,7 +26387,7 @@
 	exports.default = LogLines;
 
 /***/ },
-/* 236 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26974,15 +26404,15 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _SavesList = __webpack_require__(237);
+	var _SavesList = __webpack_require__(233);
 
 	var _SavesList2 = _interopRequireDefault(_SavesList);
 
-	var _CreateSave = __webpack_require__(239);
+	var _CreateSave = __webpack_require__(235);
 
 	var _CreateSave2 = _interopRequireDefault(_CreateSave);
 
-	var _UploadSave = __webpack_require__(240);
+	var _UploadSave = __webpack_require__(236);
 
 	var _UploadSave2 = _interopRequireDefault(_UploadSave);
 
@@ -27101,7 +26531,7 @@
 	exports.default = SavesContent;
 
 /***/ },
-/* 237 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27116,7 +26546,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Save = __webpack_require__(238);
+	var _Save = __webpack_require__(234);
 
 	var _Save2 = _interopRequireDefault(_Save);
 
@@ -27243,7 +26673,7 @@
 	exports.default = SavesList;
 
 /***/ },
-/* 238 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27348,7 +26778,7 @@
 	exports.default = Save;
 
 /***/ },
-/* 239 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27479,7 +26909,7 @@
 	exports.default = CreateSave;
 
 /***/ },
-/* 240 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27591,7 +27021,7 @@
 	exports.default = UploadSave;
 
 /***/ },
-/* 241 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27606,7 +27036,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Settings = __webpack_require__(242);
+	var _Settings = __webpack_require__(238);
 
 	var _Settings2 = _interopRequireDefault(_Settings);
 
@@ -27775,7 +27205,7 @@
 	exports.default = ConfigContent;
 
 /***/ },
-/* 242 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27844,7 +27274,7 @@
 	exports.default = Settings;
 
 /***/ },
-/* 243 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27861,11 +27291,11 @@
 
 	var _reactRouter = __webpack_require__(166);
 
-	var _ServerCtl = __webpack_require__(244);
+	var _ServerCtl = __webpack_require__(240);
 
 	var _ServerCtl2 = _interopRequireDefault(_ServerCtl);
 
-	var _ServerStatus = __webpack_require__(245);
+	var _ServerStatus = __webpack_require__(241);
 
 	var _ServerStatus2 = _interopRequireDefault(_ServerStatus);
 
@@ -27964,7 +27394,7 @@
 	exports.default = Index;
 
 /***/ },
-/* 244 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28030,7 +27460,9 @@
 	        value: function startServer(e) {
 	            var _this2 = this;
 
+	            e.preventDefault();
 	            var serverSettings = {
+	                savefile: this.refs.savefile.value,
 	                latency: Number(this.refs.latency.value),
 	                autosave_interval: Number(this.refs.autosaveInterval.value),
 	                autosave_slots: Number(this.refs.autosaveSlots.value),
@@ -28052,7 +27484,6 @@
 	                    alert(resp.data);
 	                }
 	            });
-	            e.preventDefault();
 	        }
 	    }, {
 	        key: "stopServer",
@@ -28358,7 +27789,7 @@
 	exports.default = ServerCtl;
 
 /***/ },
-/* 245 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28472,6 +27903,447 @@
 	};
 
 	exports.default = ServerStatus;
+
+/***/ },
+/* 242 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(166);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Header = function (_React$Component) {
+	    _inherits(Header, _React$Component);
+
+	    function Header() {
+	        _classCallCheck(this, Header);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Header).apply(this, arguments));
+	    }
+
+	    _createClass(Header, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'header',
+	                { className: 'main-header' },
+	                _react2.default.createElement(
+	                    _reactRouter.IndexLink,
+	                    { className: 'logo', to: '/' },
+	                    _react2.default.createElement(
+	                        'span',
+	                        { className: 'logo-lg' },
+	                        _react2.default.createElement(
+	                            'b',
+	                            null,
+	                            'Factorio'
+	                        ),
+	                        'SM'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'nav',
+	                    { className: 'navbar navbar-static-top', role: 'navigation' },
+	                    _react2.default.createElement(
+	                        'a',
+	                        { href: '#', className: 'sidebar-toggle', 'data-toggle': 'offcanvas', role: 'button' },
+	                        _react2.default.createElement(
+	                            'span',
+	                            { className: 'sr-only' },
+	                            'Toggle navigation'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'navbar-custom-menu' },
+	                        _react2.default.createElement(
+	                            'ul',
+	                            { className: 'nav navbar-nav' },
+	                            _react2.default.createElement(
+	                                'li',
+	                                null,
+	                                _react2.default.createElement(
+	                                    'a',
+	                                    { href: '#', 'data-toggle': 'control-sidebar' },
+	                                    _react2.default.createElement('i', { className: 'fa fa-gears' })
+	                                )
+	                            )
+	                        )
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Header;
+	}(_react2.default.Component);
+
+	exports.default = Header;
+
+/***/ },
+/* 243 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRouter = __webpack_require__(166);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Sidebar = function (_React$Component) {
+	    _inherits(Sidebar, _React$Component);
+
+	    function Sidebar(props) {
+	        _classCallCheck(this, Sidebar);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Sidebar).call(this, props));
+	    }
+
+	    _createClass(Sidebar, [{
+	        key: 'render',
+	        value: function render() {
+	            if (this.props.serverRunning === "running") {
+	                var serverStatus = _react2.default.createElement(
+	                    _reactRouter.IndexLink,
+	                    { to: '/' },
+	                    _react2.default.createElement('i', { className: 'fa fa-circle text-success' }),
+	                    'Server Online'
+	                );
+	            } else {
+	                var serverStatus = _react2.default.createElement(
+	                    _reactRouter.IndexLink,
+	                    { to: '/' },
+	                    _react2.default.createElement('i', { className: 'fa fa-circle text-danger' }),
+	                    'Server Offline'
+	                );
+	            }
+
+	            return _react2.default.createElement(
+	                'aside',
+	                { className: 'main-sidebar' },
+	                _react2.default.createElement(
+	                    'section',
+	                    { className: 'sidebar', style: { height: "100%" } },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'user-panel' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'pull-left image' },
+	                            _react2.default.createElement('img', { src: './dist/dist/img/factorio.jpg', className: 'img-circle', alt: 'User Image' })
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'pull-left info' },
+	                            _react2.default.createElement(
+	                                'p',
+	                                null,
+	                                'Factorio Server Manager'
+	                            ),
+	                            serverStatus
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'form',
+	                        { action: '#', method: 'get', className: 'sidebar-form' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'input-group' },
+	                            _react2.default.createElement('input', { type: 'text', name: 'q', className: 'form-control', placeholder: 'Search...' }),
+	                            _react2.default.createElement(
+	                                'span',
+	                                { className: 'input-group-btn' },
+	                                _react2.default.createElement(
+	                                    'button',
+	                                    { type: 'submit', name: 'search', id: 'search-btn', className: 'btn btn-flat' },
+	                                    _react2.default.createElement('i', { className: 'fa fa-search' })
+	                                )
+	                            )
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'ul',
+	                        { className: 'sidebar-menu' },
+	                        _react2.default.createElement(
+	                            'li',
+	                            { className: 'header' },
+	                            'MENU'
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                _reactRouter.IndexLink,
+	                                { to: '/', activeClassName: 'active' },
+	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    null,
+	                                    'Server Control'
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                _reactRouter.Link,
+	                                { to: '/mods', activeClassName: 'active' },
+	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    null,
+	                                    'Mods'
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                _reactRouter.Link,
+	                                { to: '/logs', activeClassName: 'active' },
+	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
+	                                ' ',
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    null,
+	                                    'Logs'
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                _reactRouter.Link,
+	                                { to: '/saves', activeClassName: 'active' },
+	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
+	                                ' ',
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    null,
+	                                    'Saves'
+	                                )
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'li',
+	                            null,
+	                            _react2.default.createElement(
+	                                _reactRouter.Link,
+	                                { to: '/config', activeClassName: 'active' },
+	                                _react2.default.createElement('i', { className: 'fa fa-link' }),
+	                                ' ',
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    null,
+	                                    'Configuration'
+	                                )
+	                            )
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement('div', { style: { height: "100%" } })
+	            );
+	        }
+	    }]);
+
+	    return Sidebar;
+	}(_react2.default.Component);
+
+	Sidebar.propTypes = {
+	    serverStatus: _react2.default.PropTypes.func.isRequired,
+	    serverRunning: _react2.default.PropTypes.string.isRequired
+	};
+
+	exports.default = Sidebar;
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Footer = function (_React$Component) {
+	    _inherits(Footer, _React$Component);
+
+	    function Footer() {
+	        _classCallCheck(this, Footer);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Footer).apply(this, arguments));
+	    }
+
+	    _createClass(Footer, [{
+	        key: "render",
+	        value: function render() {
+	            return _react2.default.createElement(
+	                "footer",
+	                { className: "main-footer" },
+	                _react2.default.createElement("div", { className: "pull-right hidden-xs" }),
+	                _react2.default.createElement(
+	                    "strong",
+	                    null,
+	                    "Copyright © 2016 ",
+	                    _react2.default.createElement(
+	                        "a",
+	                        { href: "https://roote.me" },
+	                        "Mitch Roote"
+	                    ),
+	                    "."
+	                ),
+	                " MIT License."
+	            );
+	        }
+	    }]);
+
+	    return Footer;
+	}(_react2.default.Component);
+
+	exports.default = Footer;
+
+/***/ },
+/* 245 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var HiddenSidebar = function (_React$Component) {
+	    _inherits(HiddenSidebar, _React$Component);
+
+	    function HiddenSidebar(props) {
+	        _classCallCheck(this, HiddenSidebar);
+
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(HiddenSidebar).call(this, props));
+	    }
+
+	    _createClass(HiddenSidebar, [{
+	        key: "capitalizeFirstLetter",
+	        value: function capitalizeFirstLetter(string) {
+	            return string.charAt(0).toUpperCase() + string.slice(1);
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            return _react2.default.createElement(
+	                "aside",
+	                { className: "control-sidebar control-sidebar-dark" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "table-responsive" },
+	                    _react2.default.createElement(
+	                        "table",
+	                        { className: "table table-border" },
+	                        _react2.default.createElement(
+	                            "thead",
+	                            null,
+	                            _react2.default.createElement("tr", null)
+	                        ),
+	                        _react2.default.createElement(
+	                            "tbody",
+	                            null,
+	                            Object.keys(this.props.serverStatus).map(function (key) {
+	                                return _react2.default.createElement(
+	                                    "tr",
+	                                    { key: key },
+	                                    _react2.default.createElement(
+	                                        "td",
+	                                        null,
+	                                        this.capitalizeFirstLetter(key)
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        "td",
+	                                        null,
+	                                        this.props.serverStatus[key]
+	                                    )
+	                                );
+	                            }, this)
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement("div", { className: "control-sidebar-bg" })
+	            );
+	        }
+	    }]);
+
+	    return HiddenSidebar;
+	}(_react2.default.Component);
+
+	HiddenSidebar.propTypes = {
+	    serverStatus: _react2.default.PropTypes.object.isRequired
+	};
+
+	exports.default = HiddenSidebar;
 
 /***/ }
 /******/ ]);
