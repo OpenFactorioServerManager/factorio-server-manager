@@ -1,7 +1,16 @@
 #Factorio Server Manager
 
-###A tool for managing dedicated Factorio servers.
-This tool runs on a Factorio server and allows management of saves, mods and many other features.
+###A tool for managing Factorio servers.
+This tool runs on a Factorio server and allows management of the Factorio server, saves, mods and many other features.
+
+## Features
+* Allows control of the Factorio Server, starting and stopping the Factorio binary.
+* Allows the management of save files, upload, download and delete saves.
+* Manage installed mods, upload new ones, delete uneeded mods.  Enable or disable individual mods.
+* Allow viewing of the server logs and current configuration.
+
+## Manage Factorio Server
+![Factorio Server Manager Screenshot](http://imgur.com/kUasJQq.png "Factorio Server Manager")
 
 ## Manage save files
 ![Factorio Server Manager Screenshot](http://i.imgur.com/wZqOuBZ.png "Factorio Server Manager")
@@ -12,12 +21,13 @@ This tool runs on a Factorio server and allows management of saves, mods and man
 ## Installation
 1. Download the latest release
   * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
-2. Run the server binary file
+2. Download the Factorio Standalone server and install to a known directory. 
+3. Run the server binary file, use the --dir flag to point the management server to your Factorio installation.
   * ```./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1 ```
-3. Visit [localhost:8080](localhost:8080) in your web browser.
+4. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Usage
-Run the server and  specify the directory of your Factorio server installation and the interface to run the HTTP server on.
+Run the UI server and  specify the directory of your Factorio server installation and the interface to run the HTTP server. on.
 ```
 Usage of ./factorio-server-manager:
   -bin string
@@ -46,7 +56,7 @@ It also acts as the webserver to serve the front end react application
 
 All api actions are accessible with the /api route.  The frontend is accessible from /.
 
-### Requirements
+#### Requirements
 + Go 1.6
 + NodeJS 4.2.6
 
