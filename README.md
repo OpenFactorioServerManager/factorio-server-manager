@@ -9,15 +9,6 @@ This tool runs on a Factorio server and allows management of the Factorio server
 * Manage installed mods, upload new ones, delete uneeded mods.  Enable or disable individual mods.
 * Allow viewing of the server logs and current configuration.
 
-## Manage Factorio Server
-![Factorio Server Manager Screenshot](http://imgur.com/kUasJQq.png "Factorio Server Manager")
-
-## Manage save files
-![Factorio Server Manager Screenshot](http://i.imgur.com/wZqOuBZ.png "Factorio Server Manager")
-
-## Manage mods
-![Factorio Server Manager Screenshot](http://i.imgur.com/45ab48W.png "Factorio Server Manager")
-
 ## Installation
 1. Download the latest release
   * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
@@ -48,6 +39,17 @@ Example:
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1
 
 ```
+
+## Manage Factorio Server
+![Factorio Server Manager Screenshot](http://imgur.com/kUasJQq.png "Factorio Server Manager")
+
+## Manage save files
+![Factorio Server Manager Screenshot](http://i.imgur.com/wZqOuBZ.png "Factorio Server Manager")
+
+## Manage mods
+![Factorio Server Manager Screenshot](http://i.imgur.com/45ab48W.png "Factorio Server Manager")
+
+
 
 ## Development
 The backend is built as a REST API via the Go web application.  
