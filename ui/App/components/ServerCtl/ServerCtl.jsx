@@ -138,88 +138,94 @@ class ServerCtl extends React.Component {
                 
                 <div className="box-body">
 
-                <form action="" onSubmit={this.startServer}>
-                    <div className="form-group">
-                    <select ref="savefile" class="form-control">
-                        {this.props.saves.map( (save, i) => {
-                            return(
-                                <option key={save.name} value={save.name}>{save.name}</option>
-                            )                                
-                            
-                        })}
-                    </select>
-                    <label>Select Save File</label>
-                    </div>
+                    <form action="" onSubmit={this.startServer}>
+                        <div className="form-group">
+                            <div className="row">
+                                <div className="col-md-4">
+                                <button className="btn btn-block btn-success" type="submit"><i className="fa fa-play fa-fw"></i>Start Factorio Server</button>
+                                </div>
+                                
+                                <div className="col-md-4">
+                                <button className="btn btn-block btn-danger" type="button" onClick={this.stopServer}><i className="fa fa-stop fa-fw"></i>Stop Factorio Server</button>
+                                </div>
+                            </div>
 
-                    <div className="box box-success">
+                            <hr />
+                            <select ref="savefile" className="form-control">
+                                {this.props.saves.map( (save, i) => {
+                                    return(
+                                        <option key={save.name} value={save.name}>{save.name}</option>
+                                    )                                
+                                    
+                                })}
+                            </select>
+                            <label>Select Save File</label>
+                        </div>
+
+                        <div className="box box-success">
                                 <button type="button" className="btn btn-box-tool" data-widget="collapse">
-                        <div className="box-header with-border">
-                        <i className="fa fa-plus"></i><h4 className="box-title">Advanced</h4>
-                        </div>
+                                    <div className="box-header with-border">
+                                    <i className="fa fa-plus fa-fw"></i><h4 className="box-title">Advanced</h4>
+                                    </div>
                                 </button>
-                        <div className="box-body" style={{display: "none"}}>
-                            <label for="latency">Server latency setting (ms)</label>
-                            <div id="latency" className="input-group">
-                                <input ref="latency" name="latency" id="latency" type="text" className="form-control" onchange={this.state.latency} value={this.state.latency} placeholder={this.state.latency} />
-                                <div className="input-group-btn">
-                                <button type="button" className="btn btn-primary" onClick={this.incrementLatency}><i className="fa fa-arrow-up"></i></button>
-                                <button type="button" className="btn btn-primary" onClick={this.decrementLatency}><i className="fa fa-arrow-down"></i></button>
+                                <div className="box-body" style={{display: "none"}}>
+                                <label for="latency">Server latency setting (ms)</label>
+                                <div id="latency" className="input-group">
+                                    <input ref="latency" name="latency" id="latency" type="text" className="form-control" onchange={this.state.latency} value={this.state.latency} placeholder={this.state.latency} />
+                                    <div className="input-group-btn">
+                                    <button type="button" className="btn btn-primary" onClick={this.incrementLatency}><i className="fa fa-arrow-up"></i></button>
+                                    <button type="button" className="btn btn-primary" onClick={this.decrementLatency}><i className="fa fa-arrow-down"></i></button>
+                                    </div>
                                 </div>
-                            </div>
-                            <label for="autosaveInterval">Autosave Interval (mins)</label>
-                            <div id="autosaveInterval" className="input-group">
-                                <input ref="autosaveInterval" name="autosaveInterval" id="autosaveInterval" type="text" className="form-control" onchange={this.state.autosaveInterval} value={this.state.autosaveInterval} placeholder={this.state.autosaveInterval} />
-                                <div className="input-group-btn">
-                                <button type="button" className="btn btn-primary" onClick={this.incrementAutosave}><i className="fa fa-arrow-up"></i></button>
-                                <button type="button" className="btn btn-primary" onClick={this.decrementAutosave}><i className="fa fa-arrow-down"></i></button>
+                                <label for="autosaveInterval">Autosave Interval (mins)</label>
+                                <div id="autosaveInterval" className="input-group">
+                                    <input ref="autosaveInterval" name="autosaveInterval" id="autosaveInterval" type="text" className="form-control" onchange={this.state.autosaveInterval} value={this.state.autosaveInterval} placeholder={this.state.autosaveInterval} />
+                                    <div className="input-group-btn">
+                                    <button type="button" className="btn btn-primary" onClick={this.incrementAutosave}><i className="fa fa-arrow-up"></i></button>
+                                    <button type="button" className="btn btn-primary" onClick={this.decrementAutosave}><i className="fa fa-arrow-down"></i></button>
+                                    </div>
                                 </div>
-                            </div>
-                            <label for="autosaveSlots">Autosave Slots</label>
-                            <div id="autosaveSlots" className="input-group">
-                                <input ref="autosaveSlots" name="autosaveSlots" id="autosaveSlots" type="text" className="form-control" onChange={this.state.autosaveSlots} value={this.state.autosaveSlots} placeholder={this.state.autosaveSlots} />
-                                <div className="input-group-btn">
-                                <button type="button" className="btn btn-primary" onClick={this.incrementAutosaveSlots}><i className="fa fa-arrow-up"></i></button>
-                                <button type="button" className="btn btn-primary" onClick={this.decrementAutosaveSlots}><i className="fa fa-arrow-down"></i></button>
+                                <label for="autosaveSlots">Autosave Slots</label>
+                                <div id="autosaveSlots" className="input-group">
+                                    <input ref="autosaveSlots" name="autosaveSlots" id="autosaveSlots" type="text" className="form-control" onChange={this.state.autosaveSlots} value={this.state.autosaveSlots} placeholder={this.state.autosaveSlots} />
+                                    <div className="input-group-btn">
+                                    <button type="button" className="btn btn-primary" onClick={this.incrementAutosaveSlots}><i className="fa fa-arrow-up"></i></button>
+                                    <button type="button" className="btn btn-primary" onClick={this.decrementAutosaveSlots}><i className="fa fa-arrow-down"></i></button>
+                                    </div>
                                 </div>
-                            </div>
-                            <label for="port">Factorio Server Port</label>
-                            <div id="port" className="input-group">
-                                <input ref="port" name="port" id="port" type="text" className="form-control" onChange={this.state.port} value={this.state.port} placeholder={this.state.port} />
-                                <div className="input-group-btn">
-                                <button type="button" className="btn btn-primary" onClick={this.incrementPort}><i className="fa fa-arrow-up"></i></button>
-                                <button type="button" className="btn btn-primary" onClick={this.decrementPort}><i className="fa fa-arrow-down"></i></button>
+                                <label for="port">Factorio Server Port</label>
+                                <div id="port" className="input-group">
+                                    <input ref="port" name="port" id="port" type="text" className="form-control" onChange={this.state.port} value={this.state.port} placeholder={this.state.port} />
+                                    <div className="input-group-btn">
+                                    <button type="button" className="btn btn-primary" onClick={this.incrementPort}><i className="fa fa-arrow-up"></i></button>
+                                    <button type="button" className="btn btn-primary" onClick={this.decrementPort}><i className="fa fa-arrow-down"></i></button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="input-group">
-                                <div className="checkbox">
-                                    <label for="autoPause">
-                                    Auto Pause when no players connected
-                                    </label>
-                                    <input id="autoPause" ref="autoPause" type="checkbox" onClick={this.toggleAutoPause} />
-                                </div>
+                                <div className="input-group">
+                                    <div className="checkbox">
+                                        <label for="autoPause">
+                                        Auto Pause when no players connected
+                                        </label>
+                                        <input id="autoPause" ref="autoPause" type="checkbox" onClick={this.toggleAutoPause} />
+                                    </div>
 
-                                <div className="checkbox">
-                                    <label for="p2p">
-                                    Peer to peer connection method
-                                    </label>
-                                    <input id="p2p" ref="p2p" type="checkbox" onClick={this.toggleP2P} />
-                                </div>
+                                    <div className="checkbox">
+                                        <label for="p2p">
+                                        Peer to peer connection method
+                                        </label>
+                                        <input id="p2p" ref="p2p" type="checkbox" onClick={this.toggleP2P} />
+                                    </div>
 
-                                <div className="checkbox">
-                                    <label for="allowCmd">
-                                    Allow commands on the server
-                                    </label>
-                                    <input id="allowCmd" ref="allowCmd" type="checkbox" onClick={this.toggleAllowCmd} />
+                                    <div className="checkbox">
+                                        <label for="allowCmd">
+                                        Allow commands on the server
+                                        </label>
+                                        <input id="allowCmd" ref="allowCmd" type="checkbox" onClick={this.toggleAllowCmd} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-
-                    <button className="btn btn-block btn-success" type="submit">Start Factorio Server</button>
-                </form>
-                    <button className="btn btn-block btn-danger" type="button" onClick={this.stopServer}>Stop Factorio Server</button>
-
+                    </form>
                 </div>
             </div>
 

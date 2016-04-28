@@ -68,7 +68,7 @@ class ModsContent extends React.Component {
                     <small>Manage your mods</small>
                 </h1>
                 <ol className="breadcrumb">
-                    <li><IndexLink to="/"><i className="fa fa-dashboard"></i> Level</IndexLink></li>
+                    <li><IndexLink to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</IndexLink></li>
                     <li className="active">Here</li>
                 </ol>
                 </section>

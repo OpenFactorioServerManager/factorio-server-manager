@@ -3,10 +3,25 @@ import React from 'react';
 class ServerStatus extends React.Component {
     constructor(props) {
         super(props);
+        this.formatServerStatus = this.formatServerStatus.bind(this)
     }
 
     capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    formatServerStatus(serverStatus) {
+        var result = {}
+
+        if (serverStatus === "running") {
+            result = <span className="label label-success">Running</span>
+            return result
+        } else if (serverStatus == "stopped") {
+            result = <span className="label label-danger">Not Running</span>
+            return result
+        } 
+
+        return serverStatus
     }
 
     render() {
@@ -30,7 +45,7 @@ class ServerStatus extends React.Component {
                                 return(
                                     <tr key={key}>
                                         <td>{this.capitalizeFirstLetter(key)}</td>
-                                        <td>{this.props.serverStatus[key]}</td>
+                                        <td>{this.formatServerStatus(this.props.serverStatus[key])}</td>
                                     </tr>
                                 )                                                  
                             }, this)}        

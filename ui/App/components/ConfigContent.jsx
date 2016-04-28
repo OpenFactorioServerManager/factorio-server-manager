@@ -1,4 +1,5 @@
 import React from 'react';
+import {IndexLink} from 'react-router';
 import Settings from './Config/Settings.jsx';
 
 class ConfigContent extends React.Component {
@@ -37,7 +38,7 @@ class ConfigContent extends React.Component {
                     <small>Manage server configuration</small>
                 </h1>
                 <ol className="breadcrumb">
-                    <li><a href="#"><i className="fa fa-dashboard"></i> Level</a></li>
+                    <li><IndexLink to="/"><i className="fa fa-dashboard"></i>Server Control</IndexLink></li>
                     <li className="active">Here</li>
                 </ol>
                 </section>

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -48,10 +49,9 @@ func main() {
 	loadFlags()
 
 	FactorioServ = initFactorio()
-	FactorioServ.Port = 12345
-	FactorioServ.Savefile = "testingsaves"
 
 	router := NewRouter()
 
+	fmt.Printf("Starting server on: %s:%s", config.ServerIP, config.ServerPort)
 	log.Fatal(http.ListenAndServe(config.ServerIP+":"+config.ServerPort, router))
 }

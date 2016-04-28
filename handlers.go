@@ -478,9 +478,9 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Factorio server started on port: %d", FactorioServ.Port)
 		}
 
-		resp.Data = fmt.Sprintf("Factorio server started on port: %s", FactorioServ.Port)
+		resp.Data = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
 		resp.Success = true
-
+		log.Printf("Factorio server started on port: %s", FactorioServ.Port)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: ", err)
 		}
@@ -520,7 +520,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func RunningServer(w http.ResponseWriter, r *http.Request) {
+func CheckServer(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Success: false,
 	}
@@ -540,11 +540,11 @@ func RunningServer(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Printf("Server status sent with data: %+v", resp.Data)
 	} else {
-		log.Printf("Server not running, creating status response")
 		resp.Success = true
 		status := map[string]string{}
 		status["status"] = "stopped"
 		resp.Data = status
+		log.Printf("Server not running, creating status response: %v", status)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: ", err)
 		}

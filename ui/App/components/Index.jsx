@@ -29,8 +29,7 @@ class Index extends React.Component {
                     <small>Control your Factorio server</small>
                 </h1>
                 <ol className="breadcrumb">
-                    <li><IndexLink to="/"><i className="fa fa-dashboard"></i> Level</IndexLink></li>
-                    <li className="active">Here</li>
+                    <li><IndexLink to="/"><i className="fa fa-dashboard"></i>Server Control</IndexLink></li>
                 </ol>
                 </section>
 

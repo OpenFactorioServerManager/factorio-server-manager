@@ -17,7 +17,7 @@ type FactorioServer struct {
 	AutosaveSlots    int  `json:"autosave_slots"`
 	Port             int  `json:"port"`
 	DisallowCmd      bool `json:"disallow_cmd"`
-	Running          bool
+	Running          bool `json:"bool"`
 	PeerToPeer       bool `json:"peer2peer"`
 	AutoPause        bool `json:"auto_pause"`
 	StdOut           io.ReadCloser
@@ -119,7 +119,7 @@ func (f *FactorioServer) Stop() error {
 
 	f.Running = false
 
-	log.Printf("Sent SIGINT to Factorio process")
+	log.Printf("Sent SIGINT to Factorio process, Factorio server shutting down...")
 
 	return nil
 }

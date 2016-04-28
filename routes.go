@@ -142,6 +142,6 @@ var apiRoutes = Routes{
 		"RunningServer",
 		"GET",
 		"/server/status",
-		RunningServer,
+		CheckServer,
 	},
 }

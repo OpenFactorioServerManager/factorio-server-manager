@@ -1,4 +1,5 @@
 import React from 'react';
+import {IndexLink} from 'react-router';
 import LogLines from './Logs/LogLines.jsx';
 
 class LogsContent extends React.Component {
@@ -37,7 +38,7 @@ class LogsContent extends React.Component {
                     <small>Analyze Factorio Logs</small>
                 </h1>
                 <ol className="breadcrumb">
-                    <li><a href="#"><i className="fa fa-dashboard"></i> Level</a></li>
+                    <li><IndexLink to="/"><i className="fa fa-dashboard"></i>Server Control</IndexLink></li>
                     <li className="active">Here</li>
                 </ol>
                 </section>
