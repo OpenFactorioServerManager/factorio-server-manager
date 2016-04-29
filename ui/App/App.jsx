@@ -15,6 +15,7 @@ class App extends React.Component {
             serverRunning: "stopped",
             serverStatus: {},
             saves: [],
+            loggedIn: false,
         }
     }
 

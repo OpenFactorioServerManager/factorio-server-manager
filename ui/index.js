@@ -11,9 +11,9 @@ import Index from './App/components/Index.jsx';
 
 ReactDOM.render((
     <Router history={browserHistory}>
-        <Route path="/" component={App}>
+        <Route path="/login" component={LoginContent}/>
+        <Route path="/server" component={App}>
             <IndexRoute component={Index}/>
-            <Route path="/login" component={LoginContent}/>
             <Route path="/mods" component={ModsContent}/> 
             <Route path="/logs" component={LogsContent}/> 
             <Route path="/saves" component={SavesContent}/> 

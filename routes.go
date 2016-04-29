@@ -21,7 +21,6 @@ func NewRouter() *mux.Router {
 
 	r.Path("/login").
 		Methods("GET").
-		Methods("POST").
 		Name("Login").
 		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
 
@@ -41,19 +40,23 @@ func NewRouter() *mux.Router {
 	r.Path("/mods").
 		Methods("GET").
 		Name("Mods").
-		Handler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/"))))
+		Handler(CheckSession(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
 	r.Path("/saves").
 		Methods("GET").
 		Name("Saves").
-		Handler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/"))))
+		Handler(CheckSession(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
 	r.Path("/logs").
 		Methods("GET").
 		Name("Logs").
-		Handler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/"))))
+		Handler(CheckSession(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
 	r.Path("/config").
 		Methods("GET").
 		Name("Config").
-		Handler(http.StripPrefix("/config", http.FileServer(http.Dir("./app/"))))
+		Handler(CheckSession(http.StripPrefix("/config", http.FileServer(http.Dir("./app/")))))
+	r.Path("/server").
+		Methods("GET").
+		Name("Server").
+		Handler(CheckSession(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
 	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
