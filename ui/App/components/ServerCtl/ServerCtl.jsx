@@ -22,6 +22,7 @@ class ServerCtl extends React.Component {
         this.toggleAutoPause = this.toggleAutoPause.bind(this);
 
         this.state = {
+            savefile: "",
             latency: 100,
             autosaveInterval: 5,
             autosaveSlots: 10,
@@ -44,7 +45,6 @@ class ServerCtl extends React.Component {
             peer2peer: this.refs.p2p.checked,
             auto_pause: this.refs.autoPause.checked,
         }
-        console.log(serverSettings);
         $.ajax({
             type: "POST",
             url: "/api/server/start",
@@ -56,6 +56,16 @@ class ServerCtl extends React.Component {
                 this.props.getStatus();
                 alert(resp.data)
             }
+        })
+        this.setState({
+            savefile: this.refs.savefile.value,
+            latency: Number(this.refs.latency.value), 
+            autosaveInterval: Number(this.refs.autosaveInterval.value),
+            autosaveSlots: Number(this.refs.autosaveSlots.value),
+            port: Number(this.refs.port.value),
+            disallowCmd: this.refs.allowCmd.checked,
+            peer2peer: this.refs.p2p.checked,
+            autoPause: this.refs.autoPause.checked,
         })
     }
 
@@ -201,27 +211,25 @@ class ServerCtl extends React.Component {
                                     <button type="button" className="btn btn-primary" onClick={this.decrementPort}><i className="fa fa-arrow-down"></i></button>
                                     </div>
                                 </div>
-                                <div className="input-group">
-                                    <div className="checkbox">
-                                        <label for="autoPause">
-                                        Auto Pause when no players connected
-                                        </label>
-                                        <input id="autoPause" ref="autoPause" type="checkbox" onClick={this.toggleAutoPause} />
-                                    </div>
+                                <div className="checkbox">
+                                    <label for="autoPause">
+                                    <input id="autoPause" ref="autoPause" type="checkbox" onClick={this.toggleAutoPause} />
+                                    Disable auto Pause when no players connected
+                                    </label>
+                                </div>
 
-                                    <div className="checkbox">
-                                        <label for="p2p">
-                                        Peer to peer connection method
-                                        </label>
-                                        <input id="p2p" ref="p2p" type="checkbox" onClick={this.toggleP2P} />
-                                    </div>
+                                <div className="checkbox">
+                                    <label for="p2p">
+                                    <input id="p2p" ref="p2p" type="checkbox" onClick={this.toggleP2P} />
+                                    Peer to peer connection method
+                                    </label>
+                                </div>
 
-                                    <div className="checkbox">
-                                        <label for="allowCmd">
-                                        Allow commands on the server
-                                        </label>
-                                        <input id="allowCmd" ref="allowCmd" type="checkbox" onClick={this.toggleAllowCmd} />
-                                    </div>
+                                <div className="checkbox">
+                                    <label for="allowCmd">
+                                    <input id="allowCmd" ref="allowCmd" type="checkbox" onClick={this.toggleAllowCmd} />
+                                    Allow commands on the server
+                                    </label>
                                 </div>
                             </div>
                         </div>
