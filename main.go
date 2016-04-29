@@ -27,6 +27,7 @@ type Config struct {
 var (
 	config       Config
 	FactorioServ *FactorioServer
+	Auth         *AuthHTTP
 )
 
 func failOnError(err error, msg string) {
@@ -45,8 +46,6 @@ func loadServerConfig(f string) {
 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
-
-	auth := initAuth
 
 	fmt.Println(config.Password)
 	parseFlags()
@@ -77,6 +76,9 @@ func main() {
 	loadServerConfig("./conf.json")
 
 	FactorioServ = initFactorio()
+
+	Auth = initAuth()
+	Auth.createRoles()
 
 	router := NewRouter()
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -18,6 +19,12 @@ type Routes []Route
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 
+	r.Path("/login").
+		Methods("GET").
+		Methods("POST").
+		Name("Login").
+		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
+
 	// API subrouter
 	// Serves all JSON REST handlers prefixed with /api
 	s := r.PathPrefix("/api").Subrouter()
@@ -25,7 +32,7 @@ func NewRouter() *mux.Router {
 		s.Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
-			Handler(route.HandlerFunc)
+			Handler(CheckSession(route.HandlerFunc))
 	}
 
 	// Serves the frontend application from the app directory
@@ -53,6 +60,19 @@ func NewRouter() *mux.Router {
 		Handler(http.FileServer(http.Dir("./app/")))
 
 	return r
+}
+
+// Middleware returns a http.HandlerFunc which authenticates the users request
+func CheckSession(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("%+v", Auth.aaa)
+		if err := Auth.aaa.Authorize(w, r, true); err != nil {
+			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
 }
 
 // Defines all API REST endpoints

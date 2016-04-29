@@ -6,12 +6,14 @@ import ModsContent from './App/components/ModsContent.jsx';
 import LogsContent from './App/components/LogsContent.jsx';
 import SavesContent from './App/components/SavesContent.jsx';
 import ConfigContent from './App/components/ConfigContent.jsx';
+import LoginContent from './App/components/LoginContent.jsx';
 import Index from './App/components/Index.jsx';
 
 ReactDOM.render((
     <Router history={browserHistory}>
         <Route path="/" component={App}>
             <IndexRoute component={Index}/>
+            <Route path="/login" component={LoginContent}/>
             <Route path="/mods" component={ModsContent}/> 
             <Route path="/logs" component={LogsContent}/> 
             <Route path="/saves" component={SavesContent}/> 
