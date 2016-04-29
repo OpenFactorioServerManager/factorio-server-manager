@@ -454,11 +454,22 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error in starting factorio server handler body: %s", err)
 			return
 		}
+
 		log.Printf("Starting Factorio server with settings: %v", string(body))
 
 		err = json.Unmarshal(body, &FactorioServ)
 		if err != nil {
 			log.Printf("Error unmarshaling server settings JSON: %s", err)
+			return
+		}
+
+		// Check if savefile was submitted with request to start server.
+		if FactorioServ.Savefile == "" {
+			log.Printf("Error starting Factorio server: %s", err)
+			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error encoding config file JSON reponse: ", err)
+			}
 			return
 		}
 
