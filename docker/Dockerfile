@@ -1,22 +1,25 @@
-FROM debian:jessie
+FROM frolvlad/alpine-glibc
 
-ENV FSM_VERSION 0.2.0
+MAINTAINER Jannik Kolodziej <docker@jkolodziej.de>
 
-RUN apt-get update && \
-    apt-get -y install unzip wget ca-certificates && \
-    apt-get clean
+ENV FACTORIO_VERSION=0.12.31 \
+    MANAGER_VERSION=0.2.0 \
+    ADMIN_PASSWORD=
 
-RUN wget https://github.com/MajorMJR/factorio-server-manager/releases/download/$FSM_VERSION/factorio-server-manager-linux-x64.zip -P /tmp/
-RUN unzip /tmp/factorio-server-manager-linux-x64.zip -d /opt/
+VOLUME /opt/factorio/saves /opt/factorio/mods /security
 
-WORKDIR /opt/factorio-server
+RUN apk add --no-cache curl tar unzip nginx
 
-VOLUME ["/factorio"]
+WORKDIR /opt/
+ADD "init.sh" "/opt/init.sh"
+ADD "nginx.conf" "/etc/nginx/nginx.conf"
 
-#Expose UI Port
-EXPOSE 8080
+RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/headless/linux64 -o /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
+    tar zxf /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
+    rm /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
+    curl -s -L -S -k https://github.com/MajorMJR/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux-x64.zip --cacert /opt/github.pem -o /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
+    unzip -qq /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
+    rm /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip
+EXPOSE 80/tcp 443/tcp 34190-34200/udp
 
-#Expose UDP game port
-EXPOSE 34190-34200/udp
-
-ENTRYPOINT ["/opt/factorio-server/factorio-server-manager", "--dir", "/factorio"]
+ENTRYPOINT ["/opt/init.sh"]
