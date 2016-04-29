@@ -2,4 +2,4 @@ build:
 	docker build -t factorio-server-manager .
 
 run:
-	docker run -d -p 8080:8080 -p 34197:34197/udp -v /home/user/.factorio:/factorio factorio-server-manager
+	docker run -d --name factorio-server-manager -d -v [yourpath]:/security -p80:80 -p443:443 -p34197:34197/udp -e "ADMIN_PASSWORD=jqkSnQS4rA" factorio-server-manager
