@@ -1,22 +1,27 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 type Config struct {
-	FactorioDir        string
-	FactorioSavesDir   string
-	FactorioModsDir    string
-	FactorioConfigFile string
-	FactorioLog        string
-	FactorioBinary     string
-	ServerIP           string
-	ServerPort         string
-	MaxUploadSize      int64
+	FactorioDir        string `json:"factorio_dir"`
+	FactorioSavesDir   string `json:"saves_dir"`
+	FactorioModsDir    string `json:"mods_dir"`
+	FactorioConfigFile string `json:"config_file"`
+	FactorioLog        string `json:"logfile"`
+	FactorioBinary     string `json:"factorio_binary"`
+	ServerIP           string `json:"server_ip"`
+	ServerPort         string `json:"server_port"`
+	MaxUploadSize      int64  `json:"max_upload_size"`
+	Username           string `json:"username"`
+	Password           string `json:"password"`
+	DatabaseFile       string `json:"database_file"`
 }
 
 var (
@@ -24,7 +29,30 @@ var (
 	FactorioServ *FactorioServer
 )
 
-func loadFlags() {
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Printf("%s: %s", msg, err)
+		panic(fmt.Sprintf("%s: %s", msg, err))
+	}
+}
+
+// Loads server configuration files
+// JSON config file contains default values,
+// any provided flags to the binary will overwrite values in config file.
+func loadServerConfig(f string) {
+	file, err := os.Open(f)
+	failOnError(err, "Error loading config file.")
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&config)
+
+	auth := initAuth
+
+	fmt.Println(config.Password)
+	parseFlags()
+}
+
+func parseFlags() {
 	factorioDir := flag.String("dir", "./", "Specify location of Factorio directory.")
 	factorioIP := flag.String("host", "0.0.0.0", "Specify IP for webserver to listen on.")
 	factorioPort := flag.String("port", "8080", "Specify a port for the server.")
@@ -35,18 +63,18 @@ func loadFlags() {
 	flag.Parse()
 
 	config.FactorioDir = *factorioDir
+	config.ServerIP = *factorioIP
+	config.ServerPort = *factorioPort
 	config.FactorioSavesDir = config.FactorioDir + "/saves"
 	config.FactorioModsDir = config.FactorioDir + "/mods"
 	config.FactorioConfigFile = config.FactorioDir + "/" + *factorioConfigFile
 	config.FactorioBinary = config.FactorioDir + "/" + *factorioBinary
-	config.ServerIP = *factorioIP
-	config.ServerPort = *factorioPort
 	config.FactorioLog = config.FactorioDir + "/factorio-current.log"
 	config.MaxUploadSize = *factorioMaxUpload
 }
 
 func main() {
-	loadFlags()
+	loadServerConfig("./conf.json")
 
 	FactorioServ = initFactorio()
 

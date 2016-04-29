@@ -1,0 +1,6 @@
+{
+    "factorio_dir": "/home/mitch/.factorio",
+    "username": "name",
+    "password": "$111",
+    "database_file": "auth.leveldb"
+}
