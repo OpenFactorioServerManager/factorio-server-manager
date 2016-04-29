@@ -1,3 +1,4 @@
+# glibc is required for Factorio Server binaries to run
 FROM frolvlad/alpine-glibc
 
 MAINTAINER Jannik Kolodziej <docker@jkolodziej.de>
