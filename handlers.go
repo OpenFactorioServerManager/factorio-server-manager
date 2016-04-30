@@ -561,3 +561,41 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func LoginUser(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	switch r.Method {
+	case "GET":
+		log.Printf("GET not supported for login handler")
+		resp.Data = "Unsupported method"
+		resp.Success = false
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error listing mods: %s", err)
+		}
+	case "POST":
+		var user User
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error in starting factorio server handler body: %s", err)
+			return
+		}
+
+		log.Printf("Logging in user: %v", string(body))
+
+		err = json.Unmarshal(body, &user)
+		if err != nil {
+			log.Printf("Error unmarshaling server settings JSON: %s", err)
+			return
+		}
+
+		fmt.Println(user)
+
+	}
+
+	//if err := Auth.aaa.Login(w, r, username, password, "/")
+}

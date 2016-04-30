@@ -1,4 +1,5 @@
 import React from 'react';
+import {browserHistory} from 'react-router';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Footer from './components/Footer.jsx';
@@ -15,7 +16,14 @@ class App extends React.Component {
             serverRunning: "stopped",
             serverStatus: {},
             saves: [],
-            loggedIn: false,
+            loggedIn: true,
+        }
+    }
+
+    // Check if state.loggedIn is true, if so continue, else redirect to /login page.
+    componentWillMount() {
+        if (!this.state.loggedIn) {
+            browserHistory.push("/login");
         }
     }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/apexskier/httpauth"
 )
@@ -11,8 +12,27 @@ type AuthHTTP struct {
 	aaa     httpauth.Authorizer
 }
 
+type User struct {
+	Username string
+	Password string
+	Role     string
+}
+
 func initAuth() *AuthHTTP {
 	return &AuthHTTP{}
+}
+
+func (auth *AuthHTTP) createAuthDb(backendFile string) error {
+	var err error
+	os.Mkdir(backendFile, 0755)
+
+	auth.backend, err = httpauth.NewLeveldbAuthBackend(backendFile)
+	if err != nil {
+		log.Printf("Error creating Auth backend: %s", err)
+		return err
+	}
+
+	return nil
 }
 
 func (auth *AuthHTTP) createRoles() {
@@ -27,7 +47,7 @@ func (auth *AuthHTTP) createRoles() {
 	}
 }
 
-func (auth *AuthHTTP) createUser(username, role, password, email string) error {
+func (auth *AuthHTTP) createUser(username, password, role, email string) error {
 	user := httpauth.UserData{Username: username, Role: role, Email: email}
 	err := auth.backend.SaveUser(user)
 	if err != nil {

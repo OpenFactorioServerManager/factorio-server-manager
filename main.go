@@ -47,7 +47,6 @@ func loadServerConfig(f string) {
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
 
-	fmt.Println(config.Password)
 	parseFlags()
 }
 
@@ -78,7 +77,12 @@ func main() {
 	FactorioServ = initFactorio()
 
 	Auth = initAuth()
+	Auth.createAuthDb(config.DatabaseFile)
 	Auth.createRoles()
+	err := Auth.createUser(config.Username, config.Password, "admin", "")
+	if err != nil {
+		log.Printf("Error creating user: %s", err)
+	}
 
 	router := NewRouter()
 

@@ -31,7 +31,7 @@ func NewRouter() *mux.Router {
 		s.Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
-			Handler(CheckSession(route.HandlerFunc))
+			Handler(route.HandlerFunc)
 	}
 
 	// Serves the frontend application from the app directory
@@ -68,7 +68,6 @@ func NewRouter() *mux.Router {
 // Middleware returns a http.HandlerFunc which authenticates the users request
 func CheckSession(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%+v", Auth.aaa)
 		if err := Auth.aaa.Authorize(w, r, true); err != nil {
 			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -166,5 +165,10 @@ var apiRoutes = Routes{
 		"GET",
 		"/server/status",
 		CheckServer,
+	}, {
+		"LoginUser",
+		"POST",
+		"/login",
+		LoginUser,
 	},
 }

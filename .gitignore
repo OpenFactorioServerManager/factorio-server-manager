@@ -1,4 +1,5 @@
 node_modules/
 bundle.js
 factorio-server-manager
+auth.level-db
 *.exe

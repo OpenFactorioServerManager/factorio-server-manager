@@ -5,6 +5,7 @@ class ServerCtl extends React.Component {
         super(props);
         this.startServer = this.startServer.bind(this);
         this.stopServer = this.stopServer.bind(this);
+
         this.incrementAutosave = this.incrementAutosave.bind(this);
         this.decrementAutosave = this.decrementAutosave.bind(this);
 
@@ -214,17 +215,15 @@ class ServerCtl extends React.Component {
                                 <div className="checkbox">
                                     <label for="autoPause">
                                     <input id="autoPause" ref="autoPause" type="checkbox" onClick={this.toggleAutoPause} />
-                                    Disable auto Pause when no players connected
+                                    Disable auto pause when no players connected
                                     </label>
                                 </div>
-
                                 <div className="checkbox">
                                     <label for="p2p">
                                     <input id="p2p" ref="p2p" type="checkbox" onClick={this.toggleP2P} />
                                     Peer to peer connection method
                                     </label>
                                 </div>
-
                                 <div className="checkbox">
                                     <label for="allowCmd">
                                     <input id="allowCmd" ref="allowCmd" type="checkbox" onClick={this.toggleAllowCmd} />
