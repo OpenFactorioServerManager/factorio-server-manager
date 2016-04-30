@@ -20,7 +20,11 @@ RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/hea
     rm /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
     curl -s -L -S -k https://github.com/MajorMJR/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux-x64.zip --cacert /opt/github.pem -o /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
     unzip -qq /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
-    rm /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip
+    rm /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
+    rm -r /var/lib/nginx && \
+    mkdir -p /var/lib/nginx/tmp && \
+    chown nginx:root /var/lib/nginx
+
 EXPOSE 80/tcp 443/tcp 34190-34200/udp
 
 ENTRYPOINT ["/opt/init.sh"]
