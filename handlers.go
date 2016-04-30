@@ -593,9 +593,68 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(user)
+		err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
+		if err != nil {
+			log.Printf("Error logging in user: %s, error: %s", user.Username, err)
+			resp.Data = fmt.Sprintf("Error logging in user: %s", user.Username)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error listing mods: %s", err)
+			}
+			return
+		}
 
+		log.Printf("User: %s, logged in successfully", user.Username)
+		resp.Data = fmt.Sprintf("User: %s, logged in successfully", user.Username)
+		resp.Success = true
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error listing mods: %s", err)
+		}
+	}
+}
+
+func LogoutUser(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
 	}
 
-	//if err := Auth.aaa.Login(w, r, username, password, "/")
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	if err := Auth.aaa.Logout(w, r); err != nil {
+		log.Printf("Error logging out current user")
+		return
+	}
+
+	resp.Success = true
+	resp.Data = "User logged out successfully."
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error logging out: %s", err)
+	}
+}
+
+func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	user, err := Auth.aaa.CurrentUser(w, r)
+	if err != nil {
+		log.Printf("Error getting current user status: %s", err)
+		resp.Data = fmt.Sprintf("Error getting user status: %s", user.Username)
+		resp.Success = false
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error listing mods: %s", err)
+		}
+		return
+	}
+	fmt.Println(user, err)
+	resp.Success = true
+	resp.Data = user
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error getting user status: %s", err)
+	}
+
 }

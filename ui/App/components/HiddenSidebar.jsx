@@ -17,11 +17,14 @@ class HiddenSidebar extends React.Component {
                     <li>
                         <Link to="/login" activeClassName="active">
                         <i className="menu-icon fa fa-lock bg-green"></i>
-
-                        <div className="menu-info">
-                            <i classNameName="fa fa-lock fa-fw"></i>Login
-                        </div>
+                        Login
                         </Link>
+                    </li>
+                    <li>
+                        <a href="/api/logout">
+                        <i className="menu-icon fa fa-lock bg-red"></i>
+                        Login
+                        </a>
                     </li>
                 </ul>
                 <div className="table-responsive">

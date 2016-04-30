@@ -170,5 +170,15 @@ var apiRoutes = Routes{
 		"POST",
 		"/login",
 		LoginUser,
+	}, {
+		"LogoutUser",
+		"GET",
+		"/logout",
+		LogoutUser,
+	}, {
+		"UserStatus",
+		"GET",
+		"/user/status",
+		GetCurrentLogin,
 	},
 }

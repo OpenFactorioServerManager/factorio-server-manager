@@ -1,5 +1,5 @@
 import React from 'react';
-import {IndexLink} from 'react-router';
+import {IndexLink, browserHistory} from 'react-router';
 
 class LoginContent extends React.Component {
     constructor(props) {
@@ -8,7 +8,7 @@ class LoginContent extends React.Component {
     }
 
     componentDidMount() {
-        console.log(this.state);
+        console.log(this.props);
     }
 
     loginUser(e) {
@@ -25,7 +25,10 @@ class LoginContent extends React.Component {
             dataType: "json",
             data: JSON.stringify(user),
             success: (resp) => {
-                console.log(resp)
+                console.log(resp);
+                if (resp.success === true) {
+                    browserHistory.push("/")
+                }
             }
         })
     }
