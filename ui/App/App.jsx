@@ -18,6 +18,7 @@ class App extends React.Component {
             serverStatus: {},
             saves: [],
             loggedIn: false,
+            username: "",
         }
     }
 
@@ -31,14 +32,13 @@ class App extends React.Component {
     }
 
     checkLogin() {
-        console.log(this.state);
         $.ajax({
             url: "/api/user/status",
             dataType: "json",
             success: (data) => {
-                console.log(data.success);
                 if (data.success === true) {
-                    this.setState({loggedIn: true})
+                    this.setState({loggedIn: true,
+                        username: data.data.Username})
                 }
             }
         })
@@ -87,7 +87,10 @@ class App extends React.Component {
         if (this.state.loggedIn) {
             var resp = 
                 <div>
-                    <Header />
+                    <Header 
+                        username={this.state.username}
+                        loggedIn={this.state.loggedIn}
+                    />
 
                     <Sidebar 
                         serverStatus={this.facServStatus}
@@ -101,18 +104,21 @@ class App extends React.Component {
                         serverStatus: this.state.serverStatus,
                         getStatus: this.getStatus,
                         saves: this.state.saves,
-                        getSaves: this.getSaves}
+                        getSaves: this.getSaves,
+                        username: this.state.username}
                     )}
 
                     <Footer />
 
                     <HiddenSidebar 
                         serverStatus={this.state.serverStatus}
-                    />;
+                        username={this.state.username}
+                        loggedIn={this.state.loggedIn}
+                        checkLogin={this.checkLogin}
+                    />
                 </div>
         } else {
             var resp = <div><p>Not Logged in</p></div>;
-            console.log(resp);
         }
 
         return(

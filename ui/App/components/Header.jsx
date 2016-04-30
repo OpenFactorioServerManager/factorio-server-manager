@@ -25,4 +25,9 @@ class Header extends React.Component {
     }
 }
 
+Header.propTypes = {
+    username: React.PropTypes.string.isRequired,
+    loggedIn: React.PropTypes.bool.isRequired,
+}
+
 export default Header

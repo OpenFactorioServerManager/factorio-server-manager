@@ -1,16 +1,37 @@
 import React from 'react';
-import {Link} from 'react-router';
+import {Link, browserHistory} from 'react-router';
 
 class HiddenSidebar extends React.Component {
     constructor(props) {
         super(props);
+        this.onLogout = this.onLogout.bind(this);
     }
 
     capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
+    onLogout(e) {
+        e.preventDefault();
+        $.ajax({
+            url: "/api/logout",
+            dataType: "json",
+            success: (resp) => {
+                alert(resp)
+            }
+        });
+        // Wait for 1 second for logout callback to complete
+        setTimeout(() => {
+            browserHistory.push("/login");
+        }, 1000);
+    }
+
     render() {
+        var username;
+        if (this.props.loggedIn) {
+            username = <p>{this.props.username}</p>
+        }
+
         return(
             <aside className="control-sidebar control-sidebar-dark">
                 <ul className="control-sidebar-menu">
@@ -21,12 +42,13 @@ class HiddenSidebar extends React.Component {
                         </Link>
                     </li>
                     <li>
-                        <a href="/api/logout">
+                        <a onClick={this.onLogout}>
                         <i className="menu-icon fa fa-lock bg-red"></i>
                         Login
                         </a>
                     </li>
                 </ul>
+                Current user: {username}
                 <div className="table-responsive">
                 <table className="table table-border">
                     <thead>
@@ -53,6 +75,9 @@ class HiddenSidebar extends React.Component {
 
 HiddenSidebar.propTypes = {
     serverStatus: React.PropTypes.object.isRequired,
+    username: React.PropTypes.string.isRequired,
+    loggedIn: React.PropTypes.bool.isRequired,
+    checkLogin: React.PropTypes.func.isRequired,
 }
 
 

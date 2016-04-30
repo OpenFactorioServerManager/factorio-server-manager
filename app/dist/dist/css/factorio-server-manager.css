@@ -1,0 +1,12 @@
+/* Custom CSS for Factorio Server Manager */
+
+.col-centered {
+    float: none;
+    margin: 0 auto;
+}
+
+.absolute-center {
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+}

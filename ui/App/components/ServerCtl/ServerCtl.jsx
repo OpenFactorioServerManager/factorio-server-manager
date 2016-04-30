@@ -162,6 +162,7 @@ class ServerCtl extends React.Component {
                             </div>
 
                             <hr />
+                            <label>Select Save File</label>
                             <select ref="savefile" className="form-control">
                                 {this.props.saves.map( (save, i) => {
                                     return(
@@ -170,7 +171,6 @@ class ServerCtl extends React.Component {
                                     
                                 })}
                             </select>
-                            <label>Select Save File</label>
                         </div>
 
                         <div className="box box-success">

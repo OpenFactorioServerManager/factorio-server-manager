@@ -4918,3 +4918,8 @@ table.text-center th {
     white-space: normal !important;
   }
 }
+
+.col-centered {
+    float: none;
+    margin: 0 auto;
+}

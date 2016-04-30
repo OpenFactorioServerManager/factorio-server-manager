@@ -79,7 +79,7 @@ func main() {
 	Auth = initAuth()
 	Auth.createAuthDb(config.DatabaseFile)
 	Auth.createRoles()
-	err := Auth.createUser(config.Username, config.Password, "admin", "")
+	err := Auth.createInitialUser(config.Username, config.Password, "admin", "")
 	if err != nil {
 		log.Printf("Error creating user: %s", err)
 	}

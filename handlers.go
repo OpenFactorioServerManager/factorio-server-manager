@@ -649,7 +649,7 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	fmt.Println(user, err)
+
 	resp.Success = true
 	resp.Data = user
 

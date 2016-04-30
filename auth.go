@@ -47,7 +47,7 @@ func (auth *AuthHTTP) createRoles() {
 	}
 }
 
-func (auth *AuthHTTP) createUser(username, password, role, email string) error {
+func (auth *AuthHTTP) createInitialUser(username, password, role, email string) error {
 	user := httpauth.UserData{Username: username, Role: role, Email: email}
 	err := auth.backend.SaveUser(user)
 	if err != nil {
