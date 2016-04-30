@@ -11,4 +11,4 @@ build:
 	docker build -t factorio-server-manager .
 
 run:
-	docker run -d --name factorio-server-manager -v $(SECURITY_PATH):/security -v $(SAVES_PATH):/opt/factorio/saves -v $(MODS_PATH):/opt/factorio/mods $(PORT_FORWARD) -e ADMIN_PASSWORD=$(ADMIN_PASS) factorio-server-manager
+	docker run -d --name factorio-server -v $(SECURITY_PATH):/security -v $(SAVES_PATH):/opt/factorio/saves -v $(MODS_PATH):/opt/factorio/mods $(PORT_FORWARD) -e ADMIN_PASSWORD=$(ADMIN_PASS) factorio-server-manager
