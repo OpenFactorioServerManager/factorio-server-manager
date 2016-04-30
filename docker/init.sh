@@ -28,6 +28,7 @@ if [ ! -f /security/passwords.conf ]; then
 	openssl passwd -apr1 $ADMIN_PASSWORD >> /security/passwords.conf
 fi
 
+chown nginx:root /var/lib/nginx/tmp/
 
 nohup nginx &
 /opt/factorio-server/factorio-server-manager -dir /opt/factorio
