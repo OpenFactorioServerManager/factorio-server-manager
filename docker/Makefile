@@ -12,6 +12,10 @@ build:
 
 logs:
 	docker logs factorio-server
+	echo "Nginx Access Logs"
+	docker exec -it factorio-server cat /var/log/nginx/access.log
+	echo "Nginx Error Logs"
+	docker exec -it factorio-server cat /var/log/nginx/error.log
 
 run:
 	docker run -d --name factorio-server -v $(SECURITY_PATH):/security -v $(SAVES_PATH):/opt/factorio/saves -v $(MODS_PATH):/opt/factorio/mods $(PORT_FORWARD) -e ADMIN_PASSWORD=$(ADMIN_PASS) factorio-server-manager
