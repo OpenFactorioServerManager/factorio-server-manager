@@ -10,5 +10,19 @@ PORT_FORWARD ?= -p 80:80 -p 443:443 -p 34197:34197/udp
 build:
 	docker build -t factorio-server-manager .
 
+logs:
+	docker logs factorio-server
+	echo "Nginx Access Logs"
+	docker exec -it factorio-server cat /var/log/nginx/access.log
+	echo "Nginx Error Logs"
+	docker exec -it factorio-server cat /var/log/nginx/error.log
+
 run:
-	docker run -d --name factorio-server-manager -v $(SECURITY_PATH):/security -v $(SAVES_PATH):/opt/factorio/saves -v $(MODS_PATH):/opt/factorio/mods $(PORT_FORWARD) -e ADMIN_PASSWORD=$(ADMIN_PASS) factorio-server-manager
+	docker run -d --name factorio-server -v $(SECURITY_PATH):/security -v $(SAVES_PATH):/opt/factorio/saves -v $(MODS_PATH):/opt/factorio/mods $(PORT_FORWARD) -e ADMIN_PASSWORD=$(ADMIN_PASS) factorio-server-manager
+
+stop:
+	docker stop factorio-server
+	docker rm factorio-server
+
+clean:
+	docker rmi factorio-server-manager
