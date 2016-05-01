@@ -20,7 +20,7 @@ This tool runs on a Factorio server and allows management of the Factorio server
 4. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Usage
-Run the UI server and  specify the directory of your Factorio server installation and the interface to run the HTTP server. on.  Edit the conf.json file with your desired credentials.
+Run the UI server and  specify the directory of your Factorio server installation and the interface to run the HTTP server on.  Edit the conf.json file with your desired credentials for authentication.
 ```
 Usage of ./factorio-server-manager:
   -bin string
