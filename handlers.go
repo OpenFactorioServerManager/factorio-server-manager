@@ -18,10 +18,6 @@ type JSONResponse struct {
 	Data    interface{} `json:"data,string"`
 }
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "hello world")
-}
-
 // Returns JSON response of all mods installed in factorio/mods
 func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -585,13 +581,13 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Printf("Logging in user: %v", string(body))
-
 		err = json.Unmarshal(body, &user)
 		if err != nil {
 			log.Printf("Error unmarshaling server settings JSON: %s", err)
 			return
 		}
+
+		log.Printf("Logging in user: %s", user.Username)
 
 		err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
 		if err != nil {
