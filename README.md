@@ -8,6 +8,8 @@ This tool runs on a Factorio server and allows management of the Factorio server
 * Allows the management of save files, upload, download and delete saves.
 * Manage installed mods, upload new ones, delete uneeded mods.  Enable or disable individual mods.
 * Allow viewing of the server logs and current configuration.
+* Authentication for protecting against unauthorized users
+* Available as a Docker container
 
 ## Installation
 1. Download the latest release
@@ -18,7 +20,7 @@ This tool runs on a Factorio server and allows management of the Factorio server
 4. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Usage
-Run the UI server and  specify the directory of your Factorio server installation and the interface to run the HTTP server. on.
+Run the UI server and  specify the directory of your Factorio server installation and the interface to run the HTTP server. on.  Edit the conf.json file with your desired credentials.
 ```
 Usage of ./factorio-server-manager:
   -bin string
