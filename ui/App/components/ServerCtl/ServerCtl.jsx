@@ -227,7 +227,7 @@ class ServerCtl extends React.Component {
                                 <div className="checkbox">
                                     <label for="allowCmd">
                                     <input id="allowCmd" ref="allowCmd" type="checkbox" onClick={this.toggleAllowCmd} />
-                                    Allow commands on the server
+                                    Disable commands on the server
                                     </label>
                                 </div>
                             </div>
