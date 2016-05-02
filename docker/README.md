@@ -16,7 +16,7 @@ I have done my best to secure the container pretty well. This includes the gener
 ### But how do I change it?
 Nothing easier than that:
 
-When first running the container you need to mount the security volume to your host machine by running `docker run --name factorio-manager -d -v [yourpath]:/security - p80:80 -p 443:443 -p 34197:34197/udp factorio-server-manager`
+When first running the container you need to mount the security volume to your host machine by running `docker run --name factorio-manager -d -v [yourpath]:/security -p 80:80 -p 443:443 -p 34197:34197/udp factorio-server-manager`
 
 You should always do that, as this will allow you to change the login credentials for any users as well. The directory will contain a "server.key" file and a "server.crt" file. If you replace these with a trusted SSL certificate and key, you should check that "server.crt" contains the whole certificate chain from the root of your CA.
 
