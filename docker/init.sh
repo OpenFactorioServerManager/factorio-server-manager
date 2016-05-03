@@ -29,4 +29,4 @@ if [ ! -f /security/passwords.conf ]; then
 fi
 
 nohup nginx &
-/opt/factorio-server/factorio-server-manager -dir /opt/factorio
+/opt/factorio-server/factorio-server-manager -dir /opt/factorio -conf /opt/factorio-server/conf.json
