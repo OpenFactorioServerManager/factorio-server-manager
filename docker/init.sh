@@ -27,6 +27,6 @@ if [ ! -f /security/passwords.conf ]; then
 	echo -n "admin:" >> /security/passwords.conf
 	openssl passwd -apr1 $ADMIN_PASSWORD >> /security/passwords.conf
 fi
-
+ls -R /opt/factorio-server
 nohup nginx &
-/opt/factorio-server/factorio-server-manager -dir /opt/factorio -conf /opt/factorio-server/conf.json
+/opt/factorio-server/factorio-server-manager -dir '/opt/factorio' -conf '/opt/factorio-server/conf.json'
