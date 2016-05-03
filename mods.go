@@ -111,7 +111,11 @@ func (m *ModList) toggleMod(name string) error {
 	}
 
 	if found {
-		m.save()
+		err := m.save()
+		if err != nil {
+			log.Printf("Error saving changes to mod-list-.json file: %s", err)
+			return err
+		}
 		log.Printf("Mod: %s was toggled to %v", name, status)
 	}
 
@@ -127,6 +131,7 @@ func (m ModList) save() error {
 	err := ioutil.WriteFile(modListFile, b, 0644)
 	if err != nil {
 		log.Printf("Error writing to mod-list.json file: %s", err)
+		return err
 	}
 
 	return nil

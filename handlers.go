@@ -69,6 +69,7 @@ func ToggleMod(w http.ResponseWriter, r *http.Request) {
 
 	err = m.toggleMod(modName)
 	if err != nil {
+		resp.Success = false
 		resp.Data = fmt.Sprintf("Could not toggle mod: %s error: %s", modName, err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in list mods: %s", err)
