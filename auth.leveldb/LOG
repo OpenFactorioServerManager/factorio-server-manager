@@ -1,0 +1,344 @@
+=============== Apr 30, 2016 (EDT) ===============
+15:37:32.674612 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:37:32.675588 db@open opening
+15:37:32.678471 version@stat F·[] S·0B[] Sc·[]
+15:37:32.702014 db@janitor F·2 G·0
+15:37:32.702116 db@open done T·26.49054ms
+15:37:32.702164 db@close closing
+15:37:32.702382 db@close done T·197.602µs
+=============== Apr 30, 2016 (EDT) ===============
+15:37:32.702611 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:37:32.702943 version@stat F·[] S·0B[] Sc·[]
+15:37:32.702980 db@open opening
+15:37:32.703105 journal@recovery F·1
+15:37:32.704471 journal@recovery recovering @1
+15:37:32.708833 version@stat F·[] S·0B[] Sc·[]
+15:37:32.710060 db@janitor F·2 G·0
+15:37:32.710172 db@open done T·7.151325ms
+15:37:32.710504 db@close closing
+15:37:32.711200 db@close done T·681.124µs
+=============== Apr 30, 2016 (EDT) ===============
+15:37:32.900064 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+15:37:32.900264 version@stat F·[] S·0B[] Sc·[]
+15:37:32.900283 db@open opening
+15:37:32.900343 journal@recovery F·1
+15:37:32.901445 journal@recovery recovering @2
+15:37:32.904426 memdb@flush created L0@4 N·1 S·190B "htt..ata,v1":"htt..ata,v1"
+15:37:32.905385 version@stat F·[1] S·190B[190B] Sc·[0.25]
+15:37:32.906989 db@janitor F·3 G·0
+15:37:32.907018 db@open done T·6.724117ms
+15:37:32.907084 db@close closing
+15:37:32.907114 db@close done T·28.641µs
+=============== May 3, 2016 (EDT) ===============
+11:48:09.988408 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:48:09.989243 version@stat F·[1] S·190B[190B] Sc·[0.25]
+11:48:09.989290 db@open opening
+11:48:09.989464 journal@recovery F·1
+11:48:09.991550 journal@recovery recovering @5
+11:48:10.000893 memdb@flush created L0@7 N·1 S·272B "htt..ata,v3":"htt..ata,v3"
+11:48:10.001966 version@stat F·[2] S·462B[462B] Sc·[0.50]
+11:48:10.005499 db@janitor F·4 G·0
+11:48:10.005577 db@open done T·16.246235ms
+11:48:10.005952 db@close closing
+11:48:10.006135 db@close done T·169.506µs
+=============== May 3, 2016 (EDT) ===============
+11:48:10.006325 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:48:10.006769 version@stat F·[2] S·462B[462B] Sc·[0.50]
+11:48:10.006812 db@open opening
+11:48:10.006955 journal@recovery F·1
+11:48:10.013946 journal@recovery recovering @8
+11:48:10.014951 version@stat F·[2] S·462B[462B] Sc·[0.50]
+11:48:10.019355 db@janitor F·4 G·0
+11:48:10.019410 db@open done T·12.576251ms
+11:48:10.019565 db@close closing
+11:48:10.019690 db@close done T·121.485µs
+=============== May 3, 2016 (EDT) ===============
+11:48:10.197341 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+11:48:10.197513 version@stat F·[2] S·462B[462B] Sc·[0.50]
+11:48:10.197528 db@open opening
+11:48:10.197580 journal@recovery F·1
+11:48:10.200474 journal@recovery recovering @10
+11:48:10.204005 memdb@flush created L0@12 N·1 S·305B "htt..ata,v5":"htt..ata,v5"
+11:48:10.208886 version@stat F·[3] S·767B[767B] Sc·[0.75]
+11:48:10.209709 db@janitor F·5 G·0
+11:48:10.209730 db@open done T·12.193097ms
+11:48:10.209788 db@close closing
+11:48:10.209822 db@close done T·32.263µs
+=============== May 3, 2016 (EDT) ===============
+12:02:58.557416 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:02:58.558125 version@stat F·[3] S·767B[767B] Sc·[0.75]
+12:02:58.558167 db@open opening
+12:02:58.558373 journal@recovery F·1
+12:02:58.560368 journal@recovery recovering @13
+12:02:58.579205 memdb@flush created L0@15 N·1 S·365B "htt..ata,v7":"htt..ata,v7"
+12:02:58.580718 version@stat F·[4] S·1KiB[1KiB] Sc·[1.00]
+12:02:58.584174 db@janitor F·6 G·0
+12:02:58.584360 db@open done T·26.1424ms
+12:02:58.584764 table@compaction L0·4 -> L1·0 S·1KiB Q·8
+12:02:58.585247 db@close closing
+12:02:58.590788 table@build created L1@18 N·1 S·365B "htt..ata,v7":"htt..ata,v7"
+12:02:58.590855 table@build exiting
+12:02:58.590875 table@build revert @18
+12:02:58.591279 db@close done T·6.014483ms
+=============== May 3, 2016 (EDT) ===============
+12:02:58.591539 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:02:58.591943 version@stat F·[4] S·1KiB[1KiB] Sc·[1.00]
+12:02:58.591978 db@open opening
+12:02:58.592113 journal@recovery F·1
+12:02:58.594756 journal@recovery recovering @16
+12:02:58.598879 version@stat F·[4] S·1KiB[1KiB] Sc·[1.00]
+12:02:58.599728 db@janitor F·6 G·0
+12:02:58.599787 db@open done T·7.785938ms
+12:02:58.599938 db@close closing
+12:02:58.599943 table@compaction L0·4 -> L1·0 S·1KiB Q·8
+12:02:58.600017 table@build exiting
+12:02:58.600115 db@close done T·170.101µs
+=============== May 3, 2016 (EDT) ===============
+12:02:58.779626 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:02:58.779785 version@stat F·[4] S·1KiB[1KiB] Sc·[1.00]
+12:02:58.779799 db@open opening
+12:02:58.779864 journal@recovery F·1
+12:02:58.782327 journal@recovery recovering @18
+12:02:58.799345 memdb@flush created L0@20 N·1 S·305B "htt..ata,v9":"htt..ata,v9"
+12:02:58.800748 version@stat F·[5] S·1KiB[1KiB] Sc·[1.25]
+12:02:58.802570 db@janitor F·7 G·0
+12:02:58.802743 db@open done T·22.920891ms
+12:02:58.802839 table@compaction L0·5 -> L1·0 S·1KiB Q·10
+12:02:58.802850 db@close closing
+12:02:58.802872 table@build exiting
+12:02:58.802916 db@close done T·64.755µs
+=============== May 3, 2016 (EDT) ===============
+12:03:12.749896 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:03:12.750749 version@stat F·[5] S·1KiB[1KiB] Sc·[1.25]
+12:03:12.750795 db@open opening
+12:03:12.750986 journal@recovery F·1
+12:03:12.757022 journal@recovery recovering @21
+12:03:12.766810 memdb@flush created L0@23 N·1 S·365B "htt..ata,v11":"htt..ata,v11"
+12:03:12.767694 version@stat F·[6] S·1KiB[1KiB] Sc·[1.50]
+12:03:12.770224 db@janitor F·8 G·0
+12:03:12.770392 db@open done T·19.472369ms
+12:03:12.770569 table@compaction L0·6 -> L1·0 S·1KiB Q·12
+12:03:12.771841 db@close closing
+12:03:12.776648 table@build created L1@26 N·1 S·365B "htt..ata,v11":"htt..ata,v11"
+12:03:12.776809 table@build exiting
+12:03:12.776870 table@build revert @26
+12:03:12.777594 db@close done T·5.736729ms
+=============== May 3, 2016 (EDT) ===============
+12:03:12.777858 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:03:12.778321 version@stat F·[6] S·1KiB[1KiB] Sc·[1.50]
+12:03:12.778375 db@open opening
+12:03:12.778541 journal@recovery F·1
+12:03:12.783689 journal@recovery recovering @24
+12:03:12.789727 version@stat F·[6] S·1KiB[1KiB] Sc·[1.50]
+12:03:12.791384 db@janitor F·8 G·0
+12:03:12.791444 db@open done T·13.039477ms
+12:03:12.791662 table@compaction L0·6 -> L1·0 S·1KiB Q·12
+12:03:12.791731 table@build exiting
+12:03:12.791685 db@close closing
+12:03:12.791841 db@close done T·153.418µs
+=============== May 3, 2016 (EDT) ===============
+12:03:12.967012 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:03:12.967177 version@stat F·[6] S·1KiB[1KiB] Sc·[1.50]
+12:03:12.967197 db@open opening
+12:03:12.967279 journal@recovery F·1
+12:03:12.968197 journal@recovery recovering @26
+12:03:12.972111 memdb@flush created L0@28 N·1 S·305B "htt..ata,v13":"htt..ata,v13"
+12:03:12.974136 version@stat F·[7] S·2KiB[2KiB] Sc·[1.75]
+12:03:12.975098 db@janitor F·9 G·0
+12:03:12.975144 db@open done T·7.934835ms
+12:03:12.975245 db@close closing
+12:03:12.975278 table@compaction L0·7 -> L1·0 S·2KiB Q·15
+12:03:12.975298 table@build exiting
+12:03:12.975324 db@close done T·77.483µs
+=============== May 3, 2016 (EDT) ===============
+12:04:08.390742 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:04:08.391578 version@stat F·[7] S·2KiB[2KiB] Sc·[1.75]
+12:04:08.391623 db@open opening
+12:04:08.391848 journal@recovery F·1
+12:04:08.393557 journal@recovery recovering @29
+12:04:08.398757 memdb@flush created L0@31 N·1 S·368B "htt..ata,v15":"htt..ata,v15"
+12:04:08.399591 version@stat F·[8] S·2KiB[2KiB] Sc·[2.00]
+12:04:08.402058 db@janitor F·10 G·0
+12:04:08.402129 db@open done T·10.47656ms
+12:04:08.402372 table@compaction L0·8 -> L1·0 S·2KiB Q·16
+12:04:08.403303 db@close closing
+12:04:08.406996 table@build created L1@34 N·1 S·368B "htt..ata,v15":"htt..ata,v15"
+12:04:08.407070 table@build exiting
+12:04:08.407092 table@build revert @34
+12:04:08.407487 db@close done T·4.17622ms
+=============== May 3, 2016 (EDT) ===============
+12:04:08.407691 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:04:08.408016 version@stat F·[8] S·2KiB[2KiB] Sc·[2.00]
+12:04:08.408051 db@open opening
+12:04:08.408208 journal@recovery F·1
+12:04:08.411548 journal@recovery recovering @32
+12:04:08.414552 version@stat F·[8] S·2KiB[2KiB] Sc·[2.00]
+12:04:08.416307 db@janitor F·10 G·0
+12:04:08.416471 db@open done T·8.36567ms
+12:04:08.416794 table@compaction L0·8 -> L1·0 S·2KiB Q·16
+12:04:08.417893 db@close closing
+12:04:08.420666 table@build created L1@36 N·1 S·368B "htt..ata,v15":"htt..ata,v15"
+12:04:08.420714 table@build exiting
+12:04:08.420729 table@build revert @36
+12:04:08.420930 db@write was delayed N·1 T·1.148136ms
+12:04:08.420992 db@close done T·3.099804ms
+=============== May 3, 2016 (EDT) ===============
+12:04:08.591165 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:04:08.591328 version@stat F·[8] S·2KiB[2KiB] Sc·[2.00]
+12:04:08.591343 db@open opening
+12:04:08.591426 journal@recovery F·1
+12:04:08.592414 journal@recovery recovering @34
+12:04:08.596360 memdb@flush created L0@36 N·1 S·305B "htt..ata,v17":"htt..ata,v17"
+12:04:08.597560 version@stat F·[9] S·2KiB[2KiB] Sc·[2.25]
+12:04:08.598404 db@janitor F·11 G·0
+12:04:08.598428 db@open done T·7.07652ms
+12:04:08.598548 table@compaction L0·9 -> L1·0 S·2KiB Q·18
+12:04:08.599646 db@close closing
+12:04:08.602708 table@build created L1@39 N·1 S·305B "htt..ata,v17":"htt..ata,v17"
+12:04:08.602742 table@build exiting
+12:04:08.602754 table@build revert @39
+12:04:08.602890 db@write was delayed N·1 T·1.127863ms
+12:04:08.602937 db@close done T·3.289858ms
+=============== May 3, 2016 (EDT) ===============
+12:04:39.986479 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:04:39.987538 version@stat F·[9] S·2KiB[2KiB] Sc·[2.25]
+12:04:39.987587 db@open opening
+12:04:39.987821 journal@recovery F·1
+12:04:39.990109 journal@recovery recovering @37
+12:04:40.001761 memdb@flush created L0@39 N·1 S·365B "htt..ata,v19":"htt..ata,v19"
+12:04:40.002704 version@stat F·[10] S·3KiB[3KiB] Sc·[2.50]
+12:04:40.005543 db@janitor F·12 G·0
+12:04:40.005634 db@open done T·18.001899ms
+12:04:40.006503 db@close closing
+12:04:40.006734 db@close done T·226.221µs
+=============== May 3, 2016 (EDT) ===============
+12:04:40.006847 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:04:40.007254 version@stat F·[10] S·3KiB[3KiB] Sc·[2.50]
+12:04:40.007410 db@open opening
+12:04:40.007623 journal@recovery F·1
+12:04:40.010592 journal@recovery recovering @40
+12:04:40.014689 version@stat F·[10] S·3KiB[3KiB] Sc·[2.50]
+12:04:40.016095 db@janitor F·12 G·0
+12:04:40.016157 db@open done T·8.72155ms
+12:04:40.016283 table@compaction L0·10 -> L1·0 S·3KiB Q·20
+12:04:40.017481 db@close closing
+12:04:40.020357 table@build created L1@44 N·1 S·365B "htt..ata,v19":"htt..ata,v19"
+12:04:40.020434 table@build exiting
+12:04:40.020450 table@build revert @44
+12:04:40.020698 db@write was delayed N·1 T·1.131606ms
+12:04:40.020809 db@close done T·3.332776ms
+=============== May 3, 2016 (EDT) ===============
+12:04:40.178690 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:04:40.178917 version@stat F·[10] S·3KiB[3KiB] Sc·[2.50]
+12:04:40.178936 db@open opening
+12:04:40.179010 journal@recovery F·1
+12:04:40.179738 journal@recovery recovering @42
+12:04:40.184697 memdb@flush created L0@44 N·1 S·305B "htt..ata,v21":"htt..ata,v21"
+12:04:40.187852 version@stat F·[11] S·3KiB[3KiB] Sc·[2.75]
+12:04:40.188360 db@janitor F·13 G·0
+12:04:40.188389 db@open done T·9.442709ms
+12:04:40.188518 table@compaction L0·11 -> L1·0 S·3KiB Q·22
+12:04:40.189665 db@close closing
+12:04:40.193121 table@build created L1@47 N·1 S·305B "htt..ata,v21":"htt..ata,v21"
+12:04:40.193192 table@build exiting
+12:04:40.193216 table@build revert @47
+12:04:40.193488 db@write was delayed N·1 T·1.136254ms
+12:04:40.193598 db@close done T·3.92735ms
+=============== May 3, 2016 (EDT) ===============
+12:06:08.895246 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:06:08.896101 version@stat F·[11] S·3KiB[3KiB] Sc·[2.75]
+12:06:08.896150 db@open opening
+12:06:08.896486 journal@recovery F·1
+12:06:08.897806 journal@recovery recovering @45
+12:06:08.904317 memdb@flush created L0@47 N·1 S·364B "htt..ata,v23":"htt..ata,v23"
+12:06:08.905536 version@stat F·[12] S·3KiB[3KiB] Sc·[3.00]
+12:06:08.907918 db@janitor F·14 G·0
+12:06:08.907996 db@open done T·11.817502ms
+12:06:08.908311 table@compaction L0·12 -> L1·0 S·3KiB Q·24
+12:06:08.909057 db@close closing
+12:06:08.913554 table@build created L1@50 N·1 S·364B "htt..ata,v23":"htt..ata,v23"
+12:06:08.913641 table@build exiting
+12:06:08.913660 table@build revert @50
+12:06:08.913993 db@close done T·4.930572ms
+=============== May 3, 2016 (EDT) ===============
+12:06:08.914167 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:06:08.914505 version@stat F·[12] S·3KiB[3KiB] Sc·[3.00]
+12:06:08.914546 db@open opening
+12:06:08.914978 journal@recovery F·1
+12:06:08.918492 journal@recovery recovering @48
+12:06:08.927428 version@stat F·[12] S·3KiB[3KiB] Sc·[3.00]
+12:06:08.928952 db@janitor F·14 G·0
+12:06:08.928998 db@open done T·14.434181ms
+12:06:08.929193 table@compaction L0·12 -> L1·0 S·3KiB Q·24
+12:06:08.930278 db@close closing
+12:06:08.933627 table@build created L1@52 N·1 S·364B "htt..ata,v23":"htt..ata,v23"
+12:06:08.933683 table@build exiting
+12:06:08.933698 table@build revert @52
+12:06:08.933907 db@write was delayed N·1 T·1.129696ms
+12:06:08.934021 db@close done T·3.741885ms
+=============== May 3, 2016 (EDT) ===============
+12:06:09.101635 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:06:09.101836 version@stat F·[12] S·3KiB[3KiB] Sc·[3.00]
+12:06:09.101854 db@open opening
+12:06:09.101934 journal@recovery F·1
+12:06:09.102813 journal@recovery recovering @50
+12:06:09.106024 memdb@flush created L0@52 N·1 S·305B "htt..ata,v25":"htt..ata,v25"
+12:06:09.107605 version@stat F·[13] S·4KiB[4KiB] Sc·[3.25]
+12:06:09.108480 db@janitor F·15 G·0
+12:06:09.108505 db@open done T·6.642242ms
+12:06:09.108649 table@compaction L0·13 -> L1·0 S·4KiB Q·26
+12:06:09.109762 db@close closing
+12:06:09.114758 table@build created L1@55 N·1 S·305B "htt..ata,v25":"htt..ata,v25"
+12:06:09.114859 table@build exiting
+12:06:09.114883 table@build revert @55
+12:06:09.115226 db@write was delayed N·1 T·1.149636ms
+12:06:09.115370 db@close done T·5.606579ms
+=============== May 3, 2016 (EDT) ===============
+12:18:33.838601 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:18:33.839503 version@stat F·[13] S·4KiB[4KiB] Sc·[3.25]
+12:18:33.839570 db@open opening
+12:18:33.839906 journal@recovery F·1
+12:18:33.842154 journal@recovery recovering @53
+12:18:33.858296 memdb@flush created L0@55 N·1 S·364B "htt..ata,v27":"htt..ata,v27"
+12:18:33.859980 version@stat F·[14] S·4KiB[4KiB] Sc·[3.50]
+12:18:33.862323 db@janitor F·16 G·0
+12:18:33.862440 db@open done T·22.814184ms
+12:18:33.862742 table@compaction L0·14 -> L1·0 S·4KiB Q·28
+12:18:33.865119 db@close closing
+12:18:33.873415 table@build created L1@58 N·1 S·364B "htt..ata,v27":"htt..ata,v27"
+12:18:33.873518 table@build exiting
+12:18:33.873547 table@build revert @58
+12:18:33.873906 db@close done T·8.780692ms
+=============== May 3, 2016 (EDT) ===============
+12:18:33.874056 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:18:33.874385 version@stat F·[14] S·4KiB[4KiB] Sc·[3.50]
+12:18:33.874427 db@open opening
+12:18:33.874609 journal@recovery F·1
+12:18:33.876974 journal@recovery recovering @56
+12:18:33.880042 version@stat F·[14] S·4KiB[4KiB] Sc·[3.50]
+12:18:33.881774 db@janitor F·16 G·0
+12:18:33.881842 db@open done T·7.394738ms
+12:18:33.882046 table@compaction L0·14 -> L1·0 S·4KiB Q·28
+12:18:33.883134 db@close closing
+12:18:33.885465 table@build created L1@60 N·1 S·364B "htt..ata,v27":"htt..ata,v27"
+12:18:33.885512 table@build exiting
+12:18:33.885527 table@build revert @60
+12:18:33.885702 db@write was delayed N·1 T·1.105393ms
+12:18:33.885782 db@close done T·2.64837ms
+=============== May 3, 2016 (EDT) ===============
+12:18:34.059772 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+12:18:34.059960 version@stat F·[14] S·4KiB[4KiB] Sc·[3.50]
+12:18:34.059982 db@open opening
+12:18:34.060083 journal@recovery F·1
+12:18:34.060974 journal@recovery recovering @58
+12:18:34.064081 memdb@flush created L0@60 N·1 S·305B "htt..ata,v29":"htt..ata,v29"
+12:18:34.066116 version@stat F·[15] S·4KiB[4KiB] Sc·[3.75]
+12:18:34.067706 db@janitor F·17 G·0
+12:18:34.067802 db@open done T·7.799057ms
+12:18:34.067964 table@compaction L0·15 -> L1·0 S·4KiB Q·30
+12:18:34.069156 db@close closing
+12:18:34.071507 table@build created L1@63 N·1 S·305B "htt..ata,v29":"htt..ata,v29"
+12:18:34.071550 table@build exiting
+12:18:34.071557 table@build revert @63
+12:18:34.071635 db@write was delayed N·1 T·1.134204ms
+12:18:34.071670 db@close done T·2.519357ms

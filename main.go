@@ -47,11 +47,10 @@ func loadServerConfig(f string) {
 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
-
-	parseFlags()
 }
 
 func parseFlags() {
+	confFile := flag.String("conf", "./conf.json", "Specify location of Factorio Server Manager config file.")
 	factorioDir := flag.String("dir", "./", "Specify location of Factorio directory.")
 	factorioIP := flag.String("host", "0.0.0.0", "Specify IP for webserver to listen on.")
 	factorioPort := flag.String("port", "8080", "Specify a port for the server.")
@@ -61,6 +60,7 @@ func parseFlags() {
 
 	flag.Parse()
 
+	config.ConfFile = *confFile
 	config.FactorioDir = *factorioDir
 	config.ServerIP = *factorioIP
 	config.ServerPort = *factorioPort
@@ -73,8 +73,7 @@ func parseFlags() {
 }
 
 func main() {
-	confFile := flag.String("conf", "./conf.json", "Specify location of Factorio Server Manager config file.")
-	config.ConfFile = *confFile
+	parseFlags()
 	loadServerConfig(config.ConfFile)
 
 	// Initialize Factorio Server struct
