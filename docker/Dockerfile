@@ -3,7 +3,7 @@ FROM frolvlad/alpine-glibc
 
 MAINTAINER Jannik Kolodziej <docker@jkolodziej.de>
 
-ENV FACTORIO_VERSION=0.12.32 \
+ENV FACTORIO_VERSION=0.12.33 \
     MANAGER_VERSION=0.3.1 \
     ADMIN_PASSWORD=
 
