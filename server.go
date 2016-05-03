@@ -17,7 +17,7 @@ type FactorioServer struct {
 	AutosaveSlots    int  `json:"autosave_slots"`
 	Port             int  `json:"port"`
 	DisallowCmd      bool `json:"disallow_cmd"`
-	Running          bool `json:"bool"`
+	Running          bool `json:"running"`
 	PeerToPeer       bool `json:"peer2peer"`
 	AutoPause        bool `json:"auto_pause"`
 	StdOut           io.ReadCloser

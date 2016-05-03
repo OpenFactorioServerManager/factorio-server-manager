@@ -2,5 +2,5 @@
 #
 
 build:
-	go build -o $(HOME)/factorio-server-manager/factorio-server-manager
-	cp -r app/ $(HOME)/factorio-server-manager/
+	go build -o $(HOME)/factorio-server/factorio-server-manager
+	cp -r app/ $(HOME)/factorio-server/

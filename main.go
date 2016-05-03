@@ -22,6 +22,7 @@ type Config struct {
 	Username           string `json:"username"`
 	Password           string `json:"password"`
 	DatabaseFile       string `json:"database_file"`
+	ConfFile           string
 }
 
 var (
@@ -72,10 +73,14 @@ func parseFlags() {
 }
 
 func main() {
-	loadServerConfig("./conf.json")
+	confFile := flag.String("conf", "./conf.json", "Specify location of Factorio Server Manager config file.")
+	config.ConfFile = *confFile
+	loadServerConfig(config.ConfFile)
 
+	// Initialize Factorio Server struct
 	FactorioServ = initFactorio()
 
+	// Initialize authentication system
 	Auth = initAuth()
 	Auth.createAuthDb(config.DatabaseFile)
 	Auth.createRoles()
