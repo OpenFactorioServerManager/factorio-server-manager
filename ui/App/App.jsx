@@ -59,12 +59,20 @@ class App extends React.Component {
             url: "/api/saves/list",
             dataType: "json",
             success: (data) => {
-                this.setState({saves: data.data})
+                if (data.success === true) {
+                    this.setState({saves: data.data})
+                } else {
+                    this.setState({saves: []})
+                }
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/list', status, err.toString());
             }
         })
+
+        if (!this.state.saves) {
+            this.setState({saves:[]})
+        }
     }
 
     getStatus() {

@@ -25,7 +25,12 @@ class ModsContent extends React.Component {
             url: "/api/mods/list",
             dataType: "json",
             success: (data) => {
-                this.setState({listMods: data.data.mods})
+                console.log(data)
+                if (data.success == true) {
+                    this.setState({listMods: data.data.mods})
+                } else {
+                    this.setState({listMods: []})
+                }
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/list', status, err.toString());

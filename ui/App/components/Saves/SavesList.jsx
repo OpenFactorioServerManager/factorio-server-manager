@@ -23,6 +23,25 @@ class SavesList extends React.Component {
     }
 
     render() {
+        var savesList;
+        console.log(this.props.saves);
+        if (this.props.saves.length === 0) {
+            savesList = <tr></tr>
+        } else {
+            savesList = this.props.saves.map ( (save, i) => {
+                return(
+                    <Save
+                        key={i}
+                        saves={this.props.saves}
+                        index={i}
+                        save={save}
+                        removeSave={this.removeSave}
+                    />
+                )
+            });
+            
+        }
+
         return(
             <div className="box">
                 <div className="box-header">
@@ -42,17 +61,7 @@ class SavesList extends React.Component {
                                 </tr>
                             </thead>
                             <tbody>
-                            {this.props.saves.map ( (save, i) => {
-                                return(
-                                    <Save
-                                        key={i}
-                                        saves={this.props.saves}
-                                        index={i}
-                                        save={save}
-                                        removeSave={this.removeSave}
-                                    />
-                                )
-                            })}
+                            {savesList}
                             </tbody>
                         </table>        
                     </div>
