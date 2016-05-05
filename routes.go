@@ -176,9 +176,14 @@ var apiRoutes = Routes{
 		"/logout",
 		LogoutUser,
 	}, {
-		"UserStatus",
+		"StatusUser",
 		"GET",
 		"/user/status",
 		GetCurrentLogin,
+	}, {
+		"ListUsers",
+		"GET",
+		"/user/list",
+		ListUsers,
 	},
 }

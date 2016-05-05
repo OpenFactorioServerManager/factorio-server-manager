@@ -25,7 +25,7 @@ func listInstalledMods(modDir string) ([]string, error) {
 
 	files, err := ioutil.ReadDir(modDir)
 	if err != nil {
-		log.Printf("Error listing installed mods")
+		log.Printf("Error listing installed mods: %s", err)
 		return result, err
 	}
 	for _, f := range files {
@@ -76,7 +76,7 @@ func rmMod(modName string) error {
 // returns ModList struct
 func parseModList() (ModList, error) {
 	var mods ModList
-	modListFile := config.FactorioDir + "/mods/mod-list.json"
+	modListFile := config.FactorioModsDir + "/mod-list.json"
 
 	modList, err := ioutil.ReadFile(modListFile)
 	if err != nil {

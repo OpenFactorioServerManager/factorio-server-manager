@@ -27,9 +27,7 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	modDir := config.FactorioDir + "/mods"
-
-	resp.Data, err = listInstalledMods(modDir)
+	resp.Data, err = listInstalledMods(config.FactorioModsDir)
 	if err != nil {
 		resp.Data = fmt.Sprintf("Error in ListInstalledMods handler: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -212,10 +210,9 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	saveDir := config.FactorioDir + "/saves"
-
-	resp.Data, err = listSaves(saveDir)
+	resp.Data, err = listSaves(config.FactorioSavesDir)
 	if err != nil {
+		resp.Success = false
 		resp.Data = fmt.Sprintf("Error listing save files: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error listing saves: %s", err)
@@ -655,4 +652,30 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error getting user status: %s", err)
 	}
 
+}
+
+func ListUsers(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	users, err := Auth.listUsers()
+	if err != nil {
+		log.Printf("Error in ListUsers handler: ", err)
+		resp.Data = fmt.Sprint("Error listing users")
+		resp.Success = false
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error listing mods: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+	resp.Data = users
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error getting user status: %s", err)
+	}
 }

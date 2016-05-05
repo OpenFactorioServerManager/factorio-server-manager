@@ -63,3 +63,14 @@ func (auth *AuthHTTP) createInitialUser(username, password, role, email string) 
 
 	return nil
 }
+
+func (auth *AuthHTTP) listUsers() ([]httpauth.UserData, error) {
+	users, err := auth.backend.Users()
+	if err != nil {
+		log.Printf("Error list users: %s", err)
+		return nil, err
+	}
+
+	log.Printf("listing users: %+v", users)
+	return users, nil
+}
