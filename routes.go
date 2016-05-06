@@ -23,6 +23,10 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Login").
 		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
+	r.Path("/login").
+		Methods("POST").
+		Name("LoginPOST").
+		HandlerFunc(LoginUser)
 
 	// API subrouter
 	// Serves all JSON REST handlers prefixed with /api
@@ -31,7 +35,7 @@ func NewRouter() *mux.Router {
 		s.Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
-			Handler(route.HandlerFunc)
+			Handler(CheckSession(route.HandlerFunc))
 	}
 
 	// Serves the frontend application from the app directory
@@ -166,11 +170,6 @@ var apiRoutes = Routes{
 		"/server/status",
 		CheckServer,
 	}, {
-		"LoginUser",
-		"POST",
-		"/login",
-		LoginUser,
-	}, {
 		"LogoutUser",
 		"GET",
 		"/logout",
@@ -185,5 +184,10 @@ var apiRoutes = Routes{
 		"GET",
 		"/user/list",
 		ListUsers,
+	}, {
+		"AddUser",
+		"POST",
+		"/user/add",
+		AddUser,
 	},
 }

@@ -441,8 +441,6 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		log.Printf("Starting Factorio server.")
 
-		// TODO get form parameters for starting server
-
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			log.Printf("Error in starting factorio server handler body: %s", err)
@@ -550,7 +548,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		status := map[string]string{}
 		status["status"] = "stopped"
 		resp.Data = status
-		log.Printf("Server not running, creating status response: %v", status)
+		log.Printf("Server not running, creating status response: %v", resp)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: ", err)
 		}
@@ -677,5 +675,65 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error getting user status: %s", err)
+	}
+}
+
+func AddUser(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	switch r.Method {
+	case "GET":
+		log.Printf("GET not supported for add user handler")
+		resp.Data = "Unsupported method"
+		resp.Success = false
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error adding user: %s", err)
+		}
+	case "POST":
+		user := User{}
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error in reading add user POST: %s", err)
+			resp.Data = fmt.Sprintf("Error in adding user: %s", err)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error adding user: %s", err)
+			}
+			return
+		}
+
+		log.Printf("Adding user: %v", string(body))
+
+		err = json.Unmarshal(body, &user)
+		if err != nil {
+			log.Printf("Error unmarshaling user add JSON: %s", err)
+			resp.Data = fmt.Sprintf("Error in adding user: %s", err)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error adding user: %s", err)
+			}
+			return
+		}
+
+		err = Auth.addUser(user.Username, user.Password, user.Email, user.Role)
+		if err != nil {
+			log.Printf("Error in adding user: %s", err)
+			resp.Data = fmt.Sprintf("Error in adding user: %s", err)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error adding user: %s", err)
+			}
+			return
+		}
+
+		resp.Success = true
+		resp.Data = fmt.Sprintf("User: %s successfully added.", user.Username)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in returning added user response: %s", err)
+		}
 	}
 }

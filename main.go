@@ -89,7 +89,7 @@ func main() {
 	}
 
 	router := NewRouter()
-	Auth.listUsers()
+
 	fmt.Printf("Starting server on: %s:%s", config.ServerIP, config.ServerPort)
 	log.Fatal(http.ListenAndServe(config.ServerIP+":"+config.ServerPort, router))
 }

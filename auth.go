@@ -13,9 +13,10 @@ type AuthHTTP struct {
 }
 
 type User struct {
-	Username string
-	Password string
-	Role     string
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Role     string `json:"role"`
+	Email    string `json:"email"`
 }
 
 func initAuth() *AuthHTTP {
@@ -61,6 +62,8 @@ func (auth *AuthHTTP) createInitialUser(username, password, role, email string) 
 		return err
 	}
 
+	log.Printf("Created initial user: %s", user.Username)
+
 	return nil
 }
 
@@ -73,4 +76,14 @@ func (auth *AuthHTTP) listUsers() ([]httpauth.UserData, error) {
 
 	log.Printf("listing users: %+v", users)
 	return users, nil
+}
+
+func (auth *AuthHTTP) addUser(username, password, email, role string) error {
+	user := httpauth.UserData{Username: username, Hash: []byte(password), Email: email, Role: role}
+	err := Auth.backend.SaveUser(user)
+	if err != nil {
+		log.Printf("Error creating user %v: %s", user, err)
+	}
+	log.Printf("Added user: %v", user)
+	return nil
 }
