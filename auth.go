@@ -80,10 +80,20 @@ func (auth *AuthHTTP) listUsers() ([]httpauth.UserData, error) {
 
 func (auth *AuthHTTP) addUser(username, password, email, role string) error {
 	user := httpauth.UserData{Username: username, Hash: []byte(password), Email: email, Role: role}
-	err := Auth.backend.SaveUser(user)
+	err := auth.backend.SaveUser(user)
 	if err != nil {
 		log.Printf("Error creating user %v: %s", user, err)
 	}
 	log.Printf("Added user: %v", user)
+	return nil
+}
+
+func (auth *AuthHTTP) removeUser(username string) error {
+	err := auth.backend.DeleteUser(username)
+	if err != nil {
+		log.Printf("Could not delete user %s, error: %s", username, err)
+		return err
+	}
+
 	return nil
 }

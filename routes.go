@@ -41,6 +41,10 @@ func NewRouter() *mux.Router {
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
 	// Routes match the ones defined in React application
+	r.Path("/settings").
+		Methods("GET").
+		Name("Settings").
+		Handler(CheckSession(http.StripPrefix("/settings", http.FileServer(http.Dir("./app/")))))
 	r.Path("/mods").
 		Methods("GET").
 		Name("Mods").
@@ -70,6 +74,7 @@ func NewRouter() *mux.Router {
 }
 
 // Middleware returns a http.HandlerFunc which authenticates the users request
+// Redirects user to login page if no session is found
 func CheckSession(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := Auth.aaa.Authorize(w, r, true); err != nil {
@@ -189,5 +194,10 @@ var apiRoutes = Routes{
 		"POST",
 		"/user/add",
 		AddUser,
+	}, {
+		"RemoveUser",
+		"POST",
+		"/user/remove",
+		RemoveUser,
 	},
 }

@@ -5,7 +5,6 @@ import Sidebar from './components/Sidebar.jsx';
 import Footer from './components/Footer.jsx';
 import HiddenSidebar from './components/HiddenSidebar.jsx';
 
-
 class App extends React.Component {
     constructor(props) {
         super(props);

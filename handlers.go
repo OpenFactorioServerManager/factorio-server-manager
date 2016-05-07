@@ -737,3 +737,60 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func RemoveUser(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	switch r.Method {
+	case "GET":
+		log.Printf("GET not supported for add user handler")
+		resp.Data = "Unsupported method"
+		resp.Success = false
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error adding user: %s", err)
+		}
+	case "POST":
+		user := User{}
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error in reading remove user POST: %s", err)
+			resp.Data = fmt.Sprintf("Error in removing user: %s", err)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error adding user: %s", err)
+			}
+			return
+		}
+		err = json.Unmarshal(body, &user)
+		if err != nil {
+			log.Printf("Error unmarshaling user remove JSON: %s", err)
+			resp.Data = fmt.Sprintf("Error in removing user: %s", err)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error removing user: %s", err)
+			}
+			return
+		}
+
+		err = Auth.removeUser(user.Username)
+		if err != nil {
+			log.Printf("Error in remove user handler: %s", err)
+			resp.Data = fmt.Sprintf("Error in removing user: %s", err)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error adding user: %s", err)
+			}
+			return
+		}
+
+		resp.Success = true
+		resp.Data = fmt.Sprintf("User: %s successfully removed.", user.Username)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in returning remove user response: %s", err)
+		}
+	}
+}

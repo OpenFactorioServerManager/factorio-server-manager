@@ -35,7 +35,7 @@ class ConfigContent extends React.Component {
                 <section className="content-header">
                 <h1>
                     Config 
-                    <small>Manage server configuration</small>
+                    <small>Manage game configuration</small>
                 </h1>
                 <ol className="breadcrumb">
                     <li><IndexLink to="/"><i className="fa fa-dashboard"></i>Server Control</IndexLink></li>
