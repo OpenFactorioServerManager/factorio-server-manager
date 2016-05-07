@@ -1,5 +1,5 @@
 import React from 'react';
-import {IndexLink, browserHistory} from 'react-router';
+import {Link, IndexLink, browserHistory} from 'react-router';
 
 class Header extends React.Component {
     constructor(props) {
@@ -14,7 +14,6 @@ class Header extends React.Component {
             dataType: "json",
             success: (resp) => {
                 console.log(resp)
-                alert(resp.data)
             }
         });
         // Wait for 1 second for logout callback to complete
@@ -29,7 +28,10 @@ class Header extends React.Component {
             loginMenu = 
                 <ul className="nav navbar-nav">
                     <li>
-                        <a href="javascript:void(0)" onClick={this.onLogout}><i className="fa fa-gears fa-fw"></i>Logout</a>
+                        <Link to="/settings"><i className="fa fa-gears fa-fw"></i>Settings</Link>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" onClick={this.onLogout}><i className="fa fa-lock fa-fw"></i>Logout</a>
                     </li>
                 </ul>
         }
