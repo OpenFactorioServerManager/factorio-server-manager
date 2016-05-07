@@ -173,7 +173,7 @@ class ServerCtl extends React.Component {
                             </select>
                         </div>
 
-                        <div className="box box-success">
+                        <div className="box box-success collapsed-box">
                                 <button type="button" className="btn btn-box-tool" data-widget="collapse">
                                     <div className="box-header with-border">
                                     <i className="fa fa-plus fa-fw"></i><h4 className="box-title">Advanced</h4>
