@@ -125,7 +125,7 @@ func (m *ModList) toggleMod(name string) error {
 // Saves ModList object to mod-list.json file
 // Overwrites old file
 func (m ModList) save() error {
-	modListFile := config.FactorioDir + "/mods/mod-list.json"
+	modListFile := config.FactorioModsDir + "/mod-list.json"
 	b, _ := json.MarshalIndent(m, "", "    ")
 
 	err := ioutil.WriteFile(modListFile, b, 0644)
