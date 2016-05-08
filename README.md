@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/MajorMJR/factorio-server-manager.svg?branch=master)](https://travis-ci.org/MajorMJR/factorio-server-manager)
+
 #Factorio Server Manager
 
 ###A tool for managing Factorio servers.
