@@ -9,6 +9,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.checkLogin = this.checkLogin.bind(this);
+        this.flashMessage = this.flashMessage.bind(this);
         this.facServStatus = this.facServStatus.bind(this);
         this.getSaves = this.getSaves.bind(this);
         this.getStatus = this.getStatus.bind(this);
@@ -18,16 +19,25 @@ class App extends React.Component {
             saves: [],
             loggedIn: false,
             username: "",
+            messages: [],
+            showMessage: false,
         }
     }
 
     componentDidMount() {
         this.checkLogin();
+        // Wait 1 second before redirecting to login page
         setTimeout(() => {
             if (!this.state.loggedIn) {
                 browserHistory.push("/login");
             }
         }, 1000);
+    }
+
+    flashMessage(message) {
+        var m = this.state.messages;
+        m.push(message);
+        this.setState({messages: m, showMessage: true});
     }
 
     checkLogin() {
@@ -65,7 +75,7 @@ class App extends React.Component {
                 }
             },
             error: (xhr, status, err) => {
-                console.log('api/mods/list', status, err.toString());
+                console.log('api/saves/list', status, err.toString());
             }
         })
 
@@ -88,8 +98,9 @@ class App extends React.Component {
     }
 
     render() {
-        // render main application, if not logged in show Not logged in message
+        // render main application, 
         // if logged in show application
+        // if not logged in show Not logged in message
         var resp;
         if (this.state.loggedIn) {
             var resp = 
@@ -97,6 +108,7 @@ class App extends React.Component {
                     <Header 
                         username={this.state.username}
                         loggedIn={this.state.loggedIn}
+                        messages={this.state.messages}
                     />
 
                     <Sidebar 
@@ -104,9 +116,12 @@ class App extends React.Component {
                         serverRunning={this.state.serverRunning}
                     />
                     
+                    // Render react-router components and pass in props
                     {React.cloneElement(
                         this.props.children,
                         {message: "",
+                        messages: this.state.messages,
+                        flashMessage: this.flashMessage,
                         facServStatus: this.facServStatus,
                         serverStatus: this.state.serverStatus,
                         getStatus: this.getStatus,

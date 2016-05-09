@@ -1,4 +1,5 @@
 import React from 'react';
+import swal from 'sweetalert';
 
 class UserTable extends React.Component {
     constructor(props) {
@@ -7,21 +8,31 @@ class UserTable extends React.Component {
     }
 
     removeUser(user) {
-        user = {username: user}
-        $.ajax({
-            type: "POST",
-            url: "/api/user/remove",
-            dataType: "json",
-            data: JSON.stringify(user),
-            success: (resp) => {
-                if (resp.success === true) {
-                    console.log(resp)
-                    alert(resp.data)
-                    this.props.listUsers();
+        swal({   
+            title: "Are you sure?",  
+            text: "User: " + user + " will be deleted",   
+            type: "warning",   
+            showCancelButton: true,   
+            confirmButtonColor: "#DD6B55",   
+            confirmButtonText: "Yes, delete it!",   
+            closeOnConfirm: false 
+        }, 
+        () => {
+            user = {username: user}
+            $.ajax({
+                type: "POST",
+                url: "/api/user/remove",
+                dataType: "json",
+                data: JSON.stringify(user),
+                success: (resp) => {
+                    if (resp.success === true) {
+                        swal("Deleted!", resp.data, "success"); 
+                    }
                 }
-            }
-        })
+            })
+        });
 
+        this.props.listUsers();
 
     }
 

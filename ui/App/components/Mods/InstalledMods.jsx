@@ -1,4 +1,5 @@
 import React from 'react';
+import swal from 'sweetalert';
 
 class InstalledMods extends React.Component {
     componentDidMount() {
@@ -32,13 +33,27 @@ class InstalledMods extends React.Component {
     }
 
     removeMod(i) {
-        $.ajax({
-            url: "/api/mods/rm/" + this.props.installedMods[i],
-            success: (data) => {
-                alert(data)
-            }
+        var self = this;
+        swal({   
+            title: "Are you sure?",  
+            text: "Save: " + self.props.installedMods[i] + " will be deleted",   
+            type: "warning",   
+            showCancelButton: true,   
+            confirmButtonColor: "#DD6B55",   
+            confirmButtonText: "Yes, delete it!",   
+            closeOnConfirm: false 
+        }, 
+        () => {
+            $.ajax({
+                url: "/api/mods/rm/" + self.props.installedMods[i],
+                success: (resp) => {
+                    if (resp.success === true) {
+                        swal("Deleted!", resp.data, "success"); 
+                        self.updateInstalledMods();
+                    }
+                }
+            })
         });
-        this.updateInstalledMods();
     }
 
     render() {

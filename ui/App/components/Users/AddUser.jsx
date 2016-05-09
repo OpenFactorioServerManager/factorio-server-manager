@@ -23,11 +23,14 @@ class AddUser extends React.Component {
             email: this.refs.email.value,
         }
         if (user.password !== this.refs.passwordConfirm.value) {
-            console.log("passwords do not match")
+            console.log("passwords do not match");
             return
         }
 
-        console.log(this.validateEmail(user.username))
+        if (!this.validateEmail(user.email)) {
+            console.log("invalid email address");
+            return
+        }
 
         $.ajax({
             type: "POST",

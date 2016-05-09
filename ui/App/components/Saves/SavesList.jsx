@@ -1,5 +1,6 @@
 import React from 'react';
 import Save from './Save.jsx';
+import swal from 'sweetalert';
 
 class SavesList extends React.Component {
    constructor(props) {
@@ -13,13 +14,28 @@ class SavesList extends React.Component {
     }
 
     removeSave(saveName, e) {
-        $.ajax({
-            url: "/api/saves/rm/" + saveName,
-            success: (data) => {
-                alert(data)
-            }
-        })
-        this.updateSavesList();
+        var self = this;
+        swal({   
+            title: "Are you sure?",  
+            text: "Save: " + saveName + " will be deleted",   
+            type: "warning",   
+            showCancelButton: true,   
+            confirmButtonColor: "#DD6B55",   
+            confirmButtonText: "Yes, delete it!",   
+            closeOnConfirm: false 
+        }, 
+        () => {
+            $.ajax({
+                url: "/api/saves/rm/" + saveName,
+                dataType: "json",
+                success: (resp) => {
+                    if (resp.success === true) {
+                        swal("Deleted!", resp.data, "success"); 
+                        self.updateSavesList();
+                    }
+                }
+            })
+        });
     }
 
     render() {
