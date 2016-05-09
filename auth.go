@@ -56,7 +56,7 @@ func (auth *AuthHTTP) createInitialUser(username, password, role, email string) 
 		return err
 	}
 
-	err = auth.aaa.Update(nil, nil, username, password, "")
+	err = auth.aaa.Update(nil, nil, username, password, email)
 	if err != nil {
 		log.Printf("Error saving user: %s", err)
 		return err
@@ -67,15 +67,21 @@ func (auth *AuthHTTP) createInitialUser(username, password, role, email string) 
 	return nil
 }
 
-func (auth *AuthHTTP) listUsers() ([]httpauth.UserData, error) {
+func (auth *AuthHTTP) listUsers() ([]User, error) {
+	var userResponse []User
 	users, err := auth.backend.Users()
 	if err != nil {
 		log.Printf("Error list users: %s", err)
 		return nil, err
 	}
 
+	for _, user := range users {
+		u := User{Username: user.Username, Role: user.Role, Email: user.Email}
+		userResponse = append(userResponse, u)
+	}
+
 	log.Printf("listing users: %+v", users)
-	return users, nil
+	return userResponse, nil
 }
 
 func (auth *AuthHTTP) addUser(username, password, email, role string) error {
@@ -84,6 +90,12 @@ func (auth *AuthHTTP) addUser(username, password, email, role string) error {
 	if err != nil {
 		log.Printf("Error creating user %v: %s", user, err)
 	}
+	err = auth.aaa.Update(nil, nil, username, password, email)
+	if err != nil {
+		log.Printf("Error saving user: %s", err)
+		return err
+	}
+
 	log.Printf("Added user: %v", user)
 	return nil
 }

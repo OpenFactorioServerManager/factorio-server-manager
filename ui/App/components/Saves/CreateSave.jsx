@@ -27,7 +27,6 @@ class CreateSave extends React.Component {
                     this.setState({loading: false});
                 } else {
                     alert(data.data)
-                    document.getElementById('uploadsave').removeChild(loading);
                     this.setState({loading: false});
                 }
             }
