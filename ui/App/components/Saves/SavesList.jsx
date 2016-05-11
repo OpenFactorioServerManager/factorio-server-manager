@@ -40,7 +40,6 @@ class SavesList extends React.Component {
 
     render() {
         var savesList;
-        console.log(this.props.saves);
         if (this.props.saves.length === 0) {
             savesList = <tr></tr>
         } else {
