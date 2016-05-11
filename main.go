@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 type Config struct {
@@ -40,7 +41,7 @@ func failOnError(err error, msg string) {
 
 // Loads server configuration files
 // JSON config file contains default values,
-// any provided flags to the binary will overwrite values in config file.
+// config file will overwrite any provided flags
 func loadServerConfig(f string) {
 	file, err := os.Open(f)
 	failOnError(err, "Error loading config file.")
@@ -64,11 +65,11 @@ func parseFlags() {
 	config.FactorioDir = *factorioDir
 	config.ServerIP = *factorioIP
 	config.ServerPort = *factorioPort
-	config.FactorioSavesDir = config.FactorioDir + "/saves"
-	config.FactorioModsDir = config.FactorioDir + "/mods"
-	config.FactorioConfigFile = config.FactorioDir + "/" + *factorioConfigFile
-	config.FactorioBinary = config.FactorioDir + "/" + *factorioBinary
-	config.FactorioLog = config.FactorioDir + "/factorio-current.log"
+	config.FactorioSavesDir = filepath.Join(config.FactorioDir, "saves")
+	config.FactorioModsDir = filepath.Join(config.FactorioDir, "/mods")
+	config.FactorioConfigFile = filepath.Join(config.FactorioDir, *factorioConfigFile)
+	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)
+	config.FactorioLog = filepath.Join(config.FactorioDir, "/factorio-current.log")
 	config.MaxUploadSize = *factorioMaxUpload
 }
 

@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -38,6 +39,7 @@ func listInstalledMods(modDir string) ([]string, error) {
 	return result, nil
 }
 
+// Delete mod by provided filename
 func rmMod(modName string) error {
 	removed := false
 	if modName == "" {
@@ -72,11 +74,21 @@ func rmMod(modName string) error {
 	return nil
 }
 
+func createModPackDir() error {
+	err := os.Mkdir(config.FactorioDir+"/modpacks", 0775)
+	if err != nil {
+		log.Printf("Could not create modpacks directory: %s", err)
+		return err
+	}
+
+	return nil
+}
+
 // Parses mod-list.json file in factorio/mods
 // returns ModList struct
 func parseModList() (ModList, error) {
 	var mods ModList
-	modListFile := config.FactorioModsDir + "/mod-list.json"
+	modListFile := filepath.Join(config.FactorioModsDir, "/mod-list.json")
 
 	modList, err := ioutil.ReadFile(modListFile)
 	if err != nil {
@@ -125,7 +137,7 @@ func (m *ModList) toggleMod(name string) error {
 // Saves ModList object to mod-list.json file
 // Overwrites old file
 func (m ModList) save() error {
-	modListFile := config.FactorioModsDir + "/mod-list.json"
+	modListFile := filepath.Join(config.FactorioModsDir, "/mod-list.json")
 	b, _ := json.MarshalIndent(m, "", "    ")
 
 	err := ioutil.WriteFile(modListFile, b, 0644)
