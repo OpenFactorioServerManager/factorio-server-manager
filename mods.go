@@ -88,7 +88,7 @@ func createModPackDir() error {
 // returns ModList struct
 func parseModList() (ModList, error) {
 	var mods ModList
-	modListFile := filepath.Join(config.FactorioModsDir, "/mod-list.json")
+	modListFile := filepath.Join(config.FactorioModsDir, "mod-list.json")
 
 	modList, err := ioutil.ReadFile(modListFile)
 	if err != nil {
@@ -137,7 +137,7 @@ func (m *ModList) toggleMod(name string) error {
 // Saves ModList object to mod-list.json file
 // Overwrites old file
 func (m ModList) save() error {
-	modListFile := filepath.Join(config.FactorioModsDir, "/mod-list.json")
+	modListFile := filepath.Join(config.FactorioModsDir, "mod-list.json")
 	b, _ := json.MarshalIndent(m, "", "    ")
 
 	err := ioutil.WriteFile(modListFile, b, 0644)

@@ -66,10 +66,10 @@ func parseFlags() {
 	config.ServerIP = *factorioIP
 	config.ServerPort = *factorioPort
 	config.FactorioSavesDir = filepath.Join(config.FactorioDir, "saves")
-	config.FactorioModsDir = filepath.Join(config.FactorioDir, "/mods")
+	config.FactorioModsDir = filepath.Join(config.FactorioDir, "mods")
 	config.FactorioConfigFile = filepath.Join(config.FactorioDir, *factorioConfigFile)
 	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)
-	config.FactorioLog = filepath.Join(config.FactorioDir, "/factorio-current.log")
+	config.FactorioLog = filepath.Join(config.FactorioDir, "factorio-current.log")
 	config.MaxUploadSize = *factorioMaxUpload
 }
 
