@@ -90,7 +90,8 @@ func main() {
 	}
 
 	router := NewRouter()
-
+	createModPackDir()
+	createModPack("test", "advanced-logistics-system_0.2.7.zip", "YARM_0.7.15.zip")
 	fmt.Printf("Starting server on: %s:%s", config.ServerIP, config.ServerPort)
 	log.Fatal(http.ListenAndServe(config.ServerIP+":"+config.ServerPort, router))
 }

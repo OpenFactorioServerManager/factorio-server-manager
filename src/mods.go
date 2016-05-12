@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -75,10 +76,57 @@ func rmMod(modName string) error {
 }
 
 func createModPackDir() error {
-	err := os.Mkdir(config.FactorioDir+"/modpacks", 0775)
+	err := os.Mkdir(filepath.Join(config.FactorioDir, "modpacks"), 0775)
 	if err != nil {
 		log.Printf("Could not create modpacks directory: %s", err)
 		return err
+	}
+
+	return nil
+}
+
+// Create's modpack zip file from provided title, mods parameter is a string of mod filenames
+func createModPack(title string, mods ...string) error {
+	zipfile, err := os.Create(filepath.Join(config.FactorioDir, "modpacks", title+".zip"))
+	if err != nil {
+		log.Printf("Error creating zipfile: %s, error: %s", title, err)
+	}
+	defer zipfile.Close()
+	// Create Zip writer
+	z := zip.NewWriter(zipfile)
+	defer z.Close()
+
+	for _, mod := range mods {
+		// Process mod file, add to zipfile
+		f, err := os.Open(filepath.Join(config.FactorioDir, "mods", mod))
+		if err != nil {
+			log.Printf("Error creating modpack file %s for archival: ", mod, err)
+			return err
+		}
+		// Read contents of mod to be compressed
+		modfile, err := ioutil.ReadAll(f)
+		if err != nil {
+			log.Printf("Error reading modfile contents: %s", err)
+			continue
+		}
+		// Add file to zip archive
+		fmt.Println(mod)
+		zip, err := z.Create(mod)
+		if err != nil {
+			log.Printf("Error adding file: %s to zip: %s", f.Name, err)
+			continue
+		}
+		// Write file contents to zip archive
+		_, err = zip.Write(modfile)
+		if err != nil {
+			log.Printf("Error writing to zipfile: %s", err)
+			continue
+		}
+	}
+
+	err = z.Close()
+	if err != nil {
+		log.Printf("Error trying to zip: %s, error: %s", title, err)
 	}
 
 	return nil
