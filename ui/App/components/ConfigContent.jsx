@@ -19,9 +19,10 @@ class ConfigContent extends React.Component {
         $.ajax({
             url: "/api/config",
             dataType: "json",
-            success: (data) => {
-                this.setState({config: data.data})
-                console.log(this.state.config)
+            success: (resp) => {
+                if (resp.success === true) {
+                    this.setState({config: resp.data})
+                }
             },
             error: (xhr, status, err) => {
                 console.log('/api/config/get', status, err.toString());

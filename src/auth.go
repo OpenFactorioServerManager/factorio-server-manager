@@ -80,7 +80,7 @@ func (auth *AuthHTTP) listUsers() ([]User, error) {
 		userResponse = append(userResponse, u)
 	}
 
-	log.Printf("listing users: %+v", users)
+	log.Printf("listing users: %v found", len(users))
 	return userResponse, nil
 }
 
