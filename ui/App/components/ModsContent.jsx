@@ -2,6 +2,7 @@ import React from 'react';
 import {IndexLink} from 'react-router';
 import ModList from './Mods/ListMods.jsx';
 import InstalledMods from './Mods/InstalledMods.jsx';
+import ModPacks from './Mods/ModPacks.jsx'
 
 class ModsContent extends React.Component {
     constructor(props) {
@@ -9,15 +10,18 @@ class ModsContent extends React.Component {
         this.componentDidMount = this.componentDidMount.bind(this);
         this.toggleMod = this.toggleMod.bind(this);
         this.loadInstalledModList = this.loadInstalledModList.bind(this);
+        this.loadModPackList = this.loadModPackList.bind(this);
         this.state = {
             installedMods: [],
-            listMods: []
+            listMods: [],
+            modPacks: [],
         };
     }
 
     componentDidMount() {
         this.loadModList();
         this.loadInstalledModList();
+        this.loadModPackList();
     }
 
     loadModList() {
@@ -49,6 +53,21 @@ class ModsContent extends React.Component {
                 console.log('api/mods/list', status, err.toString());
             }
         });
+    }
+
+    loadModPackList() {
+        $.ajax({
+            url: "/api/mods/packs/list",
+            dataType: "json",
+            success: (resp) => {
+                if (resp.success === true) {
+                    this.setState({modPacks: resp.data})
+                    console.log(this.state)
+                } else {
+                    this.setState({modPacks: []})
+                }
+            }
+        })
     }
 
     toggleMod(modName) {
@@ -87,6 +106,9 @@ class ModsContent extends React.Component {
                     <ModList
                         {...this.state}
                         toggleMod={this.toggleMod}
+                    />
+                    <ModPacks 
+                        
                     />
 
                 </section>

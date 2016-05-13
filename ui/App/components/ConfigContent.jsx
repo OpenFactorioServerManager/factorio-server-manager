@@ -47,7 +47,7 @@ class ConfigContent extends React.Component {
                 <section className="content">
                     <div className="box">
                         <div className="box-header">
-                            <h3 className="box-title">Manage Server Configuration</h3>
+                            <h3 className="box-title">Game Configuration</h3>
                         </div>
                         
                         <div className="box-body">
