@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -16,6 +17,11 @@ import (
 type JSONResponse struct {
 	Success bool        `json:"success"`
 	Data    interface{} `json:"data,string"`
+}
+
+type ModPack struct {
+	Mods  []string `json:"mods"`
+	Title string   `json:"title"`
 }
 
 // Returns JSON response of all mods installed in factorio/mods
@@ -199,6 +205,76 @@ func DownloadMod(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s downloading: %s", r.Host, modFile)
 
 	http.ServeFile(w, r, modFile)
+}
+
+func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	switch r.Method {
+	case "GET":
+		resp.Data = "Unsupported method"
+		resp.Success = false
+		if err = json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Get request to modpack handler: %s", err)
+		}
+	case "POST":
+		var mods ModPack
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error in create mod pack handler body: %s", err)
+			return
+		}
+
+		log.Printf("Creating modpack with contents: %v", string(body))
+
+		err = json.Unmarshal(body, &mods)
+		if err != nil {
+			log.Printf("Error unmarshaling server settings JSON: %s", err)
+			return
+		}
+
+		err = createModPack(mods.Title, mods.Mods...)
+		if err != nil {
+			log.Printf("Error in creating modpack handler: %s", err)
+			return
+		}
+
+		resp.Success = true
+		resp.Data = fmt.Sprintf("Created modpack: %s", mods.Title)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error listing saves: %s", err)
+		}
+	}
+}
+
+func ListModPacks(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	resp.Data, err = listModPacks(filepath.Join(config.FactorioDir, "modpacks"))
+	if err != nil {
+		resp.Success = false
+		resp.Data = fmt.Sprintf("Error listing modpack files: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error listing modpacks: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error listing saves: %s", err)
+	}
 }
 
 // Lists all save files in the factorio/saves directory

@@ -199,5 +199,10 @@ var apiRoutes = Routes{
 		"POST",
 		"/user/remove",
 		RemoveUser,
+	}, {
+		"ListModPacks",
+		"GET",
+		"/mods/packs/list",
+		ListModPacks,
 	},
 }

@@ -62,8 +62,8 @@ func rmMod(modName string) error {
 				log.Printf("Error removing mod %s: %s", mod, err)
 				return err
 			}
-			log.Printf("Removed mod: %s", mod)
 			removed = true
+			log.Printf("Removed mod: %s", mod)
 		}
 	}
 
@@ -130,6 +130,21 @@ func createModPack(title string, mods ...string) error {
 	}
 
 	return nil
+}
+
+func listModPacks(modDir string) ([]string, error) {
+	result := []string{}
+
+	files, err := ioutil.ReadDir(modDir)
+	if err != nil {
+		log.Printf("Error listing modpacks: %s", err)
+		return result, err
+	}
+	for _, f := range files {
+		result = append(result, f.Name())
+	}
+
+	return result, nil
 }
 
 // Parses mod-list.json file in factorio/mods
