@@ -57,7 +57,7 @@ func rmMod(modName string) error {
 	for _, mod := range installedMods {
 		if strings.Contains(mod, modName) {
 			log.Printf("Removing mod: %s", mod)
-			err := os.Remove(config.FactorioModsDir + "/" + mod)
+			err := os.Remove(filepath.Join(config.FactorioModsDir, mod))
 			if err != nil {
 				log.Printf("Error removing mod %s: %s", mod, err)
 				return err
@@ -70,6 +70,39 @@ func rmMod(modName string) error {
 	if !removed {
 		log.Printf("Did not remove mod: %s", modName)
 		return errors.New(fmt.Sprintf("Did not remove mod: %s", modName))
+	}
+
+	return nil
+}
+
+func rmModPack(modpack string) error {
+	removed := false
+	if modpack == "" {
+		return errors.New("No mod pack name provided.")
+	}
+	// Get list of modpacks
+	modpacks, err := listModPacks(filepath.Join(config.FactorioDir, "modpacks"))
+	if err != nil {
+		log.Printf("Error listing modpacks in rmModPack: %s", err)
+		return err
+	}
+
+	for _, m := range modpacks {
+		if strings.Contains(m, modpack) {
+			log.Printf("Removing modpack: %s", m)
+			err := os.Remove(filepath.Join(config.FactorioDir, "modpacks", m))
+			if err != nil {
+				log.Printf("Error trying to remove modpack: %s: %s", m, err)
+				return err
+			}
+			removed = true
+			log.Printf("Removed modpack: %s", m)
+		}
+	}
+
+	if !removed {
+		log.Printf("Did not remove modpack: %s", modpack)
+		return errors.New(fmt.Sprintf("Did not remove modpack: %s", modpack))
 	}
 
 	return nil

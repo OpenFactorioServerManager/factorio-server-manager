@@ -199,7 +199,7 @@ func DownloadMod(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	mod := vars["mod"]
-	modFile := config.FactorioModsDir + "/" + mod
+	modFile := filepath.Join(config.FactorioModsDir, mod)
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", mod))
 	log.Printf("%s downloading: %s", r.Host, modFile)
@@ -274,6 +274,48 @@ func ListModPacks(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error listing saves: %s", err)
+	}
+}
+
+func DownloadModPack(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	vars := mux.Vars(r)
+	modpack := vars["modpack"]
+	modFile := filepath.Join(config.FactorioDir, "modpacks", modpack)
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", modpack))
+	log.Printf("%s downloading: %s", r.Host, modFile)
+
+	http.ServeFile(w, r, modFile)
+}
+
+func DeleteModPack(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	vars := mux.Vars(r)
+	modPack := vars["modpack"]
+
+	err = rmModPack(modPack)
+	if err == nil {
+		// Modpack removed
+		resp.Data = fmt.Sprintf("Removed modpack: %s", modPack)
+		resp.Success = true
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error removing modpack %s", err)
+		}
+	} else {
+		log.Printf("Error in remove modpack handler: %s", err)
+		resp.Data = fmt.Sprintf("Error in remove modpack handler: %s", err)
+
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error removing modpack: %s", err)
+		}
 	}
 }
 
