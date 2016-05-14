@@ -76,7 +76,7 @@ class SavesList extends React.Component {
                                 </tr>
                             </thead>
                             <tbody>
-                            {savesList}
+                                {savesList}
                             </tbody>
                         </table>        
                     </div>

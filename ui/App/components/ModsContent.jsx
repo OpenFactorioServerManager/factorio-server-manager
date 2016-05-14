@@ -108,7 +108,7 @@ class ModsContent extends React.Component {
                         toggleMod={this.toggleMod}
                     />
                     <ModPacks 
-                        
+                        {...this.state}
                     />
 
                 </section>

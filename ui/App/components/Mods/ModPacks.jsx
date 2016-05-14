@@ -13,12 +13,32 @@ class ModPacks extends React.Component {
                 </div>
                      
                 <div className="box-body">
-                    <p>itest</p>        
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Download</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {this.props.modPacks.map( (mod, i) => {
+                            return(
+                                <tr key={i}>
+                                    <td>{mod}</td>    
+                                </tr>
+                            )
+                        })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         )
     }
-    
+}
+
+ModPacks.propTypes = {
+    modPacks: React.PropTypes.array.isRequired, 
 }
 
 export default ModPacks
