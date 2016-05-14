@@ -109,6 +109,7 @@ class ModsContent extends React.Component {
                     />
                     <ModPacks 
                         {...this.state}
+                        loadModPackList={this.loadModPackList}
                     />
 
                 </section>
