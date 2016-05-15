@@ -590,21 +590,26 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Error starting Factorio server: %s", err)
 				resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
 				if err := json.NewEncoder(w).Encode(resp); err != nil {
-					log.Printf("Error encoding start server JSON reponse: ", err)
+					log.Printf("Error encoding start server JSON response: ", err)
 				}
 				return
 			}
 		}()
 
 		if FactorioServ.Running {
-			log.Printf("Factorio server started on port: %d", FactorioServ.Port)
-		}
-
-		resp.Data = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
-		resp.Success = true
-		log.Printf("Factorio server started on port: %s", FactorioServ.Port)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Factorio server started on port: %s", FactorioServ.Port)
+			resp.Data = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
+			resp.Success = true
+			log.Printf("Factorio server started on port: %s", FactorioServ.Port)
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error encoding config file JSON reponse: ", err)
+			}
+		} else {
+			log.Printf("Error starting Factorio server: %s", err)
+			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error encoding start server JSON response: ", err)
+			}
 		}
 	}
 }
