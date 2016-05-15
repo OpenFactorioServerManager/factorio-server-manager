@@ -45,13 +45,13 @@ Example:
 ```
 
 ## Manage Factorio Server
-![Factorio Server Manager Screenshot](http://imgur.com/kUasJQq.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](http://i.imgur.com/q7tbzdH.png "Factorio Server Manager")
 
 ## Manage save files
-![Factorio Server Manager Screenshot](http://i.imgur.com/wZqOuBZ.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](http://i.imgur.com/M7kBAhI.png "Factorio Server Manager")
 
 ## Manage mods
-![Factorio Server Manager Screenshot](http://i.imgur.com/45ab48W.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](http://i.imgur.com/L62Yb2W.png "Factorio Server Manager")
 
 
 
