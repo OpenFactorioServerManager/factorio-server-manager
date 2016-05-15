@@ -52,10 +52,13 @@ class ServerCtl extends React.Component {
             dataType: "json",
             data: JSON.stringify(serverSettings),
             success: (resp) => {
-                console.log(resp);
                 this.props.facServStatus();
                 this.props.getStatus();
-                alert(resp.data)
+                if (resp.success === true) {
+                    swal("Factorio Server Started", resp.data)
+                } else {
+                    swal("Error", "Error starting Factorio Server", "error")
+                }
             }
         })
         this.setState({
@@ -79,7 +82,7 @@ class ServerCtl extends React.Component {
                 this.props.facServStatus();
                 this.props.getStatus();
                 console.log(resp)
-                alert(resp.data)
+                swal(resp.data)
             }
         });
         e.preventDefault();
