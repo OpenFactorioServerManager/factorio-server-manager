@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -588,29 +589,28 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			err = FactorioServ.Run()
 			if err != nil {
 				log.Printf("Error starting Factorio server: %s", err)
-				resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
-				if err := json.NewEncoder(w).Encode(resp); err != nil {
-					log.Printf("Error encoding start server JSON response: ", err)
-				}
 				return
 			}
 		}()
 
-		if FactorioServ.Running {
-			log.Printf("Factorio server started on port: %s", FactorioServ.Port)
-			resp.Data = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
-			resp.Success = true
-			log.Printf("Factorio server started on port: %s", FactorioServ.Port)
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: ", err)
+		timeout := 0
+		for timeout <= 3 {
+			time.Sleep(1 * time.Second)
+			if FactorioServ.Running {
+				log.Printf("Factorio server started on port: %s", FactorioServ.Port)
+				resp.Data = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
+				resp.Success = true
+				log.Printf("Factorio server started on port: %s", FactorioServ.Port)
+				if err := json.NewEncoder(w).Encode(resp); err != nil {
+					log.Printf("Error encoding config file JSON reponse: ", err)
+				}
+				break
+			} else {
+				log.Printf("Did not detect running Factorio server attempt: %s", timeout)
 			}
-		} else {
-			log.Printf("Error starting Factorio server: %s", err)
-			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding start server JSON response: ", err)
-			}
+			timeout++
 		}
+
 	}
 }
 
