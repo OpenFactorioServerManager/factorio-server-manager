@@ -597,7 +597,6 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		for timeout <= 3 {
 			time.Sleep(1 * time.Second)
 			if FactorioServ.Running {
-				log.Printf("Factorio server started on port: %s", FactorioServ.Port)
 				resp.Data = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
 				resp.Success = true
 				log.Printf("Factorio server started on port: %s", FactorioServ.Port)
@@ -610,7 +609,13 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			}
 			timeout++
 		}
-
+		if FactorioServ.Running == false {
+			log.Printf("Error starting Factorio server: %s", err)
+			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error encoding start server JSON response: ", err)
+			}
+		}
 	}
 }
 
