@@ -44,12 +44,12 @@ class Sidebar extends React.Component {
 
                 <ul className="sidebar-menu">
                     <li className="header">MENU</li>
-                    <li><IndexLink to="/" activeClassName="active"><i className="fa fa-link"></i><span>Server Control</span></IndexLink></li>
-                    <li><Link to="/mods" activeClassName="active"><i className="fa fa-link"></i><span>Mods</span></Link></li>
-                    <li><Link to="/logs" activeClassName="active"><i className="fa fa-link"></i> <span>Logs</span></Link></li>
-                    <li><Link to="/saves" activeClassName="active"><i className="fa fa-link"></i> <span>Saves</span></Link></li>
-                    <li><Link to="/config" activeClassName="active"><i className="fa fa-link"></i> <span>Game Configuration</span></Link></li>
-                    <li><Link to="/settings" activeClassName="active"><i className="fa fa-link"></i> <span>Settings</span></Link></li>
+                    <li><IndexLink to="/" activeClassName="active"><i className="fa fa-tachometer"></i><span>Server Control</span></IndexLink></li>
+                    <li><Link to="/mods" activeClassName="active"><i className="fa fa-pencil"></i><span>Mods</span></Link></li>
+                    <li><Link to="/logs" activeClassName="active"><i className="fa fa-file-text-o"></i> <span>Logs</span></Link></li>
+                    <li><Link to="/saves" activeClassName="active"><i className="fa fa-floppy-o"></i> <span>Saves</span></Link></li>
+                    <li><Link to="/config" activeClassName="active"><i className="fa fa-cogs"></i> <span>Game Configuration</span></Link></li>
+                    <li><Link to="/settings" activeClassName="active"><i className="fa fa-cog"></i> <span>Settings</span></Link></li>
                 </ul>
                 </section>
                 <div style={{height: "100%"}}></div>
