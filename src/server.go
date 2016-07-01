@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"syscall"
+	"path/filepath"
 )
 
 type FactorioServer struct {
