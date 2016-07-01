@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"syscall"
+	"path/filepath"
 )
 
 type FactorioServer struct {
@@ -53,7 +54,7 @@ func initFactorio() *FactorioServer {
 func (f *FactorioServer) Run() error {
 	var err error
 
-	args := []string{"--start-server", f.Savefile,
+	args := []string{"--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile),
 		"--latency-ms", strconv.Itoa(f.Latency),
 		"--autosave-interval", strconv.Itoa(f.AutosaveInterval),
 		"--autosave-slots", strconv.Itoa(f.AutosaveSlots),
