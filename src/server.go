@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"syscall"
-	"path/filepath"
 )
 
 type FactorioServer struct {
@@ -55,7 +55,6 @@ func (f *FactorioServer) Run() error {
 	var err error
 
 	args := []string{"--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile),
-		"--latency-ms", strconv.Itoa(f.Latency),
 		"--autosave-interval", strconv.Itoa(f.AutosaveInterval),
 		"--autosave-slots", strconv.Itoa(f.AutosaveSlots),
 		"--port", strconv.Itoa(f.Port)}
@@ -67,6 +66,9 @@ func (f *FactorioServer) Run() error {
 	}
 	if f.AutoPause {
 		args = append(args, "--no-auto-pause")
+	}
+	if f.Latency != 100 {
+		args = append(args, "--latency-ms", strconv.Itoa(f.Latency))
 	}
 
 	log.Println("Starting server with command: ", config.FactorioBinary, args)
