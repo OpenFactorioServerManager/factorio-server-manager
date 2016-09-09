@@ -576,9 +576,9 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 
 		// Check if savefile was submitted with request to start server.
 		if FactorioServ.Savefile == "" {
-			log.Printf("Error starting Factorio server: %s", err)
+			log.Printf("Error starting Factorio server: no save file provided")
 			resp.Success = false
-			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
+			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", "No save file provided")
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
 				log.Printf("Error encoding config file JSON reponse: ", err)
 			}
@@ -599,7 +599,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			if FactorioServ.Running {
 				resp.Data = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
 				resp.Success = true
-				log.Printf("Factorio server started on port: %s", FactorioServ.Port)
+				log.Printf("Factorio server started on port: %v", FactorioServ.Port)
 				if err := json.NewEncoder(w).Encode(resp); err != nil {
 					log.Printf("Error encoding config file JSON reponse: ", err)
 				}
