@@ -110,7 +110,7 @@ func rmModPack(modpack string) error {
 
 func createModPackDir() error {
 	err := os.Mkdir(filepath.Join(config.FactorioDir, "modpacks"), 0775)
-	if err != nil {
+	if err != nil && os.IsNotExist(err) {
 		log.Printf("Could not create modpacks directory: %s", err)
 		return err
 	}
