@@ -4,7 +4,7 @@ FROM frolvlad/alpine-glibc
 MAINTAINER Jannik Kolodziej <docker@jkolodziej.de>
 
 ENV FACTORIO_VERSION=latest \
-    MANAGER_VERSION=0.4.1 \
+    MANAGER_VERSION=0.4.3 \
     ADMIN_PASSWORD=
 
 VOLUME /opt/factorio/saves /opt/factorio/mods /security
