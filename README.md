@@ -26,18 +26,20 @@ Run the UI server and  specify the directory of your Factorio server installatio
 ```
 Usage of ./factorio-server-manager:
   -bin string
-        Location of Factorio Server binary file (default "bin/x64/factorio")
+    	Location of Factorio Server binary file (default "bin/x64/factorio")
+  -conf string
+    	Specify location of Factorio Server Manager config file. (default "./conf.json")
   -config string
-        Specify location of Factorio config.ini file (default "config/config.ini")
+    	Specify location of Factorio config.ini file (default "config/config.ini")
   -dir string
-        Specify location of Factorio directory. (default "./")
+    	Specify location of Factorio directory. (default "./")
   -host string
-        Specify IP for webserver to listen on. (default "0.0.0.0")
+    	Specify IP for webserver to listen on. (default "0.0.0.0")
   -max-upload int
-        Maximum filesize for uploaded files. (default 100000)
+    	Maximum filesize for uploaded files (default 20MB). (default 20971520)
   -port string
-        Specify a port for the server. (default "8080")
-
+    	Specify a port for the server. (default "8080")
+     
 Example:
 
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1
