@@ -9,7 +9,7 @@ ENV FACTORIO_VERSION=latest \
 
 VOLUME /opt/factorio/saves /opt/factorio/mods /security
 
-RUN apk add --no-cache curl tar unzip nginx
+RUN apk add --no-cache curl tar unzip nginx openssl
 
 WORKDIR /opt/
 ADD "init.sh" "/opt/init.sh"
