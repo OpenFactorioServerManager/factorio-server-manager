@@ -12,6 +12,7 @@ type Route struct {
 	Method      string
 	Pattern     string
 	HandlerFunc http.HandlerFunc
+	Middleware  func(http.Handler) http.Handler
 }
 
 type Routes []Route
@@ -19,52 +20,51 @@ type Routes []Route
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 
-	r.Path("/login").
-		Methods("GET").
-		Name("Login").
-		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
-	r.Path("/login").
-		Methods("POST").
-		Name("LoginPOST").
-		HandlerFunc(LoginUser)
-
 	// API subrouter
 	// Serves all JSON REST handlers prefixed with /api
 	s := r.PathPrefix("/api").Subrouter()
 	for _, route := range apiRoutes {
-		s.Methods(route.Method).
+		apiRoute := s.Methods(route.Method).
 			Path(route.Pattern).
-			Name(route.Name).
-			Handler(CheckSession(route.HandlerFunc))
+			Name(route.Name)
+        if route.Middleware != nil {
+		    apiRoute.Handler(route.Middleware(route.HandlerFunc))
+        } else {
+		    apiRoute.Handler(route.HandlerFunc)
+        }
 	}
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
 	// Routes match the ones defined in React application
+	r.Path("/login").
+		Methods("GET").
+		Name("Login").
+		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
 	r.Path("/settings").
 		Methods("GET").
 		Name("Settings").
-		Handler(CheckSession(http.StripPrefix("/settings", http.FileServer(http.Dir("./app/")))))
+		Handler(CheckAuth(http.StripPrefix("/settings", http.FileServer(http.Dir("./app/")))))
 	r.Path("/mods").
 		Methods("GET").
 		Name("Mods").
-		Handler(CheckSession(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
+		Handler(CheckAuth(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
 	r.Path("/saves").
 		Methods("GET").
 		Name("Saves").
-		Handler(CheckSession(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
+		Handler(CheckAuth(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
 	r.Path("/logs").
 		Methods("GET").
 		Name("Logs").
-		Handler(CheckSession(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
+		Handler(CheckAuth(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
 	r.Path("/config").
 		Methods("GET").
 		Name("Config").
-		Handler(CheckSession(http.StripPrefix("/config", http.FileServer(http.Dir("./app/")))))
+		Handler(CheckAuth(http.StripPrefix("/config", http.FileServer(http.Dir("./app/")))))
 	r.Path("/server").
 		Methods("GET").
 		Name("Server").
-		Handler(CheckSession(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
+		Handler(CheckAuth(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
 	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
@@ -75,7 +75,7 @@ func NewRouter() *mux.Router {
 
 // Middleware returns a http.HandlerFunc which authenticates the users request
 // Redirects user to login page if no session is found
-func CheckSession(h http.Handler) http.Handler {
+func CheckAuth(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := Auth.aaa.Authorize(w, r, true); err != nil {
 			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
@@ -94,130 +94,162 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/list/installed",
 		ListInstalledMods,
+        CheckAuth,
 	}, {
 		"ListMods",
 		"GET",
 		"/mods/list",
 		ListMods,
+        CheckAuth,
 	}, {
 		"ToggleMod",
 		"GET",
 		"/mods/toggle/{mod}",
 		ToggleMod,
+        CheckAuth,
 	}, {
 		"UploadMod",
 		"POST",
 		"/mods/upload",
 		UploadMod,
+        CheckAuth,
 	}, {
 		"RemoveMod",
 		"GET",
 		"/mods/rm/{mod}",
 		RemoveMod,
+        CheckAuth,
 	}, {
 		"DownloadMod",
 		"GET",
 		"/mods/dl/{mod}",
 		DownloadMod,
+        CheckAuth,
 	}, {
 		"ListSaves",
 		"GET",
 		"/saves/list",
 		ListSaves,
+        CheckAuth,
 	}, {
 		"DlSave",
 		"GET",
 		"/saves/dl/{save}",
 		DLSave,
+        CheckAuth,
 	}, {
 		"UploadSave",
 		"POST",
 		"/saves/upload",
 		UploadSave,
+        CheckAuth,
 	}, {
 		"RemoveSave",
 		"GET",
 		"/saves/rm/{save}",
 		RemoveSave,
+        CheckAuth,
 	}, {
 		"CreateSave",
 		"GET",
 		"/saves/create/{save}",
 		CreateSaveHandler,
+        CheckAuth,
 	}, {
 		"LogTail",
 		"GET",
 		"/log/tail",
 		LogTail,
+        CheckAuth,
 	}, {
 		"LoadConfig",
 		"GET",
 		"/config",
 		LoadConfig,
+        CheckAuth,
 	}, {
 		"StartServer",
 		"GET",
 		"/server/start",
 		StartServer,
+        CheckAuth,
 	}, {
 		"StartServer",
 		"POST",
 		"/server/start",
 		StartServer,
+        CheckAuth,
 	}, {
 		"StopServer",
 		"GET",
 		"/server/stop",
 		StopServer,
+        CheckAuth,
 	}, {
 		"RunningServer",
 		"GET",
 		"/server/status",
 		CheckServer,
+        CheckAuth,
+	}, {
+		"LoginUser",
+		"POST",
+		"/login",
+		LoginUser,
+        nil,
 	}, {
 		"LogoutUser",
 		"GET",
 		"/logout",
 		LogoutUser,
+        CheckAuth,
 	}, {
 		"StatusUser",
 		"GET",
 		"/user/status",
 		GetCurrentLogin,
+        CheckAuth,
 	}, {
 		"ListUsers",
 		"GET",
 		"/user/list",
 		ListUsers,
+        CheckAuth,
 	}, {
 		"AddUser",
 		"POST",
 		"/user/add",
 		AddUser,
+        CheckAuth,
 	}, {
 		"RemoveUser",
 		"POST",
 		"/user/remove",
 		RemoveUser,
+        CheckAuth,
 	}, {
 		"ListModPacks",
 		"GET",
 		"/mods/packs/list",
 		ListModPacks,
+        CheckAuth,
 	}, {
 		"DownloadModPack",
 		"GET",
 		"/mods/packs/dl/{modpack}",
 		DownloadModPack,
+        CheckAuth,
 	}, {
 		"DeleteModPack",
 		"GET",
 		"/mods/packs/rm/{modpack}",
 		DeleteModPack,
+        CheckAuth,
 	}, {
 		"CreateModPack",
 		"POST",
 		"/mods/packs/add",
 		CreateModPackHandler,
+        CheckAuth,
 	},
 }

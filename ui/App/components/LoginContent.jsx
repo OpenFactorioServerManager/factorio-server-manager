@@ -20,7 +20,7 @@ class LoginContent extends React.Component {
 
         $.ajax({
             type: "POST",
-            url: "/login",
+            url: "/api/login",
             dataType: "json",
             data: JSON.stringify(user),
             success: (resp) => {
