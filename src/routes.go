@@ -27,11 +27,11 @@ func NewRouter() *mux.Router {
 		apiRoute := s.Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name)
-        if route.Middleware != nil {
-		    apiRoute.Handler(route.Middleware(route.HandlerFunc))
-        } else {
-		    apiRoute.Handler(route.HandlerFunc)
-        }
+		if route.Middleware != nil {
+			apiRoute.Handler(route.Middleware(route.HandlerFunc))
+		} else {
+			apiRoute.Handler(route.HandlerFunc)
+		}
 	}
 
 	// Serves the frontend application from the app directory
