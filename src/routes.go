@@ -12,7 +12,6 @@ type Route struct {
 	Method      string
 	Pattern     string
 	HandlerFunc http.HandlerFunc
-	Middleware  func(http.Handler) http.Handler
 }
 
 type Routes []Route
@@ -24,15 +23,17 @@ func NewRouter() *mux.Router {
 	// Serves all JSON REST handlers prefixed with /api
 	s := r.PathPrefix("/api").Subrouter()
 	for _, route := range apiRoutes {
-		apiRoute := s.Methods(route.Method).
+		s.Methods(route.Method).
 			Path(route.Pattern).
-			Name(route.Name)
-		if route.Middleware != nil {
-			apiRoute.Handler(route.Middleware(route.HandlerFunc))
-		} else {
-			apiRoute.Handler(route.HandlerFunc)
-		}
+			Name(route.Name).
+			Handler(CheckAuth(route.HandlerFunc))
 	}
+
+    // The login handler does not check for authentication.
+	s.Path("/login").
+		Methods("POST").
+		Name("LoginUser").
+		HandlerFunc(LoginUser)
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
@@ -94,162 +95,130 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/list/installed",
 		ListInstalledMods,
-        CheckAuth,
 	}, {
 		"ListMods",
 		"GET",
 		"/mods/list",
 		ListMods,
-        CheckAuth,
 	}, {
 		"ToggleMod",
 		"GET",
 		"/mods/toggle/{mod}",
 		ToggleMod,
-        CheckAuth,
 	}, {
 		"UploadMod",
 		"POST",
 		"/mods/upload",
 		UploadMod,
-        CheckAuth,
 	}, {
 		"RemoveMod",
 		"GET",
 		"/mods/rm/{mod}",
 		RemoveMod,
-        CheckAuth,
 	}, {
 		"DownloadMod",
 		"GET",
 		"/mods/dl/{mod}",
 		DownloadMod,
-        CheckAuth,
 	}, {
 		"ListSaves",
 		"GET",
 		"/saves/list",
 		ListSaves,
-        CheckAuth,
 	}, {
 		"DlSave",
 		"GET",
 		"/saves/dl/{save}",
 		DLSave,
-        CheckAuth,
 	}, {
 		"UploadSave",
 		"POST",
 		"/saves/upload",
 		UploadSave,
-        CheckAuth,
 	}, {
 		"RemoveSave",
 		"GET",
 		"/saves/rm/{save}",
 		RemoveSave,
-        CheckAuth,
 	}, {
 		"CreateSave",
 		"GET",
 		"/saves/create/{save}",
 		CreateSaveHandler,
-        CheckAuth,
 	}, {
 		"LogTail",
 		"GET",
 		"/log/tail",
 		LogTail,
-        CheckAuth,
 	}, {
 		"LoadConfig",
 		"GET",
 		"/config",
 		LoadConfig,
-        CheckAuth,
 	}, {
 		"StartServer",
 		"GET",
 		"/server/start",
 		StartServer,
-        CheckAuth,
 	}, {
 		"StartServer",
 		"POST",
 		"/server/start",
 		StartServer,
-        CheckAuth,
 	}, {
 		"StopServer",
 		"GET",
 		"/server/stop",
 		StopServer,
-        CheckAuth,
 	}, {
 		"RunningServer",
 		"GET",
 		"/server/status",
 		CheckServer,
-        CheckAuth,
-	}, {
-		"LoginUser",
-		"POST",
-		"/login",
-		LoginUser,
-        nil,
 	}, {
 		"LogoutUser",
 		"GET",
 		"/logout",
 		LogoutUser,
-        CheckAuth,
 	}, {
 		"StatusUser",
 		"GET",
 		"/user/status",
 		GetCurrentLogin,
-        CheckAuth,
 	}, {
 		"ListUsers",
 		"GET",
 		"/user/list",
 		ListUsers,
-        CheckAuth,
 	}, {
 		"AddUser",
 		"POST",
 		"/user/add",
 		AddUser,
-        CheckAuth,
 	}, {
 		"RemoveUser",
 		"POST",
 		"/user/remove",
 		RemoveUser,
-        CheckAuth,
 	}, {
 		"ListModPacks",
 		"GET",
 		"/mods/packs/list",
 		ListModPacks,
-        CheckAuth,
 	}, {
 		"DownloadModPack",
 		"GET",
 		"/mods/packs/dl/{modpack}",
 		DownloadModPack,
-        CheckAuth,
 	}, {
 		"DeleteModPack",
 		"GET",
 		"/mods/packs/rm/{modpack}",
 		DeleteModPack,
-        CheckAuth,
 	}, {
 		"CreateModPack",
 		"POST",
 		"/mods/packs/add",
 		CreateModPackHandler,
-        CheckAuth,
 	},
 }
