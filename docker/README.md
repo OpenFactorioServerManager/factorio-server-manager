@@ -23,21 +23,15 @@ You should always do that, as this will allow you to change the login credential
 Ok, you got me. There might be things that are easier than that... You should do it anyways. 
 
 ## Updating Credentials, adding and deleting users.
-This is where I got lazy. I'm sorry, but I did not create a great tool that automagically does everything for you. But you can do it. As I'm sure you've read the security chapter and you've done everything I said there you should've mounted the security volume to any point on your filetree already. If not, read the security chapter!
+An admin user is created initially using the credentials defined in the factorio-server-manager config file.
 
-In the mounted security volume you'll find a passwords.conf file. This contains encrypted passwords for every user who can access the manager. The format is `username:encryptedpassword`.
+The default admin credentials are `user:admin password:factorio`.
 
-Deleting users is pretty straightforward. Delete the correct line. 
-
-To create a new password entry, you can use `openssl passwd -apr1 yourpasswordhere`. That should get you started. 
+Users can be added and deleted on the settings page.
 
 ## Updating Factorio
 For now you can't update/downgrade the Factorio version from the UI. You can however do this using docker images while sustaining your security settings and map/modfiles. This guide assumes that you mounted the volumes /security /opt/factorio/saves and /opt/factorio/mods to your file system. Before doing anything we need to stop the old container using `docker stop factorio-manager`. To update Factorio you should then open the Dockerfile and change the Factorio version to the one desired. After that you need to rebuild the image using `docker build -t factorio-server-manager .`. Once completed you can simply rerun the command that you used to run the image in the first place. It's recommended to change the name to something including the version to keep track of the containers.
 
 
 ## For everyone who actually read this thing to the end
-You can also set your default admin password by passing it to your initial docker run command like this:
-
-`docker run -d --name factorio-manager -d -v [yourpath]:/security -p 80:80 -p 443:443 -p 34197:34197/udp -e "ADMIN_PASSWORD=jqkSnQS4rA" factorio-server-manager`
-
 And now go and build some nice factories!
