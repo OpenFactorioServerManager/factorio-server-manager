@@ -26,7 +26,7 @@ func NewRouter() *mux.Router {
 		s.Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
-			Handler(CheckAuth(route.HandlerFunc))
+			Handler(AuthorizeHandler(route.HandlerFunc))
 	}
 
     // The login handler does not check for authentication.
@@ -45,27 +45,27 @@ func NewRouter() *mux.Router {
 	r.Path("/settings").
 		Methods("GET").
 		Name("Settings").
-		Handler(CheckAuth(http.StripPrefix("/settings", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/settings", http.FileServer(http.Dir("./app/")))))
 	r.Path("/mods").
 		Methods("GET").
 		Name("Mods").
-		Handler(CheckAuth(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
 	r.Path("/saves").
 		Methods("GET").
 		Name("Saves").
-		Handler(CheckAuth(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
 	r.Path("/logs").
 		Methods("GET").
 		Name("Logs").
-		Handler(CheckAuth(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
 	r.Path("/config").
 		Methods("GET").
 		Name("Config").
-		Handler(CheckAuth(http.StripPrefix("/config", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/config", http.FileServer(http.Dir("./app/")))))
 	r.Path("/server").
 		Methods("GET").
 		Name("Server").
-		Handler(CheckAuth(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
 	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
@@ -76,7 +76,7 @@ func NewRouter() *mux.Router {
 
 // Middleware returns a http.HandlerFunc which authenticates the users request
 // Redirects user to login page if no session is found
-func CheckAuth(h http.Handler) http.Handler {
+func AuthorizeHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := Auth.aaa.Authorize(w, r, true); err != nil {
 			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
