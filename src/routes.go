@@ -29,7 +29,7 @@ func NewRouter() *mux.Router {
 			Handler(AuthorizeHandler(route.HandlerFunc))
 	}
 
-    // The login handler does not check for authentication.
+	// The login handler does not check for authentication.
 	s.Path("/login").
 		Methods("POST").
 		Name("LoginUser").
