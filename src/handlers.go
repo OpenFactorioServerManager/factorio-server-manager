@@ -462,7 +462,8 @@ func CreateSaveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cmdOut, err := createSave(saveName)
+	saveFile := filepath.Join(config.FactorioSavesDir, saveName)
+	cmdOut, err := createSave(saveFile)
 	if err != nil {
 		log.Printf("Error creating save: %s", err)
 		resp.Data = "Error creating savefile."
