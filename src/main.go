@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 type Config struct {
@@ -69,8 +70,14 @@ func parseFlags() {
 	config.FactorioModsDir = filepath.Join(config.FactorioDir, "mods")
 	config.FactorioConfigFile = filepath.Join(config.FactorioDir, *factorioConfigFile)
 	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)
-	config.FactorioLog = filepath.Join(config.FactorioDir, "factorio-current.log")
 	config.MaxUploadSize = *factorioMaxUpload
+
+    if runtime.GOOS == "windows" {
+        appdata := os.Getenv("APPDATA")
+        config.FactorioLog = filepath.Join(appdata, "Factorio", "factorio-current.log")
+    } else {
+        config.FactorioLog = filepath.Join(config.FactorioDir, "factorio-current.log")
+    }
 }
 
 func main() {
