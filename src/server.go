@@ -26,9 +26,14 @@ type FactorioServer struct {
 	StdIn            io.WriteCloser
 }
 
-func createSave(saveName string) (string, error) {
-	args := []string{"--create", saveName}
+func createSave(filePath string) (string, error) {
+	err := os.MkdirAll(filepath.Base(filePath), 0755)
+	if err != nil {
+		log.Printf("Error in creating Factorio save: %s", err)
+		return "", err
+	}
 
+	args := []string{"--create", filePath}
 	cmdOutput, err := exec.Command(config.FactorioBinary, args...).Output()
 	if err != nil {
 		log.Printf("Error in creating Factorio save: %s", err)
