@@ -12,19 +12,20 @@ import (
 )
 
 type Config struct {
-	FactorioDir        string `json:"factorio_dir"`
-	FactorioSavesDir   string `json:"saves_dir"`
-	FactorioModsDir    string `json:"mods_dir"`
-	FactorioConfigFile string `json:"config_file"`
-	FactorioLog        string `json:"logfile"`
-	FactorioBinary     string `json:"factorio_binary"`
-	ServerIP           string `json:"server_ip"`
-	ServerPort         string `json:"server_port"`
-	MaxUploadSize      int64  `json:"max_upload_size"`
-	Username           string `json:"username"`
-	Password           string `json:"password"`
-	DatabaseFile       string `json:"database_file"`
-	ConfFile           string
+	FactorioDir         string `json:"factorio_dir"`
+	FactorioSavesDir    string `json:"saves_dir"`
+	FactorioModsDir     string `json:"mods_dir"`
+	FactorioConfigFile  string `json:"config_file"`
+	FactorioLog         string `json:"logfile"`
+	FactorioBinary      string `json:"factorio_binary"`
+	ServerIP            string `json:"server_ip"`
+	ServerPort          string `json:"server_port"`
+	MaxUploadSize       int64  `json:"max_upload_size"`
+	Username            string `json:"username"`
+	Password            string `json:"password"`
+	DatabaseFile        string `json:"database_file"`
+	CookieEncryptionKey string `json:"cookie_encryption_key"`
+	ConfFile            string
 }
 
 var (
@@ -89,12 +90,8 @@ func main() {
 
 	// Initialize authentication system
 	Auth = initAuth()
-	Auth.createAuthDb(config.DatabaseFile)
-	Auth.createRoles()
-	err := Auth.createInitialUser(config.Username, config.Password, "admin", "")
-	if err != nil {
-		log.Printf("Error creating user: %s", err)
-	}
+	Auth.CreateAuth(config.DatabaseFile, config.CookieEncryptionKey)
+	Auth.CreateOrUpdateUser(config.Username, config.Password, "admin", "")
 
 	router := NewRouter()
 	createModPackDir()
