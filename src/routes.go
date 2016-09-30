@@ -19,15 +19,6 @@ type Routes []Route
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 
-	r.Path("/login").
-		Methods("GET").
-		Name("Login").
-		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
-	r.Path("/login").
-		Methods("POST").
-		Name("LoginPOST").
-		HandlerFunc(LoginUser)
-
 	// API subrouter
 	// Serves all JSON REST handlers prefixed with /api
 	s := r.PathPrefix("/api").Subrouter()
@@ -35,36 +26,46 @@ func NewRouter() *mux.Router {
 		s.Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
-			Handler(CheckSession(route.HandlerFunc))
+			Handler(AuthorizeHandler(route.HandlerFunc))
 	}
+
+	// The login handler does not check for authentication.
+	s.Path("/login").
+		Methods("POST").
+		Name("LoginUser").
+		HandlerFunc(LoginUser)
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
 	// Routes match the ones defined in React application
+	r.Path("/login").
+		Methods("GET").
+		Name("Login").
+		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
 	r.Path("/settings").
 		Methods("GET").
 		Name("Settings").
-		Handler(CheckSession(http.StripPrefix("/settings", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/settings", http.FileServer(http.Dir("./app/")))))
 	r.Path("/mods").
 		Methods("GET").
 		Name("Mods").
-		Handler(CheckSession(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
 	r.Path("/saves").
 		Methods("GET").
 		Name("Saves").
-		Handler(CheckSession(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
 	r.Path("/logs").
 		Methods("GET").
 		Name("Logs").
-		Handler(CheckSession(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
 	r.Path("/config").
 		Methods("GET").
 		Name("Config").
-		Handler(CheckSession(http.StripPrefix("/config", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/config", http.FileServer(http.Dir("./app/")))))
 	r.Path("/server").
 		Methods("GET").
 		Name("Server").
-		Handler(CheckSession(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
+		Handler(AuthorizeHandler(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
 	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
@@ -75,7 +76,7 @@ func NewRouter() *mux.Router {
 
 // Middleware returns a http.HandlerFunc which authenticates the users request
 // Redirects user to login page if no session is found
-func CheckSession(h http.Handler) http.Handler {
+func AuthorizeHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := Auth.aaa.Authorize(w, r, true); err != nil {
 			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
