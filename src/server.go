@@ -121,8 +121,9 @@ func (f *FactorioServer) Run() error {
 func (f *FactorioServer) Stop() error {
 	err := f.Cmd.Process.Signal(os.Interrupt)
 
-	// SIGINT is not implemented on windows.
+	// SIGINT is not implemented on Windows.
 	if err != nil && err == syscall.EWINDOWS {
+		// TODO: Shutdown Factorio on Windows so the map can be saved.
 		err = f.Cmd.Process.Signal(os.Kill)
 		if err != nil {
 			log.Printf("Error sending SIGKILLL to Factorio process: %s", err)
