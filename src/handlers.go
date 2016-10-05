@@ -521,11 +521,10 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error tailing logfile", err)
 		}
-		return
+	} else {
+		resp.Data = configContents
+		resp.Success = true
 	}
-
-	resp.Data = configContents
-	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error encoding config file JSON reponse: ", err)
