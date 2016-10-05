@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -11,19 +13,37 @@ import (
 )
 
 type FactorioServer struct {
-	Cmd              *exec.Cmd
-	Savefile         string
-	Latency          int  `json:"latency"`
-	AutosaveInterval int  `json:"autosave_interval"`
-	AutosaveSlots    int  `json:"autosave_slots"`
-	Port             int  `json:"port"`
-	DisallowCmd      bool `json:"disallow_cmd"`
-	Running          bool `json:"running"`
-	PeerToPeer       bool `json:"peer2peer"`
-	AutoPause        bool `json:"auto_pause"`
-	StdOut           io.ReadCloser
-	StdErr           io.ReadCloser
-	StdIn            io.WriteCloser
+	Cmd      *exec.Cmd
+	Savefile string
+	Latency  int  `json:"latency"`
+	Port     int  `json:"port"`
+	Running  bool `json:"running"`
+	StdOut   io.ReadCloser
+	StdErr   io.ReadCloser
+	StdIn    io.WriteCloser
+	Settings FactorioServerSettings
+}
+
+type FactorioServerSettings struct {
+	Name                                 string   `json:"name"`
+	Description                          string   `json:"description"`
+	Tags                                 []string `json:"tags"`
+	MaxPlayers                           int      `json:"max_players"`
+	Visibility                           string   `json:"visibility"`
+	Username                             string   `json:"username"`
+	Password                             string   `json:"password"`
+	Token                                string   `json:"token"`
+	GamePassword                         string   `json:"game_password"`
+	RequireUserVerification              bool     `json:"require_user_verification"`
+	MaxUploadInKilobytesPerSecond        int      `json:"max_upload_in_kilobytes_per_second"`
+	IgnorePlayerLimitForReturningPlayers bool     `json:"ignore_player_limit_for_returning_players"`
+	AllowCommands                        string   `json:"allow_commands"`
+	AutosaveInterval                     int      `json:"autosave_interval"`
+	AutosaveSlots                        int      `json:"autosave_slots"`
+	AfkAutoKickInterval                  int      `json:"afk_autokick_interval"`
+	AutoPause                            bool     `json:"auto_pause"`
+	OnlyAdminsCanPauseThegame            bool     `json:"only_admins_can_pause_the_game"`
+	Admins                               []string `json:"admins"`
 }
 
 func createSave(filePath string) (string, error) {
@@ -46,11 +66,29 @@ func createSave(filePath string) (string, error) {
 }
 
 func initFactorio() *FactorioServer {
-	// TODO move values to config struct
-	f := FactorioServer{
-		Latency:          100,
-		AutosaveInterval: 5,
-		AutosaveSlots:    10,
+	f := FactorioServer{}
+
+	// default settings from server-settings.example.json
+	f.Settings = FactorioServerSettings{
+		Name:                                 "Factorio",
+		Description:                          "Created by Factorio Server Manager",
+		Tags:                                 []string{},
+		MaxPlayers:                           0,
+		Visibility:                           "public",
+		Username:                             "",
+		Password:                             "",
+		Token:                                "",
+		GamePassword:                         "",
+		RequireUserVerification:              true,
+		MaxUploadInKilobytesPerSecond:        0,
+		IgnorePlayerLimitForReturningPlayers: false,
+		AllowCommands:                        "admins-only",
+		AutosaveInterval:                     10,
+		AutosaveSlots:                        5,
+		AfkAutoKickInterval:                  0,
+		AutoPause:                            true,
+		OnlyAdminsCanPauseThegame:            true,
+		Admins: []string{},
 	}
 
 	return &f
@@ -59,21 +97,17 @@ func initFactorio() *FactorioServer {
 func (f *FactorioServer) Run() error {
 	var err error
 
-	args := []string{"--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile),
-		"--autosave-interval", strconv.Itoa(f.AutosaveInterval),
-		"--autosave-slots", strconv.Itoa(f.AutosaveSlots),
-		"--port", strconv.Itoa(f.Port)}
-	if f.DisallowCmd {
-		args = append(args, "--disallow-commands")
+	data, err := json.MarshalIndent(f.Settings, "", "  ")
+	if err != nil {
+		log.Println("Failed to marshal FactorioServerSettings: ", err)
+	} else {
+		ioutil.WriteFile(filepath.Join(config.FactorioDir, "server-settings.json"), data, 0755)
 	}
-	if f.PeerToPeer {
-		args = append(args, "--peer-to-peer")
-	}
-	if f.AutoPause {
-		args = append(args, "--no-auto-pause")
-	}
-	if f.Latency != 100 {
-		args = append(args, "--latency-ms", strconv.Itoa(f.Latency))
+
+	args := []string{
+		"--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile),
+		"--port", strconv.Itoa(f.Port),
+		"--server-settings", filepath.Join(config.FactorioDir, "server-settings.json"),
 	}
 
 	log.Println("Starting server with command: ", config.FactorioBinary, args)
