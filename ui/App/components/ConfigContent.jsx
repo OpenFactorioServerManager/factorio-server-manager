@@ -6,13 +6,16 @@ class ConfigContent extends React.Component {
     constructor(props) {
         super(props);
         this.getConfig = this.getConfig.bind(this);
+        this.getServerSettings = this.getServerSettings.bind(this);
         this.state = {
-            config: {}
+            config: {},
+            serverSettings: {}
         }
     }
 
     componentDidMount() {
         this.getConfig();
+        this.getServerSettings();
     }
     
     getConfig() {
@@ -26,6 +29,21 @@ class ConfigContent extends React.Component {
             },
             error: (xhr, status, err) => {
                 console.log('/api/config/get', status, err.toString());
+            }
+        });
+    }
+
+    getServerSettings() {
+        $.ajax({
+            url: "/api/settings",
+            dataType: "json",
+            success: (resp) => {
+                if (resp.success === true) {
+                    this.setState({serverSettings: resp.data})
+                }
+            },
+            error: (xhr, status, err) => {
+                console.log('/api/settings/get', status, err.toString());
             }
         });
     }
@@ -80,6 +98,31 @@ class ConfigContent extends React.Component {
                         </div>
                     </div>
                 </section>
+
+                <section className="content">
+                    <div className="box">
+                        <div className="box-header">
+                            <h3 className="box-title">Server Settings</h3>
+                        </div>
+
+                        <div className="box-body">
+                        <div className="row">
+                            <div className="col-md-4">
+                            {Object.keys(this.state.serverSettings).map(function(key) {
+                                var value = this.state.serverSettings[key]
+                                return(
+                                    <div className="settings-section" key={key}>
+                                    <h3>{key}</h3>
+                                    <p>{value}</p>
+                                    </div>
+                                )
+                            }, this)}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         )
     }
