@@ -422,12 +422,20 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	vars := mux.Vars(r)
-	saveName := vars["save"]
+	name := vars["save"]
 
-	err = rmSave(saveName)
+	save, err := findSave(name)
+	if err != nil {
+		resp.Data = fmt.Sprintf("Error removing save: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error removing save %s", err)
+		}
+	}
+
+	err = save.remove()
 	if err == nil {
 		// save was removed
-		resp.Data = fmt.Sprintf("Removed save: %s", saveName)
+		resp.Data = fmt.Sprintf("Removed save: %s", save.Name)
 		resp.Success = true
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error removing save %s", err)
