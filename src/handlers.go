@@ -923,3 +923,21 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+// Return JSON response of config.ini file
+func GetServerSettings(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	resp.Data = FactorioServ.Settings
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error encoding server settings JSON reponse: ", err)
+	}
+
+	log.Printf("Sent server settings response")
+}
