@@ -13,13 +13,57 @@ This tool runs on a Factorio server and allows management of the Factorio server
 * Authentication for protecting against unauthorized users
 * Available as a Docker container
 
-## Installation
+## Installation Linux
 1. Download the latest release
   * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
 2. Download the Factorio Standalone server and install to a known directory. 
 3. Run the server binary file, use the --dir flag to point the management server to your Factorio installation.
   * ```./factorio-server-manager --dir /home/user/.factorio ```
 4. Visit [localhost:8080](localhost:8080) in your web browser.
+
+## Installation Windows
+1. Download the latest release source zip file
+  * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
+2. Unzip the Factorio Standalone server and move it to a known directory. 
+3. Download and install Go 1.6 64-bit or 32-bit depending on your operating system, if unsure download 32-bit
+  * https://storage.googleapis.com/golang/go1.6.windows-amd64.msi 64-bit
+  * https://storage.googleapis.com/golang/go1.6.windows-386.msi 32-bit
+4. Download and install NodeJS 4.2.6 64-bit or 32-bit depending on your operating system, if unsure download 32-bit
+  * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x64.msi 64-bit
+  * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x86.msi
+5. Download and install NVM, when asked if you want it to use NodeJS 4.2.6 accept
+  * https://github.com/coreybutler/nvm-windows/releases/download/1.1.1/nvm-setup.zip
+6. You will need to setup GOPATH in environmental settings in windows. You will want to go into Control Panel\System and Security\System From there on the left hand side click "Advanced system settings". A window will open and you need to click Environment Variables.
+7. Under System Variables click New. For Variable name use GOPATH and Variable value C:\Go\
+
+Once everything is installed and ready to go you will need to compile the source for windows
+
+1. Open the folder where ever you unzipped from step #2 above.
+2. My folder structure is like this "C:\FS\factorio-server-manager\" C:\FS is where my factorio files are located C:\FS\factorio-server-manager\ is where the server manager files are.
+3. You will not need to install some dependencies for Go. You will need to open up a command prompt and one at a time type each of these and hit enter before typing the next one.
+
+```
+go get github.com/apexskier/httpauth
+go get github.com/go-ini/ini
+go get github.com/gorilla/mux
+go get github.com/hpcloud/tail
+```
+
+3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold shown left shift and right click an empty area of the folder. Then click "Open command windows here" 
+4. Type this into the command prompt then hit enter:
+
+```
+go build
+```
+
+5. Once finished you will now see src.exe or src file inside the folder. You need to move that file to the C:\FS\factorio-server-manager\ or the folder that is before your src folder.
+6. From here you need to build the web front-end by going into your ui folder for me its C:\FS\factorio-server-manager\ui\ and again hold shift and left click in an empty area then select open command prompt here. You then need to type this:
+```
+ npm install
+ npm run build
+```
+
+7. You can now Visit [localhost:8080](localhost:8080) in your web browser to start using the Factorio server Manager
 
 ## Usage
 Run the UI server and  specify the directory of your Factorio server installation and the interface to run the HTTP server on.  Edit the conf.json file with your desired credentials for authentication.
