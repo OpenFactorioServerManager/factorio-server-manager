@@ -46,25 +46,6 @@ type FactorioServerSettings struct {
 	Admins                               []string `json:"admins"`
 }
 
-func createSave(filePath string) (string, error) {
-	err := os.MkdirAll(filepath.Base(filePath), 0755)
-	if err != nil {
-		log.Printf("Error in creating Factorio save: %s", err)
-		return "", err
-	}
-
-	args := []string{"--create", filePath}
-	cmdOutput, err := exec.Command(config.FactorioBinary, args...).Output()
-	if err != nil {
-		log.Printf("Error in creating Factorio save: %s", err)
-		return "", err
-	}
-
-	result := string(cmdOutput)
-
-	return result, nil
-}
-
 func initFactorio() *FactorioServer {
 	f := FactorioServer{}
 
@@ -101,7 +82,7 @@ func (f *FactorioServer) Run() error {
 	if err != nil {
 		log.Println("Failed to marshal FactorioServerSettings: ", err)
 	} else {
-		ioutil.WriteFile(filepath.Join(config.FactorioDir, "server-settings.json"), data, 0755)
+		ioutil.WriteFile(filepath.Join(config.FactorioDir, "server-settings.json"), data, 0644)
 	}
 
 	args := []string{

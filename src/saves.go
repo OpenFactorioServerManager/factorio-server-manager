@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 )
@@ -52,4 +54,24 @@ func (s *Save) remove() error {
 	}
 
 	return os.Remove(filepath.Join(config.FactorioSavesDir, s.Name))
+}
+
+// Create savefiles for Factorio
+func createSave(filePath string) (string, error) {
+	err := os.MkdirAll(filepath.Base(filePath), 0755)
+	if err != nil {
+		log.Printf("Error in creating Factorio save: %s", err)
+		return "", err
+	}
+
+	args := []string{"--create", filePath}
+	cmdOutput, err := exec.Command(config.FactorioBinary, args...).Output()
+	if err != nil {
+		log.Printf("Error in creating Factorio save: %s", err)
+		return "", err
+	}
+
+	result := string(cmdOutput)
+
+	return result, nil
 }
