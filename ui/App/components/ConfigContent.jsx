@@ -1,6 +1,7 @@
 import React from 'react';
 import {IndexLink} from 'react-router';
 import Settings from './Config/Settings.jsx';
+import ServerSettings from './Config/ServerSettings.jsx';
 
 class ConfigContent extends React.Component {
     constructor(props) {
@@ -16,6 +17,7 @@ class ConfigContent extends React.Component {
     componentDidMount() {
         this.getConfig();
         this.getServerSettings();
+        console.log(this.state.serverSettings);
     }
     
     getConfig() {
@@ -41,6 +43,7 @@ class ConfigContent extends React.Component {
                 if (resp.success === true) {
                     this.setState({serverSettings: resp.data})
                 }
+                console.log(this.state.serverSettings);
             },
             error: (xhr, status, err) => {
                 console.log('/api/settings/get', status, err.toString());
@@ -61,6 +64,45 @@ class ConfigContent extends React.Component {
                     <li className="active">Here</li>
                 </ol>
                 </section>
+                
+                <section className="content">
+                    <div className="box">
+                        <div className="box-header">
+                            <h3 className="box-title">Server Settings</h3>
+                        </div>
+
+                        <div className="box-body">
+                        <div className="row">
+                            <div className="col-md-6">
+                                    <div className="server-settings-section">
+                                        <div className="table-responsive">
+                                            <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Setting name</th>
+                                                            <th>Setting value</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {Object.keys(this.state.serverSettings).map(function(key) {
+                                                        var setting = this.state.serverSettings[key]
+                                                        console.log(setting)
+                                                        return(
+                                                            <ServerSettings 
+                                                                name={key}
+                                                                setting={setting}
+                                                            />
+                                                        )
+                                                    }, this)}
+                                                    </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </section>
 
                 <section className="content">
                     <div className="box">
@@ -70,7 +112,7 @@ class ConfigContent extends React.Component {
                         
                         <div className="box-body">
                         <div className="row">
-                            <div className="col-md-4">
+                            <div className="col-md-6">
                             {Object.keys(this.state.config).map(function(key) {
                                 var conf = this.state.config[key]
                                 return(
@@ -99,29 +141,6 @@ class ConfigContent extends React.Component {
                     </div>
                 </section>
 
-                <section className="content">
-                    <div className="box">
-                        <div className="box-header">
-                            <h3 className="box-title">Server Settings</h3>
-                        </div>
-
-                        <div className="box-body">
-                        <div className="row">
-                            <div className="col-md-4">
-                            {Object.keys(this.state.serverSettings).map(function(key) {
-                                var value = this.state.serverSettings[key]
-                                return(
-                                    <div className="settings-section" key={key}>
-                                    <h3>{key}</h3>
-                                    <p>{value}</p>
-                                    </div>
-                                )
-                            }, this)}
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                </section>
 
             </div>
         )

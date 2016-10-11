@@ -6,6 +6,7 @@ import (
 	"github.com/go-ini/ini"
 )
 
+// Loads config.ini file from the factorio config directory
 func loadConfig(filename string) (map[string]map[string]string, error) {
 	log.Printf("Loading config file: %s", filename)
 	cfg, err := ini.Load(filename)
