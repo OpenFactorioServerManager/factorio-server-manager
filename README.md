@@ -30,7 +30,7 @@ This tool runs on a Factorio server and allows management of the Factorio server
   * https://storage.googleapis.com/golang/go1.6.windows-386.msi 32-bit
 4. Download and install NodeJS 4.2.6 64-bit or 32-bit depending on your operating system, if unsure download 32-bit
   * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x64.msi 64-bit
-  * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x86.msi
+  * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x86.msi 32-bit
 5. Download and install NVM, when asked if you want it to use NodeJS 4.2.6 accept
   * https://github.com/coreybutler/nvm-windows/releases/download/1.1.1/nvm-setup.zip
 6. You will need to setup GOPATH in environmental settings in windows. You will want to go into Control Panel\System and Security\System From there on the left hand side click "Advanced system settings". A window will open and you need to click Environment Variables.
@@ -40,7 +40,7 @@ Once everything is installed and ready to go you will need to compile the source
 
 1. Open the folder where ever you unzipped from step #2 above.
 2. My folder structure is like this "C:\FS\factorio-server-manager\" C:\FS is where my factorio files are located C:\FS\factorio-server-manager\ is where the server manager files are.
-3. You will not need to install some dependencies for Go. You will need to open up a command prompt and one at a time type each of these and hit enter before typing the next one.
+3. You will now need to install some dependencies for Go. You will need to open up a command prompt and one at a time type each of these and hit enter before typing the next one.
 
 ```
 go get github.com/apexskier/httpauth
@@ -49,7 +49,7 @@ go get github.com/gorilla/mux
 go get github.com/hpcloud/tail
 ```
 
-3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold shown left shift and right click an empty area of the folder. Then click "Open command windows here" 
+3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down left shift and right click an empty area of the folder. Then click "Open command windows here" 
 4. Type this into the command prompt then hit enter:
 
 ```
@@ -58,12 +58,14 @@ go build
 
 5. Once finished you will now see src.exe or src file inside the folder. You need to move that file to the C:\FS\factorio-server-manager\ or the folder that is before your src folder.
 6. From here you need to build the web front-end by going into your ui folder for me its C:\FS\factorio-server-manager\ui\ and again hold shift and left click in an empty area then select open command prompt here. You then need to type this:
+
 ```
  npm install
  npm run build
 ```
 
-7. You can now Visit [localhost:8080](localhost:8080) in your web browser to start using the Factorio server Manager
+7. Now execute the src file created in step #4 above
+8. You can now Visit [localhost:8080](localhost:8080) in your web browser to start using the Factorio server Manager
 
 ## Usage
 Run the UI server and  specify the directory of your Factorio server installation and the interface to run the HTTP server on.  Edit the conf.json file with your desired credentials for authentication.
