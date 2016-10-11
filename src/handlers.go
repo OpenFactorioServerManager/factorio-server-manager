@@ -931,7 +931,7 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Return JSON response of config.ini file
+// Return JSON response of server-settings.json file
 func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Success: false,
@@ -947,4 +947,34 @@ func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Sent server settings response")
+}
+
+func UpdateServerSettings(w http.ResponseWrite, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	switch r.Method {
+	case "GET":
+		log.Printf("GET not supported for add user handler")
+		resp.Data = "Unsupported method"
+		resp.Success = false
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error adding user: %s", err)
+		}
+	case "POST":
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error in reading server settings POST: %s", err)
+			resp.Data = fmt.Sprintf("Error in updating settings: %s", err)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error updating settings: %s", err)
+			}
+			return
+		}
+		log.Printf("Received settings JSON: %s", body)
+	}
 }

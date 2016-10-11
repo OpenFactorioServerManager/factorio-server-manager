@@ -225,5 +225,10 @@ var apiRoutes = Routes{
 		"GET",
 		"/settings",
 		GetServerSettings,
+	}, {
+		"UpdateServerSettings",
+		"POST",
+		"/settings/update",
+		UpdateServerSettings,
 	},
 }
