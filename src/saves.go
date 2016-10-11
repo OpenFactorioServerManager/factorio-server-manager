@@ -23,6 +23,9 @@ func (s Save) String() string {
 // Lists save files in factorio/saves
 func listSaves(saveDir string) (saves []Save, err error) {
 	err = filepath.Walk(saveDir, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() && info.Name() == "saves" {
+			return nil
+		}
 		saves = append(saves, Save{
 			info.Name(),
 			info.ModTime(),
