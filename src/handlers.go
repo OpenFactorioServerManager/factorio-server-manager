@@ -949,7 +949,7 @@ func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Sent server settings response")
 }
 
-func UpdateServerSettings(w http.ResponseWrite, r *http.Request) {
+func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Success: false,
 	}
