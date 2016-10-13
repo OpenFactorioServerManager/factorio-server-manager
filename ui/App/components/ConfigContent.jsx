@@ -8,7 +8,7 @@ class ConfigContent extends React.Component {
         this.getConfig = this.getConfig.bind(this);
         this.getServerSettings = this.getServerSettings.bind(this);
         this.updateServerSettings = this.updateServerSettings.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleServerSettingsChange = this.handleServerSettingsChange.bind(this);
         this.state = {
             config: {},
             serverSettings: {}
@@ -20,7 +20,7 @@ class ConfigContent extends React.Component {
         this.getServerSettings();
     }
 
-    handleChange(name, e) {
+    handleServerSettingsChange(name, e) {
         var change = this.state.serverSettings;
         change[name] = e.target.value;
         this.setState({serverSettings: change});
@@ -100,26 +100,30 @@ class ConfigContent extends React.Component {
                             <div className="col-md-10">
                                 <div className="server-settings-section">
                                     <div className="table-responsive">
-                                        <form ref="settingsForm" className="form" onSubmit={this.updateServerSettings}>
+                                        <form ref="settingsForm" className="form-horizontal" onSubmit={this.updateServerSettings}>
                                             {Object.keys(this.state.serverSettings).map(function(key) {
                                                 var setting = this.state.serverSettings[key]
-                                                var ref_name = "setting-" + key
+                                                var setting_key = key.replace(/_/g, " ")
                                                 return(
                                                 <div className="form-group">
-                                                    <label for={key}>{key}</label>
-                                                    <input 
-                                                        ref={key} 
-                                                        id={key} 
-                                                        className="form-control" 
-                                                        defaultValue={setting} 
-                                                        type="text" 
-                                                        onChange={this.handleChange.bind(this, key)}
-                                                    />
+                                                    <label for={key} className="control-label col-md-3">{setting_key}</label>
+                                                    <div className="col-md-6">
+                                                        <input 
+                                                            ref={key} 
+                                                            id={key} 
+                                                            className="form-control" 
+                                                            defaultValue={setting} 
+                                                            type="text" 
+                                                            onChange={this.handleServerSettingsChange.bind(this, key)}
+                                                        />
+                                                    </div>
                                                 </div>
                                                 )
                                             }, this)}
-                                            <div className="form-group">
-                                                <input className="form-control btn btn-success" type="submit" ref="button" value="Update Settings" />
+                                            <div className="col-xs-6">
+                                                <div className="form-group">
+                                                    <input className="form-control btn btn-success" type="submit" ref="button" value="Update Settings" />
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
