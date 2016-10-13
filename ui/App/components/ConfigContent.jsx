@@ -1,13 +1,16 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 import {IndexLink} from 'react-router';
 import Settings from './Config/Settings.jsx';
-import ServerSettings from './Config/ServerSettings.jsx';
+//import ServerSettings from './Config/ServerSettings.jsx';
 
 class ConfigContent extends React.Component {
     constructor(props) {
         super(props);
         this.getConfig = this.getConfig.bind(this);
         this.getServerSettings = this.getServerSettings.bind(this);
+        this.updateServerSettings = this.updateServerSettings.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.state = {
             config: {},
             serverSettings: {}
@@ -17,7 +20,13 @@ class ConfigContent extends React.Component {
     componentDidMount() {
         this.getConfig();
         this.getServerSettings();
-        console.log(this.state.serverSettings);
+    }
+
+    handleChange(name, e) {
+        var change = this.state.serverSettings;
+        change[name] = e.target.value;
+        this.setState({serverSettings: change});
+        console.log(this.state);
     }
     
     getConfig() {
@@ -35,7 +44,7 @@ class ConfigContent extends React.Component {
         });
     }
 
-    getServerSettings() {
+    getServerSettings(e) {
         $.ajax({
             url: "/api/settings",
             dataType: "json",
@@ -43,13 +52,31 @@ class ConfigContent extends React.Component {
                 if (resp.success === true) {
                     this.setState({serverSettings: resp.data})
                 }
-                console.log(this.state.serverSettings);
             },
             error: (xhr, status, err) => {
                 console.log('/api/settings/get', status, err.toString());
             }
         });
     }
+    
+    updateServerSettings(e) {
+        e.preventDefault();
+        console.log(this.refs);
+        var serverSettingsJSON = JSON.stringify(this.state.serverSettings)
+        $.ajax({
+            url: "/api/settings/update",
+            datatype: "json",
+            type: "POST",
+            data: serverSettingsJSON,
+            success: (data) => {
+                console.log(data);
+                if (data.success === true) {
+                    console.log("settings updated") 
+                }
+            }
+        })
+    }
+
 
     render() {
         return(
@@ -73,31 +100,33 @@ class ConfigContent extends React.Component {
 
                         <div className="box-body">
                         <div className="row">
-                            <div className="col-md-6">
-                                    <div className="server-settings-section">
-                                        <div className="table-responsive">
-                                            <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Setting name</th>
-                                                            <th>Setting value</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {Object.keys(this.state.serverSettings).map(function(key) {
-                                                        var setting = this.state.serverSettings[key]
-                                                        console.log(setting)
-                                                        return(
-                                                            <ServerSettings 
-                                                                name={key}
-                                                                setting={setting}
-                                                            />
-                                                        )
-                                                    }, this)}
-                                                    </tbody>
-                                            </table>
-                                        </div>
+                            <div className="col-md-10">
+                                <div className="server-settings-section">
+                                    <div className="table-responsive">
+                                        <form ref="settingsForm" className="form" onSubmit={this.updateServerSettings}>
+                                            {Object.keys(this.state.serverSettings).map(function(key) {
+                                            var setting = this.state.serverSettings[key]
+                                            var ref_name = "setting-" + key
+                                            return(
+                                            <div className="form-group">
+                                                <label for={key}>{key}</label>
+                                                <input 
+                                                    ref={key} 
+                                                    id={key} 
+                                                    className="form-control" 
+                                                    defaultValue={setting} 
+                                                    type="text" 
+                                                    onChange={this.handleChange.bind(this, key)}
+                                                />
+                                            </div>
+                                            )
+                                            }, this)}
+                                            <div className="form-group">
+                                                <input className="form-control btn btn-success" type="submit" ref="button" value="Update Settings" />
+                                            </div>
+                                        </form>
                                     </div>
+                                </div>
                             </div>
                         </div>
                         </div>
@@ -112,7 +141,7 @@ class ConfigContent extends React.Component {
                         
                         <div className="box-body">
                         <div className="row">
-                            <div className="col-md-6">
+                            <div className="col-md-10">
                             {Object.keys(this.state.config).map(function(key) {
                                 var conf = this.state.config[key]
                                 return(
