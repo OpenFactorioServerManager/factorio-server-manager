@@ -1,8 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
 import {IndexLink} from 'react-router';
 import Settings from './Config/Settings.jsx';
-//import ServerSettings from './Config/ServerSettings.jsx';
 
 class ConfigContent extends React.Component {
     constructor(props) {
@@ -44,7 +42,7 @@ class ConfigContent extends React.Component {
         });
     }
 
-    getServerSettings(e) {
+    getServerSettings() {
         $.ajax({
             url: "/api/settings",
             dataType: "json",
@@ -61,7 +59,6 @@ class ConfigContent extends React.Component {
     
     updateServerSettings(e) {
         e.preventDefault();
-        console.log(this.refs);
         var serverSettingsJSON = JSON.stringify(this.state.serverSettings)
         $.ajax({
             url: "/api/settings/update",
@@ -105,21 +102,21 @@ class ConfigContent extends React.Component {
                                     <div className="table-responsive">
                                         <form ref="settingsForm" className="form" onSubmit={this.updateServerSettings}>
                                             {Object.keys(this.state.serverSettings).map(function(key) {
-                                            var setting = this.state.serverSettings[key]
-                                            var ref_name = "setting-" + key
-                                            return(
-                                            <div className="form-group">
-                                                <label for={key}>{key}</label>
-                                                <input 
-                                                    ref={key} 
-                                                    id={key} 
-                                                    className="form-control" 
-                                                    defaultValue={setting} 
-                                                    type="text" 
-                                                    onChange={this.handleChange.bind(this, key)}
-                                                />
-                                            </div>
-                                            )
+                                                var setting = this.state.serverSettings[key]
+                                                var ref_name = "setting-" + key
+                                                return(
+                                                <div className="form-group">
+                                                    <label for={key}>{key}</label>
+                                                    <input 
+                                                        ref={key} 
+                                                        id={key} 
+                                                        className="form-control" 
+                                                        defaultValue={setting} 
+                                                        type="text" 
+                                                        onChange={this.handleChange.bind(this, key)}
+                                                    />
+                                                </div>
+                                                )
                                             }, this)}
                                             <div className="form-group">
                                                 <input className="form-control btn btn-success" type="submit" ref="button" value="Update Settings" />
