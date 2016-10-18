@@ -8,7 +8,7 @@ class Save extends React.Component {
         let saveSize = parseFloat(this.props.save.size / 1024 / 1024).toFixed(3)
         let saveLastMod = Date.parse(this.props.save.last_mod);
         let date = new Date(saveLastMod)
-        let dateFmt = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay() + '   '
+        let dateFmt = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + '   '
             + this.hours12(date) + ':' + date.getMinutes() + ':' + date.getSeconds();
 
         return(
