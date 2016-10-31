@@ -25,6 +25,7 @@ type Config struct {
 	Password            string `json:"password"`
 	DatabaseFile        string `json:"database_file"`
 	CookieEncryptionKey string `json:"cookie_encryption_key"`
+	SettingsFile        string `json:"settings_file"`
 	ConfFile            string
 }
 
@@ -73,12 +74,12 @@ func parseFlags() {
 	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)
 	config.MaxUploadSize = *factorioMaxUpload
 
-    if runtime.GOOS == "windows" {
-        appdata := os.Getenv("APPDATA")
-        config.FactorioLog = filepath.Join(appdata, "Factorio", "factorio-current.log")
-    } else {
-        config.FactorioLog = filepath.Join(config.FactorioDir, "factorio-current.log")
-    }
+	if runtime.GOOS == "windows" {
+		appdata := os.Getenv("APPDATA")
+		config.FactorioLog = filepath.Join(appdata, "Factorio", "factorio-current.log")
+	} else {
+		config.FactorioLog = filepath.Join(config.FactorioDir, "factorio-current.log")
+	}
 }
 
 func main() {

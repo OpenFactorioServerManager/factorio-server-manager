@@ -48,28 +48,46 @@ type FactorioServerSettings struct {
 
 func initFactorio() *FactorioServer {
 	f := FactorioServer{}
+	settingsFile := filepath.Join(config.FactorioDir, config.SettingsFile)
 
-	// default settings from server-settings.example.json
-	f.Settings = FactorioServerSettings{
-		Name:                                 "Factorio",
-		Description:                          "Created by Factorio Server Manager",
-		Tags:                                 []string{},
-		MaxPlayers:                           0,
-		Visibility:                           "public",
-		Username:                             "",
-		Password:                             "",
-		Token:                                "",
-		GamePassword:                         "",
-		RequireUserVerification:              true,
-		MaxUploadInKilobytesPerSecond:        0,
-		IgnorePlayerLimitForReturningPlayers: false,
-		AllowCommands:                        "admins-only",
-		AutosaveInterval:                     10,
-		AutosaveSlots:                        5,
-		AfkAutoKickInterval:                  0,
-		AutoPause:                            true,
-		OnlyAdminsCanPauseThegame:            true,
-		Admins: []string{},
+	if _, err := os.Stat(settingsFile); err == nil {
+		// server-settings.json file exists
+		settings, err := os.Open(settingsFile)
+		defer settings.Close()
+		if err != nil {
+			log.Printf("Error in reading %s: %s", settingsFile, err)
+		}
+
+		settingsParser := json.NewDecoder(settings)
+		if err = settingsParser.Decode(&f.Settings); err != nil {
+			log.Printf("Error in reading %s: %s", settingsFile, err)
+		}
+		log.Printf("Loaded Factorio settings from %s, settings: %+v", settingsFile, &f.Settings)
+
+	} else {
+		// default settings from server-settings.example.json
+		f.Settings = FactorioServerSettings{
+			Name:                                 "Factorio",
+			Description:                          "Created by Factorio Server Manager",
+			Tags:                                 []string{},
+			MaxPlayers:                           0,
+			Visibility:                           "public",
+			Username:                             "",
+			Password:                             "",
+			Token:                                "",
+			GamePassword:                         "",
+			RequireUserVerification:              true,
+			MaxUploadInKilobytesPerSecond:        0,
+			IgnorePlayerLimitForReturningPlayers: false,
+			AllowCommands:                        "admins-only",
+			AutosaveInterval:                     10,
+			AutosaveSlots:                        5,
+			AfkAutoKickInterval:                  0,
+			AutoPause:                            true,
+			OnlyAdminsCanPauseThegame:            true,
+			Admins: []string{},
+		}
+		log.Printf("Loaded Default Factorio settings settings: %s", &f.Settings)
 	}
 
 	return &f
