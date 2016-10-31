@@ -2,5 +2,6 @@
     "username": "admin",
     "password": "factorio",
     "database_file": "auth.leveldb",
-    "cookie_encryption_key": "topsecretkey"
+    "cookie_encryption_key": "topsecretkey",
+    "settings_file": "server-settings.json"
 }
