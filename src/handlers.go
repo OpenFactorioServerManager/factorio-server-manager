@@ -976,5 +976,31 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Printf("Received settings JSON: %s", body)
+
+		err = json.Unmarshal(body, &FactorioServ.Settings)
+		if err != nil {
+			log.Printf("Error unmarshaling server settings JSON: %s", err)
+			resp.Data = fmt.Sprintf("Error in updating settings: %s", err)
+			resp.Success = false
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error encoding server settings response: %s", err)
+			}
+			return
+		}
+
+		settings, err := json.MarshalIndent(&FactorioServ.Settings, "", "  ")
+		if err != nil {
+			log.Printf("Failed to marshal server settings: %s", err)
+			return
+		} else {
+			ioutil.WriteFile(filepath.Join(config.FactorioDir, "server-settings.json"), settings, 0644)
+			log.Printf("Saved Factorio server settings in server-settings.json")
+		}
+
+		resp.Success = true
+		resp.Data = fmt.Sprintf("Settings successfully saved: %s", &FactorioServ.Settings)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in sending server settings response: %s", err)
+		}
 	}
 }
