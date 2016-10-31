@@ -4,3 +4,4 @@ factorio-server-manager
 auth.leveldb*
 conf.json
 *.exe
+build/
