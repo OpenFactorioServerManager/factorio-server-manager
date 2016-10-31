@@ -9,6 +9,7 @@ class ConfigContent extends React.Component {
         this.getServerSettings = this.getServerSettings.bind(this);
         this.updateServerSettings = this.updateServerSettings.bind(this);
         this.handleServerSettingsChange = this.handleServerSettingsChange.bind(this);
+        this.formTypeField = this.formTypeField.bind(this);
         this.state = {
             config: {},
             serverSettings: {}
@@ -49,6 +50,7 @@ class ConfigContent extends React.Component {
             success: (resp) => {
                 if (resp.success === true) {
                     this.setState({serverSettings: resp.data})
+                    console.log(this.state)
                 }
             },
             error: (xhr, status, err) => {
@@ -72,6 +74,65 @@ class ConfigContent extends React.Component {
                 }
             }
         })
+    }
+
+    formTypeField(key, setting) {
+        if (typeof setting === "number") {
+            return (
+                <input
+                    key={key}
+                    ref={key} 
+                    id={key} 
+                    className="form-control" 
+                    defaultValue={setting} 
+                    type="number" 
+                    onChange={this.handleServerSettingsChange.bind(this, key)}
+                />
+            )
+        } else if (typeof setting === "string") {
+            return (
+                <input 
+                    key={key}
+                    ref={key} 
+                    id={key} 
+                    className="form-control" 
+                    defaultValue={setting} 
+                    type="text" 
+                    onChange={this.handleServerSettingsChange.bind(this, key)}
+                />
+            )
+        } else if (typeof setting === "boolean") {
+            return (
+                <select key={key} ref={key} id={key} className="form-control" onChange={this.handleServerSettingsChange.bind(this, key)}>
+                    <option value={true}>True</option>
+                    <option value={false}>False</option>
+                </select>
+            )
+        } else if (Array.isArray(setting)) {
+            return (
+                <input 
+                    key={key}
+                    ref={key} 
+                    id={key} 
+                    className="form-control" 
+                    defaultValue={setting} 
+                    type="password" 
+                    onChange={this.handleServerSettingsChange.bind(this, key)}
+                />
+            )
+        } else {
+            return (
+                <input 
+                    key={key}
+                    ref={key} 
+                    id={key} 
+                    className="form-control" 
+                    defaultValue={setting} 
+                    type="text" 
+                    onChange={this.handleServerSettingsChange.bind(this, key)}
+                />
+            )
+        }
     }
 
 
@@ -108,14 +169,7 @@ class ConfigContent extends React.Component {
                                                 <div className="form-group">
                                                     <label for={key} className="control-label col-md-3">{setting_key}</label>
                                                     <div className="col-md-6">
-                                                        <input 
-                                                            ref={key} 
-                                                            id={key} 
-                                                            className="form-control" 
-                                                            defaultValue={setting} 
-                                                            type="text" 
-                                                            onChange={this.handleServerSettingsChange.bind(this, key)}
-                                                        />
+                                                        {this.formTypeField(key, setting)}
                                                     </div>
                                                 </div>
                                                 )

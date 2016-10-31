@@ -10,7 +10,6 @@ import LoginContent from './App/components/LoginContent.jsx';
 import UsersContent from './App/components/UsersContent.jsx';
 import Index from './App/components/Index.jsx';
 
-
 ReactDOM.render((
     <Router history={browserHistory}>
         <Route path="/login" component={LoginContent}/>
