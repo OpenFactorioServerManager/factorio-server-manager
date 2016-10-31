@@ -44,6 +44,7 @@ type FactorioServerSettings struct {
 	AutoPause                            bool     `json:"auto_pause"`
 	OnlyAdminsCanPauseThegame            bool     `json:"only_admins_can_pause_the_game"`
 	Admins                               []string `json:"admins"`
+	AutosaveOnlyOnServer                 bool     `json:"autosave_only_on_server"`
 }
 
 func initFactorio() *FactorioServer {
@@ -83,6 +84,7 @@ func initFactorio() *FactorioServer {
 			AutosaveInterval:                     10,
 			AutosaveSlots:                        5,
 			AfkAutoKickInterval:                  0,
+			AutosaveOnlyOnServer:                 true,
 			AutoPause:                            true,
 			OnlyAdminsCanPauseThegame:            true,
 			Admins: []string{},
