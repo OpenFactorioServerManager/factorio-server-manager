@@ -54,10 +54,10 @@ func initFactorio() *FactorioServer {
 	if _, err := os.Stat(settingsFile); err == nil {
 		// server-settings.json file exists
 		settings, err := os.Open(settingsFile)
-		defer settings.Close()
 		if err != nil {
 			log.Printf("Error in reading %s: %s", settingsFile, err)
 		}
+		defer settings.Close()
 
 		settingsParser := json.NewDecoder(settings)
 		if err = settingsParser.Decode(&f.Settings); err != nil {
