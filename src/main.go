@@ -86,8 +86,14 @@ func parseFlags() {
 }
 
 func main() {
+	var err error
+
+	// Parse configuration flags
 	parseFlags()
+	// Load server config from file
 	loadServerConfig(config.ConfFile)
+	// Create mod pack dir if missing
+	createModPackDir()
 
 	// Set logging output to file
 	logPath := filepath.Join(config.FactorioDir, config.LogFile)
@@ -99,15 +105,19 @@ func main() {
 	log.SetOutput(logFile)
 
 	// Initialize Factorio Server struct
-	FactorioServ = initFactorio()
+	FactorioServ, err = initFactorio()
+	if err != nil {
+		log.Printf("Error occurred during FactorioServer initializaion: %v\n", err)
+		return
+	}
 
 	// Initialize authentication system
 	Auth = initAuth()
 	Auth.CreateAuth(config.DatabaseFile, config.CookieEncryptionKey)
 	Auth.CreateOrUpdateUser(config.Username, config.Password, "admin", "")
 
+	// Initialize HTTP router
 	router := NewRouter()
-	createModPackDir()
 
 	fmt.Printf("Starting server on: %s:%s", config.ServerIP, config.ServerPort)
 	log.Fatal(http.ListenAndServe(config.ServerIP+":"+config.ServerPort, router))

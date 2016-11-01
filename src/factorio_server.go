@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,86 +14,71 @@ import (
 )
 
 type FactorioServer struct {
-	Cmd      *exec.Cmd
-	Savefile string
-	Latency  int  `json:"latency"`
-	Port     int  `json:"port"`
-	Running  bool `json:"running"`
-	StdOut   io.ReadCloser
-	StdErr   io.ReadCloser
-	StdIn    io.WriteCloser
-	Settings FactorioServerSettings
+	Cmd      *exec.Cmd              `json:"-"`
+	Savefile string                 `json:"-"`
+	Latency  int                    `json:"latency"`
+	Port     int                    `json:"port"`
+	Running  bool                   `json:"running"`
+	StdOut   io.ReadCloser          `json:"-"`
+	StdErr   io.ReadCloser          `json:"-"`
+	StdIn    io.WriteCloser         `json:"-"`
+	Settings map[string]interface{} `json:"-"`
 }
 
-type FactorioServerSettings struct {
-	Name                                 string   `json:"name"`
-	Description                          string   `json:"description"`
-	Tags                                 []string `json:"tags"`
-	MaxPlayers                           int      `json:"max_players"`
-	Visibility                           string   `json:"visibility"`
-	Username                             string   `json:"username"`
-	Password                             string   `json:"password"`
-	Token                                string   `json:"token"`
-	GamePassword                         string   `json:"game_password"`
-	RequireUserVerification              bool     `json:"require_user_verification"`
-	MaxUploadInKilobytesPerSecond        int      `json:"max_upload_in_kilobytes_per_second"`
-	IgnorePlayerLimitForReturningPlayers bool     `json:"ignore_player_limit_for_returning_players"`
-	AllowCommands                        string   `json:"allow_commands"`
-	AutosaveInterval                     int      `json:"autosave_interval"`
-	AutosaveSlots                        int      `json:"autosave_slots"`
-	AfkAutoKickInterval                  int      `json:"afk_autokick_interval"`
-	AutoPause                            bool     `json:"auto_pause"`
-	OnlyAdminsCanPauseThegame            bool     `json:"only_admins_can_pause_the_game"`
-	Admins                               []string `json:"admins"`
-	AutosaveOnlyOnServer                 bool     `json:"autosave_only_on_server"`
-}
+func initFactorio() (f *FactorioServer, err error) {
+	f = new(FactorioServer)
+	f.Settings = make(map[string]interface{})
 
-func initFactorio() *FactorioServer {
-	f := FactorioServer{}
-	settingsFile := filepath.Join(config.FactorioConfigDir, config.SettingsFile)
+	if err = os.MkdirAll(config.FactorioConfigDir, 0755); err != nil {
+		return nil, fmt.Errorf("failed to create config directory: %v", err)
+	}
 
-	if _, err := os.Stat(settingsFile); err == nil {
-		// server-settings.json file exists
-		settings, err := os.Open(settingsFile)
+	settingsPath := filepath.Join(config.FactorioConfigDir, config.SettingsFile)
+	var settings *os.File
+
+	if _, err := os.Stat(settingsPath); os.IsNotExist(err) {
+		// copy example settings to supplied settings file, if not exists
+		log.Printf("Server settings at %s not found, copying example server settings.\n", settingsPath)
+
+		examplePath := filepath.Join(config.FactorioDir, "data", "server-settings.example.json")
+
+		example, err := os.Open(examplePath)
 		if err != nil {
-			log.Printf("Error in reading %s: %s", settingsFile, err)
+			return nil, fmt.Errorf("failed to open example server settings: %v", err)
+		}
+		defer example.Close()
+
+		settings, err = os.Create(settingsPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create server settings file: %v", err)
 		}
 		defer settings.Close()
 
-		settingsParser := json.NewDecoder(settings)
-		if err = settingsParser.Decode(&f.Settings); err != nil {
-			log.Printf("Error in reading %s: %s", settingsFile, err)
+		_, err = io.Copy(settings, example)
+		if err != nil {
+			return nil, fmt.Errorf("failed to copy example server settings: %v", err)
 		}
-		log.Printf("Loaded Factorio settings from %s, settings: %+v", settingsFile, &f.Settings)
-
 	} else {
-		// default settings from server-settings.example.json
-		f.Settings = FactorioServerSettings{
-			Name:                                 "Factorio",
-			Description:                          "Created by Factorio Server Manager",
-			Tags:                                 []string{},
-			MaxPlayers:                           0,
-			Visibility:                           "public",
-			Username:                             "",
-			Password:                             "",
-			Token:                                "",
-			GamePassword:                         "",
-			RequireUserVerification:              true,
-			MaxUploadInKilobytesPerSecond:        0,
-			IgnorePlayerLimitForReturningPlayers: false,
-			AllowCommands:                        "admins-only",
-			AutosaveInterval:                     10,
-			AutosaveSlots:                        5,
-			AfkAutoKickInterval:                  0,
-			AutosaveOnlyOnServer:                 true,
-			AutoPause:                            true,
-			OnlyAdminsCanPauseThegame:            true,
-			Admins: []string{},
+		// otherwise, open file normally
+		settings, err = os.Open(settingsPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open server settings file: %v", err)
 		}
-		log.Printf("Loaded Default Factorio settings settings: %+v", &f.Settings)
+		defer settings.Close()
 	}
 
-	return &f
+	// before reading reset offset
+	if _, err = settings.Seek(0, 0); err != nil {
+		return nil, fmt.Errorf("error while seeking in settings file: %v", err)
+	}
+
+	if err = json.NewDecoder(settings).Decode(&f.Settings); err != nil {
+		return nil, fmt.Errorf("error reading %s: %v", settingsPath, err)
+	}
+
+	log.Printf("Loaded Factorio settings from %s\n", settingsPath)
+
+	return
 }
 
 func (f *FactorioServer) Run() error {

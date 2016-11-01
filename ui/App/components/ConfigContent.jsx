@@ -77,6 +77,17 @@ class ConfigContent extends React.Component {
     }
 
     formTypeField(key, setting) {
+        if (key.startsWith("_comment_")) {
+            return (
+                <input 
+                   key={key}
+                   ref={key}
+                   id={key}
+                   defaultValue={setting}
+                   type="hidden"
+                />
+            )
+        }
         if (typeof setting === "number") {
             return (
                 <input
@@ -163,13 +174,17 @@ class ConfigContent extends React.Component {
                                     <div className="table-responsive">
                                         <form ref="settingsForm" className="form-horizontal" onSubmit={this.updateServerSettings}>
                                             {Object.keys(this.state.serverSettings).map(function(key) {
+                                                if (key.startsWith("_comment_"))
+                                                    return(<div>{this.formTypeField(key, setting)}</div>);
                                                 var setting = this.state.serverSettings[key]
                                                 var setting_key = key.replace(/_/g, " ")
+                                                var comment = this.state.serverSettings["_comment_" + key]
                                                 return(
                                                 <div className="form-group">
                                                     <label for={key} className="control-label col-md-3">{setting_key}</label>
                                                     <div className="col-md-6">
                                                         {this.formTypeField(key, setting)}
+                                                        <p className="help-block">{comment}</p>
                                                     </div>
                                                 </div>
                                                 )
@@ -198,7 +213,7 @@ class ConfigContent extends React.Component {
                         <div className="row">
                             <div className="col-md-10">
                             {Object.keys(this.state.config).map(function(key) {
-                                var conf = this.state.config[key]
+				var conf = this.state.config[key]
                                 return(
                                     <div className="settings-section" key={key}>
                                     <h3>{key}</h3>
