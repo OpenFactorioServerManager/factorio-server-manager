@@ -102,7 +102,7 @@ func (f *FactorioServer) Run() error {
 	if err != nil {
 		log.Println("Failed to marshal FactorioServerSettings: ", err)
 	} else {
-		ioutil.WriteFile(filepath.Join(config.FactorioDir, "server-settings.json"), data, 0644)
+		ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), data, 0644)
 	}
 
 	args := []string{
