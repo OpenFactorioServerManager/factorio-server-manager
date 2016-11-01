@@ -1,13 +1,13 @@
 # glibc is required for Factorio Server binaries to run
 FROM frolvlad/alpine-glibc
 
-MAINTAINER Jannik Kolodziej <docker@jkolodziej.de>
+MAINTAINER Mitch Roote <mitch@r00t.cac>
 
 ENV FACTORIO_VERSION=latest \
     MANAGER_VERSION=0.4.3 \
-    ADMIN_PASSWORD=
+    ADMIN_PASSWORD=factorio
 
-VOLUME /opt/factorio/saves /opt/factorio/mods /security
+VOLUME /opt/factorio/saves /opt/factorio/mods /opt/factorio/config /security
 
 RUN apk add --no-cache curl tar unzip nginx openssl
 
