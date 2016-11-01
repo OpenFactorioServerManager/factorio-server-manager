@@ -993,7 +993,10 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Failed to marshal server settings: %s", err)
 			return
 		} else {
-			ioutil.WriteFile(filepath.Join(config.FactorioDir, "server-settings.json"), settings, 0644)
+			if err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), settings, 0644); err != nil {
+				log.Printf("Failed to save server settings: %v\n", err)
+				return
+			}
 			log.Printf("Saved Factorio server settings in server-settings.json")
 		}
 

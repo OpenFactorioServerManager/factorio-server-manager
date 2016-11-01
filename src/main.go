@@ -88,8 +88,14 @@ func main() {
 	parseFlags()
 	loadServerConfig(config.ConfFile)
 
+	var err error
+
 	// Initialize Factorio Server struct
-	FactorioServ = initFactorio()
+	FactorioServ, err = initFactorio()
+	if err != nil {
+		log.Printf("Error occurred during FactorioServer initializaion: %v\n", err)
+		return
+	}
 
 	// Initialize authentication system
 	Auth = initAuth()
