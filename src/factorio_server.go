@@ -15,7 +15,7 @@ import (
 
 type FactorioServer struct {
 	Cmd      *exec.Cmd              `json:"-"`
-	Savefile string                 `json:"-"`
+	Savefile string                 `json:"savefile"`
 	Latency  int                    `json:"latency"`
 	Port     int                    `json:"port"`
 	Running  bool                   `json:"running"`
