@@ -16,6 +16,7 @@ type Config struct {
 	FactorioSavesDir    string `json:"saves_dir"`
 	FactorioModsDir     string `json:"mods_dir"`
 	FactorioConfigFile  string `json:"config_file"`
+	FactorioConfigDir   string `json:"config_directory"`
 	FactorioLog         string `json:"logfile"`
 	FactorioBinary      string `json:"factorio_binary"`
 	ServerIP            string `json:"server_ip"`
@@ -70,6 +71,7 @@ func parseFlags() {
 	config.ServerPort = *factorioPort
 	config.FactorioSavesDir = filepath.Join(config.FactorioDir, "saves")
 	config.FactorioModsDir = filepath.Join(config.FactorioDir, "mods")
+	config.FactorioConfigDir = filepath.Join(config.FactorioDir, "config")
 	config.FactorioConfigFile = filepath.Join(config.FactorioDir, *factorioConfigFile)
 	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)
 	config.MaxUploadSize = *factorioMaxUpload

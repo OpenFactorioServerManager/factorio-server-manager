@@ -49,7 +49,7 @@ type FactorioServerSettings struct {
 
 func initFactorio() *FactorioServer {
 	f := FactorioServer{}
-	settingsFile := filepath.Join(config.FactorioDir, config.SettingsFile)
+	settingsFile := filepath.Join(config.FactorioConfigDir, config.SettingsFile)
 
 	if _, err := os.Stat(settingsFile); err == nil {
 		// server-settings.json file exists
