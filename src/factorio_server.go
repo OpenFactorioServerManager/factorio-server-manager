@@ -89,7 +89,7 @@ func initFactorio() *FactorioServer {
 			OnlyAdminsCanPauseThegame:            true,
 			Admins: []string{},
 		}
-		log.Printf("Loaded Default Factorio settings settings: %s", &f.Settings)
+		log.Printf("Loaded Default Factorio settings settings: %+v", &f.Settings)
 	}
 
 	return &f
