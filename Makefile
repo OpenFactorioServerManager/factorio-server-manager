@@ -3,6 +3,7 @@
 
 build:
 	# Build Linux release
+	mkdir build
 	go build -o factorio-server-linux/factorio-server-manager src/*
 	ui/node_modules/webpack/bin/webpack.js ui/webpack.config.js app/bundle.js --progress --profile --colors 
 	cp -r app/ factorio-server-linux/
