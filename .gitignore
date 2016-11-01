@@ -5,3 +5,4 @@ auth.leveldb*
 conf.json
 *.exe
 build/
+npm-debug.log
