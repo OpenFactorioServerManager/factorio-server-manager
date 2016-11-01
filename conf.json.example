@@ -3,5 +3,6 @@
     "password": "factorio",
     "database_file": "auth.leveldb",
     "cookie_encryption_key": "topsecretkey",
-    "settings_file": "server-settings.json"
+    "settings_file": "server-settings.json",
+    "log_file": "factorio-server-manager.log"
 }

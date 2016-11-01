@@ -27,6 +27,7 @@ type Config struct {
 	DatabaseFile        string `json:"database_file"`
 	CookieEncryptionKey string `json:"cookie_encryption_key"`
 	SettingsFile        string `json:"settings_file"`
+	LogFile             string `json:"log_file"`
 	ConfFile            string
 }
 
@@ -87,6 +88,15 @@ func parseFlags() {
 func main() {
 	parseFlags()
 	loadServerConfig(config.ConfFile)
+
+	// Set logging output to file
+	logPath := filepath.Join(config.FactorioDir, config.LogFile)
+	logFile, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	if err != nil {
+		log.Fatalf("error opening log file: %v", err)
+	}
+	defer logFile.Close()
+	log.SetOutput(logFile)
 
 	// Initialize Factorio Server struct
 	FactorioServ = initFactorio()
