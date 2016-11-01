@@ -104,8 +104,6 @@ func main() {
 	defer logFile.Close()
 	log.SetOutput(logFile)
 
-	var err error
-
 	// Initialize Factorio Server struct
 	FactorioServ, err = initFactorio()
 	if err != nil {
