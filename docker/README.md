@@ -11,12 +11,12 @@ docker pull majormjr/factorio-server-manager
 Now you can start the container by running:
 
 ```
-docker run --name factorio-manager -d -p 80:80 -p 443:443 -p 34197:34197/udp majormjr/ factorio-server-manager
+docker run --name factorio-manager -d -p 80:80 -p 443:443 -p 34197:34197/udp majormjr/factorio-server-manager
 ```
 
 If you want persistent data in your container also mount the data volumes when starting:
 ```
-docker run --name factorio-manager -d -v [yourpath]:/opt/factorio/saves [yourpath]:/opt/factorio/mods [yourpath]:/opt/factorio/config -p 80:80 -p 443:443 -p 34197:34197/udp majormjr/ factorio-server-manager
+docker run --name factorio-manager -d -v [yourpath]:/opt/factorio/saves [yourpath]:/opt/factorio/mods [yourpath]:/opt/factorio/config -p 80:80 -p 443:443 -p 34197:34197/udp majormjr/factorio-server-manager
 ```
 
 ## Security
