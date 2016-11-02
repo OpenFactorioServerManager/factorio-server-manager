@@ -32,7 +32,8 @@ class ServerCtl extends React.Component {
                 if (resp.success === true) {
                     swal("Factorio Server Started", resp.data)
                 } else {
-                    swal("Error", "Error starting Factorio Server", "error")
+                    var err = "Error starting Factorio Server: " + resp.data
+                    swal("Error", err, "error")
                 }
             }
         })
