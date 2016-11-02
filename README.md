@@ -13,6 +13,17 @@ This tool runs on a Factorio server and allows management of the Factorio server
 * Authentication for protecting against unauthorized users
 * Available as a Docker container
 
+## Installation Docker
+1. Pull the Docker container from Docker Hub using the pull command
+   ```
+   docker pull majormjr/factorio-server-manager
+   ```
+
+2. Now you can start the container by running:
+   ```
+   docker run --name factorio-manager -d -p 80:80 -p 443:443 -p 34197:34197/udp majormjr/factorio-server-manager
+   ```
+
 ## Installation Linux
 1. Download the latest release
   * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
