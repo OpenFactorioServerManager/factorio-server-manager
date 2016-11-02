@@ -10,6 +10,7 @@ class ConfigContent extends React.Component {
         this.updateServerSettings = this.updateServerSettings.bind(this);
         this.handleServerSettingsChange = this.handleServerSettingsChange.bind(this);
         this.formTypeField = this.formTypeField.bind(this);
+        this.capitalizeFirstLetter = this.capitalizeFirstLetter.bind(this)
         this.state = {
             config: {},
             serverSettings: {}
@@ -19,6 +20,10 @@ class ConfigContent extends React.Component {
     componentDidMount() {
         this.getConfig();
         this.getServerSettings();
+    }
+    
+    capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     handleServerSettingsChange(name, e) {
@@ -177,7 +182,7 @@ class ConfigContent extends React.Component {
                                                 if (key.startsWith("_comment_"))
                                                     return(<div>{this.formTypeField(key, setting)}</div>);
                                                 var setting = this.state.serverSettings[key]
-                                                var setting_key = key.replace(/_/g, " ")
+                                                var setting_key = this.capitalizeFirstLetter(key.replace(/_/g, " "))
                                                 var comment = this.state.serverSettings["_comment_" + key]
                                                 return(
                                                 <div className="form-group">
@@ -213,7 +218,7 @@ class ConfigContent extends React.Component {
                         <div className="row">
                             <div className="col-md-10">
                             {Object.keys(this.state.config).map(function(key) {
-				var conf = this.state.config[key]
+                				var conf = this.state.config[key]
                                 return(
                                     <div className="settings-section" key={key}>
                                     <h3>{key}</h3>
