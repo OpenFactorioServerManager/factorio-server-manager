@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MajorMJR/factorio-server-manager.svg?branch=master)](https://travis-ci.org/MajorMJR/factorio-server-manager)
+[![Build Status](https://travis-ci.org/MajorMJR/factorio-server-manager.svg?branch=master)](https://travis-ci.org/MajorMJR/factorio-server-manager) [![Docker Pulls](https://img.shields.io/docker/pulls/mashape/kong.svg)](https://hub.docker.com/r/majormjr/factorio-server-manager/)
 
 #Factorio Server Manager
 
