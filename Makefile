@@ -6,7 +6,7 @@ NODE_ENV:=production
 build:
 	# Build Linux release
 	mkdir build
-	go build -o factorio-server-linux/factorio-server-manager src/*
+	GOOS=linux GOARCH=amd64 go build -o factorio-server-linux/factorio-server-manager src/*
 #	ui/node_modules/webpack/bin/webpack.js ui/webpack.config.js app/bundle.js --progress --profile --colors 
 	cp -r app/ factorio-server-linux/
 	cp conf.json.example factorio-server-linux/conf.json
