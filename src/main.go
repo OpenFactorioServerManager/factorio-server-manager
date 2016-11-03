@@ -95,15 +95,6 @@ func main() {
 	// Create mod pack dir if missing
 	createModPackDir()
 
-	// Set logging output to file
-	logPath := filepath.Join(config.FactorioDir, config.LogFile)
-	logFile, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
-	if err != nil {
-		log.Fatalf("error opening log file: %v", err)
-	}
-	defer logFile.Close()
-	log.SetOutput(logFile)
-
 	// Initialize Factorio Server struct
 	FactorioServ, err = initFactorio()
 	if err != nil {
