@@ -37,7 +37,7 @@ func NewRouter() *mux.Router {
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
-	// Routes match the ones defined in React application
+	// Routes match the ones defined in React frontend application
 	r.Path("/login").
 		Methods("GET").
 		Name("Login").
