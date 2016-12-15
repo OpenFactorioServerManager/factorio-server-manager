@@ -32,7 +32,7 @@ class HiddenSidebar extends React.Component {
                             <i className="menu-icon fa fa-birthday-cake bg-red"></i>
 
                             <div className="menu-info">
-                                <i classNameName="menu-icon fa fa-lock bg-green"></i>
+                                <i className="menu-icon fa fa-lock bg-green"></i>
                                 <h4 className="control-sidebar-subheading">Login</h4>
                             </div>
                             </Link>
@@ -50,8 +50,8 @@ class HiddenSidebar extends React.Component {
                     </ul>
 
                     <h3 className="control-sidebar-heading">Tasks Progress</h3>
-                        <div classNameName="table-responsive">
-                        <table classNameName="table table-border">
+                        <div className="table-responsive">
+                        <table className="table table-border">
                             <thead>
                                 <tr>
                                 </tr>
