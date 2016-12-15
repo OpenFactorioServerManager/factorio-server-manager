@@ -108,7 +108,7 @@ class ServerCtl extends React.Component {
                                     </div>
                                 </button>
                                 <div className="box-body" style={{display: "none"}}>
-                                <label for="port">Factorio Server Port</label>
+                                <label htmlFor="port">Factorio Server Port</label>
                                 <div id="port" className="input-group">
                                     <input ref="port" name="port" id="port" type="text" className="form-control" onChange={this.state.port} value={this.state.port} placeholder={this.state.port} />
                                     <div className="input-group-btn">

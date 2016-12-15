@@ -38,7 +38,7 @@ class UploadSave extends React.Component {
                 <div className="box-body">
                     <form ref="uploadForm" className="form-inline" encType='multipart/form-data'>
                         <div className="form-group">
-                            <label for="savefile">Upload Save File...</label>
+                            <label htmlFor="savefile">Upload Save File...</label>
                             <input className="form-control btn btn-default" ref="file" type="file" name="savefile" id="savefile" />
                         </div>
                         <div className="form-group">
