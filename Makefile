@@ -19,3 +19,9 @@ build:
 	zip -r build/factorio-server-manager-windows.zip factorio-server-windows
 	rm -rf factorio-server-windows
 
+dev:
+	mkdir dev
+	GOOS=linux GOARCH=amd64 go build -o factorio-server-linux/factorio-server-manager src/*
+	cp -r app/ dev/
+	cp conf.json.example dev/conf.json
+	mv factorio-server-linux/factorio-server-manager dev/factorio-server-manager
