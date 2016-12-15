@@ -50,6 +50,10 @@ func NewRouter() *mux.Router {
 		Name("LoginUser").
 		HandlerFunc(LoginUser)
 
+	// Route for initializing websocket connection
+	// Clients connecting to /ws establish websocket connection by upgrading
+	// HTTP session.
+	// Ensure user is logged in with the AuthorizeHandler middleware
 	r.Path("/ws").
 		Methods("GET").
 		Name("Websocket").
