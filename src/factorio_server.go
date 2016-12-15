@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -94,7 +95,7 @@ func (f *FactorioServer) Run() error {
 	args := []string{
 		"--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile),
 		"--port", strconv.Itoa(f.Port),
-		"--server-settings", filepath.Join(config.FactorioDir, "server-settings.json"),
+		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
 	}
 
 	log.Println("Starting server with command: ", config.FactorioBinary, args)
@@ -119,8 +120,8 @@ func (f *FactorioServer) Run() error {
 		return err
 	}
 
-	go io.Copy(os.Stdout, f.StdOut)
-	go io.Copy(os.Stderr, f.StdErr)
+	go parseRunningCommand(f.StdOut)
+	go parseRunningCommand(f.StdErr)
 
 	err = f.Cmd.Start()
 	if err != nil {
@@ -139,11 +140,27 @@ func (f *FactorioServer) Run() error {
 	return nil
 }
 
+func parseRunningCommand(std io.ReadCloser) (err error) {
+	stdScanner := bufio.NewScanner(std)
+	for stdScanner.Scan() {
+		fmt.Println(stdScanner.Text())
+	}
+	if err := stdScanner.Err(); err != nil {
+		log.Printf("Error reading stdout buffer: %s", err)
+		return err
+	}
+	return nil
+}
+
 func (f *FactorioServer) Stop() error {
 	// TODO: Find an alternative to os.Kill on Windows. os.Interupt
 	// is not implemented. Maps will not be saved.
 	if runtime.GOOS == "windows" {
 		err := f.Cmd.Process.Signal(os.Kill)
+		if err.Error() == "os: process already finished" {
+			f.Running = false
+			return err
+		}
 		if err != nil {
 			log.Printf("Error sending SIGKILLL to Factorio process: %s", err)
 			return err
@@ -153,6 +170,10 @@ func (f *FactorioServer) Stop() error {
 		}
 	} else {
 		err := f.Cmd.Process.Signal(os.Interrupt)
+		if err.Error() == "os: process already finished" {
+			f.Running = false
+			return err
+		}
 		if err != nil {
 			log.Printf("Error sending SIGINT to Factorio process: %s", err)
 			return err
