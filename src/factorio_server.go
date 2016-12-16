@@ -12,6 +12,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
+
+	"github.com/james4k/rcon"
 )
 
 type FactorioServer struct {
@@ -24,6 +27,7 @@ type FactorioServer struct {
 	StdErr   io.ReadCloser          `json:"-"`
 	StdIn    io.WriteCloser         `json:"-"`
 	Settings map[string]interface{} `json:"-"`
+	Rcon     *rcon.RemoteConsole    `json:"-"`
 }
 
 func initFactorio() (f *FactorioServer, err error) {
@@ -120,36 +124,47 @@ func (f *FactorioServer) Run() error {
 		return err
 	}
 
-	go parseRunningCommand(f.StdOut)
-	go parseRunningCommand(f.StdErr)
+	go f.parseRunningCommand(f.StdOut)
+	go f.parseRunningCommand(f.StdErr)
 
 	err = f.Cmd.Start()
 	if err != nil {
-		log.Printf("Error starting server process: %s", err)
+		log.Printf("Factorio process failed to start: %s", err)
 		return err
 	}
-
 	f.Running = true
 
 	err = f.Cmd.Wait()
 	if err != nil {
-		log.Printf("Command exited with error: %s", err)
+		log.Printf("Factorio process exited with error: %s", err)
+		f.Running = false
 		return err
 	}
 
 	return nil
 }
 
-func parseRunningCommand(std io.ReadCloser) (err error) {
+func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 	stdScanner := bufio.NewScanner(std)
 	for stdScanner.Scan() {
-		fmt.Println(stdScanner.Text())
+		log.Printf("Factorio Server: %s", stdScanner.Text())
+		line := strings.Fields(stdScanner.Text())
+		if line[1] == "Error" {
+			log.Printf("Error: %s, %s", line[0], line[1])
+		}
 	}
 	if err := stdScanner.Err(); err != nil {
-		log.Printf("Error reading stdout buffer: %s", err)
+		log.Printf("Error reading std buffer: %s", err)
 		return err
 	}
 	return nil
+}
+
+func (f *FactorioServer) checkLogError(logline string) []string {
+	line := strings.Fields(logline)
+	log.Println(line)
+
+	return line
 }
 
 func (f *FactorioServer) Stop() error {
@@ -157,31 +172,31 @@ func (f *FactorioServer) Stop() error {
 	// is not implemented. Maps will not be saved.
 	if runtime.GOOS == "windows" {
 		err := f.Cmd.Process.Signal(os.Kill)
-		if err.Error() == "os: process already finished" {
-			f.Running = false
-			return err
-		}
 		if err != nil {
+			if err.Error() == "os: process already finished" {
+				f.Running = false
+				return err
+			}
 			log.Printf("Error sending SIGKILLL to Factorio process: %s", err)
 			return err
-		} else {
-			f.Running = false
-			log.Println("Sent SIGKILL to Factorio process. Factorio forced to exit.")
 		}
-	} else {
-		err := f.Cmd.Process.Signal(os.Interrupt)
+		f.Running = false
+		log.Println("Sent SIGKILL to Factorio process. Factorio forced to exit.")
+
+		return nil
+	}
+
+	err := f.Cmd.Process.Signal(os.Interrupt)
+	if err != nil {
 		if err.Error() == "os: process already finished" {
 			f.Running = false
 			return err
 		}
-		if err != nil {
-			log.Printf("Error sending SIGINT to Factorio process: %s", err)
-			return err
-		} else {
-			f.Running = false
-			log.Printf("Sent SIGINT to Factorio process. Factorio shutting down...")
-		}
+		log.Printf("Error sending SIGINT to Factorio process: %s", err)
+		return err
 	}
+	f.Running = false
+	log.Printf("Sent SIGINT to Factorio process. Factorio shutting down...")
 
 	return nil
 }
