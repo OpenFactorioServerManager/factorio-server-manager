@@ -596,7 +596,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		go func() {
 			err = FactorioServ.Run()
 			if err != nil {
-				log.Printf("Error starting Factorio server: %s", err)
+				log.Printf("Error starting Factorio server: %+v", err)
 				return
 			}
 		}()
@@ -613,7 +613,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 				}
 				break
 			} else {
-				log.Printf("Did not detect running Factorio server attempt: %s", timeout)
+				log.Printf("Did not detect running Factorio server attempt: %+v", timeout)
 			}
 			timeout++
 		}
@@ -668,7 +668,6 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	if FactorioServ.Running {
-		log.Printf("Creating server status response")
 		resp.Success = true
 		status := map[string]string{}
 		status["status"] = "running"
