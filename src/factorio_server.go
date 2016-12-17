@@ -28,6 +28,7 @@ type FactorioServer struct {
 	StdIn    io.WriteCloser         `json:"-"`
 	Settings map[string]interface{} `json:"-"`
 	Rcon     *rcon.RemoteConsole    `json:"-"`
+	LogChan  chan []string          `json:"-"`
 }
 
 func initFactorio() (f *FactorioServer, err error) {
@@ -149,9 +150,13 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 	for stdScanner.Scan() {
 		log.Printf("Factorio Server: %s", stdScanner.Text())
 		line := strings.Fields(stdScanner.Text())
+		// Check if Factorio Server reports any errors if so handle it
 		if line[1] == "Error" {
-			log.Printf("Error: %s, %s", line[0], line[1])
+			f.checkLogError(line)
 		}
+
+		// Send latest console output to log channel
+		f.LogChan <- line
 	}
 	if err := stdScanner.Err(); err != nil {
 		log.Printf("Error reading std buffer: %s", err)
@@ -160,11 +165,11 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 	return nil
 }
 
-func (f *FactorioServer) checkLogError(logline string) []string {
+func (f *FactorioServer) checkLogError(logline string) error {
 	line := strings.Fields(logline)
 	log.Println(line)
 
-	return line
+	return nil
 }
 
 func (f *FactorioServer) Stop() error {
