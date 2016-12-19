@@ -32,12 +32,6 @@ class App extends React.Component {
                 browserHistory.push("/login");
             }
         }, 1000);
-        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-        var ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
-        ws.onopen = function(){
-            /*Send a small message to the console once the connection is established */
-            console.log('Connection open!');
-        }
     }
 
     flashMessage(message) {

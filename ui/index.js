@@ -8,6 +8,7 @@ import SavesContent from './App/components/SavesContent.jsx';
 import ConfigContent from './App/components/ConfigContent.jsx';
 import LoginContent from './App/components/LoginContent.jsx';
 import UsersContent from './App/components/UsersContent.jsx';
+import ConsoleContent from './App/components/ConsoleContent.jsx';
 import Index from './App/components/Index.jsx';
 
 ReactDOM.render((
@@ -20,7 +21,8 @@ ReactDOM.render((
             <Route path="/mods" component={ModsContent}/> 
             <Route path="/logs" component={LogsContent}/> 
             <Route path="/saves" component={SavesContent}/> 
-            <Route path="/config" component={ConfigContent}/> 
+            <Route path="/config" component={ConfigContent}/>
+            <Route path="/console" component={ConsoleContent}/>
         </Route>
     </Router>
 ), document.getElementById('app'))
