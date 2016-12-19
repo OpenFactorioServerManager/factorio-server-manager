@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,7 +15,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/james4k/rcon"
+	"github.com/MajorMJR/rcon"
 )
 
 type FactorioServer struct {
@@ -31,9 +32,17 @@ type FactorioServer struct {
 	LogChan  chan []string          `json:"-"`
 }
 
+func randomPort() int {
+	// Returns random port to use for rcon connection
+	return rand.Intn(45000-40000) + 40000
+}
+
 func initFactorio() (f *FactorioServer, err error) {
 	f = new(FactorioServer)
 	f.Settings = make(map[string]interface{})
+	config.FactorioRconPort = randomPort()
+
+	log.Printf("%v", config)
 
 	if err = os.MkdirAll(config.FactorioConfigDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create config directory: %v", err)
@@ -101,6 +110,8 @@ func (f *FactorioServer) Run() error {
 		"--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile),
 		"--port", strconv.Itoa(f.Port),
 		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
+		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
+		"--rcon-pass", config.FactorioRconPass,
 	}
 
 	log.Println("Starting server with command: ", config.FactorioBinary, args)
@@ -152,11 +163,11 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 		line := strings.Fields(stdScanner.Text())
 		// Check if Factorio Server reports any errors if so handle it
 		if line[1] == "Error" {
-			f.checkLogError(line)
+			err := f.checkLogError(line)
+			if err != nil {
+				log.Printf("Error checking Factorio Server Error: %s", err)
+			}
 		}
-
-		// Send latest console output to log channel
-		f.LogChan <- line
 	}
 	if err := stdScanner.Err(); err != nil {
 		log.Printf("Error reading std buffer: %s", err)
@@ -165,9 +176,8 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 	return nil
 }
 
-func (f *FactorioServer) checkLogError(logline string) error {
-	line := strings.Fields(logline)
-	log.Println(line)
+func (f *FactorioServer) checkLogError(logline []string) error {
+	log.Println(logline)
 
 	return nil
 }

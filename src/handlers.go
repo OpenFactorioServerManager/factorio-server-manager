@@ -677,13 +677,11 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: ", err)
 		}
-		log.Printf("Server status sent with data: %+v", resp.Data)
 	} else {
 		resp.Success = true
 		status := map[string]string{}
 		status["status"] = "stopped"
 		resp.Data = status
-		log.Printf("Server not running, creating status response: %v", resp)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: ", err)
 		}
