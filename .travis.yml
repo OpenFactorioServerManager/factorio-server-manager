@@ -11,7 +11,7 @@ install:
   - go get github.com/gorilla/mux
   - go get github.com/hpcloud/tail
   - go get github.com/gorilla/websocket
-  - go get github.com/james4k/rcon
+  - go get github.com/majormjr/rcon
 
 script:
  - go test -v ./...
