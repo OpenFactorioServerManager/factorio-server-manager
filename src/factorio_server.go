@@ -40,9 +40,6 @@ func randomPort() int {
 func initFactorio() (f *FactorioServer, err error) {
 	f = new(FactorioServer)
 	f.Settings = make(map[string]interface{})
-	config.FactorioRconPort = randomPort()
-
-	log.Printf("%v", config)
 
 	if err = os.MkdirAll(config.FactorioConfigDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create config directory: %v", err)

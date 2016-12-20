@@ -186,7 +186,7 @@ class ConfigContent extends React.Component {
                                                 var comment = this.state.serverSettings["_comment_" + key]
                                                 return(
                                                 <div className="form-group">
-                                                    <label for={key} className="control-label col-md-3">{setting_key}</label>
+                                                    <label htmlFor={key} className="control-label col-md-3">{setting_key}</label>
                                                     <div className="col-md-6">
                                                         {this.formTypeField(key, setting)}
                                                         <p className="help-block">{comment}</p>

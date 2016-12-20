@@ -58,6 +58,7 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Websocket").
 		Handler(AuthorizeHandler(ws))
+	ws.Handle("log subscribe", logSubscribe)
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
@@ -90,6 +91,10 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Server").
 		Handler(AuthorizeHandler(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
+	r.Path("/console").
+		Methods("GET").
+		Name("Server").
+		Handler(AuthorizeHandler(http.StripPrefix("/console", http.FileServer(http.Dir("./app/")))))
 	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
