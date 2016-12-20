@@ -55,6 +55,9 @@ func loadServerConfig(f string) {
 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
+	failOnError(err, "Error decoding JSON config file.")
+
+	config.FactorioRconPort = randomPort()
 }
 
 func parseFlags() {

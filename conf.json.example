@@ -5,5 +5,5 @@
     "cookie_encryption_key": "topsecretkey",
     "settings_file": "server-settings.json",
     "log_file": "factorio-server-manager.log",
-    "rcon_pass": "factorio_rcon",
+    "rcon_pass": "factorio_rcon"
 }

@@ -10,3 +10,52 @@
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
 }
+
+div.react-console-container {
+  font-size: 0.85em;
+  font-family: "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+  width: 60em;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 20em;
+  background: #efefef;
+  padding: 0.5em;
+  overflow: auto;
+  white-space: pre; }
+
+div.react-console-prompt-box {
+  color: #444; }
+
+span.react-console-prompt-label {
+  font-weight: bold; }
+
+div.react-console-focus span.react-console-cursor {
+  background: #333;
+  color: #eee; }
+
+div.react-console-nofocus span.react-console-cursor {
+  background: none;
+  color: #444;
+  outline: 0.1em solid #333;
+  outline-offset: -0.1em; }
+
+div.react-console-focus span.react-console-cursor-idle {
+  animation: react-console-cursor-animation 1s infinite; }
+
+@keyframes react-console-cursor-animation {
+  0% {
+    background: #333;
+    color: #eee; }
+  50% {
+    background: #333;
+    color: #eee; }
+  51% {
+    background: none;
+    color: #444; }
+  100% {
+    background: none;
+    color: #444; } }
+
+div.react-console-message {
+  color: #999;
+  padding: 0.1em; }

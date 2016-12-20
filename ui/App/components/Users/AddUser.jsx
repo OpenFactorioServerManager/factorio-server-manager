@@ -61,7 +61,7 @@ class AddUser extends React.Component {
                         <div className="col-md-4">
                             <form action="" onSubmit={this.createUser}>
                                 <div className="form-group">
-                                    <label for="username">Username</label>
+                                    <label htmlFor="username">Username</label>
                                     <input ref="username" type="text" className="form-control" id="username" placeholder="Enter username" />
                                 </div> 
                                 <div className="form-group">

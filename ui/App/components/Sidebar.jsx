@@ -50,6 +50,7 @@ class Sidebar extends React.Component {
                     <li><Link to="/saves" activeClassName="active"><i className="fa fa-floppy-o"></i> <span>Saves</span></Link></li>
                     <li><Link to="/config" activeClassName="active"><i className="fa fa-cogs"></i> <span>Game Configuration</span></Link></li>
                     <li><Link to="/settings" activeClassName="active"><i className="fa fa-cog"></i> <span>Settings</span></Link></li>
+                    <li><Link to="/console" activeClassName="active"><i className="fa fa-terminal"></i> <span>Console</span></Link></li>
                 </ul>
                 </section>
                 <div style={{height: "100%"}}></div>
