@@ -14,7 +14,7 @@
 div.console-container {
   font-size: 0.85em;
   font-family: "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
-  width: 60em;
+  width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   height: 20em;
@@ -25,4 +25,5 @@ div.console-container {
 
 div.console-prompt-box {
   color: #444; 
-  max-width: 100%}
+  width: 100%;
+  max-width: 100%;}
