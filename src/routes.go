@@ -58,6 +58,7 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Websocket").
 		Handler(AuthorizeHandler(ws))
+	ws.Handle("command send", commandSend)
 	ws.Handle("log subscribe", logSubscribe)
 
 	// Serves the frontend application from the app directory

@@ -56,6 +56,8 @@ class ConsoleContent extends React.Component {
         if (e.key === "Enter") {
             var input_text = this.refs.term.value;
 
+            this.socket.emit("command send", input_text);
+
             this.addHistory(this.state.prompt + " " + input_text);
 
             this.clearInput();
@@ -115,8 +117,8 @@ class ConsoleContent extends React.Component {
                     {output}
                 </div>
                 <p>
-                    <span className="console-prompt-box">{this.state.prompt}</span>
-                    <input type="text" onKeyPress={this.handleInput} ref="term" />
+                    <span className="console-prompt-box">{this.state.prompt}
+                    <input type="text" onKeyPress={this.handleInput} ref="term" /></span>
                 </p>
 
                 </section>

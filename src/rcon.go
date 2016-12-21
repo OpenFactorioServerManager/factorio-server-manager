@@ -1,33 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"strconv"
 
-	"github.com/james4k/rcon"
+	"github.com/majormjr/rcon"
 )
 
-func connectRC(addr, pass string) {
-	rc, err := rcon.Dial(addr, pass)
+func connectRC() error {
+	var err error
+	rconAddr := config.ServerIP + ":" + strconv.Itoa(config.FactorioRconPort)
+	FactorioServ.Rcon, err = rcon.Dial(rconAddr, config.FactorioRconPass)
 	if err != nil {
-		log.Printf("Error: %s", err)
+		log.Printf("Cannot create rcon session: %s", err)
+		return err
 	}
-	defer rc.Close()
+	log.Printf("rcon session established on %s", rconAddr)
 
-	req_id, err := rc.Write("Factorio Server Manager Connected")
-	if err != nil {
-		log.Printf("Error: %s", err)
-	}
-
-	log.Printf("Establish RCON connection with request id: %s", req_id)
-
-	for {
-		resp, req_id, err := rc.Read()
-		if err != nil {
-			log.Printf("Error: %s", err)
-		}
-
-		fmt.Println(resp, req_id)
-	}
-
+	return nil
 }
