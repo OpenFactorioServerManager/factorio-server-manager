@@ -15,7 +15,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/MajorMJR/rcon"
+	"github.com/majormjr/rcon"
 )
 
 type FactorioServer struct {
