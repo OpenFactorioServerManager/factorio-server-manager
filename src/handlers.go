@@ -329,7 +329,7 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	resp.Data, err = listSaves(config.FactorioSavesDir)
+	savesList, err := listSaves(config.FactorioSavesDir)
 	if err != nil {
 		resp.Success = false
 		resp.Data = fmt.Sprintf("Error listing save files: %s", err)
@@ -338,6 +338,11 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	loadLatest := Save{Name: "Load Latest"}
+	savesList = append(savesList, loadLatest)
+
+	resp.Data = savesList
 
 	resp.Success = true
 
@@ -645,7 +650,6 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		err = FactorioServ.Rcon.Close()
 		if err != nil {
 			log.Printf("Error closing rcon connection: %s", err)
 			resp.Data = fmt.Sprintf("Error in stop server handler: %s", err)
