@@ -4,6 +4,7 @@ import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Footer from './components/Footer.jsx';
 import HiddenSidebar from './components/HiddenSidebar.jsx';
+import Socket from '../socket.js';
 
 class App extends React.Component {
     constructor(props) {
@@ -13,6 +14,7 @@ class App extends React.Component {
         this.facServStatus = this.facServStatus.bind(this);
         this.getSaves = this.getSaves.bind(this);
         this.getStatus = this.getStatus.bind(this);
+        this.connectWebSocket = this.connectWebSocket.bind(this);
         this.state = {
             serverRunning: "stopped",
             serverStatus: {},
@@ -32,6 +34,13 @@ class App extends React.Component {
                 browserHistory.push("/login");
             }
         }, 1000);
+        this.connectWebSocket();
+    }
+    
+    connectWebSocket() {
+        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        let ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
+        let socket = this.socket = new Socket(ws);
     }
 
     flashMessage(message) {
@@ -127,7 +136,8 @@ class App extends React.Component {
                         getStatus: this.getStatus,
                         saves: this.state.saves,
                         getSaves: this.getSaves,
-                        username: this.state.username}
+                        username: this.state.username,
+                        socket: this.socket}
                     )}
 
                     <Footer />

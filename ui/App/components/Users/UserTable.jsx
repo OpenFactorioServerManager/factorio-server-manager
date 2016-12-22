@@ -75,7 +75,7 @@ class UserTable extends React.Component {
     }
 }
 
-UserTable.proptypes = {
+UserTable.propTypes = {
     users: React.PropTypes.array.isRequired,
     listUsers: React.PropTypes.func.isRequired,
 }

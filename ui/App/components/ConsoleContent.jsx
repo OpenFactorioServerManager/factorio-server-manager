@@ -1,14 +1,10 @@
 import React from 'react';
 import {IndexLink} from 'react-router';
-import Socket from '../../socket.js';
 
 class ConsoleContent extends React.Component {
     constructor(props) {
         super(props);
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.connectWebsocket = this.connectWebsocket.bind(this);
-        this.handleCommand = this.handleCommand.bind(this);
-        this.onConnect = this.onConnect.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.clearInput = this.clearInput.bind(this);
         this.clearHistory = this.clearHistory.bind(this);
@@ -23,43 +19,23 @@ class ConsoleContent extends React.Component {
     }
 
     componentDidMount() {
-        this.connectWebsocket();
+        this.props.socket.emit("log subscribe");
+        this.setState({connected: true});
+        
+        this.props.socket.on('log update', this.newLogLine.bind(this));
     }
 
     componentDidUpdate() {
       var el = this.refs.output;
-      console.log(this.refs);
       var container = document.getElementById("console-output");
-      console.log(container)
       container.scrollTop = this.refs.output.scrollHeight;
-    }
-
-    connectWebsocket() {
-        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-        let ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
-        let socket = this.socket = new Socket(ws);
-        socket.on('connect', this.onConnect.bind(this));
-        socket.on('log update', this.newLogLine.bind(this));
-    }
-
-    handleCommand(command) {
-        this.refs.console.log(command);
-        this.refs.console.return();
-    }
-
-    onConnect() {
-        this.setState({connected: true});
-        this.socket.emit("log subscribe");
     }
 
     handleInput(e) {
         if (e.key === "Enter") {
             var input_text = this.refs.term.value;
-
-            this.socket.emit("command send", input_text);
-
+            this.props.socket.emit("command send", input_text);
             this.addHistory(this.state.prompt + " " + input_text);
-
             this.clearInput();
         }
     }
@@ -69,7 +45,7 @@ class ConsoleContent extends React.Component {
     }
 
     clearHistory() {
-        ths.setState({ history: []});
+        ths.setState({ history: [] });
     }
 
     addHistory(output) {
@@ -125,6 +101,10 @@ class ConsoleContent extends React.Component {
             </div>
         );
     }
+}
+
+ConsoleContent.propTypes = {
+    socket: React.PropTypes.object.isRequired,
 }
 
 export default ConsoleContent;
