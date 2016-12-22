@@ -95,6 +95,7 @@ func initFactorio() (f *FactorioServer, err error) {
 
 func (f *FactorioServer) Run() error {
 	var err error
+	var savefileArg string
 
 	data, err := json.MarshalIndent(f.Settings, "", "  ")
 	if err != nil {
@@ -104,11 +105,16 @@ func (f *FactorioServer) Run() error {
 	}
 
 	args := []string{
-		"--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile),
 		"--port", strconv.Itoa(f.Port),
 		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-pass", config.FactorioRconPass,
+	}
+
+	if f.Savefile == "Load Latest" {
+		args = append(args, "--start-server-load-latest")
+	} else {
+		args = append(args, "--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile))
 	}
 
 	log.Println("Starting server with command: ", config.FactorioBinary, args)
@@ -159,22 +165,24 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 		log.Printf("Factorio Server: %s", stdScanner.Text())
 		line := strings.Fields(stdScanner.Text())
 		// Check if Factorio Server reports any errors if so handle it
-		if line[1] == "Error" {
-			err := f.checkLogError(line)
-			if err != nil {
-				log.Printf("Error checking Factorio Server Error: %s", err)
-			}
-		}
-		// If rcon port is opened connect to rcon
-		rconLog := "Starting RCON interface at port " + strconv.Itoa(config.FactorioRconPort)
-		// check if slice index is greater than 2 to prevent panic
-		if len(line) > 2 {
-			// log line for opened rcon connection
-			if strings.Join(line[3:], " ") == rconLog {
-				log.Printf("Rcon running on Factorio Server")
-				err = connectRC()
+		if len(line) > 0 {
+			if line[1] == "Error" {
+				err := f.checkLogError(line)
 				if err != nil {
-					log.Printf("Error: %s", err)
+					log.Printf("Error checking Factorio Server Error: %s", err)
+				}
+			}
+			// If rcon port is opened connect to rcon
+			rconLog := "Starting RCON interface at port " + strconv.Itoa(config.FactorioRconPort)
+			// check if slice index is greater than 2 to prevent panic
+			if len(line) > 2 {
+				// log line for opened rcon connection
+				if strings.Join(line[3:], " ") == rconLog {
+					log.Printf("Rcon running on Factorio Server")
+					err = connectRC()
+					if err != nil {
+						log.Printf("Error: %s", err)
+					}
 				}
 			}
 		}
@@ -223,6 +231,11 @@ func (f *FactorioServer) Stop() error {
 	}
 	f.Running = false
 	log.Printf("Sent SIGINT to Factorio process. Factorio shutting down...")
+
+	err = f.Rcon.Close()
+	if err != nil {
+		log.Printf("Error close rcon connection: %s", err)
+	}
 
 	return nil
 }
