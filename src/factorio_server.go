@@ -95,7 +95,6 @@ func initFactorio() (f *FactorioServer, err error) {
 
 func (f *FactorioServer) Run() error {
 	var err error
-	var savefileArg string
 
 	data, err := json.MarshalIndent(f.Settings, "", "  ")
 	if err != nil {
