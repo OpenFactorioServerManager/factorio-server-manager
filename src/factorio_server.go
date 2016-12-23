@@ -162,16 +162,21 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 	stdScanner := bufio.NewScanner(std)
 	for stdScanner.Scan() {
 		log.Printf("Factorio Server: %s", stdScanner.Text())
+		if err := f.writeLog(stdScanner.Text()); err != nil {
+			log.Printf("Error: %s", err)
+		}
+
 		line := strings.Fields(stdScanner.Text())
-		// Check if Factorio Server reports any errors if so handle it
+		// Ensure logline slice is in bounds
 		if len(line) > 0 {
+			// Check if Factorio Server reports any errors if so handle it
 			if line[1] == "Error" {
 				err := f.checkLogError(line)
 				if err != nil {
 					log.Printf("Error checking Factorio Server Error: %s", err)
 				}
 			}
-			// If rcon port is opened connect to rcon
+			// If rcon port opens indicated in log connect to rcon
 			rconLog := "Starting RCON interface at port " + strconv.Itoa(config.FactorioRconPort)
 			// check if slice index is greater than 2 to prevent panic
 			if len(line) > 2 {
@@ -190,6 +195,25 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 		log.Printf("Error reading std buffer: %s", err)
 		return err
 	}
+	return nil
+}
+
+func (f *FactorioServer) writeLog(logline string) error {
+	logfileName := config.FactorioDir + "factorio-server-console.log"
+	file, err := os.OpenFile(logfileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		log.Printf("Cannot open logfile for appending Factorio Server output: %s", err)
+		return err
+	}
+	defer file.Close()
+
+	logline = logline + "\n"
+
+	if _, err = file.WriteString(logline); err != nil {
+		log.Printf("Error appending to factorio-server-console.log: %s", err)
+		return err
+	}
+
 	return nil
 }
 

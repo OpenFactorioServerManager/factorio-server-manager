@@ -650,14 +650,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		if err != nil {
-			log.Printf("Error closing rcon connection: %s", err)
-			resp.Data = fmt.Sprintf("Error in stop server handler: %s", err)
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: ", err)
-			}
-			return
-		}
+
 		log.Printf("Stopped Factorio server.")
 		resp.Success = true
 		resp.Data = fmt.Sprintf("Factorio server stopped")

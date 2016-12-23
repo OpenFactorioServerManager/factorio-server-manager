@@ -8,7 +8,8 @@ import (
 
 func logSubscribe(client *Client, data interface{}) {
 	go func() {
-		t, err := tail.TailFile(config.FactorioLog, tail.Config{Follow: true})
+		logfile := config.FactorioDir + "factorio-server-console.log"
+		t, err := tail.TailFile(logfile, tail.Config{Follow: true})
 		if err != nil {
 			log.Printf("Error subscribing to tail log %s", err)
 			return
