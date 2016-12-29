@@ -17,7 +17,7 @@ div.console-container {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  height: 20em;
+  height: 100vh;
   background: #efefef;
   padding: 0.5em;
   overflow: auto;
