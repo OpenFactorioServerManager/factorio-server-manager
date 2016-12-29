@@ -88,15 +88,16 @@ class ConsoleContent extends React.Component {
                 </section>
 
                 <section className="content">
-                
-                <div id='console-output' className='console-container' onClick={this.handleClick} ref="output">
-                    {output}
-                </div>
-                <p>
-                    <span className="console-prompt-box">{this.state.prompt}
-                    <input type="text" onKeyPress={this.handleInput} ref="term" /></span>
-                </p>
+                <div className="console-box" >
+                    <div id='console-output' className='console-container' onClick={this.handleClick} ref="output">
+                        {output}
+                    </div>
+                    <p>
+                        <span className="console-prompt-box">{this.state.prompt}
+                        <input type="text" onKeyPress={this.handleInput} ref="term" /></span>
+                    </p>
 
+                </div>
                 </section>
             </div>
         );
