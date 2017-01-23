@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MajorMJR/factorio-server-manager.svg?branch=master)](https://travis-ci.org/MajorMJR/factorio-server-manager) 
+[![Build Status](https://travis-ci.org/mroote/factorio-server-manager.svg?branch=master)](https://travis-ci.org/mroote/factorio-server-manager) 
 
 #Factorio Server Manager
 
