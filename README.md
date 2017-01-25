@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MajorMJR/factorio-server-manager.svg?branch=master)](https://travis-ci.org/MajorMJR/factorio-server-manager) 
+[![Build Status](https://travis-ci.org/mroote/factorio-server-manager.svg?branch=master)](https://travis-ci.org/mroote/factorio-server-manager) 
 
 #Factorio Server Manager
 
@@ -96,7 +96,7 @@ The frontend code is served by a HTTP file server running on /.
 ```
 git clone https://github.com/MajorMJR/factorio-server-manager.git
 cd factorio-server-manager
-go build
+make build
 ```
 
 #### Building the React frontend
@@ -106,13 +106,11 @@ The root of the UI application is served at app/index.html.  Run the npm build s
 
 All necessary CSS and Javascript files are included for running the UI.
 
-Transpiled bundle.js application is output to app/bundle.js, 'npm run build' script starts webpack to build the React application for development
+Transpiled bundle.js application is output to app/bundle.js, 'npm run build' script starts webpack to build the React application for development.
 ```
- install nodejs (use nvm)
  cd ui/
  npm install
  npm run build
- Start factorio-server-manager binary in another terminal
 ```
 
 ### Building for Windows

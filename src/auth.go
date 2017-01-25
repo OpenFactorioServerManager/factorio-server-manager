@@ -60,7 +60,7 @@ func (auth *AuthHTTP) CreateOrUpdateUser(username, password, role, email string)
 		return err
 	}
 
-	log.Printf("Created user: %s", user.Username)
+	log.Printf("Created/Updated user: %s", user.Username)
 
 	return nil
 }

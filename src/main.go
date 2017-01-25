@@ -19,6 +19,8 @@ type Config struct {
 	FactorioConfigDir   string `json:"config_directory"`
 	FactorioLog         string `json:"logfile"`
 	FactorioBinary      string `json:"factorio_binary"`
+	FactorioRconPort    int    `json:"rcon_port"`
+	FactorioRconPass    string `json:"rcon_pass"`
 	ServerIP            string `json:"server_ip"`
 	ServerPort          string `json:"server_port"`
 	MaxUploadSize       int64  `json:"max_upload_size"`
@@ -53,6 +55,9 @@ func loadServerConfig(f string) {
 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
+	failOnError(err, "Error decoding JSON config file.")
+
+	config.FactorioRconPort = randomPort()
 }
 
 func parseFlags() {

@@ -10,3 +10,20 @@
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
 }
+
+div.console-container {
+  font-size: 0.85em;
+  font-family: "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 100vh;
+  background: #efefef;
+  padding: 0.5em;
+  overflow: auto;
+  white-space: pre; }
+
+div.console-prompt-box {
+  color: #444; 
+  width: 100%;
+  max-width: 100%;}

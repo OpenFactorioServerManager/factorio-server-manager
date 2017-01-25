@@ -329,7 +329,7 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	resp.Data, err = listSaves(config.FactorioSavesDir)
+	savesList, err := listSaves(config.FactorioSavesDir)
 	if err != nil {
 		resp.Success = false
 		resp.Data = fmt.Sprintf("Error listing save files: %s", err)
@@ -338,6 +338,11 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	loadLatest := Save{Name: "Load Latest"}
+	savesList = append(savesList, loadLatest)
+
+	resp.Data = savesList
 
 	resp.Success = true
 
@@ -596,7 +601,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		go func() {
 			err = FactorioServ.Run()
 			if err != nil {
-				log.Printf("Error starting Factorio server: %s", err)
+				log.Printf("Error starting Factorio server: %+v", err)
 				return
 			}
 		}()
@@ -613,8 +618,9 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 				}
 				break
 			} else {
-				log.Printf("Did not detect running Factorio server attempt: %s", timeout)
+				log.Printf("Did not detect running Factorio server attempt: %+v", timeout)
 			}
+
 			timeout++
 		}
 		if FactorioServ.Running == false {
@@ -644,6 +650,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+
 		log.Printf("Stopped Factorio server.")
 		resp.Success = true
 		resp.Data = fmt.Sprintf("Factorio server stopped")
@@ -668,7 +675,6 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	if FactorioServ.Running {
-		log.Printf("Creating server status response")
 		resp.Success = true
 		status := map[string]string{}
 		status["status"] = "running"
@@ -678,13 +684,11 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: ", err)
 		}
-		log.Printf("Server status sent with data: %+v", resp.Data)
 	} else {
 		resp.Success = true
 		status := map[string]string{}
 		status["status"] = "stopped"
 		resp.Data = status
-		log.Printf("Server not running, creating status response: %v", resp)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: ", err)
 		}
