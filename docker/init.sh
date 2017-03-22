@@ -14,4 +14,5 @@ if [ ! -f /security/server.key ]; then
 fi
 
 nohup nginx &
-/opt/factorio-server/factorio-server-manager -dir '/opt/factorio' -conf '/opt/factorio-server/conf.json'
+cd /opt/factorio-server-manager
+./factorio-server-manager -dir '/opt/factorio'

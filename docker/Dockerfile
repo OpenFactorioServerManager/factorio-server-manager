@@ -12,8 +12,6 @@ VOLUME /opt/factorio/saves /opt/factorio/mods /opt/factorio/config /security
 RUN apk add --no-cache curl tar unzip nginx openssl
 
 WORKDIR /opt/
-COPY "init.sh" "/opt/init.sh"
-COPY "nginx.conf" "/etc/nginx/nginx.conf"
 
 RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/headless/linux64 -o /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
     tar zxf /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
@@ -23,6 +21,9 @@ RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/hea
     rm /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
     mkdir -p /run/nginx && \
     chown nginx:root /var/lib/nginx
+
+COPY "init.sh" "/opt/init.sh"
+COPY "nginx.conf" "/etc/nginx/nginx.conf"
 
 EXPOSE 80/tcp 443/tcp 34190-34200/udp
 
