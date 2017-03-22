@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/mroote/factorio-server-manager.svg?branch=master)](https://travis-ci.org/mroote/factorio-server-manager) 
 
-#Factorio Server Manager
+# Factorio Server Manager
 
-###A tool for managing Factorio servers.
+### A tool for managing Factorio servers.
 This tool runs on a Factorio server and allows management of the Factorio server, saves, mods and many other features.
 
 ## Features
