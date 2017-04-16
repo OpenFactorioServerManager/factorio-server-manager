@@ -1,0 +1,12 @@
+version: '2'
+services:
+  factorio-manager:
+    build: .
+    volumes:
+      - ./security:/security
+      - ./saves:/saves
+      - ./mods:/mods
+    ports:
+      - "80:80"
+      - "443:443"
+      - "34197:34197/udp"
