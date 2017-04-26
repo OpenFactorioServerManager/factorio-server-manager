@@ -9,13 +9,13 @@ ENV FACTORIO_VERSION=latest \
 
 VOLUME /opt/factorio/saves /opt/factorio/mods /opt/factorio/config /security
 
-RUN apk add --no-cache curl tar unzip nginx openssl
+RUN apk add --no-cache curl tar unzip nginx openssl xz
 
 WORKDIR /opt/
 
-RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/headless/linux64 -o /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
-    tar zxf /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
-    rm /tmp/factorio_$FACTORIO_VERSION.tar.gz && \
+RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/headless/linux64 -o /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
+    tar Jxf /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
+    rm /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
     curl -s -L -S -k https://github.com/mroote/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux-x64.zip --cacert /opt/github.pem -o /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
     unzip -qq /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
     rm /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
