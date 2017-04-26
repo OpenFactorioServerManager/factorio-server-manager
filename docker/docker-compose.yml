@@ -1,0 +1,17 @@
+version: '2'
+services:
+    factorio-manager:
+        container_name: factorio-manager
+        image: "majormjr/factorio-server-manager"
+        restart: always
+        volumes:
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/etc/timezone:/etc/timezone:ro"
+            - "[yourPath_optional]:/security"
+            - "[yourPath]:/opt/factorio/saves"
+            - "[yourPath]:/opt/factorio/mods"
+            - "[yourPath]:/opt/factorio/config"
+        ports:
+            - "80:80"
+            - "443:443"
+            - "34197:34197/udp"
