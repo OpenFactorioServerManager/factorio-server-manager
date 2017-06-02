@@ -667,6 +667,41 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+func KillServer(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	if FactorioServ.Running {
+		err := FactorioServ.Kill()
+		if err != nil {
+			log.Printf("Error in kill server handler: %s", err)
+			resp.Data = fmt.Sprintf("Error in kill server handler: %s", err)
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error encoding config file JSON reponse: ", err)
+			}
+			return
+		}
+
+		log.Printf("Killed Factorio server.")
+		resp.Success = true
+		resp.Data = fmt.Sprintf("Factorio server killed")
+	} else {
+		resp.Data = "Factorio server is not running"
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error encoding config file JSON reponse: ", err)
+		}
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error encoding config file JSON reponse: ", err)
+	}
+}
+
 func CheckServer(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Success: false,

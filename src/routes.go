@@ -229,6 +229,11 @@ var apiRoutes = Routes{
 		"/server/stop",
 		StopServer,
 	}, {
+		"KillServer",
+		"GET",
+		"/server/kill",
+		KillServer,
+	}, {
 		"RunningServer",
 		"GET",
 		"/server/status",

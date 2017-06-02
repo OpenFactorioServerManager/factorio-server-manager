@@ -5,6 +5,7 @@ class ServerCtl extends React.Component {
         super(props);
         this.startServer = this.startServer.bind(this);
         this.stopServer = this.stopServer.bind(this);
+        this.killServer = this.killServer.bind(this);
 
         this.incrementPort = this.incrementPort.bind(this);
         this.decrementPort = this.decrementPort.bind(this);
@@ -58,6 +59,21 @@ class ServerCtl extends React.Component {
         e.preventDefault();
     }
 
+    killServer(e) {
+        $.ajax({
+            type: "GET",
+            url: "/api/server/kill",
+            dataType: "json",
+            success: (resp) => {
+                this.props.facServStatus();
+                this.props.getStatus();
+                console.log(resp)
+                swal(resp.data)
+            }
+        });
+        e.preventDefault();
+    }
+
     incrementPort() {
         let port = this.state.port + 1;
         this.setState({port: port})
@@ -85,7 +101,11 @@ class ServerCtl extends React.Component {
                                 </div>
                                 
                                 <div className="col-md-4">
-                                <button className="btn btn-block btn-danger" type="button" onClick={this.stopServer}><i className="fa fa-stop fa-fw"></i>Stop Factorio Server</button>
+                                <button className="btn btn-block btn-warning" type="button" onClick={this.stopServer}><i className="fa fa-stop fa-fw"></i>Stop &amp; Save Factorio Server</button>
+                                </div>
+
+                                <div className="col-md-4">
+                                <button className="btn btn-block btn-danger" type="button" onClick={this.killServer}><i className="fa fa-close fa-fw"></i>Stop Factorio Server without Saving</button>
                                 </div>
                             </div>
 
@@ -132,3 +152,4 @@ ServerCtl.propTypes = {
 }
 
 export default ServerCtl
+
