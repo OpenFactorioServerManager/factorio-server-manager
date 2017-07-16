@@ -7,3 +7,5 @@ conf.json
 *.exe
 build/
 npm-debug.log
+.idea/
+/ui/package-lock.json
