@@ -1,5 +1,5 @@
 import React from 'react';
-import Mod from './Mod';
+import Mod from './Mod.jsx';
 
 class ModOverview extends React.Component {
     render() {

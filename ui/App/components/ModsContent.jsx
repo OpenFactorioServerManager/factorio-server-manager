@@ -1,6 +1,6 @@
 import React from 'react';
 import {IndexLink} from 'react-router';
-import ModOverview from './Mods/overview';
+import ModOverview from './Mods/ModOverview.jsx';
 
 class ModsContent extends React.Component {
     constructor(props) {
