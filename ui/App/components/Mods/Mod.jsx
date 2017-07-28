@@ -1,14 +1,6 @@
 import React from 'react';
 
 class Mod extends React.Component {
-    togglePress(e) {
-        e.preventDefault();
-        console.log(this.refs.modName);
-        const node = this.refs.modName;
-        const modName = node.name;
-        this.props.toggleMod(modName);
-    }
-
     render() {
         if (this.props.mod.enabled === "false") {
             this.modStatus = <span className="label label-danger">Disabled</span>
@@ -20,14 +12,12 @@ class Mod extends React.Component {
                 <td>{this.props.mod.name}</td>
                 <td>{this.modStatus}</td>
                 <td>
-                    <form onSubmit={this.togglePress.bind(this)}>
-                        <input className='btn btn-default btn-sm'
-                            ref='modName'
-                            type='submit'
-                            value='Toggle'
-                            name={this.props.mod.name}
-                        />
-                    </form>
+                    <input className='btn btn-default btn-sm'
+                        ref='modName'
+                        type='submit'
+                        value='Toggle'
+                        name={this.props.mod.name}
+                    />
                 </td>
             </tr>
         )
@@ -35,8 +25,7 @@ class Mod extends React.Component {
 }
 
 Mod.propTypes = {
-    mod: React.PropTypes.object.isRequired,
-    toggleMod: React.PropTypes.func.isRequired
+    mod: React.PropTypes.object.isRequired
 }
 
 export default Mod

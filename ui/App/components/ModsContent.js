@@ -1,5 +1,6 @@
 import React from 'react';
 import {IndexLink} from 'react-router';
+import ModOverview from './Mods/overview';
 
 class ModsContent extends React.Component {
     constructor(props) {
@@ -46,7 +47,9 @@ class ModsContent extends React.Component {
                 </section>
 
                 <section className="content">
-                    Test
+                    <ModOverview
+                        {...this.state}
+                    />
                 </section>
             </div>
         )

@@ -4,7 +4,6 @@ import (
     "io/ioutil"
     "log"
     "encoding/json"
-    "os"
 )
 
 type Mod struct {
@@ -22,20 +21,16 @@ func listInstalledMods(modDir string) ([]Mod, error) {
 
     if err != nil {
         log.Println(err.Error())
-        os.Exit(1)
+        return nil, err
     }
-
-    log.Print(file)
 
     var result ModsList
     err_json := json.Unmarshal(file, &result)
 
     if err_json != nil {
         log.Println(err_json.Error())
-        os.Exit(1)
+        return result.Mods, err_json
     }
-
-    log.Printf("%v", result)
 
 	return result.Mods, nil
 }
