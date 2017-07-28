@@ -153,7 +153,7 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/list/installed",
 		ListInstalledMods,
-	}, {
+	}, /*{
 		"ListMods",
 		"GET",
 		"/mods/list",
@@ -178,7 +178,7 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/dl/{mod}",
 		DownloadMod,
-	}, {
+	},*/ {
 		"ListSaves",
 		"GET",
 		"/saves/list",

@@ -6,6 +6,7 @@ class ModsContent extends React.Component {
         super(props);
 
         this.componentDidMount = this.componentDidMount.bind(this);
+        this.loadModList = this.loadModList.bind(this);
 
         this.state = {
             installedMods: []
@@ -13,7 +14,21 @@ class ModsContent extends React.Component {
     }
 
     componentDidMount() {
+        this.loadModList();
         //TODO get base stuff
+    }
+
+    loadModList() {
+        $.ajax({
+            url: "/api/mods/list/installed",
+            dataType: "json",
+            success: (data) => {
+                this.setState({installedMods: data.data})
+            },
+            error: (xhr, status, err) => {
+                console.log('api/mods/list', status, err.toString());
+            }
+        });
     }
 
     render() {
