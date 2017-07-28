@@ -1,0 +1,41 @@
+import React from 'react';
+import {IndexLink} from 'react-router';
+
+class ModsContent extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.componentDidMount = this.componentDidMount.bind(this);
+
+        this.state = {
+            installedMods: []
+        }
+    }
+
+    componentDidMount() {
+        //TODO get base stuff
+    }
+
+    render() {
+        return(
+            <div className="content-wrapper">
+                <section className="content-header">
+                    <h1>
+                        Mods
+                        <small>Manage your mods</small>
+                    </h1>
+                    <ol className="breadcrumb">
+                        <li><IndexLink to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</IndexLink></li>
+                        <li className="active">Here</li>
+                    </ol>
+                </section>
+
+                <section className="content">
+                    Test
+                </section>
+            </div>
+        )
+    }
+}
+
+export default ModsContent;
