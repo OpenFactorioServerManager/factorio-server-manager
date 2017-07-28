@@ -98,7 +98,7 @@ func main() {
 	// Load server config from file
 	loadServerConfig(config.ConfFile)
 	// Create mod pack dir if missing
-	createModPackDir()
+	//createModPackDir() FIXME
 
 	// Initialize Factorio Server struct
 	FactorioServ, err = initFactorio()

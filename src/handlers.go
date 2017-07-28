@@ -52,7 +52,7 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 
 // Toggles mod passed in through mod variable
 // Updates mod-list.json file to toggle the enabled status of mods
-func ToggleMod(w http.ResponseWriter, r *http.Request) {
+/*func ToggleMod(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -88,10 +88,10 @@ func ToggleMod(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error in toggle mod: %s", err)
 	}
-}
+}*/
 
 // Returns JSON response of all mods in the mod-list.json file
-func ListMods(w http.ResponseWriter, r *http.Request) {
+/*func ListMods(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -113,7 +113,7 @@ func ListMods(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error listing mods: %s", err)
 	}
-}
+}*/
 
 // Uploads mod to the mods directory
 func UploadMod(w http.ResponseWriter, r *http.Request) {
@@ -165,7 +165,7 @@ func UploadMod(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func RemoveMod(w http.ResponseWriter, r *http.Request) {
+/*func RemoveMod(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -193,7 +193,7 @@ func RemoveMod(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-}
+}*/
 
 func DownloadMod(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
@@ -208,7 +208,7 @@ func DownloadMod(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, modFile)
 }
 
-func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
+/*func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -251,9 +251,9 @@ func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error listing saves: %s", err)
 		}
 	}
-}
+}*/
 
-func ListModPacks(w http.ResponseWriter, r *http.Request) {
+/*func ListModPacks(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -276,7 +276,7 @@ func ListModPacks(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error listing saves: %s", err)
 	}
-}
+}*/
 
 func DownloadModPack(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
@@ -291,7 +291,7 @@ func DownloadModPack(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, modFile)
 }
 
-func DeleteModPack(w http.ResponseWriter, r *http.Request) {
+/*func DeleteModPack(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -318,7 +318,7 @@ func DeleteModPack(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error removing modpack: %s", err)
 		}
 	}
-}
+}*/
 
 // Lists all save files in the factorio/saves directory
 func ListSaves(w http.ResponseWriter, r *http.Request) {
