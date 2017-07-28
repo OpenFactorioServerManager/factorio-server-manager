@@ -2,7 +2,7 @@ import React from 'react';
 
 class Mod extends React.Component {
     render() {
-        if (this.props.mod.enabled === "false") {
+        if (this.props.mod.enabled === false) {
             this.modStatus = <span className="label label-danger">Disabled</span>
         } else {
             this.modStatus = <span className="label label-success">Enabled</span>
@@ -17,6 +17,7 @@ class Mod extends React.Component {
                         type='submit'
                         value='Toggle'
                         name={this.props.mod.name}
+                           //TODO toggle and remove mod
                     />
                 </td>
             </tr>

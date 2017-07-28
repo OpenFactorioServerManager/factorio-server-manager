@@ -21,13 +21,14 @@ class ModOverview extends React.Component {
                             </thead>
                             <tbody>
                             {this.props.installedMods.map ( (mod, i) => {
-                                return(
-                                    <Mod
-                                        key={i}
-                                        mod={mod}
-                                        {...this.props}
-                                    />
-                                )
+                                if(mod != "base")
+                                    return(
+                                        <Mod
+                                            key={i}
+                                            mod={mod}
+                                            {...this.props}
+                                        />
+                                    )
                             })}
                             </tbody>
                         </table>
