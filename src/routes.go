@@ -263,7 +263,7 @@ var apiRoutes = Routes{
 		"POST",
 		"/user/remove",
 		RemoveUser,
-	}, {
+	}, /*{
 		"ListModPacks",
 		"GET",
 		"/mods/packs/list",
@@ -283,7 +283,7 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/packs/add",
 		CreateModPackHandler,
-	}, {
+	},*/ {
 		"GetServerSettings",
 		"GET",
 		"/settings",
