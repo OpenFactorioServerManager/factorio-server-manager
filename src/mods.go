@@ -4,6 +4,8 @@ import (
     "io/ioutil"
     "log"
     "encoding/json"
+    "net/http"
+    "net/url"
 )
 
 type Mod struct {
@@ -33,4 +35,34 @@ func listInstalledMods(modDir string) ([]Mod, error) {
     }
 
 	return result.Mods, nil
+}
+
+
+type LoginErrorResponse struct {
+    Message string  `json:"message"`
+    Status  int     `json:"status"`
+}
+type LoginSuccessResponse struct {
+    UserKey []string  `json:""`
+}
+//Log the user into factorio, so mods can be downloaded
+func getUserToken(username string, password string) (string, error, int) {
+    resp, get_err := http.PostForm("https://auth.factorio.com/api-login",
+        url.Values{"require_game_ownership": {"true"}, "username": {username}, "password": {password}})
+    if get_err != nil {
+        log.Fatal(get_err)
+        return "error", get_err, 500
+    }
+
+    text, err_io := ioutil.ReadAll(resp.Body)
+    resp.Body.Close()
+
+    text_string := string(text)
+
+    if err_io != nil {
+        log.Fatal(err_io)
+        return "error", err_io, resp.StatusCode
+    }
+
+    return text_string, nil, resp.StatusCode
 }

@@ -50,6 +50,38 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Login into the Factorio Mod Portal System
+func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+    var statusCode int
+	resp.Data, err, statusCode = getUserToken(username, password)
+
+    w.WriteHeader(statusCode)
+
+	if err != nil {
+		resp.Data = fmt.Sprintf("Error in getUserToken or LoginFactorioModPortal handler: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in Factorio-Login: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in Factorio-Login: %s", err)
+	}
+}
+
 // Toggles mod passed in through mod variable
 // Updates mod-list.json file to toggle the enabled status of mods
 /*func ToggleMod(w http.ResponseWriter, r *http.Request) {
@@ -90,33 +122,8 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 	}
 }*/
 
-// Returns JSON response of all mods in the mod-list.json file
-/*func ListMods(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	resp.Data, err = parseModList()
-	if err != nil {
-		resp.Data = fmt.Sprintf("Could not parse mod list: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in list mods: %s", err)
-		}
-		return
-	}
-
-	resp.Success = true
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error listing mods: %s", err)
-	}
-}*/
-
 // Uploads mod to the mods directory
-func UploadMod(w http.ResponseWriter, r *http.Request) {
+/*func UploadMod(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -163,7 +170,7 @@ func UploadMod(w http.ResponseWriter, r *http.Request) {
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
-}
+}*/
 
 /*func RemoveMod(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -195,7 +202,7 @@ func UploadMod(w http.ResponseWriter, r *http.Request) {
 	}
 }*/
 
-func DownloadMod(w http.ResponseWriter, r *http.Request) {
+/*func DownloadMod(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	vars := mux.Vars(r)
@@ -206,7 +213,7 @@ func DownloadMod(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s downloading: %s", r.Host, modFile)
 
 	http.ServeFile(w, r, modFile)
-}
+}*/
 
 /*func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -278,7 +285,7 @@ func DownloadMod(w http.ResponseWriter, r *http.Request) {
 	}
 }*/
 
-func DownloadModPack(w http.ResponseWriter, r *http.Request) {
+/*func DownloadModPack(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	vars := mux.Vars(r)
@@ -289,7 +296,7 @@ func DownloadModPack(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s downloading: %s", r.Host, modFile)
 
 	http.ServeFile(w, r, modFile)
-}
+}*/
 
 /*func DeleteModPack(w http.ResponseWriter, r *http.Request) {
 	var err error

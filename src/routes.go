@@ -153,6 +153,11 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/list/installed",
 		ListInstalledMods,
+	}, {
+		"LoginFactorioModPortal",
+		"POST",
+		"/mods/factorio/login",
+		LoginFactorioModPortal,
 	}, /*{
 		"ListMods",
 		"GET",
