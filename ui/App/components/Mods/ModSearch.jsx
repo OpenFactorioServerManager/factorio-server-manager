@@ -6,7 +6,7 @@ class ModSearch extends React.Component {
             return (
                 <form onSubmit={this.props.submitSearchMod}>
                     <div className="input-group col-lg-5">
-                        <input type="text" className="form-control" placeholder="Search for Mod"/>
+                        <input type="text" className="form-control" placeholder="Search for Mod" name="search" />
                         <span className="input-group-btn">
                             <input className="btn btn-default" type="submit" value="Go!"/>
                         </span>

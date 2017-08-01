@@ -54,6 +54,7 @@ func getUserToken(username string, password string) (string, error, int) {
         return "error", get_err, 500
     }
 
+    //get the response-text
     text, err_io := ioutil.ReadAll(resp.Body)
     resp.Body.Close()
 
@@ -63,6 +64,35 @@ func getUserToken(username string, password string) (string, error, int) {
         log.Fatal(err_io)
         return "error", err_io, resp.StatusCode
     }
+
+    return text_string, nil, resp.StatusCode
+}
+
+
+//Search inside the factorio mod portal
+func searchModPortal(keyword string) (string, error, int) {
+    //resp, get_err := http.Get
+    req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods", nil)
+    if err != nil {
+        return "error", err, 500
+    }
+
+    query := req.URL.Query()
+    query.Add("q", keyword)
+    req.URL.RawQuery = query.Encode()
+
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        return "error", err, 500
+    }
+
+    text, err := ioutil.ReadAll(resp.Body)
+    resp.Body.Close()
+    if err != nil {
+        return "error", err, 500
+    }
+
+    text_string := string(text)
 
     return text_string, nil, resp.StatusCode
 }

@@ -50,7 +50,7 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Login into the Factorio Mod Portal System
+// Returns JSON response with the userKey or the error-message
 func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -80,6 +80,39 @@ func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error in Factorio-Login: %s", err)
 	}
+}
+
+//Returns JSON response with the found mods
+func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
+    var err error
+    resp := JSONResponse{
+        Success: false,
+    }
+
+    w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+    //Get Data out of the request
+    search_keyword := r.FormValue("search")
+    log.Printf("search_keyword: %s", search_keyword)
+
+    var statusCode int
+    resp.Data, err, statusCode = searchModPortal(search_keyword)
+
+    w.WriteHeader(statusCode)
+
+    if err != nil {
+        resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+        if err := json.NewEncoder(w).Encode(resp); err != nil {
+            log.Printf("Error in searchModPortal: %s", err)
+        }
+        return
+    }
+
+    resp.Success = true
+
+    if err := json.NewEncoder(w).Encode(resp); err != nil {
+        log.Printf("Error in ModPortalSearch: %s", err)
+    }
 }
 
 // Toggles mod passed in through mod variable

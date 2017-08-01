@@ -10,14 +10,27 @@ class ModOverview extends React.Component {
 
         this.state = {
             username: "",
-            userKey: ""
+            userKey: "",
+            shownModList: []
         }
     }
 
     handlerSearchMod(e) {
         console.log($(e.target).find("input").val());
         e.preventDefault();
-        //TODO
+
+        $.ajax({
+            url: "/api/mods/search",
+            method: "GET",
+            data: $(e.target).serialize(),
+            dataType: "JSON",
+            success: (data) => {
+                console.log(data);
+            },
+            error: (jqXHR) => {
+                console.log(jqXHR.statusText);
+            }
+        })
     }
 
     handlerFactorioLogin(e) {
@@ -27,11 +40,8 @@ class ModOverview extends React.Component {
         let username = $form.find('input[name=username]').val();
 
         $.ajax({
-            // url: "https://auth.factorio.com/api-login",
-            // url: "https://mods.factorio.com/api/mods",
             url: "/api/mods/factorio/login",
             method: "POST",
-            crossDomain: true,
             data: $form.serialize(),
             dataType: "JSON",
             success: (data) => {
