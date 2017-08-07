@@ -26,7 +26,7 @@ type ModPack struct {
 }
 
 // Returns JSON response of all mods installed in factorio/mods
-func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
+func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -34,7 +34,8 @@ func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	resp.Data, err = listInstalledMods(config.FactorioModsDir)
+	mod_list, err := listInstalledMods(config.FactorioModsDir)
+	resp.Data = mod_list.Mods
 	if err != nil {
 		resp.Data = fmt.Sprintf("Error in ListInstalledMods handler: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -93,7 +94,6 @@ func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
 
     //Get Data out of the request
     search_keyword := r.FormValue("search")
-    log.Printf("search_keyword: %s", search_keyword)
 
     var statusCode int
     resp.Data, err, statusCode = searchModPortal(search_keyword)
@@ -113,6 +113,73 @@ func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
     if err := json.NewEncoder(w).Encode(resp); err != nil {
         log.Printf("Error in ModPortalSearch: %s", err)
     }
+}
+
+//Returns JSON response with the mod details
+func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	//Get Data out of the request
+	mod_id := r.FormValue("mod_id")
+
+	var statusCode int
+	resp.Data, err, statusCode = getModDetails(mod_id)
+
+	w.WriteHeader(statusCode)
+
+	if err != nil {
+		resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in searchModPortal: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in ModPortalSearch: %s", err)
+	}
+}
+
+func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	//Get Data out of the request
+	username := r.FormValue("username")
+	userKey := r.FormValue("userKey")
+	downloadUrl := r.FormValue("link")
+	filename := r.FormValue("filename")
+	mod_name := r.FormValue("modName")
+
+	var statusCode int
+	resp.Data, err, statusCode = installMod(username, userKey, downloadUrl, filename, mod_name)
+
+	w.WriteHeader(statusCode)
+
+	if err != nil {
+		resp.Data = fmt.Sprintf("Error in installMod: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in installMod: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in ModPortalInstallHandler: %s", err)
+	}
 }
 
 // Toggles mod passed in through mod variable

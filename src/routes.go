@@ -152,7 +152,7 @@ var apiRoutes = Routes{
 		"ListInstalledMods",
 		"GET",
 		"/mods/list/installed",
-		ListInstalledMods,
+		listInstalledModsHandler,
 	}, {
 		"LoginFactorioModPortal",
 		"POST",
@@ -163,6 +163,16 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/search",
 		ModPortalSearchHandler,
+	}, {
+		"GetModDetails",
+		"POST",
+		"/mods/details",
+		ModPortalDetailsHandler,
+	}, {
+		"ModPortalInstall",
+		"POST",
+		"/mods/install",
+		ModPortalInstallHandler,
 	}, /*{
 		"ListMods",
 		"GET",

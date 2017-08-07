@@ -6,6 +6,8 @@ import (
     "encoding/json"
     "net/http"
     "net/url"
+	"os"
+	"io"
 )
 
 type Mod struct {
@@ -18,12 +20,11 @@ type ModsList struct {
 }
 
 // List mods installed in the factorio/mods directory
-func listInstalledMods(modDir string) ([]Mod, error) {
+func listInstalledMods(modDir string) (ModsList, error) {
     file, err := ioutil.ReadFile(modDir + "/mod-list.json")
 
     if err != nil {
         log.Println(err.Error())
-        return nil, err
     }
 
     var result ModsList
@@ -31,10 +32,10 @@ func listInstalledMods(modDir string) ([]Mod, error) {
 
     if err_json != nil {
         log.Println(err_json.Error())
-        return result.Mods, err_json
+        return result, err_json
     }
 
-	return result.Mods, nil
+	return result, nil
 }
 
 
@@ -95,4 +96,84 @@ func searchModPortal(keyword string) (string, error, int) {
     text_string := string(text)
 
     return text_string, nil, resp.StatusCode
+}
+
+func getModDetails(modId string) (string, error, int) {
+    var err error
+    new_link := "https://mods.factorio.com/api/mods/" + modId
+    resp, err := http.Get(new_link)
+
+    if err != nil {
+        return "error", err, 500
+    }
+
+    //get the response-text
+    text, err := ioutil.ReadAll(resp.Body)
+    resp.Body.Close()
+
+    text_string := string(text)
+
+    if err != nil {
+        log.Fatal(err)
+        return "error", err, resp.StatusCode
+    }
+
+    return text_string, nil, resp.StatusCode
+}
+
+func installMod(username string, userKey string, url string, filename string, mod_id string) ([]Mod, error, int) {
+	var err error
+	//download the mod from the mod portal api
+	complete_url := "https://mods.factorio.com" + url + "?username=" + username + "&token=" + userKey
+
+	// don't worry about errors
+	response, err := http.Get(complete_url)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err, 500
+	}
+
+	if response.StatusCode != 200 {
+		text, _ := ioutil.ReadAll(response.Body)
+		log.Printf("StatusCode: %d \n ResponseBody: %s", response.StatusCode, text)
+
+		defer response.Body.Close()
+		return nil, err, response.StatusCode
+	}
+
+	defer response.Body.Close()
+
+	//open a file for writing
+	file, err := os.Create(config.FactorioModsDir + "/" + filename)
+	if err != nil {
+		log.Fatal(err)
+		return nil,  err, 500
+	}
+	// Use io.Copy to just dump the response body to the file. This supports huge files
+	_, err = io.Copy(file, response.Body)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err, 500
+	}
+	file.Close()
+
+	mod_list, err := listInstalledMods(config.FactorioModsDir)
+
+	if err != nil {
+		return nil, err, 500
+	}
+
+	//add new mod
+	new_mod_entry := Mod{
+		Name: mod_id,
+		Enabled:true,
+	}
+	mod_list.Mods = append(mod_list.Mods, new_mod_entry)
+
+	//build new json
+	new_json, _ := json.Marshal(mod_list)
+
+	ioutil.WriteFile(config.FactorioModsDir + "/mod-list.json", new_json, 0664)
+
+	return mod_list.Mods, nil, response.StatusCode
 }

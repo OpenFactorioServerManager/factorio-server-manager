@@ -1,22 +1,19 @@
 import React from 'react';
 import Mod from './Mod.jsx';
-import ModSearch from './ModSearch.jsx';
+import ModSearch from './search/ModSearch.jsx';
 
 class ModOverview extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handlerFactorioLogin = this.handlerFactorioLogin.bind(this);
+        this.handlerSearchMod = this.handlerSearchMod.bind(this);
 
         this.state = {
-            username: "",
-            userKey: "",
             shownModList: []
         }
     }
 
     handlerSearchMod(e) {
-        console.log($(e.target).find("input").val());
         e.preventDefault();
 
         $.ajax({
@@ -25,45 +22,21 @@ class ModOverview extends React.Component {
             data: $(e.target).serialize(),
             dataType: "JSON",
             success: (data) => {
-                console.log(data);
-            },
-            error: (jqXHR) => {
-                console.log(jqXHR.statusText);
-            }
-        })
-    }
-
-    handlerFactorioLogin(e) {
-        e.preventDefault();
-
-        let $form = $(e.target);
-        let username = $form.find('input[name=username]').val();
-
-        $.ajax({
-            url: "/api/mods/factorio/login",
-            method: "POST",
-            data: $form.serialize(),
-            dataType: "JSON",
-            success: (data) => {
-                swal({
-                    title: "Logged in Successfully",
-                    type: "success"
-                });
+                let parsed_data = JSON.parse(data.data);
 
                 this.setState({
-                    "username": username,
-                    "userKey": (JSON.parse(data.data))[0]
+                    "shownModList": parsed_data.results
                 });
             },
             error: (jqXHR) => {
                 let json_data = JSON.parse(jqXHR.responseJSON.data);
 
                 swal({
-                    title: json_data.message,
+                    title: json_data.detail,
                     type: "error"
                 });
             }
-        });
+        })
     }
 
     render() {
@@ -82,13 +55,13 @@ class ModOverview extends React.Component {
                             </div>
                         </button>
 
-                        <div className="box-body">
-                            <ModSearch
-                                {...this.state}
-                                submitSearchMod={this.handlerSearchMod}
-                                submitFactorioLogin={this.handlerFactorioLogin}
-                            />
-                        </div>
+                        <ModSearch
+                            {...this.state}
+                            {...this.props}
+                            submitSearchMod={this.handlerSearchMod}
+                            submitFactorioLogin={this.props.submitFactorioLogin}
+                        />
+
                     </div>
 
                     <div className="table-responsive">
@@ -121,7 +94,8 @@ class ModOverview extends React.Component {
 }
 
 ModOverview.propTypes = {
-    installedMods: React.PropTypes.array.isRequired
+    installedMods: React.PropTypes.array.isRequired,
+    submitFactorioLogin: React.PropTypes.func.isRequired
 };
 
 export default ModOverview;
