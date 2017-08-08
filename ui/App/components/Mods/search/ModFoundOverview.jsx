@@ -32,7 +32,8 @@ class ModFoundOverview extends React.Component {
         }
 
         let mods = [];
-        this.props.shownModList.forEach((mod) => {
+        this.props.shownModList.some((mod, index) => {
+            if(index == 10) return true;
             let img =
                 (mod.first_media_file != null) ?
                     <img src={mod.first_media_file.urls.thumb} style={img_style} />
