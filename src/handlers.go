@@ -34,7 +34,7 @@ func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	mod_list, err := listInstalledMods(config.FactorioModsDir)
+	mod_list, err := listInstalledModsByFolder()
 	resp.Data = mod_list.Mods
 	if err != nil {
 		resp.Data = fmt.Sprintf("Error in ListInstalledMods handler: %s", err)

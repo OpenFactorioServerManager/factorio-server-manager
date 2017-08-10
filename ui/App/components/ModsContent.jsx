@@ -89,7 +89,6 @@ class ModsContent extends React.Component {
                 modName: mod_name
             },
             success: (data) => {
-                console.log(data);
                 this.setState({
                     installedMods: data.data
                 })

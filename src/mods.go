@@ -8,6 +8,8 @@ import (
     "net/url"
 	"os"
 	"io"
+	"path/filepath"
+	"archive/zip"
 )
 
 type Mod struct {
@@ -34,6 +36,68 @@ func listInstalledMods(modDir string) (ModsList, error) {
         log.Println(err_json.Error())
         return result, err_json
     }
+
+	return result, nil
+}
+
+type ModInfoList struct {
+	Mods []ModInfo `json:"mods"`
+}
+type ModInfo struct {
+	Name string `json:"name"`
+	Version string `json:"version"`
+	Title string `json:"title"`
+	Author string `json:"author"`
+}
+func listInstalledModsByFolder() (ModInfoList, error) {
+	//scan ModFolder
+	var result ModInfoList
+	var err_o error
+	err_o = filepath.Walk(config.FactorioModsDir, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() && filepath.Ext(path) == ".zip" {
+			zip_file, err := zip.OpenReader(path)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			//iterate through all files inside the zip (search for info.json)
+			for _, single_file := range zip_file.File {
+				if single_file.FileInfo().Name() == "info.json" {
+					//interpret info.json
+					rc, err := single_file.Open()
+
+					if err != nil {
+						log.Fatal(err)
+						return err
+					}
+
+					byte_array, err := ioutil.ReadAll(rc)
+					rc.Close()
+					if err != nil {
+						log.Fatal(err)
+						return err
+					}
+
+					var mod_info ModInfo
+					err = json.Unmarshal(byte_array, &mod_info)
+					if err != nil {
+						log.Fatalln(err)
+						return err
+					}
+
+					result.Mods = append(result.Mods, mod_info)
+
+					break
+				}
+			}
+		}
+
+		return nil
+	})
+
+	if err_o != nil {
+		return ModInfoList{}, err_o
+	}
 
 	return result, nil
 }
@@ -121,7 +185,7 @@ func getModDetails(modId string) (string, error, int) {
     return text_string, nil, resp.StatusCode
 }
 
-func installMod(username string, userKey string, url string, filename string, mod_id string) ([]Mod, error, int) {
+func installMod(username string, userKey string, url string, filename string, mod_id string) ([]ModInfo, error, int) {
 	var err error
 	//download the mod from the mod portal api
 	complete_url := "https://mods.factorio.com" + url + "?username=" + username + "&token=" + userKey
@@ -175,5 +239,11 @@ func installMod(username string, userKey string, url string, filename string, mo
 
 	ioutil.WriteFile(config.FactorioModsDir + "/mod-list.json", new_json, 0664)
 
-	return mod_list.Mods, nil, response.StatusCode
+	mod_info_list, err := listInstalledModsByFolder()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err, 500
+	}
+
+	return mod_info_list.Mods, nil, response.StatusCode
 }

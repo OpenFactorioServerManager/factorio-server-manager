@@ -9,7 +9,7 @@ class Mod extends React.Component {
         }
         return(
             <tr>
-                <td>{this.props.mod.name}</td>
+                <td>{this.props.mod.title}</td>
                 <td>{this.modStatus}</td>
                 <td>
                     <input className='btn btn-default btn-sm'

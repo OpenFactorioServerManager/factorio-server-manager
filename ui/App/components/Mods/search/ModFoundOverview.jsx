@@ -2,8 +2,6 @@ import React from 'react';
 
 class ModFoundOverview extends React.Component {
     render() {
-        console.log(this.props.shownModList);
-
         let img_style= {
             width: 144,
             height: 144,
