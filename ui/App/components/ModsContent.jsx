@@ -12,6 +12,7 @@ class ModsContent extends React.Component {
         this.handlerFactorioLogin = this.handlerFactorioLogin.bind(this);
         this.loadDownloadList = this.loadDownloadList.bind(this);
         this.swalSubmitHandler = this.swalSubmitHandler.bind(this);
+        this.toggleModHandler = this.toggleModHandler.bind(this);
 
         this.state = {
             username: "",
@@ -218,6 +219,36 @@ class ModsContent extends React.Component {
         // });
     };
 
+    toggleModHandler(e) {
+        e.preventDefault();
+        console.log(e.target);
+        let $button = $(e.target);
+        let $row = $button.parents("tr");
+        let mod_name = $row.data("mod-name");
+
+        $.ajax({
+            url: "/api/mods/toggle",
+            method: "POST",
+            data: {
+                mod_name: mod_name
+            },
+            dataType: "JSON",
+            success: (data) => {
+                this.setState({
+                    installedMods: data.data
+                });
+            },
+            error: (jqXHR, status, err) => {
+                console.log('api/mods/details', status, err.toString());
+                swal({
+                    title: "Toggle Mod went wrong",
+                    text: err.toString(),
+                    type: "error"
+                });
+            }
+        });
+    }
+
     render() {
         return(
             <div className="content-wrapper">
@@ -237,6 +268,7 @@ class ModsContent extends React.Component {
                         {...this.state}
                         loadDownloadList={this.loadDownloadList}
                         submitFactorioLogin={this.handlerFactorioLogin}
+                        toggleMod={this.toggleModHandler}
                     />
                 </section>
             </div>

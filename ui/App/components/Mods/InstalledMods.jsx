@@ -24,7 +24,6 @@ class InstalledMods extends React.Component {
             contentType: false,
             success: (data) => {
                 var response = JSON.parse(data)
-                console.log(response.success);
                 if (response.success === true) {
                     this.updateInstalledMods();
                 }

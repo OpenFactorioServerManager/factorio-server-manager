@@ -40,6 +40,7 @@ class ModOverview extends React.Component {
     }
 
     render() {
+        console.log(this.props.installedMods)
         return(
             <div className="box">
                 <div className="box-header">
@@ -95,7 +96,8 @@ class ModOverview extends React.Component {
 
 ModOverview.propTypes = {
     installedMods: React.PropTypes.array.isRequired,
-    submitFactorioLogin: React.PropTypes.func.isRequired
+    submitFactorioLogin: React.PropTypes.func.isRequired,
+    toggleMod: React.PropTypes.func.isRequired
 };
 
 export default ModOverview;

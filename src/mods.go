@@ -22,8 +22,8 @@ type ModsList struct {
 }
 
 // List mods installed in the factorio/mods directory
-func listInstalledMods(modDir string) (ModsList, error) {
-    file, err := ioutil.ReadFile(modDir + "/mod-list.json")
+func listInstalledMods() (ModsList, error) {
+    file, err := ioutil.ReadFile(config.FactorioModsDir + "/mod-list.json")
 
     if err != nil {
         log.Println(err.Error())
@@ -48,6 +48,8 @@ type ModInfo struct {
 	Version string `json:"version"`
 	Title string `json:"title"`
 	Author string `json:"author"`
+	FileName string `json:"file_name"`
+	Enabled bool `json:"enabled"`
 }
 func listInstalledModsByFolder() (ModInfoList, error) {
 	//scan ModFolder
@@ -85,6 +87,8 @@ func listInstalledModsByFolder() (ModInfoList, error) {
 						return err
 					}
 
+					mod_info.FileName = info.Name()
+					mod_info.FileName = info.Name()
 					result.Mods = append(result.Mods, mod_info)
 
 					break
@@ -99,7 +103,51 @@ func listInstalledModsByFolder() (ModInfoList, error) {
 		return ModInfoList{}, err_o
 	}
 
+	mod_list_by_json, err_o := listInstalledMods()
+	if err_o != nil {
+		return ModInfoList{}, err_o
+	}
+
+	for _, json_mod := range mod_list_by_json.Mods {
+		for result_index, result_mod := range result.Mods {
+			if result_mod.Name == json_mod.Name {
+				result.Mods[result_index].Enabled = json_mod.Enabled
+				break
+			}
+		}
+	}
+
 	return result, nil
+}
+
+func toggleMod(mod_name string)([]ModInfo, error) {
+	var err error
+
+	mod_list, err := listInstalledMods()
+
+	for index, mod := range mod_list.Mods {
+		if mod.Name == mod_name {
+			mod_list.Mods[index].Enabled = !mod_list.Mods[index].Enabled
+			break
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	//build new json
+	new_json, _ := json.Marshal(mod_list)
+
+	ioutil.WriteFile(config.FactorioModsDir + "/mod-list.json", new_json, 0664)
+
+	mod_info_list, err := listInstalledModsByFolder()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return mod_info_list.Mods, nil
 }
 
 
@@ -221,7 +269,7 @@ func installMod(username string, userKey string, url string, filename string, mo
 	}
 	file.Close()
 
-	mod_list, err := listInstalledMods(config.FactorioModsDir)
+	mod_list, err := listInstalledMods()
 
 	if err != nil {
 		return nil, err, 500

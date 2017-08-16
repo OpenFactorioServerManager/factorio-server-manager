@@ -8,7 +8,9 @@ class Mod extends React.Component {
             this.modStatus = <span className="label label-success">Enabled</span>
         }
         return(
-            <tr>
+            <tr data-mod-name={this.props.mod.name}
+                data-file-name={this.props.mod.file_name}
+            >
                 <td>{this.props.mod.title}</td>
                 <td>{this.modStatus}</td>
                 <td>
@@ -16,8 +18,7 @@ class Mod extends React.Component {
                         ref='modName'
                         type='submit'
                         value='Toggle'
-                        name={this.props.mod.name}
-                           //TODO toggle and remove mod
+                        onClick={this.props.toggleMod}
                     />
                 </td>
             </tr>
@@ -26,7 +27,8 @@ class Mod extends React.Component {
 }
 
 Mod.propTypes = {
-    mod: React.PropTypes.object.isRequired
+    mod: React.PropTypes.object.isRequired,
+    toggleMod: React.PropTypes.func.isRequired
 }
 
 export default Mod

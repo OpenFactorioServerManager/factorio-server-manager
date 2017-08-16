@@ -173,6 +173,11 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/install",
 		ModPortalInstallHandler,
+	}, {
+		"ToggleMod",
+		"POST",
+		"/mods/toggle",
+		ToggleModHandler,
 	}, /*{
 		"ListMods",
 		"GET",
