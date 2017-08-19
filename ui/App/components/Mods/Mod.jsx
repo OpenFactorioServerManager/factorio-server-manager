@@ -20,6 +20,14 @@ class Mod extends React.Component {
                         value='Toggle'
                         onClick={this.props.toggleMod}
                     />
+
+                    <input className="btn btn-danger btn-sm"
+                        style={{marginLeft: 25}}
+                        ref="modName"
+                        type="submit"
+                        value="Delete"
+                        onClick={this.props.deleteMod}
+                    />
                 </td>
             </tr>
         )
@@ -28,7 +36,8 @@ class Mod extends React.Component {
 
 Mod.propTypes = {
     mod: React.PropTypes.object.isRequired,
-    toggleMod: React.PropTypes.func.isRequired
+    toggleMod: React.PropTypes.func.isRequired,
+    deleteMod: React.PropTypes.func.isRequired
 }
 
 export default Mod

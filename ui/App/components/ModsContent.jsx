@@ -11,8 +11,9 @@ class ModsContent extends React.Component {
         this.loadModList = this.loadModList.bind(this);
         this.handlerFactorioLogin = this.handlerFactorioLogin.bind(this);
         this.loadDownloadList = this.loadDownloadList.bind(this);
-        this.swalSubmitHandler = this.swalSubmitHandler.bind(this);
+        this.loadDownloadListSwalHandler = this.loadDownloadListSwalHandler.bind(this);
         this.toggleModHandler = this.toggleModHandler.bind(this);
+        this.deleteModHandler = this.deleteModHandler.bind(this);
 
         this.state = {
             username: "",
@@ -23,7 +24,6 @@ class ModsContent extends React.Component {
 
     componentDidMount() {
         this.loadModList();
-        //TODO get base stuff
     }
 
     loadModList() {
@@ -72,7 +72,7 @@ class ModsContent extends React.Component {
         });
     }
 
-    swalSubmitHandler() {
+    loadDownloadListSwalHandler() {
         let $checked_input = $('input[name=version]:checked');
         let link = $checked_input.data("link");
         let filename = $checked_input.data("filename");
@@ -111,10 +111,6 @@ class ModsContent extends React.Component {
 
     loadDownloadList(e) {
         e.preventDefault();
-        // swal({
-        //     title: "Select the version, that will be installed",
-        //     showLoaderOnConfirm: true
-        // });
         let $button = $(e.target);
         let $loader = $("<div class='loader'></div>");
         $button.prepend($loader);
@@ -197,31 +193,17 @@ class ModsContent extends React.Component {
                     confirmButtonText: "Download it!",
                     cancelButtonText: "Close",
                     showLoaderOnConfirm: true,
-                }, this.swalSubmitHandler);
+                }, this.loadDownloadListSwalHandler);
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/details', status, err.toString());
                 $loader.remove();
             }
         })
-        // swal({
-        //     title: "Ajax request example",
-        //     text: "Submit to run ajax request",
-        //     type: "info",
-        //     showCancelButton: true,
-        //     closeOnConfirm: false,
-        //     showLoaderOnConfirm: true,
-        // },
-        // function(){
-        //     setTimeout(function(){
-        //         swal("Ajax request finished!");
-        //     }, 2000);
-        // });
-    };
+    }
 
     toggleModHandler(e) {
         e.preventDefault();
-        console.log(e.target);
         let $button = $(e.target);
         let $row = $button.parents("tr");
         let mod_name = $row.data("mod-name");
@@ -239,13 +221,56 @@ class ModsContent extends React.Component {
                 });
             },
             error: (jqXHR, status, err) => {
-                console.log('api/mods/details', status, err.toString());
+                console.log('api/mods/toggle', status, err.toString());
                 swal({
                     title: "Toggle Mod went wrong",
                     text: err.toString(),
                     type: "error"
                 });
             }
+        });
+    }
+
+    deleteModHandler(e) {
+        e.preventDefault();
+        let $button = $(e.target);
+        let $row = $button.parents("tr");
+        let mod_name = $row.data("mod-name");
+        let class_this = this;
+
+        swal({
+            title: "Delete Mod?",
+            text: "this will delete the mod and can break the save file",
+            type: "info",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            confirmButtonText: "Delete it!",
+            cancelButtonText: "Close",
+            showLoaderOnConfirm: true,
+            confirmButtonColor: "#DD6B55",
+        }, function () {
+            $.ajax({
+                url: "/api/mods/delete",
+                method: "POST",
+                data: {
+                    mod_name: mod_name
+                },
+                dataType: "JSON",
+                success: (data) => {
+                    swal("Delete of mod " + mod_name + " successful", "", "success");
+                    class_this.setState({
+                        installedMods: data.data
+                    });
+                },
+                error: (jqXHR, status, err) => {
+                    console.log('api/mods/delete', status, err.toString());
+                    swal({
+                        title: "Delete Mod went wrong",
+                        text: err.toString(),
+                        type: "error"
+                    });
+                }
+            });
         });
     }
 
@@ -269,6 +294,7 @@ class ModsContent extends React.Component {
                         loadDownloadList={this.loadDownloadList}
                         submitFactorioLogin={this.handlerFactorioLogin}
                         toggleMod={this.toggleModHandler}
+                        deleteMod={this.deleteModHandler}
                     />
                 </section>
             </div>

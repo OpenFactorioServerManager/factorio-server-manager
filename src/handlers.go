@@ -196,9 +196,9 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
 	resp.Data, err = toggleMod(mod_name)
 
 	if err != nil {
-		resp.Data = fmt.Sprintf("Error in installMod: %s", err)
+		resp.Data = fmt.Sprintf("Error in toggleMod: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in installMod: %s", err)
+			log.Printf("Error in toggleMod: %s", err)
 		}
 		return
 	}
@@ -206,7 +206,35 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error in ModPortalInstallHandler: %s", err)
+		log.Printf("Error in ToggleModHandler: %s", err)
+	}
+}
+
+func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	//Get Data out of the request
+	mod_name := r.FormValue("mod_name")
+
+	resp.Data, err = deleteMod(mod_name)
+
+	if err != nil {
+		resp.Data = fmt.Sprintf("Error in deleteMod: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in DeleteModHandler: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in DeleteModHandler: %s", err)
 	}
 }
 

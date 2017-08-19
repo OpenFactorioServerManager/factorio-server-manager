@@ -88,7 +88,6 @@ func listInstalledModsByFolder() (ModInfoList, error) {
 					}
 
 					mod_info.FileName = info.Name()
-					mod_info.FileName = info.Name()
 					result.Mods = append(result.Mods, mod_info)
 
 					break
@@ -125,15 +124,15 @@ func toggleMod(mod_name string)([]ModInfo, error) {
 
 	mod_list, err := listInstalledMods()
 
+	if err != nil {
+		return nil, err
+	}
+
 	for index, mod := range mod_list.Mods {
 		if mod.Name == mod_name {
 			mod_list.Mods[index].Enabled = !mod_list.Mods[index].Enabled
 			break
 		}
-	}
-
-	if err != nil {
-		return nil, err
 	}
 
 	//build new json
@@ -146,6 +145,59 @@ func toggleMod(mod_name string)([]ModInfo, error) {
 		log.Fatal(err)
 		return nil, err
 	}
+
+	return mod_info_list.Mods, nil
+}
+
+func deleteMod(mod_name string) ([]ModInfo, error) {
+	var err error
+	mod_list, err := listInstalledMods()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for index, mod := range mod_list.Mods {
+		if mod.Name == mod_name {
+			slice1 := mod_list.Mods[:index]
+			slice2 := mod_list.Mods[index + 1:]
+			var new_mod_list []Mod
+			new_mod_list = append(new_mod_list, slice1...)
+			new_mod_list = append(new_mod_list, slice2...)
+			mod_list.Mods = new_mod_list
+			break
+		}
+	}
+
+	//build new json
+	new_json, _ := json.Marshal(mod_list)
+
+	ioutil.WriteFile(config.FactorioModsDir + "/mod-list.json", new_json, 0664)
+
+	mod_info_list, err := listInstalledModsByFolder()
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	var delete_file_name string
+	//search for mod in own setup
+	for index, mod := range mod_info_list.Mods {
+		if mod.Name == mod_name {
+			delete_file_name = mod.FileName
+
+			//remove mod from list (faster than scanning path new)
+			slice1 := mod_info_list.Mods[:index]
+			slice2 := mod_info_list.Mods[index+1:]
+			var new_mod_list []ModInfo
+			new_mod_list = append(new_mod_list, slice1...)
+			new_mod_list = append(new_mod_list, slice2...)
+			mod_info_list.Mods = new_mod_list
+			break
+		}
+	}
+
+	os.Remove(config.FactorioModsDir + "/" + delete_file_name)
 
 	return mod_info_list.Mods, nil
 }

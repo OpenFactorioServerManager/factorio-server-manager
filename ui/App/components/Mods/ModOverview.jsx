@@ -40,7 +40,6 @@ class ModOverview extends React.Component {
     }
 
     render() {
-        console.log(this.props.installedMods)
         return(
             <div className="box">
                 <div className="box-header">
@@ -75,7 +74,8 @@ class ModOverview extends React.Component {
                             </tr>
                             </thead>
                             <tbody>
-                            {this.props.installedMods.map ( (mod, i) => {
+                            {(this.props.installedMods != null) ?
+                                this.props.installedMods.map((mod, i) => {
                                 if(mod.name !== "base")
                                     return(
                                         <Mod
@@ -84,7 +84,7 @@ class ModOverview extends React.Component {
                                             {...this.props}
                                         />
                                     )
-                            })}
+                            }):null}
                             </tbody>
                         </table>
                     </div>
@@ -95,9 +95,10 @@ class ModOverview extends React.Component {
 }
 
 ModOverview.propTypes = {
-    installedMods: React.PropTypes.array.isRequired,
+    installedMods: React.PropTypes.array,
     submitFactorioLogin: React.PropTypes.func.isRequired,
-    toggleMod: React.PropTypes.func.isRequired
+    toggleMod: React.PropTypes.func.isRequired,
+    deleteMod: React.PropTypes.func.isRequired
 };
 
 export default ModOverview;

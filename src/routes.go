@@ -178,32 +178,12 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/toggle",
 		ToggleModHandler,
-	}, /*{
-		"ListMods",
-		"GET",
-		"/mods/list",
-		ListMods,
 	}, {
-		"ToggleMod",
-		"GET",
-		"/mods/toggle/{mod}",
-		ToggleMod,
-	}, {
-		"UploadMod",
+		"DeleteMod",
 		"POST",
-		"/mods/upload",
-		UploadMod,
+		"/mods/delete",
+		DeleteModHandler,
 	}, {
-		"RemoveMod",
-		"GET",
-		"/mods/rm/{mod}",
-		RemoveMod,
-	}, {
-		"DownloadMod",
-		"GET",
-		"/mods/dl/{mod}",
-		DownloadMod,
-	},*/ {
 		"ListSaves",
 		"GET",
 		"/saves/list",
