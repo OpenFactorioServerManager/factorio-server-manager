@@ -14,11 +14,13 @@ class ModsContent extends React.Component {
         this.loadDownloadListSwalHandler = this.loadDownloadListSwalHandler.bind(this);
         this.toggleModHandler = this.toggleModHandler.bind(this);
         this.deleteModHandler = this.deleteModHandler.bind(this);
+        this.updateModHandler = this.updateModHandler.bind(this);
 
         this.state = {
             username: "",
             userKey: "",
-            installedMods: []
+            installedMods: [],
+            updateInProgress: false
         }
     }
 
@@ -274,6 +276,64 @@ class ModsContent extends React.Component {
         });
     }
 
+    updateModHandler(e, toggleUpdateStatus, removeVersionAvailableStatus) {
+        e.preventDefault();
+
+        if(!this.state.userKey) {
+            swal({
+                type: "error",
+                title: "Update failed",
+                text: "please login into Factorio to update mod"
+            });
+
+            let $addModBox = $('#add-mod-box');
+            if($addModBox.hasClass("collapsed-box")) {
+                $addModBox.children("button").click();
+            }
+        } else {
+            let $button = $(e.currentTarget);
+            let download_url = $button.data("downloadUrl");
+            let filename = $button.data("fileName");
+            let modname = $button.parents("tr").data("modName");
+
+            let this_class = this;
+
+            //make button spinning
+            // let $loader = $("");
+            // $button.html($loader);
+
+            toggleUpdateStatus();
+
+            $.ajax({
+                url: "/api/mods/update",
+                method: "POST",
+                data: {
+                    username: this.state.username,
+                    userKey: this.state.userKey,
+                    downloadUrl: download_url,
+                    filename: filename,
+                    mod_name: modname,
+                },
+                success: (data) => {
+                    toggleUpdateStatus();
+                    removeVersionAvailableStatus();
+                    this_class.setState({
+                        installedMods: data.data
+                    });
+                },
+                error: (jqXHR, status, err) => {
+                    console.log('api/mods/delete', status, err.toString());
+                    toggleUpdateStatus();
+                    swal({
+                        title: "Update Mod went wrong",
+                        text: err.toString(),
+                        type: "error"
+                    });
+                }
+            });
+        }
+    }
+
     render() {
         return(
             <div className="content-wrapper">
@@ -295,6 +355,7 @@ class ModsContent extends React.Component {
                         submitFactorioLogin={this.handlerFactorioLogin}
                         toggleMod={this.toggleModHandler}
                         deleteMod={this.deleteModHandler}
+                        updateMod={this.updateModHandler}
                     />
                 </section>
             </div>

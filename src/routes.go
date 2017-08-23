@@ -184,6 +184,11 @@ var apiRoutes = Routes{
 		"/mods/delete",
 		DeleteModHandler,
 	}, {
+        "UpdateMod",
+        "POST",
+        "/mods/update",
+        UpdateModHandler,
+    }, {
 		"ListSaves",
 		"GET",
 		"/saves/list",

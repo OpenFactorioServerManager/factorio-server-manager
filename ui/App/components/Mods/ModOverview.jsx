@@ -47,7 +47,7 @@ class ModOverview extends React.Component {
                 </div>
 
                 <div className="box-body">
-                    <div className="box box-success collapsed-box">
+                    <div className="box box-success collapsed-box" id="add-mod-box">
                         <button className="btn btn-box-tool" type="button" data-widget="collapse">
                             <div className="box-header with-border">
                                 <i className="fa fa-plus"></i>
@@ -70,6 +70,7 @@ class ModOverview extends React.Component {
                             <tr>
                                 <th>Name</th>
                                 <th>Status</th>
+                                <th>Version</th>
                                 <th>Toggle/Remove</th>
                             </tr>
                             </thead>
@@ -98,7 +99,8 @@ ModOverview.propTypes = {
     installedMods: React.PropTypes.array,
     submitFactorioLogin: React.PropTypes.func.isRequired,
     toggleMod: React.PropTypes.func.isRequired,
-    deleteMod: React.PropTypes.func.isRequired
+    deleteMod: React.PropTypes.func.isRequired,
+    updateMod: React.PropTypes.func.isRequired,
 };
 
 export default ModOverview;
