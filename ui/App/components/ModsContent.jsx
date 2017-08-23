@@ -17,10 +17,9 @@ class ModsContent extends React.Component {
         this.updateModHandler = this.updateModHandler.bind(this);
 
         this.state = {
-            username: "",
-            userKey: "",
+            username: sessionStorage.getItem("username") || "",
+            userKey: sessionStorage.getItem("userKey") || "",
             installedMods: [],
-            updateInProgress: false
         }
     }
 
@@ -58,9 +57,14 @@ class ModsContent extends React.Component {
                     type: "success"
                 });
 
+                let user_key = (JSON.parse(data.data))[0];
+
+                sessionStorage.setItem("username", username);
+                sessionStorage.setItem("userKey", user_key);
+
                 this.setState({
                     "username": username,
-                    "userKey": (JSON.parse(data.data))[0]
+                    "userKey": user_key
                 });
             },
             error: (jqXHR) => {

@@ -29,7 +29,6 @@ class Mod extends React.Component {
             dataType: "JSON",
             success: (data) => {
                 let newest_release = JSON.parse(data.data).releases[0];
-                console.log(newest_release);
                 if(newest_release.version != this.props.mod.version) {
                     this_class.setState({
                         newVersionAvailable: true,
