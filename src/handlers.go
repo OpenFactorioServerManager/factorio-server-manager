@@ -721,7 +721,7 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error tailing logfile", err)
+		log.Printf("Error tailing logfile: %s", err)
 	}
 }
 
@@ -739,7 +739,7 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Could not retrieve config.ini: %s", err)
 		resp.Data = "Error getting config.ini"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error tailing logfile", err)
+			log.Printf("Error tailing logfile: %s", err)
 		}
 	} else {
 		resp.Data = configContents
@@ -747,7 +747,7 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: ", err)
+		log.Printf("Error encoding config file JSON reponse: %s", err)
 	}
 
 	log.Printf("Sent config.ini response")
@@ -764,7 +764,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	if FactorioServ.Running {
 		resp.Data = "Factorio server is already running"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding JSON response: ", err)
+			log.Printf("Error encoding JSON response: %s", err)
 		}
 		return
 	}
@@ -800,7 +800,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			resp.Success = false
 			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", "No save file provided")
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: ", err)
+				log.Printf("Error encoding config file JSON reponse: %s", err)
 			}
 			return
 		}
@@ -821,7 +821,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 				resp.Success = true
 				log.Printf("Factorio server started on port: %v", FactorioServ.Port)
 				if err := json.NewEncoder(w).Encode(resp); err != nil {
-					log.Printf("Error encoding config file JSON reponse: ", err)
+					log.Printf("Error encoding config file JSON reponse: %s", err)
 				}
 				break
 			} else {
@@ -834,7 +834,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error starting Factorio server: %s", err)
 			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding start server JSON response: ", err)
+				log.Printf("Error encoding start server JSON response: %s", err)
 			}
 		}
 	}
@@ -853,7 +853,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error in stop server handler: %s", err)
 			resp.Data = fmt.Sprintf("Error in stop server handler: %s", err)
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: ", err)
+				log.Printf("Error encoding config file JSON reponse: %s", err)
 			}
 			return
 		}
@@ -864,13 +864,13 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	} else {
 		resp.Data = "Factorio server is not running"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Error encoding config file JSON reponse: %s", err)
 		}
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: ", err)
+		log.Printf("Error encoding config file JSON reponse: %s", err)
 	}
 }
 
@@ -888,7 +888,7 @@ func KillServer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error in kill server handler: %s", err)
 			resp.Data = fmt.Sprintf("Error in kill server handler: %s", err)
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: ", err)
+				log.Printf("Error encoding config file JSON reponse: %s", err)
 			}
 			return
 		}
@@ -899,13 +899,13 @@ func KillServer(w http.ResponseWriter, r *http.Request) {
 	} else {
 		resp.Data = "Factorio server is not running"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Error encoding config file JSON reponse: %s", err)
 		}
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: ", err)
+		log.Printf("Error encoding config file JSON reponse: %s", err)
 	}
 }
 
@@ -924,7 +924,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		status["savefile"] = FactorioServ.Savefile
 		resp.Data = status
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Error encoding config file JSON reponse: %s", err)
 		}
 	} else {
 		resp.Success = true
@@ -932,7 +932,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		status["status"] = "stopped"
 		resp.Data = status
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Error encoding config file JSON reponse: %s", err)
 		}
 	}
 }
@@ -1043,7 +1043,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	users, err := Auth.listUsers()
 	if err != nil {
-		log.Printf("Error in ListUsers handler: ", err)
+		log.Printf("Error in ListUsers handler: %s", err)
 		resp.Data = fmt.Sprint("Error listing users")
 		resp.Success = false
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -1189,7 +1189,7 @@ func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding server settings JSON reponse: ", err)
+		log.Printf("Error encoding server settings JSON reponse: %s", err)
 	}
 
 	log.Printf("Sent server settings response")

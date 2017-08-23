@@ -18,7 +18,7 @@ class Mod extends React.Component {
     }
 
     checkForNewVersion() {
-        let this_class = this
+        let this_class = this;
         //send AJAX that will check this
         $.ajax({
             url: "/api/mods/details",
@@ -133,6 +133,6 @@ Mod.propTypes = {
     toggleMod: React.PropTypes.func.isRequired,
     deleteMod: React.PropTypes.func.isRequired,
     updateMod: React.PropTypes.func.isRequired,
-}
+};
 
 export default Mod
