@@ -43,8 +43,9 @@ class ModOverview extends React.Component {
     render() {
         return(
             <div>
-                <div className="box" id="add-mod-box">
-                    <div className="box-header">
+                <div className="box collapsed-box" id="add-mod-box">
+                    <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
+                        <i className="fa fa-plus"></i>
                         <h3 className="box-title">Add Mod</h3>
                     </div>
 
@@ -56,8 +57,9 @@ class ModOverview extends React.Component {
                     />
                 </div>
 
-                <div className="box">
-                    <div className="box-header">
+                <div className="box collapsed-box">
+                    <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
+                        <i className="fa fa-plus"></i>
                         <h3 className="box-title">Upload Mod</h3>
                     </div>
 
