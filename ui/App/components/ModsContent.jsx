@@ -247,7 +247,7 @@ class ModsContent extends React.Component {
 
         swal({
             title: "Delete Mod?",
-            text: "this will delete the mod and can break the save file",
+            text: "This will delete the mod and can break the save file",
             type: "info",
             showCancelButton: true,
             closeOnConfirm: false,

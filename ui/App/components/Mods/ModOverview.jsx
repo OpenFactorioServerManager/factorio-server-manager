@@ -88,7 +88,7 @@ class ModOverview extends React.Component {
                                     if(mod.name !== "base")
                                         return(
                                             <Mod
-                                                key={i}
+                                                key={mod.name}
                                                 mod={mod}
                                                 {...this.props}
                                             />
