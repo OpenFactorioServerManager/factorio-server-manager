@@ -293,7 +293,7 @@ class ModsContent extends React.Component {
 
             let $addModBox = $('#add-mod-box');
             if($addModBox.hasClass("collapsed-box")) {
-                $addModBox.children("button").click();
+                $addModBox.find(".box-header").click();
             }
         } else {
             let $button = $(e.currentTarget);
