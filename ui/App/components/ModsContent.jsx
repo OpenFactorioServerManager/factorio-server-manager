@@ -15,6 +15,7 @@ class ModsContent extends React.Component {
         this.toggleModHandler = this.toggleModHandler.bind(this);
         this.deleteModHandler = this.deleteModHandler.bind(this);
         this.updateModHandler = this.updateModHandler.bind(this);
+        this.uploadModSuccessHandler = this.uploadModSuccessHandler.bind(this);
 
         this.state = {
             username: sessionStorage.getItem("username") || "",
@@ -338,6 +339,15 @@ class ModsContent extends React.Component {
         }
     }
 
+    uploadModSuccessHandler(event, data) {
+        console.log('File batch upload success');
+        console.log(data.response.data.mods);
+
+        this.setState({
+            installedMods: data.response.data.mods
+        });
+    }
+
     render() {
         return(
             <div className="content-wrapper">
@@ -360,6 +370,7 @@ class ModsContent extends React.Component {
                         toggleMod={this.toggleModHandler}
                         deleteMod={this.deleteModHandler}
                         updateMod={this.updateModHandler}
+                        uploadModSuccessHandler={this.uploadModSuccessHandler}
                     />
                 </section>
             </div>

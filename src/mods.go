@@ -10,6 +10,9 @@ import (
 	"io"
 	"path/filepath"
 	"archive/zip"
+	"mime/multipart"
+    "errors"
+    "bytes"
 )
 
 type Mod struct {
@@ -51,6 +54,39 @@ type ModInfo struct {
 	FileName string `json:"file_name"`
 	Enabled bool `json:"enabled"`
 }
+
+func (mod_info *ModInfo) getModInfo(reader *zip.Reader) error {
+    for _, single_file := range reader.File {
+        if single_file.FileInfo().Name() == "info.json" {
+            //interpret info.json
+            rc, err := single_file.Open()
+
+            if err != nil {
+                log.Fatal(err)
+                return err
+            }
+
+            byte_array, err := ioutil.ReadAll(rc)
+            rc.Close()
+            if err != nil {
+                log.Fatal(err)
+                return err
+            }
+
+            //var mod_info ModInfo
+            err = json.Unmarshal(byte_array, mod_info)
+            if err != nil {
+                log.Fatalln(err)
+                return err
+            }
+
+            return nil
+        }
+    }
+
+    return errors.New("info.json not found in zip-file!")
+}
+
 func listInstalledModsByFolder() (ModInfoList, error) {
 	//scan ModFolder
 	var result ModInfoList
@@ -60,39 +96,17 @@ func listInstalledModsByFolder() (ModInfoList, error) {
 			zip_file, err := zip.OpenReader(path)
 			if err != nil {
 				log.Fatalln(err)
+                return err
 			}
 
-			//iterate through all files inside the zip (search for info.json)
-			for _, single_file := range zip_file.File {
-				if single_file.FileInfo().Name() == "info.json" {
-					//interpret info.json
-					rc, err := single_file.Open()
+            var mod_info ModInfo
+            err = mod_info.getModInfo(&zip_file.Reader)
+            if err != nil {
+                log.Fatalf("Error in getModInfo: %s", err)
+            }
 
-					if err != nil {
-						log.Fatal(err)
-						return err
-					}
-
-					byte_array, err := ioutil.ReadAll(rc)
-					rc.Close()
-					if err != nil {
-						log.Fatal(err)
-						return err
-					}
-
-					var mod_info ModInfo
-					err = json.Unmarshal(byte_array, &mod_info)
-					if err != nil {
-						log.Fatalln(err)
-						return err
-					}
-
-					mod_info.FileName = info.Name()
-					result.Mods = append(result.Mods, mod_info)
-
-					break
-				}
-			}
+            mod_info.FileName = info.Name()
+            result.Mods = append(result.Mods, mod_info)
 		}
 
 		return nil
@@ -346,4 +360,100 @@ func installMod(username string, userKey string, url string, filename string, mo
 	}
 
 	return mod_info_list.Mods, nil, response.StatusCode
+}
+
+func uploadMod(header *multipart.FileHeader) (error) {
+    var err error
+    if header.Header.Get("Content-Type") != "application/zip" {
+        log.Print("The uploaded file wasn't a zip-file -> ignore it")
+        return nil //simply do nothing xD
+    }
+
+    if _,err_file := os.Stat(config.FactorioModsDir + "/" + header.Filename); !os.IsNotExist(err_file) {
+        log.Print("The uploaded file already exists -> ignore it")
+        return nil //simply do nothing xD
+    }
+
+    file, err := header.Open()
+    if err != nil {
+        log.Printf("error on open file via fileHeader. %s", err)
+        return err
+    }
+
+    var buff bytes.Buffer
+    file_length, err := buff.ReadFrom(file)
+    if err != nil {
+        log.Printf("Error occured while reading bytes.Buffer.ReadFrom: %s", err)
+        return err
+    }
+
+    zip_reader, err := zip.NewReader(file, file_length)
+    if err != nil {
+        log.Printf("Uploaded file could not put into zip.Reader: %s", err)
+        return err
+    }
+
+    var mod_info ModInfo
+    err = mod_info.getModInfo(zip_reader)
+    if err != nil {
+        log.Printf("Error in getModInfo: %s", err)
+        return err
+    }
+
+    //check if mod already exists in mod_list.json
+    mods_list, err := listInstalledMods()
+    if err != nil {
+        log.Printf("Error in listInstalledMods: %s", err)
+        return err
+    }
+
+    var mod_already_exists bool
+    for _, single_mod := range mods_list.Mods {
+        if single_mod.Name == mod_info.Name {
+            mod_already_exists = true
+            break
+        }
+    }
+
+    if mod_already_exists {
+        _, err = deleteMod(mod_info.Name)
+        if err != nil {
+            log.Printf("error when trying to delete mod: %s", err)
+            return err
+        }
+    }
+
+    //save uploaded file
+    new_file, err := os.Create(config.FactorioModsDir + "/" + header.Filename)
+    if err != nil {
+        log.Printf("error on creating new file - %s: %s", header.Filename, err)
+        return err
+    }
+    defer new_file.Close()
+
+    file.Seek(0,0) //reset file-cursor to 0,0
+    _, err = io.Copy(new_file, file)
+    if err != nil {
+        log.Printf("error on copying file to disk: %s", err)
+        return err
+    }
+
+    //build new json
+    mods_list, err = listInstalledMods()
+    if err != nil {
+        log.Printf("Error in listInstalledMods: %s", err)
+        return err
+    }
+
+    //add this mod
+    mods_list.Mods = append(mods_list.Mods, Mod{
+        Name: mod_info.Name,
+        Enabled: true,
+    })
+
+    //save mod-list.json with the new mod
+    new_json, _ := json.Marshal(mods_list)
+    ioutil.WriteFile(config.FactorioModsDir + "/mod-list.json", new_json, 0664)
+
+	return nil
 }

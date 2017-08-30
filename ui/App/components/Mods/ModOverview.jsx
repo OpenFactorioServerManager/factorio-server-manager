@@ -1,6 +1,7 @@
 import React from 'react';
 import Mod from './Mod.jsx';
 import ModSearch from './search/ModSearch.jsx';
+import ModUpload from "./ModUpload.jsx";
 
 class ModOverview extends React.Component {
     constructor(props) {
@@ -41,53 +42,61 @@ class ModOverview extends React.Component {
 
     render() {
         return(
-            <div className="box">
-                <div className="box-header">
-                    <h3 className="box-title">Manage Mods</h3>
-                </div>
-
-                <div className="box-body">
-                    <div className="box box-success collapsed-box" id="add-mod-box">
-                        <button className="btn btn-box-tool" type="button" data-widget="collapse">
-                            <div className="box-header with-border">
-                                <i className="fa fa-plus"></i>
-                                <h4 className="box-title">Add Mods</h4>
-                            </div>
-                        </button>
-
-                        <ModSearch
-                            {...this.state}
-                            {...this.props}
-                            submitSearchMod={this.handlerSearchMod}
-                            submitFactorioLogin={this.props.submitFactorioLogin}
-                        />
-
+            <div>
+                <div className="box" id="add-mod-box">
+                    <div className="box-header">
+                        <h3 className="box-title">Add Mod</h3>
                     </div>
 
-                    <div className="table-responsive">
-                        <table className="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Status</th>
-                                <th>Version</th>
-                                <th>Toggle/Remove</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {(this.props.installedMods != null) ?
-                                this.props.installedMods.map((mod, i) => {
-                                if(mod.name !== "base")
-                                    return(
-                                        <Mod
-                                            key={i}
-                                            mod={mod}
-                                            {...this.props}
-                                        />
-                                    )
-                            }):null}
-                            </tbody>
-                        </table>
+                    <ModSearch
+                        {...this.state}
+                        {...this.props}
+                        submitSearchMod={this.handlerSearchMod}
+                        submitFactorioLogin={this.props.submitFactorioLogin}
+                    />
+                </div>
+
+                <div className="box">
+                    <div className="box-header">
+                        <h3 className="box-title">Upload Mod</h3>
+                    </div>
+
+                    <ModUpload
+                        {...this.props}
+                    />
+                </div>
+
+                <div className="box">
+                    <div className="box-header">
+                        <h3 className="box-title">Manage Mods</h3>
+                    </div>
+
+                    <div className="box-body">
+                        <div className="table-responsive">
+                            <table className="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Version</th>
+                                    <th>Toggle/Remove</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {(this.props.installedMods != null) ?
+                                    this.props.installedMods.map((mod, i) => {
+                                    if(mod.name !== "base")
+                                        return(
+                                            <Mod
+                                                key={i}
+                                                mod={mod}
+                                                {...this.props}
+                                            />
+                                        )
+                                }):null}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -101,6 +110,7 @@ ModOverview.propTypes = {
     toggleMod: React.PropTypes.func.isRequired,
     deleteMod: React.PropTypes.func.isRequired,
     updateMod: React.PropTypes.func.isRequired,
+    uploadModSuccessHandler: React.PropTypes.func.isRequired,
 };
 
 export default ModOverview;

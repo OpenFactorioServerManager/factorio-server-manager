@@ -11,13 +11,18 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
-
 	"github.com/gorilla/mux"
 )
 
 type JSONResponse struct {
 	Success bool        `json:"success"`
 	Data    interface{} `json:"data,string"`
+}
+type JSONResponseFileInput struct {
+	Success	bool		`json:"success"`
+	Data	interface{}	`json:"data,string"`
+	Error	string		`json:"error"`
+	ErrorKeys	[]int	`json:"errorkeys"`
 }
 
 type ModPack struct {
@@ -282,45 +287,41 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Toggles mod passed in through mod variable
-// Updates mod-list.json file to toggle the enabled status of mods
-/*func ToggleMod(w http.ResponseWriter, r *http.Request) {
+func UploadModHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
-	resp := JSONResponse{
+	resp := JSONResponseFileInput{
 		Success: false,
 	}
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	vars := mux.Vars(r)
-	modName := vars["mod"]
+	r.ParseMultipartForm(32 << 20)
 
-	m, err := parseModList()
-	if err != nil {
-		resp.Data = fmt.Sprintf("Could not parse mod list: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in list mods: %s", err)
+	//get file out of the POST
+	for file_key, mod_file := range r.MultipartForm.File["mod_file"] {
+		err = uploadMod(mod_file)
+		if err != nil {
+			resp.ErrorKeys = append(resp.ErrorKeys, file_key)
+			resp.Error = "An error occurred during upload or saving, pls check manually, if all went well and delete invalid files. (This program also could be crashed)"
 		}
-		return
 	}
 
-	err = m.toggleMod(modName)
+	resp.Data, err = listInstalledModsByFolder()
 	if err != nil {
-		resp.Success = false
-		resp.Data = fmt.Sprintf("Could not toggle mod: %s error: %s", modName, err)
+		w.WriteHeader(500)
+		resp.Data = fmt.Sprintf("Error in uploadMod, listing mods wasn't successful: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in list mods: %s", err)
+			log.Printf("Error in uploadMod, listing mods wasn't successful: %s", err)
 		}
 		return
 	}
 
 	resp.Success = true
-	resp.Data = m
 
 	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error in toggle mod: %s", err)
+		log.Printf("Error in UploadModHandler: %s", err)
 	}
-}*/
+}
 
 // Uploads mod to the mods directory
 /*func UploadMod(w http.ResponseWriter, r *http.Request) {
