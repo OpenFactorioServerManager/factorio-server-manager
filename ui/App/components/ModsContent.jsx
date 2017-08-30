@@ -304,9 +304,6 @@ class ModsContent extends React.Component {
             let this_class = this;
 
             //make button spinning
-            // let $loader = $("");
-            // $button.html($loader);
-
             toggleUpdateStatus();
 
             $.ajax({
@@ -340,9 +337,6 @@ class ModsContent extends React.Component {
     }
 
     uploadModSuccessHandler(event, data) {
-        console.log('File batch upload success');
-        console.log(data.response.data.mods);
-
         this.setState({
             installedMods: data.response.data.mods
         });

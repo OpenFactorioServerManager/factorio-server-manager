@@ -24,6 +24,16 @@ type ModsList struct {
     Mods    []Mod   `json:"mods"`
 }
 
+func (mod_list *ModsList) check_mod_exists(mod_name string) bool {
+    for _, single_mod := range mod_list.Mods {
+        if single_mod.Name == mod_name {
+            return true
+        }
+    }
+
+    return false
+}
+
 // List mods installed in the factorio/mods directory
 func listInstalledMods() (ModsList, error) {
     file, err := ioutil.ReadFile(config.FactorioModsDir + "/mod-list.json")
@@ -304,6 +314,20 @@ func installMod(username string, userKey string, url string, filename string, mo
 	//download the mod from the mod portal api
 	complete_url := "https://mods.factorio.com" + url + "?username=" + username + "&token=" + userKey
 
+    mod_list, err := listInstalledMods()
+    if err != nil {
+        return nil, err, 500
+    }
+
+    if mod_list.check_mod_exists(mod_id) {
+        log.Printf("delete old mod %s.", mod_id)
+        _, err = deleteMod(mod_id)
+        if err != nil {
+            log.Printf("error on deleting mod: %s", err)
+            return nil, err, 500
+        }
+    }
+
 	// don't worry about errors
 	response, err := http.Get(complete_url)
 	if err != nil {
@@ -335,11 +359,10 @@ func installMod(username string, userKey string, url string, filename string, mo
 	}
 	file.Close()
 
-	mod_list, err := listInstalledMods()
-
-	if err != nil {
-		return nil, err, 500
-	}
+    mod_list, err = listInstalledMods()
+    if err != nil {
+        return nil, err, 500
+    }
 
 	//add new mod
 	new_mod_entry := Mod{
@@ -407,13 +430,7 @@ func uploadMod(header *multipart.FileHeader) (error) {
         return err
     }
 
-    var mod_already_exists bool
-    for _, single_mod := range mods_list.Mods {
-        if single_mod.Name == mod_info.Name {
-            mod_already_exists = true
-            break
-        }
-    }
+    mod_already_exists := mods_list.check_mod_exists(mod_info.Name)
 
     if mod_already_exists {
         _, err = deleteMod(mod_info.Name)

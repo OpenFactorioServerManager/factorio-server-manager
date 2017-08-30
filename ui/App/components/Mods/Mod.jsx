@@ -17,6 +17,12 @@ class Mod extends React.Component {
         this.checkForNewVersion();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.mod.version != this.props.mod.version) {
+            this.checkForNewVersion();
+        }
+    }
+
     checkForNewVersion() {
         let this_class = this;
         //send AJAX that will check this
