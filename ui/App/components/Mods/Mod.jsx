@@ -43,6 +43,11 @@ class Mod extends React.Component {
                             file_name: newest_release.file_name
                         }
                     });
+                } else {
+                    this_class.setState({
+                        newVersionAvailable: false,
+                        newVersion: null
+                    })
                 }
             },
             error: (jqXHR, status, err) => {
