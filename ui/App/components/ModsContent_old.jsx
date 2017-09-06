@@ -2,7 +2,7 @@ import React from 'react';
 import {IndexLink} from 'react-router';
 import ModList from './Mods/ListMods.jsx';
 import InstalledMods from './Mods/InstalledMods.jsx';
-import ModPacks from './Mods/ModPacks.jsx'
+import ModPacks from './Mods/packs/ModPackOverview.jsx'
 
 class ModsContent extends React.Component {
     constructor(props) {

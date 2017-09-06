@@ -15,6 +15,7 @@ type Config struct {
 	FactorioDir         string `json:"factorio_dir"`
 	FactorioSavesDir    string `json:"saves_dir"`
 	FactorioModsDir     string `json:"mods_dir"`
+	FactorioModPackDir	string `json:"mod_pack_dir"`
 	FactorioConfigFile  string `json:"config_file"`
 	FactorioConfigDir   string `json:"config_directory"`
 	FactorioLog         string `json:"logfile"`
@@ -77,6 +78,7 @@ func parseFlags() {
 	config.ServerPort = *factorioPort
 	config.FactorioSavesDir = filepath.Join(config.FactorioDir, "saves")
 	config.FactorioModsDir = filepath.Join(config.FactorioDir, "mods")
+	config.FactorioModPackDir = "./mod_packs"
 	config.FactorioConfigDir = filepath.Join(config.FactorioDir, "config")
 	config.FactorioConfigFile = filepath.Join(config.FactorioDir, *factorioConfigFile)
 	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)

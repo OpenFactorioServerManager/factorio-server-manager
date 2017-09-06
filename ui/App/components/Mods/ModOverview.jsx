@@ -1,7 +1,8 @@
 import React from 'react';
-import Mod from './Mod.jsx';
 import ModSearch from './search/ModSearch.jsx';
 import ModUpload from "./ModUpload.jsx";
+import ModManager from "./ModManager.jsx";
+import ModPacks from "./packs/ModPackOverview.jsx";
 
 class ModOverview extends React.Component {
     constructor(props) {
@@ -73,33 +74,20 @@ class ModOverview extends React.Component {
                         <h3 className="box-title">Manage Mods</h3>
                     </div>
 
-                    <div className="box-body">
-                        <div className="table-responsive">
-                            <table className="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Version</th>
-                                    <th>Toggle/Remove</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {(this.props.installedMods != null) ?
-                                    this.props.installedMods.map((mod, i) => {
-                                    if(mod.name !== "base")
-                                        return(
-                                            <Mod
-                                                key={mod.name}
-                                                mod={mod}
-                                                {...this.props}
-                                            />
-                                        )
-                                }):null}
-                                </tbody>
-                            </table>
-                        </div>
+                    <ModManager
+                        {...this.props}
+                    />
+                </div>
+
+                <div className="box collapsed-box">
+                    <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
+                        <i className="fa fa-plus"></i>
+                        <h3 className="box-title">Manage Modpacks</h3>
                     </div>
+
+                    <ModPacks
+                        {...this.props}
+                    />
                 </div>
             </div>
         );
@@ -107,12 +95,12 @@ class ModOverview extends React.Component {
 }
 
 ModOverview.propTypes = {
-    installedMods: React.PropTypes.array,
+    // installedMods: React.PropTypes.array,
     submitFactorioLogin: React.PropTypes.func.isRequired,
-    toggleMod: React.PropTypes.func.isRequired,
-    deleteMod: React.PropTypes.func.isRequired,
-    updateMod: React.PropTypes.func.isRequired,
-    uploadModSuccessHandler: React.PropTypes.func.isRequired,
+    // toggleMod: React.PropTypes.func.isRequired,
+    // deleteMod: React.PropTypes.func.isRequired,
+    // updateMod: React.PropTypes.func.isRequired,
+    // uploadModSuccessHandler: React.PropTypes.func.isRequired,
 };
 
 export default ModOverview;

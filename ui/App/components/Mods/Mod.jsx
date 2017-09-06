@@ -92,7 +92,7 @@ class Mod extends React.Component {
                    }}
                    href="#"
                    onClick={(event) => {
-                       this.state.updateInProgress ? null : this.props.updateMod(event, this.toggleUpdateStatus, this.removeVersionAvailableStatus);
+                       this.state.updateInProgress && this.props.updateMod != null ? null : this.props.updateMod(event, this.toggleUpdateStatus, this.removeVersionAvailableStatus);
                    }}
                    data-download-url={this.state.newVersion.downloadUrl}
                    data-file-name={this.state.newVersion.file_name}

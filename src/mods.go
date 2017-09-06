@@ -474,3 +474,164 @@ func uploadMod(header *multipart.FileHeader) (error) {
 
 	return nil
 }
+
+type ModPack struct {
+    Name string `json:"name"`
+    Mods ModInfoList `json:"mods"`
+}
+
+func (mod_pack *ModPack) readModPack(reader zip.Reader) error {
+    //var err error
+    var mod_info_list ModInfoList
+    var pack_list ModsList
+
+    for _, mod_file := range reader.File {
+        mod_file_rc, err := mod_file.Open()
+        if err != nil {
+            log.Printf("Error opening mod_file: %s", err)
+            return err
+        }
+
+        mod_file_b, err := ioutil.ReadAll(mod_file_rc)
+        if err != nil {
+            log.Printf("Error on reading file to RAM: %s", err)
+            return err
+        }
+
+        if filepath.Ext(mod_file.Name) == ".zip" {
+            mod_file_r := bytes.NewReader(mod_file_b)
+
+            single_mod_reader, err := zip.NewReader(mod_file_r, int64(len(mod_file_b)))
+            if err != nil {
+                log.Printf("Error on reading byte_array to zip_reader: %s", err)
+                return err
+            }
+
+            var mod_info ModInfo
+            err = mod_info.getModInfo(single_mod_reader)
+            if err != nil {
+                log.Printf("Error in getModInfo with the zip-byte-array: %s", err)
+                return err
+            }
+
+            mod_info_list.Mods = append(mod_info_list.Mods, mod_info)
+        } else if mod_file.Name == "mod-list.json" {
+            err := json.Unmarshal(mod_file_b, &pack_list)
+            if err != nil {
+                log.Printf("Error on Unmashal the mod-info.json: %s", err)
+                return err
+            }
+        }
+    }
+
+    for _, json_mod := range pack_list.Mods {
+        for result_index, result_mod := range mod_info_list.Mods {
+            if result_mod.Name == json_mod.Name {
+                mod_info_list.Mods[result_index].Enabled = json_mod.Enabled
+                break
+            }
+        }
+    }
+
+    mod_pack.Mods = mod_info_list
+
+    return nil
+}
+
+type ModPackList struct {
+    ModPacks []ModPack `json:"mod_packs"`
+}
+func (mod_pack_list *ModPackList) getModPacks() error {
+    var err error
+    err = filepath.Walk(config.FactorioModPackDir, func(path string, info os.FileInfo, err error) error {
+        if !info.IsDir() && filepath.Ext(path) == ".zip" {
+            //var modpack ModPack
+            zip_file, err := zip.OpenReader(path)
+            if err != nil {
+                log.Printf("error on opening zip-file %s: %s", path, err)
+                return err
+            }
+            defer zip_file.Close()
+
+            var mod_pack ModPack
+            err = mod_pack.readModPack(zip_file.Reader)
+            if err != nil {
+                log.Printf("Error in readModPack: %s", err)
+                return err
+            }
+
+            var extension = filepath.Ext(info.Name())
+            mod_pack.Name = info.Name()[0:len(info.Name())-len(extension)]
+
+            mod_pack_list.ModPacks = append(mod_pack_list.ModPacks, mod_pack)
+        }
+        return nil
+    })
+
+    if err != nil {
+        log.Printf("error while walking over path: %s", err)
+        return err
+    }
+
+    return nil
+}
+
+func createModPack(pack_name string) (ModPackList, error) {
+    var err error
+    var mod_pack_list ModPackList
+
+    pack_name_file := config.FactorioModPackDir + "/" + pack_name + ".zip"
+
+    if _, err := os.Stat(pack_name_file); !os.IsNotExist(err) || pack_name == "" {
+        log.Printf("ModPack %s already exists", pack_name)
+        return mod_pack_list, errors.New("ModPack " + pack_name + " already exists, pls choose a different name")
+    }
+
+    file, err := os.Create(pack_name_file)
+    if err != nil {
+        log.Printf("error while creating mod-pack file: %s", err)
+        return mod_pack_list, err
+    }
+
+    zip_file := zip.NewWriter(file)
+    defer zip_file.Close()
+
+    err = filepath.Walk(config.FactorioModsDir, func(path string, info os.FileInfo, err error) error {
+        if !info.IsDir() && (filepath.Ext(path) == ".zip" || info.Name() == "mod-list.json") {
+            file_writer, err := zip_file.Create(info.Name())
+            if err != nil {
+                log.Printf("Error on creating file inside the zip: %s", err)
+                return err
+            }
+
+            current_file, err := os.Open(path)
+            if err != nil {
+                log.Printf("Error on opening file %s: %s", path, err)
+                return err
+            }
+            defer current_file.Close()
+
+            _, err = io.Copy(file_writer, current_file)
+            if err != nil {
+                log.Printf("Error while copying file %s into the zip: %s", path, err)
+                return err
+            }
+        }
+
+        return nil
+    })
+
+    if err != nil {
+        log.Printf("Error in Walking over the folder; %s", err)
+        return mod_pack_list, err
+    }
+
+    zip_file.Close()
+
+    err = mod_pack_list.getModPacks()
+    if err != nil {
+        return mod_pack_list, err
+    }
+
+    return mod_pack_list, nil
+}

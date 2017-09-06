@@ -25,11 +25,6 @@ type JSONResponseFileInput struct {
 	ErrorKeys	[]int	`json:"errorkeys"`
 }
 
-type ModPack struct {
-	Mods  []string `json:"mods"`
-	Title string   `json:"title"`
-}
-
 // Returns JSON response of all mods installed in factorio/mods
 func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -323,57 +318,7 @@ func UploadModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Uploads mod to the mods directory
-/*func UploadMod(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	switch r.Method {
-	case "GET":
-		resp.Data = "Unsupported method"
-		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing mods: %s", err)
-		}
-	case "POST":
-		log.Println("Uploading file")
-		r.ParseMultipartForm(32 << 20)
-		file, header, err := r.FormFile("modfile")
-		if err != nil {
-			log.Printf("No mod filename provided for upload: %s", err)
-			json.NewEncoder(w).Encode("No mod file provided.")
-			return
-		}
-		defer file.Close()
-
-		out, err := os.Create(config.FactorioModsDir + "/" + header.Filename)
-		if err != nil {
-			resp.Data = err.Error()
-			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in out")
-			return
-		}
-		defer out.Close()
-
-		_, err = io.Copy(out, file)
-		if err != nil {
-			resp.Data = err.Error()
-			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in io copy")
-			return
-		}
-		log.Printf("Uploaded mod file: %s", header.Filename)
-		resp.Data = "File '" + header.Filename + "' submitted successfully"
-		resp.Success = true
-		json.NewEncoder(w).Encode(resp)
-
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-}*/
-
-/*func RemoveMod(w http.ResponseWriter, r *http.Request) {
+func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
@@ -381,85 +326,53 @@ func UploadModHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	vars := mux.Vars(r)
-	modName := vars["mod"]
+	var mod_packs ModPackList
+	err = mod_packs.getModPacks()
 
-	err = rmMod(modName)
-	if err == nil {
-		// No error returned means mod was removed
-		resp.Data = fmt.Sprintf("Removed mod: %s", modName)
-		resp.Success = true
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing mod: %s", err)
-		}
-	} else {
-		log.Printf("Error in remove mod handler: %s", err)
-		resp.Data = fmt.Sprintf("Error in remove mod handler: %s", err)
+	resp.Data = mod_packs
 
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error listing modpack files: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing mod: %s", err)
+			log.Printf("Error listing modpacks: %s", err)
 		}
 		return
 	}
-}*/
 
-/*func DownloadMod(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+	resp.Success = true
 
-	vars := mux.Vars(r)
-	mod := vars["mod"]
-	modFile := filepath.Join(config.FactorioModsDir, mod)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error listing saves: %s", err)
+	}
+}
 
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", mod))
-	log.Printf("%s downloading: %s", r.Host, modFile)
-
-	http.ServeFile(w, r, modFile)
-}*/
-
-/*func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
+func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
 		Success: false,
 	}
 
+	name := r.FormValue("name")
+
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	switch r.Method {
-	case "GET":
-		resp.Data = "Unsupported method"
-		resp.Success = false
-		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Get request to modpack handler: %s", err)
-		}
-	case "POST":
-		var mods ModPack
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Printf("Error in create mod pack handler body: %s", err)
-			return
-		}
-
-		log.Printf("Creating modpack with contents: %v", string(body))
-
-		err = json.Unmarshal(body, &mods)
-		if err != nil {
-			log.Printf("Error unmarshaling server settings JSON: %s", err)
-			return
-		}
-
-		err = createModPack(mods.Title, mods.Mods...)
-		if err != nil {
-			log.Printf("Error in creating modpack handler: %s", err)
-			return
-		}
-
-		resp.Success = true
-		resp.Data = fmt.Sprintf("Created modpack: %s", mods.Title)
+	resp.Data, err = createModPack(name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error creating modpack file: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing saves: %s", err)
+			log.Printf("Error creating modpack: %s", err)
 		}
+		return
 	}
-}*/
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error listing saves: %s", err)
+	}
+}
 
 /*func ListModPacks(w http.ResponseWriter, r *http.Request) {
 	var err error
