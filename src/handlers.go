@@ -370,34 +370,9 @@ func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error listing saves: %s", err)
+		log.Printf("Error creating modpack response: %s", err)
 	}
 }
-
-/*func ListModPacks(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	resp.Data, err = listModPacks(filepath.Join(config.FactorioDir, "modpacks"))
-	if err != nil {
-		resp.Success = false
-		resp.Data = fmt.Sprintf("Error listing modpack files: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing modpacks: %s", err)
-		}
-		return
-	}
-
-	resp.Success = true
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error listing saves: %s", err)
-	}
-}*/
 
 /*func DownloadModPack(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
@@ -412,6 +387,32 @@ func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, modFile)
 }*/
 
+func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	name := r.FormValue("name")
+
+	resp.Data, err = deleteModPack(name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error deleting modpack file: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error deleting modpack: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error creating delete modpack response: %s", err)
+	}
+}
 /*func DeleteModPack(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{

@@ -1,11 +1,13 @@
 import React from 'react';
 import ModManager from "../ModManager.jsx";
+import NativeListener from 'react-native-listener';
 
 class ModPackOverview extends React.Component {
     constructor(props) {
         super(props);
 
         this.createModPack = this.createModPack.bind(this);
+        this.deleteModPack = this.deleteModPack.bind(this);
 
         this.state = {
             listPacks: []
@@ -71,7 +73,7 @@ class ModPackOverview extends React.Component {
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/packs/create', status, err.toString());
 
-                    let json_response = jqXHR.responseJSON
+                    let json_response = jqXHR.responseJSON;
                     swal({
                         title: "Error on creating modpack",
                         text: json_response.data,
@@ -84,8 +86,48 @@ class ModPackOverview extends React.Component {
 
     deleteModPack(e) {
         e.stopPropagation();
-        e.preventDefault();
-        e.nativeEvent.stopImmediatePropagation();
+
+        let this_class = this;
+        let name = $(e.target).parent().prev().html();
+
+        swal({
+            title: "Are you sure?",
+            text: "You really want to delete this modpack?\nThere is no turning back, the modpack will be deleted forever (a very long time)!",
+            type: "info",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            showLoaderOnConfirm: true
+        },
+        function() {
+            $.ajax({
+                url: "/api/mods/packs/delete",
+                method: "POST",
+                data: {name: name},
+                dataType: "JSON",
+                success: (data) => {
+                    this_class.setState({
+                        listPacks: data.data.mod_packs
+                    });
+
+                    swal({
+                        title: "Modpack deleted successfully",
+                        type: "success"
+                    });
+                },
+                error: (jqXHR, status, err) => {
+                    console.log('api/mods/packs/delete', status, err.toString());
+
+                    let json_response = jqXHR.responseJSON || err.toString();
+                    json_response = json_response.data || err.toString();
+
+                    swal({
+                        title: "Error on creating modpack",
+                        text: json_response,
+                        type: "error"
+                    });
+                }
+            })
+        });
     }
 
     test() {
@@ -96,29 +138,33 @@ class ModPackOverview extends React.Component {
         return(
             <div className="box-body">
                 {
-                    this.state.listPacks.map(
-                        (modpack, index) => {
-                            return(
-                                <div className="box collapsed-box">
-                                    <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
-                                        <i className="fa fa-plus"></i>
-                                        <h3 className="box-title">{modpack.name}</h3>
-                                        <div className="box-tools pull-right">
-                                            <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}} onClick={this.deleteModPack}>Delete</button>
+                    this.state.listPacks != null ?
+                        this.state.listPacks.map(
+                            (modpack, index) => {
+                                return(
+                                    <div className="box collapsed-box">
+                                        <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
+                                            <i className="fa fa-plus"></i>
+                                            <h3 className="box-title">{modpack.name}</h3>
+                                            <div className="box-tools pull-right">
+                                                <NativeListener onClick={this.deleteModPack}>
+                                                    <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Delete</button>
+                                                </NativeListener>
+                                            </div>
+                                        </div>
+                                        <div className="box-body">
+                                            <ModManager
+                                                installedMods={modpack.mods.mods}
+                                                deleteMod={this.test} //TODO
+                                                toggleMod={this.test}
+                                                updateMod={this.test}
+                                            />
                                         </div>
                                     </div>
-                                    <div className="box-body">
-                                        <ModManager
-                                            installedMods={modpack.mods.mods}
-                                            deleteMod={this.test}
-                                            toggleMod={this.test}
-                                            updateMod={this.test}
-                                        />
-                                    </div>
-                                </div>
-                            )
-                        }
-                    )
+                                )
+                            }
+                        )
+                    : null
                 }
 
                 <div className="box">

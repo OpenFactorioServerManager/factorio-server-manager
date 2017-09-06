@@ -635,3 +635,22 @@ func createModPack(pack_name string) (ModPackList, error) {
 
     return mod_pack_list, nil
 }
+
+func deleteModPack(mod_name string) (ModPackList, error) {
+    var err error
+    var mod_pack_list ModPackList
+
+    err = os.Remove(config.FactorioModPackDir + "/" + mod_name + ".zip")
+    if err != nil {
+        log.Printf("Error when deleting modPack: %s", err)
+        return mod_pack_list, err
+    }
+
+    err = mod_pack_list.getModPacks()
+    if err != nil {
+        log.Printf("error when listing modPacks: %s", err)
+        return mod_pack_list, err
+    }
+
+    return mod_pack_list, nil
+}
