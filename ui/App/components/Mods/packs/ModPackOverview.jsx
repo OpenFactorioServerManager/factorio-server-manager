@@ -1,6 +1,7 @@
 import React from 'react';
 import ModManager from "../ModManager.jsx";
 import NativeListener from 'react-native-listener';
+import {instanceOfModsContent} from "../ModsPropTypes.js";
 
 class ModPackOverview extends React.Component {
     constructor(props) {
@@ -8,6 +9,7 @@ class ModPackOverview extends React.Component {
 
         this.createModPack = this.createModPack.bind(this);
         this.deleteModPack = this.deleteModPack.bind(this);
+        this.loadModPack = this.loadModPack.bind(this);
 
         this.state = {
             listPacks: []
@@ -130,6 +132,54 @@ class ModPackOverview extends React.Component {
         });
     }
 
+    loadModPack(e) {
+        e.stopPropagation();
+
+        let this_class = this
+        let name = $(e.target).parent().prev().html();
+
+        swal({
+            title: "Are you sure?",
+            text: "This operation will replace the current installed mods with the mods out of the selected ModPack!",
+            type: "info",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            showLoaderOnConfirm: true
+        },
+        function() {
+            $.ajax({
+                url: "/api/mods/packs/load",
+                method: "POST",
+                data: {name: name},
+                dataType: "JSON",
+                success: (data) => {
+                    swal({
+                        title: "ModPack loaded!",
+                        type: "success"
+                    });
+
+                    // console.log(data);
+
+                    this_class.props.modContentClass.setState({
+                        installedMods: data.data
+                    });
+                },
+                error: (jqXHR, status, err) => {
+                    console.log('api/mods/packs/load', status, err.toString());
+
+                    let json_response = jqXHR.responseJSON || err.toString();
+                    json_response = json_response.data || err.toString();
+
+                    swal({
+                        title: "Error on loading ModPack",
+                        text: json_response,
+                        type: "error"
+                    });
+                }
+            })
+        });
+    }
+
     test() {
         console.log("test called");
     }
@@ -147,6 +197,9 @@ class ModPackOverview extends React.Component {
                                             <i className="fa fa-plus"></i>
                                             <h3 className="box-title">{modpack.name}</h3>
                                             <div className="box-tools pull-right">
+                                                <NativeListener onClick={this.loadModPack}>
+                                                    <button className="btn btn-box-tool btn-default" style={{marginRight: 10}}>Load ModPack</button>
+                                                </NativeListener>
                                                 <NativeListener onClick={this.deleteModPack}>
                                                     <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Delete</button>
                                                 </NativeListener>
@@ -179,7 +232,7 @@ class ModPackOverview extends React.Component {
 }
 
 ModPackOverview.propTypes = {
-
+    modContentClass: instanceOfModsContent.isRequired,
 };
 
 export default ModPackOverview

@@ -654,3 +654,70 @@ func deleteModPack(mod_name string) (ModPackList, error) {
 
     return mod_pack_list, nil
 }
+
+func loadModPack(name string) ([]ModInfo, error) {
+    var err error
+
+    zip_rc, err := zip.OpenReader(config.FactorioModPackDir + "/" + name + ".zip")
+    if err != nil {
+        log.Printf("Error opening ModPack zip: %s", err)
+        return nil, err
+    }
+    defer zip_rc.Close()
+
+    //delete current mods
+    factorio_mods_dir, err := os.Open(config.FactorioModsDir)
+    if err != nil {
+        log.Printf("Error opening factorioModsDir: %s", err)
+        return nil, err
+    }
+    defer factorio_mods_dir.Close()
+
+    folder_names, err := factorio_mods_dir.Readdirnames(-1)
+    if err != nil {
+        log.Printf("Error on reading dirnames: %s", err)
+        return nil, err
+    }
+
+    for _, name := range folder_names {
+        err = os.RemoveAll(filepath.Join(config.FactorioModsDir, name))
+        if err != nil {
+            log.Printf("Removing everything in the dir failed: %s", err)
+            return nil, err
+        }
+    }
+
+    //unpack zip to mods-directory
+    for _, single_file := range zip_rc.File {
+        log.Printf("filename: %s", single_file.Name)
+        new_file, err := os.Create(config.FactorioModsDir + "/" + single_file.Name)
+        if err != nil {
+            log.Printf("error when creating new file in mod-dir: %s", err)
+            return nil, err
+        }
+
+        singe_file_rc, err := single_file.Open()
+        if err != nil {
+            log.Printf("error when opening file inside zip: %s", err)
+            return nil, err
+        }
+
+        _, err = io.Copy(new_file, singe_file_rc)
+
+        new_file.Close()
+        singe_file_rc.Close()
+        if err != nil {
+            log.Printf("error when copying into the new file: %s", err)
+            return nil, err
+        }
+    }
+
+    //read the new mod configuration
+    mod_info_list, err := listInstalledModsByFolder()
+    if err != nil {
+        log.Printf("error when listing mods after extracting a ModPack: %s", err)
+        return nil, err
+    }
+
+    return mod_info_list.Mods, nil
+}

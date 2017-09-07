@@ -299,6 +299,11 @@ var apiRoutes = Routes{
 		"/mods/packs/create",
 		CreateModPackHandler,
 	}, {
+		"LoadModPack",
+		"POST",
+		"/mods/packs/load",
+		LoadModPackHandler,
+	}, {
 		"GetServerSettings",
 		"GET",
 		"/settings",

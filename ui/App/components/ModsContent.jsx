@@ -365,6 +365,7 @@ class ModsContent extends React.Component {
                         deleteMod={this.deleteModHandler}
                         updateMod={this.updateModHandler}
                         uploadModSuccessHandler={this.uploadModSuccessHandler}
+                        modContentClass={this}
                     />
                 </section>
             </div>

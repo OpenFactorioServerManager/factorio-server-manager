@@ -3,6 +3,7 @@ import ModSearch from './search/ModSearch.jsx';
 import ModUpload from "./ModUpload.jsx";
 import ModManager from "./ModManager.jsx";
 import ModPacks from "./packs/ModPackOverview.jsx";
+import {instanceOfModsContent} from "./ModsPropTypes.js";
 
 class ModOverview extends React.Component {
     constructor(props) {
@@ -95,12 +96,14 @@ class ModOverview extends React.Component {
 }
 
 ModOverview.propTypes = {
-    // installedMods: React.PropTypes.array,
+    installedMods: React.PropTypes.array,
     submitFactorioLogin: React.PropTypes.func.isRequired,
-    // toggleMod: React.PropTypes.func.isRequired,
-    // deleteMod: React.PropTypes.func.isRequired,
-    // updateMod: React.PropTypes.func.isRequired,
-    // uploadModSuccessHandler: React.PropTypes.func.isRequired,
+    toggleMod: React.PropTypes.func.isRequired,
+    deleteMod: React.PropTypes.func.isRequired,
+    updateMod: React.PropTypes.func.isRequired,
+    uploadModSuccessHandler: React.PropTypes.func.isRequired,
+
+    modContentClass: instanceOfModsContent.isRequired,
 };
 
 export default ModOverview;

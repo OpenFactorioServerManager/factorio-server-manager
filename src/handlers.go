@@ -413,6 +413,34 @@ func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error creating delete modpack response: %s", err)
 	}
 }
+
+func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	name := r.FormValue("name")
+
+	resp.Data, err = loadModPack(name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error loading modpack file: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error loading modpack: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error creating loading modpack response: %s", err)
+	}
+}
+
 /*func DeleteModPack(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
