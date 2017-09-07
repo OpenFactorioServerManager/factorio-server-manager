@@ -158,8 +158,6 @@ class ModPackOverview extends React.Component {
                         type: "success"
                     });
 
-                    // console.log(data);
-
                     this_class.props.modContentClass.setState({
                         installedMods: data.data
                     });

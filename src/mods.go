@@ -689,7 +689,6 @@ func loadModPack(name string) ([]ModInfo, error) {
 
     //unpack zip to mods-directory
     for _, single_file := range zip_rc.File {
-        log.Printf("filename: %s", single_file.Name)
         new_file, err := os.Create(config.FactorioModsDir + "/" + single_file.Name)
         if err != nil {
             log.Printf("error when creating new file in mod-dir: %s", err)
