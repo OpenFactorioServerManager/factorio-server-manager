@@ -283,12 +283,12 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/packs/list",
 		ListModPacksHandler,
-	}, /*{
+	}, {
 		"DownloadModPack",
 		"GET",
-		"/mods/packs/dl/{modpack}",
-		DownloadModPack,
-	}, */{
+		"/mods/packs/download/{modpack}",
+		DownloadModPackHandler,
+	}, {
 		"DeleteModPack",
 		"POST",
 		"/mods/packs/delete",

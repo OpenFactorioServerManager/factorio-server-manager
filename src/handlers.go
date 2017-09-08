@@ -374,18 +374,18 @@ func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-/*func DownloadModPack(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+func DownloadModPackHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/zip;charset=UTF-8")
 
 	vars := mux.Vars(r)
 	modpack := vars["modpack"]
-	modFile := filepath.Join(config.FactorioDir, "modpacks", modpack)
+	modFile := config.FactorioModPackDir + "/" + modpack + ".zip"
 
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", modpack))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", modpack + ".zip"))
 	log.Printf("%s downloading: %s", r.Host, modFile)
 
 	http.ServeFile(w, r, modFile)
-}*/
+}
 
 func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -440,35 +440,6 @@ func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error creating loading modpack response: %s", err)
 	}
 }
-
-/*func DeleteModPack(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	vars := mux.Vars(r)
-	modPack := vars["modpack"]
-
-	err = rmModPack(modPack)
-	if err == nil {
-		// Modpack removed
-		resp.Data = fmt.Sprintf("Removed modpack: %s", modPack)
-		resp.Success = true
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing modpack %s", err)
-		}
-	} else {
-		log.Printf("Error in remove modpack handler: %s", err)
-		resp.Data = fmt.Sprintf("Error in remove modpack handler: %s", err)
-
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing modpack: %s", err)
-		}
-	}
-}*/
 
 // Lists all save files in the factorio/saves directory
 func ListSaves(w http.ResponseWriter, r *http.Request) {

@@ -178,6 +178,10 @@ class ModPackOverview extends React.Component {
         });
     }
 
+    downloadModPack(e) {
+        e.stopPropagation();
+    }
+
     test() {
         console.log("test called");
     }
@@ -195,9 +199,14 @@ class ModPackOverview extends React.Component {
                                             <i className="fa fa-plus"></i>
                                             <h3 className="box-title">{modpack.name}</h3>
                                             <div className="box-tools pull-right">
+                                                <NativeListener onClick={this.downloadModPack}>
+                                                    <a className="btn btn-box-tool btn-default" style={{marginRight: 10}} href={"/api/mods/packs/download/" + modpack.name} download>Download</a>
+                                                </NativeListener>
+
                                                 <NativeListener onClick={this.loadModPack}>
                                                     <button className="btn btn-box-tool btn-default" style={{marginRight: 10}}>Load ModPack</button>
                                                 </NativeListener>
+
                                                 <NativeListener onClick={this.deleteModPack}>
                                                     <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Delete</button>
                                                 </NativeListener>
