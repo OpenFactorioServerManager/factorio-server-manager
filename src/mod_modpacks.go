@@ -247,8 +247,6 @@ func (mod_pack *ModPack) loadModPack() error {
         return err
     }
 
-    //mods, err := newMods(config.FactorioModsDir)
-
     return nil
 }
 
