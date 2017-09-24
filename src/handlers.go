@@ -536,7 +536,7 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    resp.Data = mod_pack_map[mod_pack_name].Mods.listInstalledMods()
+    resp.Data = mod_pack_map.listInstalledModPacks()
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {
