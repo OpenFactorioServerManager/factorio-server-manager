@@ -10,6 +10,7 @@ class ModPackOverview extends React.Component {
         this.createModPack = this.createModPack.bind(this);
         this.deleteModPack = this.deleteModPack.bind(this);
         this.loadModPack = this.loadModPack.bind(this);
+        this.modPackToggleModHandler = this.modPackToggleModHandler.bind(this);
 
         this.state = {
             listPacks: []
@@ -27,7 +28,6 @@ class ModPackOverview extends React.Component {
             method: "GET",
             dataType: "JSON",
             success: (data) => {
-                console.log(data);
                 this.setState({
                     listPacks: data.data.mod_packs
                 });
@@ -159,7 +159,7 @@ class ModPackOverview extends React.Component {
                     });
 
                     this_class.props.modContentClass.setState({
-                        installedMods: data.data
+                        installedMods: data.data.mods
                     });
                 },
                 error: (jqXHR, status, err) => {
@@ -182,6 +182,37 @@ class ModPackOverview extends React.Component {
         e.stopPropagation();
     }
 
+    modPackToggleModHandler(e) {
+        e.preventDefault();
+        let $button = $(e.target);
+        let $row = $button.parents("tr");
+        let mod_name = $row.data("mod-name");
+        let mod_pack = $row.parents(".single-modpack").find("h3").html();
+
+        $.ajax({
+            url: "/api/mods/packs/mod/toggle",
+            method: "POST",
+            data: {
+                mod_name: mod_name,
+                mod_pack: mod_pack
+            },
+            dataType: "JSON",
+            success: (data) => {
+                this.setState({
+                    listPacks: data.data.mod_packs
+                });
+            },
+            error: (jqXHR, status, err) => {
+                console.log('api/mods/packs/mod/toggle', status, err.toString());
+                swal({
+                    title: "Toggle Mod went wrong",
+                    text: err.toString(),
+                    type: "error"
+                });
+            }
+        });
+    }
+
     test() {
         console.log("test called");
     }
@@ -194,7 +225,7 @@ class ModPackOverview extends React.Component {
                         this.state.listPacks.map(
                             (modpack, index) => {
                                 return(
-                                    <div className="box collapsed-box">
+                                    <div key={modpack.name} className="box single-modpack collapsed-box">
                                         <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
                                             <i className="fa fa-plus"></i>
                                             <h3 className="box-title">{modpack.name}</h3>
@@ -216,7 +247,7 @@ class ModPackOverview extends React.Component {
                                             <ModManager
                                                 installedMods={modpack.mods.mods}
                                                 deleteMod={this.test} //TODO
-                                                toggleMod={this.test}
+                                                toggleMod={this.modPackToggleModHandler}
                                                 updateMod={this.test}
                                             />
                                         </div>

@@ -304,6 +304,11 @@ var apiRoutes = Routes{
 		"/mods/packs/load",
 		LoadModPackHandler,
 	}, {
+	    "ModPackToggleMod",
+	    "POST",
+	    "/mods/packs/mod/toggle",
+	    ModPackToggleModHandler,
+    } ,{
 		"GetServerSettings",
 		"GET",
 		"/settings",

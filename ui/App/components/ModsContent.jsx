@@ -320,7 +320,7 @@ class ModsContent extends React.Component {
                     toggleUpdateStatus();
                     removeVersionAvailableStatus();
                     this_class.setState({
-                        installedMods: data.data
+                        installedMods: data.data.mods
                     });
                 },
                 error: (jqXHR, status, err) => {
