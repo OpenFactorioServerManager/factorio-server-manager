@@ -130,7 +130,7 @@ func (mod_info *ModInfo) getModInfo(reader *zip.Reader) error {
     return errors.New("info.json not found in zip-file")
 }
 
-func (mod_info_list ModInfoList) createMod(mod_name string, file_name string, mod_file io.Reader) error {
+func (mod_info_list *ModInfoList) createMod(mod_name string, file_name string, mod_file io.Reader) error {
     var err error
 
     //save uploaded file

@@ -4,10 +4,11 @@ import (
     "log"
     "net/http"
     "io"
-    "io/ioutil"
     "mime/multipart"
     "bytes"
     "archive/zip"
+    "errors"
+    "fmt"
 )
 
 type Mods struct {
@@ -132,10 +133,9 @@ func (mods *Mods) downloadMod(username string, userKey string, url string, filen
     defer response.Body.Close()
 
     if response.StatusCode != 200 {
-        text, _ := ioutil.ReadAll(response.Body)
-        log.Printf("StatusCode: %d \n ResponseBody: %s", response.StatusCode, text)
+        log.Printf("StatusCode: %d", response.StatusCode)
 
-        return err
+        return errors.New("Statuscode not 200: " + fmt.Sprint(response.StatusCode))
     }
 
     err = mods.createMod(mod_id, filename, response.Body)
@@ -196,15 +196,15 @@ func (mods *Mods) uploadMod(header *multipart.FileHeader) (error) {
 func (mods *Mods) updateMod(mod_name string, username string, userKey string, url string, filename string) error {
     var err error
 
-    err = mods.deleteMod(mod_name)
-    if err != nil {
-        log.Printf("updateMod ... error when deleting mod: %s", err)
-        return err
-    }
+    //err = mods.deleteMod(mod_name)
+    //if err != nil {
+    //    log.Printf("updateMod ... error when deleting mod: %s", err)
+    //    return err
+    //}
 
     err = mods.downloadMod(username, userKey, url, filename, mod_name)
     if err != nil {
-        log.Printf("updateMod ... error hen downloading the new Mod: %s", err)
+        log.Printf("updateMod ... error when downloading the new Mod: %s", err)
         return err
     }
 

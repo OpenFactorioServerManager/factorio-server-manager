@@ -313,6 +313,11 @@ var apiRoutes = Routes{
     	"POST",
     	"/mods/packs/mod/delete",
     	ModPackDeleteModHandler,
+	}, {
+		"ModPackUpdateMod",
+		"POST",
+		"/mods/packs/mod/update",
+		ModPackUpdateModHandler,
 	} ,{
 		"GetServerSettings",
 		"GET",

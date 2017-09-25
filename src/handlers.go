@@ -583,6 +583,48 @@ func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
     return
 }
 
+func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	//Get Data out of the request
+	mod_name := r.FormValue("mod_name")
+	username := r.FormValue("username")
+	user_key := r.FormValue("userKey")
+	download_url := r.FormValue("downloadUrl")
+	file_name := r.FormValue("filename")
+	mod_pack_name := r.FormValue("mod_pack_name")
+
+	mod_pack_map, err := newModPackMap()
+	if err == nil {
+		if mod_pack_map.checkModPackExists(mod_pack_name){
+			err = mod_pack_map[mod_pack_name].Mods.updateMod(mod_name, username, user_key, download_url, file_name)
+		} else {
+			err = errors.New("ModPack " + mod_pack_name + "does not exist")
+		}
+	}
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error in deleteMod: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in DeleteModHandler: %s", err)
+		}
+		return
+	}
+
+	resp.Data = mod_pack_map.listInstalledModPacks()
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in DeleteModHandler: %s", err)
+	}
+}
+
 // Lists all save files in the factorio/saves directory
 func ListSaves(w http.ResponseWriter, r *http.Request) {
 	var err error

@@ -12,6 +12,7 @@ class ModPackOverview extends React.Component {
         this.loadModPack = this.loadModPack.bind(this);
         this.modPackToggleModHandler = this.modPackToggleModHandler.bind(this);
         this.modPackDeleteModHandler = this.modPackDeleteModHandler.bind(this);
+        this.modPackUpdateModHandler = this.modPackUpdateModHandler.bind(this);
 
         this.state = {
             listPacks: []
@@ -219,7 +220,7 @@ class ModPackOverview extends React.Component {
         let $button = $(e.target);
         let $row = $button.parents("tr");
         let mod_name = $row.data("mod-name");
-        let mod_pack = $row.parents(".single-modpack").find("h3").html();7
+        let mod_pack = $row.parents(".single-modpack").find("h3").html();
         let class_this = this;
 
         swal({
@@ -259,6 +260,64 @@ class ModPackOverview extends React.Component {
         });
     }
 
+    modPackUpdateModHandler(e, toggleUpdateStatus, removeVersionAvailableStatus) {
+        e.preventDefault();
+
+        if(!this.props.modContentClass.state.userKey) {
+            swal({
+                type: "error",
+                title: "Update failed",
+                text: "please login into Factorio to update mod"
+            });
+
+            let $addModBox = $('#add-mod-box');
+            if($addModBox.hasClass("collapsed-box")) {
+                $addModBox.find(".box-header").click();
+            }
+        } else {
+            let $button = $(e.currentTarget);
+            let download_url = $button.data("downloadUrl");
+            let filename = $button.data("fileName");
+            let $row = $button.parents("tr");
+            let modname = $row.data("modName");
+            let mod_pack = $row.parents(".single-modpack").find("h3").html();
+
+            let this_class = this;
+
+            //make button spinning
+            toggleUpdateStatus();
+
+            $.ajax({
+                url: "/api/mods/packs/mod/update",
+                method: "POST",
+                data: {
+                    username: this.props.modContentClass.state.username,
+                    userKey: this.props.modContentClass.state.userKey,
+                    downloadUrl: download_url,
+                    filename: filename,
+                    mod_name: modname,
+                    mod_pack_name: mod_pack
+                },
+                success: (data) => {
+                    toggleUpdateStatus();
+                    removeVersionAvailableStatus();
+                    this_class.setState({
+                        listPacks: data.data.mod_packs
+                    });
+                },
+                error: (jqXHR, status, err) => {
+                    console.log('api/mods/packs/mod/update', status, err.toString());
+                    toggleUpdateStatus();
+                    swal({
+                        title: "Update Mod went wrong",
+                        text: jqXHR.responseJSON.data,
+                        type: "error"
+                    });
+                }
+            });
+        }
+    }
+
     test() {
         console.log("test called");
     }
@@ -294,7 +353,7 @@ class ModPackOverview extends React.Component {
                                                 installedMods={modpack.mods.mods}
                                                 deleteMod={this.modPackDeleteModHandler}
                                                 toggleMod={this.modPackToggleModHandler}
-                                                updateMod={this.test}
+                                                updateMod={this.modPackUpdateModHandler}
                                             />
                                         </div>
                                     </div>
