@@ -11,6 +11,7 @@ class ModPackOverview extends React.Component {
         this.deleteModPack = this.deleteModPack.bind(this);
         this.loadModPack = this.loadModPack.bind(this);
         this.modPackToggleModHandler = this.modPackToggleModHandler.bind(this);
+        this.modPackDeleteModHandler = this.modPackDeleteModHandler.bind(this);
 
         this.state = {
             listPacks: []
@@ -213,6 +214,51 @@ class ModPackOverview extends React.Component {
         });
     }
 
+    modPackDeleteModHandler(e) {
+        e.preventDefault();
+        let $button = $(e.target);
+        let $row = $button.parents("tr");
+        let mod_name = $row.data("mod-name");
+        let mod_pack = $row.parents(".single-modpack").find("h3").html();7
+        let class_this = this;
+
+        swal({
+            title: "Delete Mod?",
+            text: "This will delete the mod forever",
+            type: "info",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            confirmButtonText: "Delete it!",
+            cancelButtonText: "Close",
+            showLoaderOnConfirm: true,
+            confirmButtonColor: "#DD6B55",
+        }, function () {
+            $.ajax({
+                url: "/api/mods/packs/mod/delete",
+                method: "POST",
+                data: {
+                    mod_name: mod_name,
+                    mod_pack_name: mod_pack
+                },
+                dataType: "JSON",
+                success: (data) => {
+                    swal("Delete of mod " + mod_name + " inside modPack " + mod_pack + " successful", "", "success");
+                    class_this.setState({
+                        listPacks: data.data.mod_packs
+                    });
+                },
+                error: (jqXHR, status, err) => {
+                    console.log('api/mods/packs/mod/delete', status, err.toString());
+                    swal({
+                        title: "Delete Mod went wrong",
+                        text: jqXHR.responseJSON.data,
+                        type: "error"
+                    });
+                }
+            });
+        });
+    }
+
     test() {
         console.log("test called");
     }
@@ -246,7 +292,7 @@ class ModPackOverview extends React.Component {
                                         <div className="box-body">
                                             <ModManager
                                                 installedMods={modpack.mods.mods}
-                                                deleteMod={this.test} //TODO
+                                                deleteMod={this.modPackDeleteModHandler}
                                                 toggleMod={this.modPackToggleModHandler}
                                                 updateMod={this.test}
                                             />

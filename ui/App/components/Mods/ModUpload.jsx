@@ -24,7 +24,6 @@ class ModUpload extends React.Component {
                     The mods you upload will override every mod, that is already uploaded!<br/>
                     Uploaded mods will be treated same, as if you install mods with the mod-portal-api.<br/><br/>
                     Only zip-files are allowed to upload !!
-                    {/*TODO make better english*/}
                 </div>
 
                 <label className="control-label">Select File</label>

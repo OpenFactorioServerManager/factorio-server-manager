@@ -13,6 +13,7 @@ import (
 	"time"
 	"github.com/gorilla/mux"
 	"archive/zip"
+	"errors"
 )
 
 type JSONResponse struct {
@@ -542,6 +543,44 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
     if err := json.NewEncoder(w).Encode(resp); err != nil {
         log.Printf("Error creating loading modpack response: %s", err)
     }
+}
+
+func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
+    var err error
+    resp := JSONResponse{
+        Success: false,
+    }
+
+    w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+    mod_name := r.FormValue("mod_name")
+    mod_pack_name := r.FormValue("mod_pack_name")
+
+    mod_pack_map, err := newModPackMap()
+    if err == nil {
+    	if mod_pack_map.checkModPackExists(mod_pack_name) {
+			err = mod_pack_map[mod_pack_name].Mods.deleteMod(mod_name)
+		} else {
+			err = errors.New("ModPack " + mod_pack_name + " does not exist")
+		}
+    }
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        resp.Data = fmt.Sprintf("Error loading modpack file: %s", err)
+        if err := json.NewEncoder(w).Encode(resp); err != nil {
+            log.Printf("Error loading modpack: %s", err)
+        }
+        return
+    }
+
+    resp.Data = mod_pack_map.listInstalledModPacks()
+    resp.Success = true
+
+    if err := json.NewEncoder(w).Encode(resp); err != nil {
+        log.Printf("Error creating loading modpack response: %s", err)
+    }
+
+    return
 }
 
 // Lists all save files in the factorio/saves directory
