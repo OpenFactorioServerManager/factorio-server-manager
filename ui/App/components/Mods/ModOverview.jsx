@@ -72,7 +72,7 @@ class ModOverview extends React.Component {
 
                 <div className="box">
                     <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
-                        <i className="fa fa-plus"></i>
+                        <i className="fa fa-minus"></i>
                         <h3 className="box-title">Manage Mods</h3>
                     </div>
 
