@@ -99,8 +99,8 @@ func main() {
 	parseFlags()
 	// Load server config from file
 	loadServerConfig(config.ConfFile)
-	// Create mod pack dir if missing
-	//createModPackDir() FIXME
+	// create mod-stuff
+	modStartUp()
 
 	// Initialize Factorio Server struct
 	FactorioServ, err = initFactorio()

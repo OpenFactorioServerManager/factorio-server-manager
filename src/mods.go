@@ -5,6 +5,13 @@ import (
     "net/url"
     "log"
     "io/ioutil"
+    "os"
+    "path/filepath"
+    "strings"
+    "errors"
+    "archive/zip"
+    "encoding/json"
+    "bytes"
 )
 
 type LoginErrorResponse struct {
@@ -87,4 +94,140 @@ func getModDetails(modId string) (string, error, int) {
     }
 
     return text_string, nil, resp.StatusCode
+}
+
+func modStartUp() {
+    var err error
+
+    //get main-folder info
+    factorioDir_info, err := os.Stat(config.FactorioDir)
+    if err != nil {
+        log.Printf("error getting stats from FactorioDir: %s", err)
+        return
+    }
+    factorioDir_perm := factorioDir_info.Mode().Perm()
+
+    //create mods dir
+    if _, err = os.Stat(config.FactorioModsDir); os.IsNotExist(err) {
+        log.Println("no mods dir found ... creating one ...")
+        os.Mkdir(config.FactorioModsDir, factorioDir_perm)
+    }
+
+    //crate mod_pack dir
+    if _, err = os.Stat(config.FactorioModPackDir); os.IsNotExist(err) {
+        log.Println("no ModPackDir found ... creating one ...")
+        os.Mkdir(config.FactorioModPackDir, factorioDir_perm)
+    }
+
+    old_modpack_dir := filepath.Join(config.FactorioDir, "modpacks")
+    if _, err := os.Stat(filepath.Join(old_modpack_dir)); !os.IsNotExist(err) {
+        log.Printf("found old modpack files, rebuild into new system...")
+
+        err = filepath.Walk(old_modpack_dir, func(path string, info os.FileInfo, err error) error {
+            if info.IsDir() {
+                return nil
+            }
+            if filepath.Ext(info.Name()) != ".zip" {
+                log.Printf("file is not a zip or a directory -> skip")
+                return nil
+            }
+
+            filename := info.Name()
+            n := strings.LastIndexByte(info.Name(), '.')
+            mod_pack_name := filename[:n]
+
+            log.Printf("loading modPack %s into new system ...", mod_pack_name)
+
+            mod_pack_dir := filepath.Join(config.FactorioModPackDir, mod_pack_name)
+
+            if _, err := os.Stat(mod_pack_dir); !os.IsNotExist(err) {
+                log.Printf("modPack already exists")
+                return errors.New("modPack already exists")
+            }
+
+            err = os.Mkdir(mod_pack_dir, factorioDir_perm)
+            if err != nil {
+                log.Printf("error creating newModPackDir: %s", err)
+                return err
+            }
+
+            //create mod-info.json
+            mod_simple_list := ModSimpleList{
+                Destination: mod_pack_dir,
+                Mods: []ModSimple{
+                    ModSimple{
+                        Name: "base",
+                        Enabled: true,
+                    },
+                },
+            }
+            new_json, _ := json.Marshal(mod_simple_list)
+
+            err = ioutil.WriteFile(mod_simple_list.Destination + "/mod-list.json", new_json, 0664)
+            if err != nil {
+                log.Printf("error when writing new mod-list: %s", err)
+                return err
+            }
+
+            mod_pack_file, err := zip.OpenReader(path)
+            if err != nil {
+                return err
+            }
+            defer mod_pack_file.Close()
+
+            mods, err := newMods(mod_pack_dir)
+            if err != nil {
+                log.Printf("error reading mods: %s", err)
+                return err
+            }
+
+            for _, mod_file := range mod_pack_file.File {
+                mod_file_rc, err := mod_file.Open()
+                if err != nil {
+                    log.Printf("error opening mod_file: %s", err)
+                    return err
+                }
+                defer mod_file_rc.Close()
+
+                mod_file_buffer, err := ioutil.ReadAll(mod_file_rc)
+                if err != nil {
+                    log.Printf("error reading mod_file_rc: %s", err)
+                    return err
+                }
+                mod_file_rc.Close()
+
+                mod_file_byte_reader := bytes.NewReader(mod_file_buffer)
+                mod_file_zip_reader, err := zip.NewReader(mod_file_byte_reader, int64(len(mod_file_buffer)))
+                if err != nil {
+                    log.Printf("error creating Reader on byte_array: %s", err)
+                    return err
+                }
+
+                var mod_info ModInfo
+                err = mod_info.getModInfo(mod_file_zip_reader)
+                if err != nil {
+                    log.Printf("error loading the ModInfo: %s", err)
+                    return err
+                }
+
+                err = mods.createMod(mod_info.Name, mod_file.Name, bytes.NewReader(mod_file_buffer))
+                if err != nil {
+                    log.Printf("error on creating mod: %s", err)
+                    return err
+                }
+            }
+
+            log.Printf("loading modPack %s successful", mod_pack_name)
+
+            return nil
+        })
+
+        if err != nil {
+            log.Printf("error on loading old modpacks into the new system: %s\n please check if empty modPacks are creating and delete them", err)
+        } else {
+            log.Printf("all modPacks are loaded into the new system successfully")
+            log.Printf("deleting old modPackDir")
+            os.RemoveAll(old_modpack_dir)
+        }
+    }
 }
