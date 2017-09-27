@@ -169,6 +169,7 @@ func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    resp.Data = mods.listInstalledMods()
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {

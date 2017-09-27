@@ -85,6 +85,8 @@ class ModsContent extends React.Component {
         let filename = $checked_input.data("filename");
         let mod_name = $checked_input.data("modid");
 
+        let this_class = this;
+
         $.ajax({
             method: "POST",
             url: "/api/mods/install",
@@ -97,8 +99,8 @@ class ModsContent extends React.Component {
                 modName: mod_name
             },
             success: (data) => {
-                this.setState({
-                    installedMods: data.data
+                this_class.setState({
+                    installedMods: data.data.mods
                 })
 
                 swal({
