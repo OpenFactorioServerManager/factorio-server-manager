@@ -54,7 +54,7 @@ func (mod_simple_list *ModSimpleList) saveModInfoJson() (error) {
     var err error
 
     //build json of current state
-    new_json, _ := json.Marshal(mod_simple_list)
+    new_json, _ := json.MarshalIndent(mod_simple_list, "", "    ")
 
     err = ioutil.WriteFile(mod_simple_list.Destination + "/mod-list.json", new_json, 0664)
     if err != nil {
