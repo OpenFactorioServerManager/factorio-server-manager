@@ -249,30 +249,3 @@ func (mod_pack *ModPack) loadModPack() error {
 
     return nil
 }
-
-//func modPackToggleMod(mod_pack_name string, mod_name string) (ModPackList, error) {
-//    //var err error
-//    //var mod_pack_list ModPackList
-//    //
-//    //mod_pack := ModPack{
-//    //    Name: mod_pack_name,
-//    //}
-//    //
-//    //temp_dir, err := mod_pack.create_temp_dir()
-//    //if err != nil {
-//    //    log.Printf("error when creating temp_dir: %s", err)
-//    //    return mod_pack_list, err
-//    //}
-//    //defer os.RemoveAll(temp_dir)
-//    //
-//    //var mods_list ModsList
-//    //err = mods_list.listInstalledMods(temp_dir)
-//    //if err != nil {
-//    //    log.Printf("error on listing mods in temp_dir: %s", err)
-//    //    return mod_pack_list, err
-//    //}
-//    //
-//    //log.Print(mods_list)
-//
-//    return ModPackList{}, nil
-//}

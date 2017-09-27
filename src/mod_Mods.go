@@ -9,6 +9,7 @@ import (
     "archive/zip"
     "errors"
     "fmt"
+    "io/ioutil"
 )
 
 type Mods struct {
@@ -164,14 +165,13 @@ func (mods *Mods) uploadMod(header *multipart.FileHeader) (error) {
     }
     defer file.Close()
 
-    var buff bytes.Buffer
-    file_length, err := buff.ReadFrom(file)
+    file_byte_array, err := ioutil.ReadAll(file)
     if err != nil {
-        log.Printf("Error occured while reading bytes.Buffer.ReadFrom: %s", err)
+        log.Printf("error reading file: %s", err)
         return err
     }
 
-    zip_reader, err := zip.NewReader(file, file_length)
+    zip_reader, err := zip.NewReader(bytes.NewReader(file_byte_array), int64(len(file_byte_array)))
     if err != nil {
         log.Printf("Uploaded file could not put into zip.Reader: %s", err)
         return err
@@ -184,7 +184,7 @@ func (mods *Mods) uploadMod(header *multipart.FileHeader) (error) {
         return err
     }
 
-    err = mods.createMod(mod_info.Name, header.Filename, file)
+    err = mods.createMod(mod_info.Name, header.Filename, bytes.NewReader(file_byte_array))
     if err != nil {
         log.Printf("error on creating Mod: %s", err)
         return err
