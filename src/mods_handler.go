@@ -61,7 +61,7 @@ func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(statusCode)
 
     if err != nil {
-        resp.Data = fmt.Sprintf("Error in getUserToken or LoginFactorioModPortal handler: %s", err)
+        resp.Data = fmt.Sprintf("Error trying to login into Factorio: %s", err)
         if err := json.NewEncoder(w).Encode(resp); err != nil {
             log.Printf("Error in Factorio-Login: %s", err)
         }
@@ -86,13 +86,39 @@ func LoginstatusFactorioModPortal(w http.ResponseWriter, r *http.Request) {
 
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
-        resp.Data = fmt.Sprintf("Error in getUserToken or LoginFactorioModPortal handler: %s", err)
+        resp.Data = fmt.Sprintf("Error getting the factorio credentials: %s", err)
         if err := json.NewEncoder(w).Encode(resp); err != nil {
             log.Printf("Error in Factorio-Login: %s", err)
         }
         return
     }
 
+    resp.Success = true
+
+    if err := json.NewEncoder(w).Encode(resp); err != nil {
+        log.Printf("Error in Factorio-Login: %s", err)
+    }
+}
+
+func LogoutFactorioModPortalHandler(w http.ResponseWriter, r *http.Request) {
+    var err error
+    resp := JSONResponse{
+        Success: false,
+    }
+
+    var credentials FactorioCredentials
+    err = credentials.del()
+
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        resp.Data = fmt.Sprintf("Error on logging out of factorio: %s", err)
+        if err := json.NewEncoder(w).Encode(resp); err != nil {
+            log.Printf("Error in Factorio-Login: %s", err)
+        }
+        return
+    }
+
+    resp.Data = false
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {

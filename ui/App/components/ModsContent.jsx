@@ -16,6 +16,7 @@ class ModsContent extends React.Component {
         this.deleteModHandler = this.deleteModHandler.bind(this);
         this.updateModHandler = this.updateModHandler.bind(this);
         this.uploadModSuccessHandler = this.uploadModSuccessHandler.bind(this);
+        this.factorioLogoutHandler = this.factorioLogoutHandler.bind(this);
 
         this.state = {
             logged_in: false,
@@ -85,6 +86,31 @@ class ModsContent extends React.Component {
                 let json_data = JSON.parse(jqXHR.responseJSON.data);
 
                 console.log("error checking login status", json_data)
+            }
+        })
+    }
+
+    factorioLogoutHandler(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let this_class = this;
+
+        $.ajax({
+            url: "/api/mods/factorio/logout",
+            method: "POST",
+            dataType: "JSON",
+            success: (data) => {
+                this_class.setState({
+                    logged_in: data.data
+                })
+            },
+            error: (jqXHR) => {
+                swal({
+                    title: "error logging out of factorio",
+                    text: jqXHR.responseJSON.data,
+                    type: "error"
+                });
             }
         })
     }
@@ -374,6 +400,7 @@ class ModsContent extends React.Component {
                         updateMod={this.updateModHandler}
                         uploadModSuccessHandler={this.uploadModSuccessHandler}
                         modContentClass={this}
+                        factorioLogoutHandler={this.factorioLogoutHandler}
                     />
                 </section>
             </div>

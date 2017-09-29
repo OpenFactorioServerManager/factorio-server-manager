@@ -1,4 +1,5 @@
 import React from 'react';
+import NativeListener from 'react-native-listener';
 import ModSearch from './search/ModSearch.jsx';
 import ModUpload from "./ModUpload.jsx";
 import ModManager from "./ModManager.jsx";
@@ -49,6 +50,14 @@ class ModOverview extends React.Component {
                     <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
                         <i className="fa fa-plus"></i>
                         <h3 className="box-title">Add Mod</h3>
+                        {this.props.logged_in ?
+                            <div className="box-tools pull-right">
+                                <NativeListener onClick={this.props.factorioLogoutHandler}>
+                                    <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Logout
+                                    </button>
+                                </NativeListener>
+                            </div>
+                        : null}
                     </div>
 
                     <ModSearch
@@ -104,6 +113,7 @@ ModOverview.propTypes = {
     updateMod: React.PropTypes.func.isRequired,
     uploadModSuccessHandler: React.PropTypes.func.isRequired,
     logged_in: React.PropTypes.bool.isRequired,
+    factorioLogoutHandler: React.PropTypes.func.isRequired,
 
     modContentClass: instanceOfModsContent.isRequired,
 };
