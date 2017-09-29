@@ -18,14 +18,14 @@ class ModsContent extends React.Component {
         this.uploadModSuccessHandler = this.uploadModSuccessHandler.bind(this);
 
         this.state = {
-            username: sessionStorage.getItem("username") || "",
-            userKey: sessionStorage.getItem("userKey") || "",
+            logged_in: false,
             installedMods: [],
         }
     }
 
     componentDidMount() {
         this.loadModList();
+        this.checkLoginState();
     }
 
     loadModList() {
@@ -45,7 +45,6 @@ class ModsContent extends React.Component {
         e.preventDefault();
 
         let $form = $(e.target);
-        let username = $form.find('input[name=username]').val();
 
         $.ajax({
             url: "/api/mods/factorio/login",
@@ -58,25 +57,36 @@ class ModsContent extends React.Component {
                     type: "success"
                 });
 
-                let user_key = (JSON.parse(data.data))[0];
-
-                sessionStorage.setItem("username", username);
-                sessionStorage.setItem("userKey", user_key);
-
                 this.setState({
-                    "username": username,
-                    "userKey": user_key
+                    "logged_in": data.data
                 });
             },
             error: (jqXHR) => {
-                let json_data = JSON.parse(jqXHR.responseJSON.data);
-
                 swal({
-                    title: json_data.message,
+                    title: jqXHR.responseJSON.data,
                     type: "error"
                 });
             }
         });
+    }
+
+    checkLoginState() {
+        let this_class = this;
+        $.ajax({
+            url: "/api/mods/factorio/status",
+            method: "POST",
+            dataType: "json",
+            success: (data) => {
+                this_class.setState({
+                    "logged_in": data.data
+                })
+            },
+            error: (jqXHR) => {
+                let json_data = JSON.parse(jqXHR.responseJSON.data);
+
+                console.log("error checking login status", json_data)
+            }
+        })
     }
 
     loadDownloadListSwalHandler() {
@@ -92,8 +102,6 @@ class ModsContent extends React.Component {
             url: "/api/mods/install",
             dataType: "JSON",
             data: {
-                username: this.state.username,
-                userKey: this.state.userKey,
                 link: link,
                 filename: filename,
                 modName: mod_name
@@ -286,7 +294,7 @@ class ModsContent extends React.Component {
     updateModHandler(e, toggleUpdateStatus, removeVersionAvailableStatus) {
         e.preventDefault();
 
-        if(!this.state.userKey) {
+        if(!this.state.logged_in) {
             swal({
                 type: "error",
                 title: "Update failed",
@@ -312,8 +320,6 @@ class ModsContent extends React.Component {
                 url: "/api/mods/update",
                 method: "POST",
                 data: {
-                    username: this.state.username,
-                    userKey: this.state.userKey,
                     downloadUrl: download_url,
                     filename: filename,
                     mod_name: modname,

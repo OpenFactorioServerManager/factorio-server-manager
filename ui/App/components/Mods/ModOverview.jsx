@@ -103,6 +103,7 @@ ModOverview.propTypes = {
     deleteMod: React.PropTypes.func.isRequired,
     updateMod: React.PropTypes.func.isRequired,
     uploadModSuccessHandler: React.PropTypes.func.isRequired,
+    logged_in: React.PropTypes.bool.isRequired,
 
     modContentClass: instanceOfModsContent.isRequired,
 };

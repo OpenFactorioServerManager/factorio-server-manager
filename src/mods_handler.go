@@ -41,7 +41,7 @@ func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-// Returns JSON response with the userKey or the error-message
+// Returns JSON response with success or error-message
 func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
     var err error
     resp := JSONResponse{
@@ -53,13 +53,39 @@ func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
     username := r.FormValue("username")
     password := r.FormValue("password")
 
-    var statusCode int
-    resp.Data, err, statusCode = getUserToken(username, password)
+    login_status, err, statusCode := factorioLogin(username, password)
+    if login_status == "" && err == nil {
+        resp.Data = true
+    }
 
     w.WriteHeader(statusCode)
 
     if err != nil {
-        w.WriteHeader(500)
+        resp.Data = fmt.Sprintf("Error in getUserToken or LoginFactorioModPortal handler: %s", err)
+        if err := json.NewEncoder(w).Encode(resp); err != nil {
+            log.Printf("Error in Factorio-Login: %s", err)
+        }
+        return
+    }
+
+    resp.Success = true
+
+    if err := json.NewEncoder(w).Encode(resp); err != nil {
+        log.Printf("Error in Factorio-Login: %s", err)
+    }
+}
+
+func LoginstatusFactorioModPortal(w http.ResponseWriter, r *http.Request) {
+    var err error
+    resp := JSONResponse{
+        Success: false,
+    }
+
+    var credentials FactorioCredentials
+    resp.Data, err = credentials.load()
+
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
         resp.Data = fmt.Sprintf("Error in getUserToken or LoginFactorioModPortal handler: %s", err)
         if err := json.NewEncoder(w).Encode(resp); err != nil {
             log.Printf("Error in Factorio-Login: %s", err)
@@ -125,7 +151,6 @@ func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(statusCode)
 
     if err != nil {
-        w.WriteHeader(500)
         resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
         if err := json.NewEncoder(w).Encode(resp); err != nil {
             log.Printf("Error in searchModPortal: %s", err)
@@ -149,15 +174,13 @@ func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
     //Get Data out of the request
-    username := r.FormValue("username")
-    userKey := r.FormValue("userKey")
     downloadUrl := r.FormValue("link")
     filename := r.FormValue("filename")
     mod_name := r.FormValue("modName")
 
     mods, err := newMods(config.FactorioModsDir)
     if err == nil {
-        err = mods.downloadMod(username, userKey, downloadUrl, filename, mod_name)
+        err = mods.downloadMod(downloadUrl, filename, mod_name)
     }
 
     if err != nil {
@@ -253,14 +276,12 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
 
     //Get Data out of the request
     mod_name := r.FormValue("mod_name")
-    username := r.FormValue("username")
-    user_key := r.FormValue("userKey")
     download_url := r.FormValue("downloadUrl")
     file_name := r.FormValue("filename")
 
     mods, err := newMods(config.FactorioModsDir)
     if err == nil {
-        err = mods.updateMod(mod_name, username, user_key, download_url, file_name)
+        err = mods.updateMod(mod_name, download_url, file_name)
     }
 
     if err != nil {
@@ -580,8 +601,6 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
 
     //Get Data out of the request
     mod_name := r.FormValue("mod_name")
-    username := r.FormValue("username")
-    user_key := r.FormValue("userKey")
     download_url := r.FormValue("downloadUrl")
     file_name := r.FormValue("filename")
     mod_pack_name := r.FormValue("mod_pack_name")
@@ -589,7 +608,7 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
     mod_pack_map, err := newModPackMap()
     if err == nil {
         if mod_pack_map.checkModPackExists(mod_pack_name){
-            err = mod_pack_map[mod_pack_name].Mods.updateMod(mod_name, username, user_key, download_url, file_name)
+            err = mod_pack_map[mod_pack_name].Mods.updateMod(mod_name, download_url, file_name)
         } else {
             err = errors.New("ModPack " + mod_pack_name + "does not exist")
         }

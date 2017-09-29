@@ -21,27 +21,116 @@ type LoginErrorResponse struct {
 type LoginSuccessResponse struct {
     UserKey []string  `json:""`
 }
+type FactorioCredentials struct {
+    Username    string  `json:"username"`
+    Userkey     string  `json:"userkey"`
+}
+
+func (credentials *FactorioCredentials) save() error {
+    var err error
+
+    credentials_json, err := json.Marshal(credentials)
+    if err != nil {
+        log.Printf("error mashalling the credentials: %s", err)
+        return err
+    }
+
+    err = ioutil.WriteFile(config.FactorioCredentialsFile, credentials_json, 0664)
+    if err != nil {
+        log.Printf("error on saving the credentials. %s", err)
+        return err
+    }
+
+    return nil
+}
+
+func (credentials *FactorioCredentials) load() (bool, error) {
+    var err error
+
+    if _, err := os.Stat(config.FactorioCredentialsFile); os.IsNotExist(err) {
+        return false, nil
+    }
+
+    file_bytes, err := ioutil.ReadFile(config.FactorioCredentialsFile)
+    if err != nil {
+        credentials.del()
+        log.Printf("error reading CredentialsFile: %s", err)
+        return false, err
+    }
+
+    err = json.Unmarshal(file_bytes, credentials)
+    if err != nil {
+        credentials.del()
+        log.Printf("error on unmarshal credentials_file: %s", err)
+        return false, err
+    }
+
+    if credentials.Userkey != "" && credentials.Username != "" {
+        return true, nil
+    } else {
+        credentials.del()
+        return false, errors.New("incredients incomplete")
+    }
+}
+
+func (credentials *FactorioCredentials) del() error {
+    var err error
+
+    err = os.Remove(config.FactorioCredentialsFile)
+    if err != nil {
+        log.Printf("error delete the credentialfile: %s", err)
+        return err
+    }
+
+    return nil
+}
+
 //Log the user into factorio, so mods can be downloaded
-func getUserToken(username string, password string) (string, error, int) {
-    resp, get_err := http.PostForm("https://auth.factorio.com/api-login",
+func factorioLogin(username string, password string) (string, error, int) {
+    var err error
+
+    resp, err := http.PostForm("https://auth.factorio.com/api-login",
         url.Values{"require_game_ownership": {"true"}, "username": {username}, "password": {password}})
-    if get_err != nil {
-        log.Fatal(get_err)
-        return "error", get_err, 500
+
+    if err != nil {
+        log.Printf("error on logging in: %s", err)
+        return "", err, resp.StatusCode
     }
 
-    //get the response-text
-    text, err_io := ioutil.ReadAll(resp.Body)
-    resp.Body.Close()
+    defer resp.Body.Close()
 
-    text_string := string(text)
-
-    if err_io != nil {
-        log.Fatal(err_io)
-        return "error", err_io, resp.StatusCode
+    body_bytes, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        log.Printf("error on reading resp.Body: %s", err)
+        return "", err, http.StatusInternalServerError
     }
 
-    return text_string, nil, resp.StatusCode
+    body_string := string(body_bytes)
+
+    if resp.StatusCode != http.StatusOK {
+        log.Println("error Statuscode not 200")
+        return body_string, errors.New("Statuscode not 200"), resp.StatusCode
+    }
+
+    var success_response []string
+    err = json.Unmarshal(body_bytes, &success_response)
+    if err != nil {
+        log.Printf("error on unmarshal body: %s", err)
+        return err.Error(), err, http.StatusInternalServerError
+    }
+
+    credentials := FactorioCredentials{
+        Username: username,
+        Userkey: success_response[0],
+    }
+
+    err = credentials.save()
+    if err != nil {
+        log.Printf("error saving the credentials. %s", err)
+        return err.Error(), err, http.StatusInternalServerError
+    }
+
+    return "", nil, http.StatusOK
 }
 
 
@@ -79,7 +168,7 @@ func getModDetails(modId string) (string, error, int) {
     resp, err := http.Get(new_link)
 
     if err != nil {
-        return "error", err, 500
+        return "error", err, http.StatusInternalServerError
     }
 
     //get the response-text

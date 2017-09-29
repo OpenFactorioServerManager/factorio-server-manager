@@ -263,7 +263,7 @@ class ModPackOverview extends React.Component {
     modPackUpdateModHandler(e, toggleUpdateStatus, removeVersionAvailableStatus) {
         e.preventDefault();
 
-        if(!this.props.modContentClass.state.userKey) {
+        if(!this.props.modContentClass.state.logged_in) {
             swal({
                 type: "error",
                 title: "Update failed",
@@ -291,8 +291,6 @@ class ModPackOverview extends React.Component {
                 url: "/api/mods/packs/mod/update",
                 method: "POST",
                 data: {
-                    username: this.props.modContentClass.state.username,
-                    userKey: this.props.modContentClass.state.userKey,
                     downloadUrl: download_url,
                     filename: filename,
                     mod_name: modname,

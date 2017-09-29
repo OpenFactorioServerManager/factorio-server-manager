@@ -119,11 +119,22 @@ func (mods *Mods) createMod(mod_name string, file_name string, file_rc io.Reader
     return nil
 }
 
-func (mods *Mods) downloadMod(username string, userKey string, url string, filename string, mod_id string) (error) {
+func (mods *Mods) downloadMod(url string, filename string, mod_id string) (error) {
     var err error
 
+    var credentials FactorioCredentials
+    status, err := credentials.load()
+    if err != nil {
+        log.Printf("error loading credentials: %s", err)
+        return err
+    }
+    if status == false {
+        log.Printf("error: credentials are invalid")
+        return errors.New("error: credentials are invalid")
+    }
+
     //download the mod from the mod portal api
-    complete_url := "https://mods.factorio.com" + url + "?username=" + username + "&token=" + userKey
+    complete_url := "https://mods.factorio.com" + url + "?username=" + credentials.Username + "&token=" + credentials.Userkey
 
     response, err := http.Get(complete_url)
     if err != nil {
@@ -193,7 +204,7 @@ func (mods *Mods) uploadMod(header *multipart.FileHeader) (error) {
     return nil
 }
 
-func (mods *Mods) updateMod(mod_name string, username string, userKey string, url string, filename string) error {
+func (mods *Mods) updateMod(mod_name string, url string, filename string) error {
     var err error
 
     //err = mods.deleteMod(mod_name)
@@ -202,7 +213,7 @@ func (mods *Mods) updateMod(mod_name string, username string, userKey string, ur
     //    return err
     //}
 
-    err = mods.downloadMod(username, userKey, url, filename, mod_name)
+    err = mods.downloadMod(url, filename, mod_name)
     if err != nil {
         log.Printf("updateMod ... error when downloading the new Mod: %s", err)
         return err

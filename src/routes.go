@@ -159,6 +159,11 @@ var apiRoutes = Routes{
 		"/mods/factorio/login",
 		LoginFactorioModPortal,
 	}, {
+		"LoginstatusFactorioModPortal",
+		"POST",
+		"/mods/factorio/status",
+		LoginstatusFactorioModPortal,
+	}, {
 		"SearchModPortal",
 		"GET",
 		"/mods/search",
