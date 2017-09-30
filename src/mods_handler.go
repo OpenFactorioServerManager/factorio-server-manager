@@ -292,6 +292,34 @@ func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func DeleteAllModsHandler(w http.ResponseWriter, r *http.Request) {
+    var err error
+    resp := JSONResponse{
+        Success: false,
+    }
+
+    w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+    //delete mods folder
+    err = deleteAllMods()
+
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        resp.Data = fmt.Sprintf("Error in deleteMod: %s", err)
+        if err := json.NewEncoder(w).Encode(resp); err != nil {
+            log.Printf("Error in DeleteModHandler: %s", err)
+        }
+        return
+    }
+
+    resp.Data = nil
+    resp.Success = true
+
+    if err := json.NewEncoder(w).Encode(resp); err != nil {
+        log.Printf("Error in DeleteModHandler: %s", err)
+    }
+}
+
 func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
     var err error
     resp := JSONResponse{

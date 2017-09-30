@@ -4,6 +4,7 @@ import (
     "log"
     "io/ioutil"
     "encoding/json"
+    "os"
 )
 
 type ModSimple struct {
@@ -36,8 +37,25 @@ func (mod_simple_list *ModSimpleList) listInstalledMods() (error) {
     var err error
 
     file, err := ioutil.ReadFile(mod_simple_list.Destination + "/mod-list.json")
+    if os.IsNotExist(err) {
+        log.Println("no mod-list.json found ... create new one ...")
+
+        //mod-list.json does not exist, create one
+        base_mod := ModSimple{
+            Name: "base",
+            Enabled: true,
+        }
+        mod_simple_list.Mods = append(mod_simple_list.Mods, base_mod)
+        err = mod_simple_list.saveModInfoJson()
+        if err != nil {
+            log.Printf("error saving mod-list.json: %s", err)
+            return err
+        }
+
+        return nil
+    }
     if err != nil {
-        log.Printf("ModSimpleList ... error read the mod-info.json: %s", err)
+        log.Printf("ModSimpleList ... error read or write the mod-info.json: %s", err)
         return err
     }
 

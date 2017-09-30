@@ -194,6 +194,11 @@ var apiRoutes = Routes{
 		"/mods/delete",
 		DeleteModHandler,
 	}, {
+		"DeleteAllMods",
+		"POST",
+		"/mods/delete/all",
+		DeleteAllModsHandler,
+	}, {
         "UpdateMod",
         "POST",
         "/mods/update",

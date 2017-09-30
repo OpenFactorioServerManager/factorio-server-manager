@@ -185,6 +185,32 @@ func getModDetails(modId string) (string, error, int) {
     return text_string, nil, resp.StatusCode
 }
 
+func deleteAllMods() (error) {
+    var err error
+
+    mods_dir_info, err := os.Stat(config.FactorioModsDir)
+    if err != nil {
+        log.Printf("error getting stats of FactorioModsDir: %s", err)
+        return err
+    }
+
+    mods_dir_perm := mods_dir_info.Mode().Perm()
+
+    err = os.RemoveAll(config.FactorioModsDir)
+    if err != nil {
+        log.Printf("removing FactorioModsDir failed: %s", err)
+        return err
+    }
+
+    err = os.Mkdir(config.FactorioModsDir, mods_dir_perm)
+    if err != nil {
+        log.Printf("error recreating modPackDir: %s", err)
+        return err
+    }
+
+    return nil
+}
+
 func modStartUp() {
     var err error
 

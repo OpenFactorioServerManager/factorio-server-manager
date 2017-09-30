@@ -17,10 +17,11 @@ class ModsContent extends React.Component {
         this.updateModHandler = this.updateModHandler.bind(this);
         this.uploadModSuccessHandler = this.uploadModSuccessHandler.bind(this);
         this.factorioLogoutHandler = this.factorioLogoutHandler.bind(this);
+        this.deleteAllHandler = this.deleteAllHandler.bind(this);
 
         this.state = {
             logged_in: false,
-            installedMods: [],
+            installedMods: null,
         }
     }
 
@@ -317,6 +318,47 @@ class ModsContent extends React.Component {
         });
     }
 
+    deleteAllHandler(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let class_this = this;
+
+        swal({
+            title: "Delete Mod?",
+            text: "This will delete ALL mods and can't be redone!<br> Are you sure?",
+            type: "info",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            confirmButtonText: "Yes, Delete ALL!",
+            cancelButtonText: "Cancel",
+            showLoaderOnConfirm: true,
+            confirmButtonColor: "#DD6B55",
+            html: true,
+        }, function () {
+            $.ajax({
+                url: "/api/mods/delete/all",
+                method: "POST",
+                dataType: "JSON",
+                success: (data) => {
+                    swal("ALL mods deleted successful", "", "success");
+                    class_this.setState({
+                        installedMods: data.data
+                    });
+                },
+                error: (jqXHR, status, err) => {
+                    console.log('api/mods/delete/all', status, err.toString());
+                    swal({
+                        title: "Delete all mods went wrong",
+                        text: err.toString() + "<br>" + jqXHR.responseJSON.data,
+                        type: "error",
+                        html: true
+                    });
+                }
+            });
+        });
+    }
+
     updateModHandler(e, toggleUpdateStatus, removeVersionAvailableStatus) {
         e.preventDefault();
 
@@ -397,6 +439,7 @@ class ModsContent extends React.Component {
                         submitFactorioLogin={this.handlerFactorioLogin}
                         toggleMod={this.toggleModHandler}
                         deleteMod={this.deleteModHandler}
+                        deleteAll={this.deleteAllHandler}
                         updateMod={this.updateModHandler}
                         uploadModSuccessHandler={this.uploadModSuccessHandler}
                         modContentClass={this}

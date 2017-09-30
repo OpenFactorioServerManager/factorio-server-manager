@@ -83,6 +83,16 @@ class ModOverview extends React.Component {
                     <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
                         <i className="fa fa-minus"></i>
                         <h3 className="box-title">Manage Mods</h3>
+                        <div className="box-tools pull-right">
+                            {
+                                this.props.installedMods != null ?
+                                    <NativeListener onClick={this.props.deleteAll}>
+                                        <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Delete ALL
+                                        </button>
+                                    </NativeListener>
+                                : null
+                            }
+                        </div>
                     </div>
 
                     <ModManager
@@ -110,6 +120,7 @@ ModOverview.propTypes = {
     submitFactorioLogin: React.PropTypes.func.isRequired,
     toggleMod: React.PropTypes.func.isRequired,
     deleteMod: React.PropTypes.func.isRequired,
+    deleteAll: React.PropTypes.func.isRequired,
     updateMod: React.PropTypes.func.isRequired,
     uploadModSuccessHandler: React.PropTypes.func.isRequired,
     logged_in: React.PropTypes.bool.isRequired,
