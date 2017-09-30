@@ -13,6 +13,9 @@ class ModUpload extends React.Component {
             allowedFileExtensions: ['zip'],
             browseLabel: "Select Mods...",
             browseIcon: '<i class="fa fa-upload text-muted" style="color: white;"></i>&nbsp;',
+            slugCallback: function(filename) {
+                return filename;
+            },
         }).on('filebatchuploadsuccess fileuploaded', this.props.uploadModSuccessHandler);
     }
 

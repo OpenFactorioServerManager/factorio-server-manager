@@ -10,6 +10,7 @@ import (
     "errors"
     "fmt"
     "io/ioutil"
+    "path/filepath"
 )
 
 type Mods struct {
@@ -164,7 +165,9 @@ func (mods *Mods) downloadMod(url string, filename string, mod_id string) (error
 func (mods *Mods) uploadMod(header *multipart.FileHeader) (error) {
     var err error
 
-    if header.Header.Get("Content-Type") != "application/zip" {
+    log.Printf("filename of the uploaded file: %s", header.Filename)
+
+    if filepath.Ext(header.Filename) != ".zip" {
         log.Print("The uploaded file wasn't a zip-file -> ignore it")
         return nil //simply do nothing xD
     }

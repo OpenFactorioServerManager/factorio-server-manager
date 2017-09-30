@@ -109,7 +109,7 @@ func factorioLogin(username string, password string) (string, error, int) {
 
     if resp.StatusCode != http.StatusOK {
         log.Println("error Statuscode not 200")
-        return body_string, errors.New("Statuscode not 200"), resp.StatusCode
+        return body_string, errors.New(body_string), resp.StatusCode
     }
 
     var success_response []string
