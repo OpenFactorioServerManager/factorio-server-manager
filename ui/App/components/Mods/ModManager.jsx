@@ -2,6 +2,12 @@ import React from "react";
 import Mod from "./Mod.jsx";
 
 class ModManager extends React.Component {
+    constructor(props) {
+        super(props);
+
+
+    }
+
     render() {
         return (
             <div className="box-body">
@@ -40,6 +46,7 @@ ModManager.propTypes = {
     toggleMod: React.PropTypes.func.isRequired,
     deleteMod: React.PropTypes.func.isRequired,
     updateMod: React.PropTypes.func.isRequired,
+    updateCountAdd: React.PropTypes.func,
 }
 
 export default ModManager;

@@ -333,6 +333,8 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
     download_url := r.FormValue("downloadUrl")
     file_name := r.FormValue("filename")
 
+    log.Println("--------------------------------------------------------------")
+
     mods, err := newMods(config.FactorioModsDir)
     if err == nil {
         err = mods.updateMod(mod_name, download_url, file_name)

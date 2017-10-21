@@ -79,18 +79,28 @@ class ModOverview extends React.Component {
                     />
                 </div>
 
-                <div className="box">
+                <div className="box" id="manage-mods">
                     <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
                         <i className="fa fa-minus"></i>
                         <h3 className="box-title">Manage Mods</h3>
                         <div className="box-tools pull-right">
                             {
-                                this.props.installedMods != null ?
-                                    <NativeListener onClick={this.props.deleteAll}>
-                                        <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Delete ALL
+                                this.props.updates_available > 0 ?
+                                    <NativeListener onClick={this.props.updateAllMods}>
+                                        <button className="btn btn-box-tool btn-default" style={{marginRight: 20}}>
+                                            Update all Mods
                                         </button>
                                     </NativeListener>
-                                : null
+                                    : null
+                            }
+                            {
+                                this.props.installedMods != null ?
+                                    <NativeListener onClick={this.props.deleteAll}>
+                                        <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>
+                                            Delete ALL Mods
+                                        </button>
+                                    </NativeListener>
+                                    : null
                             }
                         </div>
                     </div>
@@ -125,6 +135,9 @@ ModOverview.propTypes = {
     uploadModSuccessHandler: React.PropTypes.func.isRequired,
     logged_in: React.PropTypes.bool.isRequired,
     factorioLogoutHandler: React.PropTypes.func.isRequired,
+    updates_available: React.PropTypes.number.isRequired,
+    updateAllMods: React.PropTypes.func.isRequired,
+    updateCountAdd: React.PropTypes.func.isRequired,
 
     modContentClass: instanceOfModsContent.isRequired,
 };

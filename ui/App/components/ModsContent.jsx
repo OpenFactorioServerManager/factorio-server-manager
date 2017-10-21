@@ -18,10 +18,15 @@ class ModsContent extends React.Component {
         this.uploadModSuccessHandler = this.uploadModSuccessHandler.bind(this);
         this.factorioLogoutHandler = this.factorioLogoutHandler.bind(this);
         this.deleteAllHandler = this.deleteAllHandler.bind(this);
+        this.updateAllModsHandler = this.updateAllModsHandler.bind(this);
+        this.updatesAvailable = this.updatesAvailable.bind(this);
+        this.updateCountSubtract = this.updateCountSubtract.bind(this);
+        this.updateCountAdd = this.updateCountAdd.bind(this);
 
         this.state = {
             logged_in: false,
             installedMods: null,
+            updates_available: 0,
         }
     }
 
@@ -395,6 +400,10 @@ class ModsContent extends React.Component {
                 success: (data) => {
                     toggleUpdateStatus();
                     removeVersionAvailableStatus();
+
+                    this_class.updatesAvailable();
+                    this_class.updateCountSubtract();
+
                     this_class.setState({
                         installedMods: data.data.mods
                     });
@@ -410,6 +419,35 @@ class ModsContent extends React.Component {
                 }
             });
         }
+    }
+
+    updatesAvailable() {
+        this.setState({
+            updates_available: true
+        })
+    }
+
+    updateAllModsHandler(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let update_buttons = $('#manage-mods').find(".update-button");
+        // $('.update-button').click();
+        $.each(update_buttons, function(k, v) {
+            v.click();
+        });
+    }
+
+    updateCountSubtract() {
+        this.setState({
+            updates_available: this.state.updates_available > 0 ? this.state.updates_available - 1 : 0
+        });
+    }
+
+    updateCountAdd() {
+        this.setState({
+            updates_available: this.state.updates_available + 1
+        });
     }
 
     uploadModSuccessHandler(event, data) {
@@ -441,7 +479,9 @@ class ModsContent extends React.Component {
                         deleteMod={this.deleteModHandler}
                         deleteAll={this.deleteAllHandler}
                         updateMod={this.updateModHandler}
+                        updateCountAdd={this.updateCountAdd}
                         uploadModSuccessHandler={this.uploadModSuccessHandler}
+                        updateAllMods={this.updateAllModsHandler}
                         modContentClass={this}
                         factorioLogoutHandler={this.factorioLogoutHandler}
                     />

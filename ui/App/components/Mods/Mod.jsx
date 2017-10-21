@@ -36,6 +36,9 @@ class Mod extends React.Component {
             success: (data) => {
                 let newest_release = JSON.parse(data.data).releases[0];
                 if(newest_release.version != this.props.mod.version) {
+                    if(this_class.props.updateCountAdd)
+                        this_class.props.updateCountAdd();
+
                     this_class.setState({
                         newVersionAvailable: true,
                         newVersion: {
@@ -47,7 +50,7 @@ class Mod extends React.Component {
                     this_class.setState({
                         newVersionAvailable: false,
                         newVersion: null
-                    })
+                    });
                 }
             },
             error: (jqXHR, status, err) => {
@@ -81,7 +84,7 @@ class Mod extends React.Component {
         let version;
         if(this.state.newVersionAvailable) {
             version = <span>{this.props.mod.version}
-                <a className="btn btn-xs btn-default"
+                <a className="btn btn-xs btn-default update-button"
                    style={{
                        marginLeft: 10,
                        display: "inline-flex",
@@ -143,6 +146,7 @@ Mod.propTypes = {
     toggleMod: React.PropTypes.func.isRequired,
     deleteMod: React.PropTypes.func.isRequired,
     updateMod: React.PropTypes.func.isRequired,
+    updateCountAdd: React.PropTypes.func,
 };
 
 export default Mod

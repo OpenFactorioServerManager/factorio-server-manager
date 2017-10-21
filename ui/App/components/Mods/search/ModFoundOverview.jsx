@@ -41,7 +41,7 @@ class ModFoundOverview extends React.Component {
                     </div>;
 
             mods.push(
-                <div className="list-group-item">
+                <div className="list-group-item" key={mod.title}>
                     <div style={{display: "flex"}}>
                         {img}
                         <div style={information_style.container}>

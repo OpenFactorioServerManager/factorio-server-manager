@@ -104,7 +104,6 @@ func (mods *Mods) createMod(mod_name string, file_name string, file_rc io.Reader
         }
     }
 
-
     //create new mod
     err = mods.ModInfoList.createMod(mod_name, file_name, file_rc)
     if err != nil {
@@ -143,6 +142,8 @@ func (mods *Mods) downloadMod(url string, filename string, mod_id string) (error
         return err
     }
 
+    log.Printf("download complete\n StatusCode: %d\n Status: %s", response.StatusCode, response.Status)
+
     defer response.Body.Close()
 
     if response.StatusCode != 200 {
@@ -156,6 +157,8 @@ func (mods *Mods) downloadMod(url string, filename string, mod_id string) (error
         log.Printf("error when creating Mod: %s", err)
         return err
     }
+
+    log.Printf("completed copying the response.Body")
 
     //done everything is made inside the createMod
 
