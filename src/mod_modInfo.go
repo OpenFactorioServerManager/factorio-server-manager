@@ -141,6 +141,12 @@ func (mod_info_list *ModInfoList) createMod(mod_name string, file_name string, m
     }
     defer new_file.Close()
 
+    _, err = io.Copy(new_file, mod_file)
+    if err != nil {
+        log.Printf("error on copying file to disk: %s", err)
+        return err
+    }
+
     //reload the list
     err = new_file.Close()
     if err != nil {
