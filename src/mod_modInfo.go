@@ -9,6 +9,7 @@ import (
     "archive/zip"
     "errors"
     "io"
+    "lockfile"
 )
 
 type ModInfoList struct {
@@ -44,6 +45,16 @@ func (mod_info_list *ModInfoList) listInstalledMods() (error) {
 
     err = filepath.Walk(mod_info_list.Destination, func(path string, info os.FileInfo, err error) error {
         if !info.IsDir() && filepath.Ext(path) == ".zip" {
+            err = fileLock.RLock(path)
+            if err != nil && err == lockfile.ErrorAlreadyLocked {
+                log.Println(err)
+                return nil
+            } else if err != nil {
+                log.Printf("error locking file: %s", err)
+                return err
+            }
+            defer fileLock.RUnlock(path)
+
             zip_file, err := zip.OpenReader(path)
             if err != nil {
                 log.Fatalln(err)
@@ -77,8 +88,12 @@ func (mod_info_list *ModInfoList) deleteMod(mod_name string) (error) {
     //search for mod, that should be deleted
     for _, mod := range mod_info_list.Mods {
         if mod.Name == mod_name {
+            filePath := mod_info_list.Destination + "/" + mod.FileName
+
+            fileLock.LockW(filePath)
             //delete mod
-            err = os.Remove(mod_info_list.Destination + "/" + mod.FileName)
+            err = os.Remove(filePath)
+            fileLock.Unlock(filePath)
             if err != nil {
                 log.Printf("ModInfoList ... error when deleting mod: %s", err)
                 return err
@@ -134,12 +149,15 @@ func (mod_info_list *ModInfoList) createMod(mod_name string, file_name string, m
     var err error
 
     //save uploaded file
-    new_file, err := os.Create(mod_info_list.Destination + "/" + file_name)
+    filePath := mod_info_list.Destination + "/" + file_name
+    new_file, err := os.Create(filePath)
     if err != nil {
         log.Printf("error on creating new file - %s: %s", file_name, err)
         return err
     }
     defer new_file.Close()
+
+    fileLock.LockW(filePath)
 
     _, err = io.Copy(new_file, mod_file)
     if err != nil {
@@ -147,13 +165,15 @@ func (mod_info_list *ModInfoList) createMod(mod_name string, file_name string, m
         return err
     }
 
-    //reload the list
     err = new_file.Close()
     if err != nil {
         log.Printf("error on closing new created zip-file: %s", err)
         return err
     }
 
+    fileLock.Unlock(filePath)
+
+    //reload the list
     err = mod_info_list.listInstalledMods()
     if err != nil {
         log.Printf("error on listing mod-infos: %s", err)

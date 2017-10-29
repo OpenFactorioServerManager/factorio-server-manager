@@ -5,6 +5,8 @@ import (
     "path"
     "os"
     "log"
+    "errors"
+    "time"
 )
 
 type FileLock struct {
@@ -17,8 +19,13 @@ type Lock struct {
     Write int
 }
 
-func newLock() FileLock {
-    lock := FileLock{}
+var ErrorLocking error = errors.New("error locking file")
+var ErrorAlreadyLocked error = errors.New("file already locke by another routine")
+
+func NewLock() FileLock {
+    lock := FileLock{
+        Locks: make(map[string]Lock),
+    }
     return lock
 }
 
@@ -36,70 +43,103 @@ func makeAbsolutePath(target string) string {
     return path.Join(wd, target)
 }
 
-func (fl *FileLock) Lock(path string) {
+func (fl *FileLock) Lock(filePath string) error {
     fl.m.Lock()
     defer fl.m.Unlock()
 
-    path = makeAbsolutePath(path)
+    filePath = makeAbsolutePath(filePath)
 
-    if fl.Locks[path].Read == 0 && fl.Locks[path].Write == 0 {
-        lock := fl.Locks[path]
+    if fl.Locks[filePath].Read == 0 && fl.Locks[filePath].Write == 0 {
+        lock := fl.Locks[filePath]
         lock.Write = 1
-        fl.Locks[path] = lock
+        fl.Locks[filePath] = lock
+    } else {
+        return ErrorAlreadyLocked
     }
+    log.Println("write locked")
+    return nil
 }
 
-func (fl *FileLock) Unlock(path string) {
+func (fl *FileLock) Unlock(filePath string) error {
     fl.m.Lock()
     defer fl.m.Unlock()
 
-    path = makeAbsolutePath(path)
+    filePath = makeAbsolutePath(filePath)
 
-    lock := fl.Locks[path]
+    lock := fl.Locks[filePath]
     if lock.Read == 0 && lock.Write == 1 {
         lock.Write = 0
-        fl.Locks[path] = lock
+        fl.Locks[filePath] = lock
+    } else {
+        return ErrorAlreadyLocked
     }
+    log.Println("write unlocked")
+    return nil
 }
 
-func (fl *FileLock) RLock(path string) {
+func (fl *FileLock) RLock(filePath string) error {
     fl.m.Lock()
     defer fl.m.Unlock()
 
-    path = makeAbsolutePath(path)
+    filePath = makeAbsolutePath(filePath)
 
-    lock := fl.Locks[path]
+    lock := fl.Locks[filePath]
     if lock.Write == 0 {
         lock.Read++
-        fl.Locks[path] = lock
+        fl.Locks[filePath] = lock
+    } else {
+        return ErrorAlreadyLocked
     }
+    log.Println("read locked")
+    return nil
 }
 
-func (fl *FileLock) RUnlock(path string) {
+func (fl *FileLock) RUnlock(filePath string) error {
     fl.m.Lock()
     defer fl.m.Unlock()
 
-    path = makeAbsolutePath(path)
+    filePath = makeAbsolutePath(filePath)
 
-    lock := fl.Locks[path]
+    lock := fl.Locks[filePath]
     if lock.Read > 0 && lock.Write == 0 {
         lock.Read--
-        fl.Locks[path] = lock
+        fl.Locks[filePath] = lock
+    } else {
+        return ErrorAlreadyLocked
     }
+    log.Println("read unlocked")
+    return nil
 }
 
-func (fl *FileLock) LockW(path string) {
+func (fl *FileLock) LockW(filePath string) {
+    log.Println("LockW called")
+    for {
+        err := fl.Lock(filePath)
+        log.Println(err)
+        if err == ErrorAlreadyLocked {
+            time.Sleep(time.Second * 2)
+            log.Println("file locked wait two seconds to access write-lock")
+        }
+
+        if err == nil {
+            break
+        }
+    }
     return
 }
 
-func (fl *FileLock) UnlockW(path string) {
-    return
-}
+func (fl *FileLock) RLockW(filePath string) {
+    for {
+        err := fl.RLock(filePath)
 
-func (fl *FileLock) RLockW(path string) {
-    return
-}
+        if err == ErrorAlreadyLocked {
+            time.Sleep(time.Second * 2)
+            log.Println("file locked wait two seconds to access read-lock")
+        }
 
-func (fl *FileLock) RUnlockW(path string) {
+        if err == nil {
+            break
+        }
+    }
     return
 }
