@@ -125,7 +125,8 @@ class Mod extends React.Component {
                         ref='modName'
                         type='submit'
                         value='Toggle'
-                        onClick={this.props.toggleMod}
+                        onClick={(event) => this.props.toggleMod(event, this.state.updateInProgress)}
+                        disabled={this.state.updateInProgress}
                     />
 
                     <input className="btn btn-danger btn-sm"
@@ -133,7 +134,8 @@ class Mod extends React.Component {
                         ref="modName"
                         type="submit"
                         value="Delete"
-                        onClick={this.props.deleteMod}
+                        onClick={(event) => this.props.deleteMod(event, this.state.updateInProgress)}
+                        disabled={this.state.updateInProgress}
                     />
                 </td>
             </tr>

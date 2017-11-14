@@ -56,7 +56,6 @@ func (fl *FileLock) Lock(filePath string) error {
     } else {
         return ErrorAlreadyLocked
     }
-    log.Println("write locked")
     return nil
 }
 
@@ -73,7 +72,6 @@ func (fl *FileLock) Unlock(filePath string) error {
     } else {
         return ErrorAlreadyLocked
     }
-    log.Println("write unlocked")
     return nil
 }
 
@@ -90,7 +88,6 @@ func (fl *FileLock) RLock(filePath string) error {
     } else {
         return ErrorAlreadyLocked
     }
-    log.Println("read locked")
     return nil
 }
 
@@ -107,15 +104,12 @@ func (fl *FileLock) RUnlock(filePath string) error {
     } else {
         return ErrorAlreadyLocked
     }
-    log.Println("read unlocked")
     return nil
 }
 
 func (fl *FileLock) LockW(filePath string) {
-    log.Println("LockW called")
     for {
         err := fl.Lock(filePath)
-        log.Println(err)
         if err == ErrorAlreadyLocked {
             time.Sleep(time.Second * 2)
             log.Println("file locked wait two seconds to access write-lock")
@@ -134,7 +128,7 @@ func (fl *FileLock) RLockW(filePath string) {
 
         if err == ErrorAlreadyLocked {
             time.Sleep(time.Second * 2)
-            log.Println("file locked wait two seconds to access read-lock")
+            log.Println("file locked ... wait two seconds to try to access read-lock")
         }
 
         if err == nil {

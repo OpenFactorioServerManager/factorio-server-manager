@@ -2,6 +2,7 @@ import React from 'react';
 import ModManager from "../ModManager.jsx";
 import NativeListener from 'react-native-listener';
 import {instanceOfModsContent} from "../ModsPropTypes.js";
+import locks from "locks";
 
 class ModPackOverview extends React.Component {
     constructor(props) {
@@ -17,6 +18,8 @@ class ModPackOverview extends React.Component {
         this.state = {
             listPacks: []
         }
+
+        this.mutex = locks.createMutex();
     }
 
     componentDidMount() {
@@ -65,13 +68,26 @@ class ModPackOverview extends React.Component {
                 data: {name: inputValue},
                 dataType: "JSON",
                 success: (data) => {
-                    this_class.setState({
-                        listPacks: data.data.mod_packs
-                    });
+                    this_class.mutex.lock(() => {
+                        let packList = this_class.state.listPacks;
 
-                    swal({
-                        title: "modpack created successfully",
-                        type: "success"
+                        data.data.mod_packs.forEach((v, k) => {
+                            if(v.name == inputValue) {
+                                packList.push(data.data.mod_packs[k]);
+                                return false;
+                            }
+                        });
+
+                        this_class.setState({
+                            listPacks: packList
+                        });
+
+                        swal({
+                            title: "modpack created successfully",
+                            type: "success"
+                        });
+
+                        this_class.mutex.unlock();
                     });
                 },
                 error: (jqXHR, status, err) => {
@@ -109,14 +125,28 @@ class ModPackOverview extends React.Component {
                 data: {name: name},
                 dataType: "JSON",
                 success: (data) => {
-                    this_class.setState({
-                        listPacks: data.data.mod_packs
-                    });
+                    if(data.success) {
+                        this_class.mutex.lock(() => {
+                            let mod_packs = this_class.state.listPacks;
 
-                    swal({
-                        title: "Modpack deleted successfully",
-                        type: "success"
-                    });
+                            mod_packs.forEach((v, k) => {
+                                if(v.name == name) {
+                                    delete mod_packs[k];
+                                }
+                            });
+
+                            this_class.setState({
+                                listPacks: mod_packs
+                            });
+
+                            swal({
+                                title: "Modpack deleted successfully",
+                                type: "success"
+                            });
+
+                            this_class.mutex.unlock();
+                        });
+                    }
                 },
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/packs/delete', status, err.toString());
@@ -184,12 +214,20 @@ class ModPackOverview extends React.Component {
         e.stopPropagation();
     }
 
-    modPackToggleModHandler(e) {
+    modPackToggleModHandler(e, updatesInProgress) {
         e.preventDefault();
+
+
+        if(updatesInProgress) {
+            swal("Toggle mod failed", "Can't toggle the mod, when an update is still in progress", "error");
+            return false;
+        }
+
         let $button = $(e.target);
         let $row = $button.parents("tr");
         let mod_name = $row.data("mod-name");
         let mod_pack = $row.parents(".single-modpack").find("h3").html();
+        let this_class = this;
 
         $.ajax({
             url: "/api/mods/packs/mod/toggle",
@@ -200,9 +238,28 @@ class ModPackOverview extends React.Component {
             },
             dataType: "JSON",
             success: (data) => {
-                this.setState({
-                    listPacks: data.data.mod_packs
-                });
+                if(data.success) {
+                    this_class.mutex.lock(() => {
+                        let packList = this_class.state.listPacks;
+
+                        packList.forEach((modPack, modPackKey) => {
+                            if(modPack.name == mod_pack) {
+                                packList[modPackKey].mods.mods.forEach((mod, modKey) => {
+                                    if(mod.name == mod_name) {
+                                        packList[modPackKey].mods.mods[modKey].enabled = data.data;
+                                        return false;
+                                    }
+                                });
+                            }
+                        });
+
+                        this_class.setState({
+                            listPacks: packList
+                        });
+
+                        this_class.mutex.unlock();
+                    });
+                }
             },
             error: (jqXHR, status, err) => {
                 console.log('api/mods/packs/mod/toggle', status, err.toString());
@@ -215,8 +272,14 @@ class ModPackOverview extends React.Component {
         });
     }
 
-    modPackDeleteModHandler(e) {
+    modPackDeleteModHandler(e, updatesInProgress) {
         e.preventDefault();
+
+        if(updatesInProgress) {
+            swal("Delete failed", "Can't delete the mod, when an update is still in progress", "error");
+            return false;
+        }
+
         let $button = $(e.target);
         let $row = $button.parents("tr");
         let mod_name = $row.data("mod-name");
@@ -243,10 +306,30 @@ class ModPackOverview extends React.Component {
                 },
                 dataType: "JSON",
                 success: (data) => {
-                    swal("Delete of mod " + mod_name + " inside modPack " + mod_pack + " successful", "", "success");
-                    class_this.setState({
-                        listPacks: data.data.mod_packs
-                    });
+                    if(data.success) {
+                        class_this.mutex.lock(() => {
+                            swal("Delete of mod " + mod_name + " inside modPack " + mod_pack + " successful", "", "success");
+
+                            let packList = class_this.state.listPacks;
+
+                            packList.forEach((modPack, modPackKey) => {
+                                if(modPack.name == mod_pack) {
+                                    packList[modPackKey].mods.mods.forEach((mod, modKey) => {
+                                        if(mod.name == mod_name) {
+                                            delete packList[modPackKey].mods.mods[modKey];
+                                            return false;
+                                        }
+                                    });
+                                }
+                            });
+
+                            class_this.setState({
+                                listPacks: packList
+                            });
+
+                            class_this.mutex.unlock();
+                        });
+                    }
                 },
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/packs/mod/delete', status, err.toString());
@@ -299,9 +382,29 @@ class ModPackOverview extends React.Component {
                 success: (data) => {
                     toggleUpdateStatus();
                     removeVersionAvailableStatus();
-                    this_class.setState({
-                        listPacks: data.data.mod_packs
-                    });
+
+                    if(data.success) {
+                        this_class.mutex.lock(() => {
+                            let packList = this_class.state.listPacks;
+
+                            packList.forEach((modPack, modPackKey) => {
+                                if(modPack.name == mod_pack) {
+                                    packList[modPackKey].mods.mods.forEach((mod, modKey) => {
+                                        if(mod.name == modname) {
+                                            packList[modPackKey].mods.mods[modKey] = data.data;
+                                            return false;
+                                        }
+                                    });
+                                }
+                            });
+
+                            this_class.setState({
+                                listPacks: packList
+                            });
+
+                            this_class.mutex.unlock();
+                        });
+                    }
                 },
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/packs/mod/update', status, err.toString());

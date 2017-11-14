@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import {IndexLink} from 'react-router';
 import ModOverview from './Mods/ModOverview.jsx';
+import locks from "locks";
 
 class ModsContent extends React.Component {
     constructor(props) {
@@ -27,7 +28,9 @@ class ModsContent extends React.Component {
             logged_in: false,
             installedMods: null,
             updates_available: 0,
-        }
+        };
+
+        this.mutex = locks.createMutex();
     }
 
     componentDidMount() {
@@ -141,7 +144,7 @@ class ModsContent extends React.Component {
             success: (data) => {
                 this_class.setState({
                     installedMods: data.data.mods
-                })
+                });
 
                 swal({
                     type: "success",
@@ -251,11 +254,18 @@ class ModsContent extends React.Component {
         })
     }
 
-    toggleModHandler(e) {
+    toggleModHandler(e, updatesInProgress) {
         e.preventDefault();
+
+        if(updatesInProgress) {
+            swal("Toggle mod failed", "Can't toggle the mod, when an update is still in progress", "error");
+            return false;
+        }
+
         let $button = $(e.target);
         let $row = $button.parents("tr");
         let mod_name = $row.data("mod-name");
+        let this_class = this;
 
         $.ajax({
             url: "/api/mods/toggle",
@@ -265,9 +275,23 @@ class ModsContent extends React.Component {
             },
             dataType: "JSON",
             success: (data) => {
-                this.setState({
-                    installedMods: data.data
-                });
+                if(data.success) {
+                    this_class.mutex.lock(() => {
+                        let installedMods = this_class.state.installedMods;
+
+                        $.each(installedMods, (k, v) => {
+                            if(v.name == mod_name) {
+                                installedMods[k].enabled = data.data;
+                            }
+                        });
+
+                        this_class.setState({
+                            installedMods: installedMods
+                        });
+
+                        this_class.mutex.unlock();
+                    });
+                }
             },
             error: (jqXHR, status, err) => {
                 console.log('api/mods/toggle', status, err.toString());
@@ -280,8 +304,14 @@ class ModsContent extends React.Component {
         });
     }
 
-    deleteModHandler(e) {
+    deleteModHandler(e, updatesInProgress) {
         e.preventDefault();
+
+        if(updatesInProgress) {
+            swal("Delete failed", "Can't delete the mod, when an update is still in progress", "error");
+            return false;
+        }
+
         let $button = $(e.target);
         let $row = $button.parents("tr");
         let mod_name = $row.data("mod-name");
@@ -306,10 +336,24 @@ class ModsContent extends React.Component {
                 },
                 dataType: "JSON",
                 success: (data) => {
-                    swal("Delete of mod " + mod_name + " successful", "", "success");
-                    class_this.setState({
-                        installedMods: data.data
-                    });
+                    if(data.success) {
+                        class_this.mutex.lock(() => {
+                            swal("Delete of mod " + mod_name + " successful", "", "success");
+                            let installedMods = class_this.state.installedMods;
+
+                            installedMods.forEach((v, k) => {
+                                if(v.name == mod_name) {
+                                    delete installedMods[k];
+                                }
+                            });
+
+                            class_this.setState({
+                                installedMods: installedMods
+                            });
+
+                            class_this.mutex.unlock();
+                        });
+                    }
                 },
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/delete', status, err.toString());
@@ -401,12 +445,26 @@ class ModsContent extends React.Component {
                     toggleUpdateStatus();
                     removeVersionAvailableStatus();
 
-                    this_class.updatesAvailable();
                     this_class.updateCountSubtract();
 
-                    this_class.setState({
-                        installedMods: data.data.mods
-                    });
+                    if(data.success) {
+                        this_class.mutex.lock(() => {
+                            swal("Delete of mod " + modname + " successful", "", "success");
+                            let installedMods = this_class.state.installedMods;
+
+                            installedMods.forEach((v, k) => {
+                                if(v.name == modname) {
+                                    installedMods[k] = data.data;
+                                }
+                            });
+
+                            this_class.setState({
+                                installedMods: installedMods
+                            });
+
+                            this_class.mutex.unlock();
+                        });
+                    }
                 },
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/delete', status, err.toString());
@@ -451,6 +509,26 @@ class ModsContent extends React.Component {
     }
 
     uploadModSuccessHandler(event, data) {
+        // let this_class = this;
+        // console.log(data.response);
+        //
+        // if(data.response.success) {
+        //     this.mutex.lock(() => {
+        //         let installedMods = this_class.state.installedMods;
+        //         console.log(installedMods);
+        //         data.response.data.mods.forEach((key, mod) => {
+        //             if(!installedMods.find((sMod) => mod.name == sMod.name)) {
+        //                 installedMods.push(mod);
+        //             }
+        //         });
+        //
+        //         this_class.setState({
+        //             installedMods: installedMods
+        //         });
+        //
+        //         this_class.mutex.unlock();
+        //     });
+        // }
         this.setState({
             installedMods: data.response.data.mods
         });

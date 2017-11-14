@@ -239,7 +239,7 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
 
     mods, err := newMods(config.FactorioModsDir)
     if err == nil {
-        err = mods.ModSimpleList.toggleMod(mod_name)
+        err, resp.Data = mods.ModSimpleList.toggleMod(mod_name)
     }
 
     if err != nil {
@@ -251,7 +251,6 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    resp.Data = mods.listInstalledMods().ModsResult
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -284,7 +283,7 @@ func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    resp.Data = mods.listInstalledMods().ModsResult
+    resp.Data = mod_name
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -341,7 +340,7 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     if err != nil {
-        w.WriteHeader(500)
+        w.WriteHeader(http.StatusInternalServerError)
         resp.Data = fmt.Sprintf("Error in deleteMod: %s", err)
         if err := json.NewEncoder(w).Encode(resp); err != nil {
             log.Printf("Error in DeleteModHandler: %s", err)
@@ -349,7 +348,13 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    resp.Data = mods.listInstalledMods()
+    installedMods := mods.listInstalledMods().ModsResult
+    for _, mod := range installedMods {
+        if mod.Name == mod_name {
+            resp.Data = mod
+            break
+        }
+    }
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -537,7 +542,7 @@ func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    resp.Data = mod_pack_map.listInstalledModPacks()
+    resp.Data = name
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -590,7 +595,7 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
 
     mod_pack_map, err := newModPackMap()
     if err == nil {
-        err = mod_pack_map[mod_pack_name].Mods.ModSimpleList.toggleMod(mod_name)
+        err, resp.Data = mod_pack_map[mod_pack_name].Mods.ModSimpleList.toggleMod(mod_name)
     }
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
@@ -601,7 +606,6 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    resp.Data = mod_pack_map.listInstalledModPacks()
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -637,7 +641,7 @@ func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    resp.Data = mod_pack_map.listInstalledModPacks()
+    resp.Data = true
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -679,7 +683,13 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    resp.Data = mod_pack_map.listInstalledModPacks()
+    installedMods := mod_pack_map[mod_pack_name].Mods.listInstalledMods().ModsResult
+    for _, mod := range installedMods {
+        if mod.Name == mod_name {
+            resp.Data = mod
+            break
+        }
+    }
     resp.Success = true
 
     if err := json.NewEncoder(w).Encode(resp); err != nil {

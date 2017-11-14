@@ -139,12 +139,14 @@ func (mod_simple_list *ModSimpleList) createMod(mod_name string) (error) {
 }
 
 
-func (mod_simple_list *ModSimpleList) toggleMod(mod_name string) error {
+func (mod_simple_list *ModSimpleList) toggleMod(mod_name string) (error, bool) {
     var err error
+    var newEnabled bool
 
     for index, mod := range mod_simple_list.Mods {
         if mod.Name == mod_name {
-            mod_simple_list.Mods[index].Enabled = !mod_simple_list.Mods[index].Enabled
+            newEnabled = !mod_simple_list.Mods[index].Enabled
+            mod_simple_list.Mods[index].Enabled = newEnabled
             break
         }
     }
@@ -152,10 +154,10 @@ func (mod_simple_list *ModSimpleList) toggleMod(mod_name string) error {
     err = mod_simple_list.saveModInfoJson()
     if err != nil {
         log.Printf("error on savin new ModSimpleList: %s", err)
-        return err
+        return err, newEnabled
     }
 
     //i changed it already don't need to reload it
 
-    return nil
+    return nil, newEnabled
 }
