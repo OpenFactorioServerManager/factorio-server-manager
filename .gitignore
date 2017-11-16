@@ -12,3 +12,4 @@ npm-debug.log
 .idea/
 /ui/package-lock.json
 factorio.auth
+/pkg/
