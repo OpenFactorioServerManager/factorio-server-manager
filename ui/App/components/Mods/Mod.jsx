@@ -120,6 +120,7 @@ class Mod extends React.Component {
                 <td>{this.props.mod.title}</td>
                 <td>{modStatus}</td>
                 <td>{version}</td>
+                <td>{this.props.mod.factorio_version}</td>
                 <td>
                     <input className='btn btn-default btn-sm'
                         ref='modName'

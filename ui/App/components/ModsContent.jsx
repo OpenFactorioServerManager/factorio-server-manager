@@ -46,7 +46,7 @@ class ModsContent extends React.Component {
                 this.setState({installedMods: data.data})
             },
             error: (xhr, status, err) => {
-                console.log('api/mods/list', status, err.toString());
+                console.log('api/mods/list/installed', status, err.toString());
             }
         });
     }

@@ -22,6 +22,7 @@ type ModInfo struct {
     Title string `json:"title"`
     Author string `json:"author"`
     FileName string `json:"file_name"`
+    FactorioVersion string `json:"factorio_version"`
 }
 
 func newModInfoList(destination string) (ModInfoList, error) {

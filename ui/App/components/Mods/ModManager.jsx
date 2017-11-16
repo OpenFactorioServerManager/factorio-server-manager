@@ -18,6 +18,7 @@ class ModManager extends React.Component {
                             <th>Name</th>
                             <th>Status</th>
                             <th>Version</th>
+                            <th>Factorio Version</th>
                             <th>Toggle/Remove</th>
                         </tr>
                         </thead>
