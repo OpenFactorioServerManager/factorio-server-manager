@@ -11,6 +11,7 @@ import (
     "os"
     "io"
     "errors"
+    "lockfile"
 )
 
 // Returns JSON response of all mods installed in factorio/mods
@@ -398,6 +399,61 @@ func UploadModHandler(w http.ResponseWriter, r *http.Request) {
     if err = json.NewEncoder(w).Encode(resp); err != nil {
         log.Printf("Error in UploadModHandler: %s", err)
     }
+}
+
+func DownloadModsHandler(w http.ResponseWriter, r *http.Request) {
+    var err error
+
+    zipWriter := zip.NewWriter(w)
+    defer zipWriter.Close()
+
+
+    //iterate over folder and create everything in the zip
+    err = filepath.Walk(config.FactorioModsDir, func(path string, info os.FileInfo, err error) error {
+        if info.IsDir() == false {
+            //Lock the file, that we are want to read
+            err := fileLock.RLock(path)
+            if err != nil {
+                log.Printf("error locking file for reading, something else has locked it")
+                return err
+            }
+            defer fileLock.RUnlock(path)
+
+            writer, err := zipWriter.Create(info.Name())
+            if err != nil {
+                log.Printf("error on creating new file inside zip: %s", err)
+                return err
+            }
+
+            file, err := os.Open(path)
+            if err != nil {
+                log.Printf("error on opening modfile: %s", err)
+                return err
+            }
+            defer file.Close()
+
+            _, err = io.Copy(writer, file)
+            if err != nil {
+                log.Printf("error on copying file into zip: %s", err)
+                return err
+            }
+        }
+
+        return nil
+    })
+    if err == lockfile.ErrorAlreadyLocked {
+        w.WriteHeader(http.StatusLocked)
+        return
+    }
+    if err != nil {
+        log.Printf("error on walking over the mods: %s", err)
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    writer_header := w.Header()
+    writer_header.Set("Content-Type", "application/zip;charset=UTF-8")
+    writer_header.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "all_installed_mods.zip"))
 }
 
 func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {

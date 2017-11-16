@@ -43,6 +43,10 @@ class ModOverview extends React.Component {
         })
     }
 
+    downloadAllHandler(e) {
+        e.stopPropagation();
+    }
+
     render() {
         return(
             <div>
@@ -84,6 +88,15 @@ class ModOverview extends React.Component {
                         <i className="fa fa-minus"></i>
                         <h3 className="box-title">Manage Mods</h3>
                         <div className="box-tools pull-right">
+                            {
+                                this.props.installedMods != null ?
+                                    <NativeListener onClick={this.downloadAllHandler}>
+                                        <a className="btn btn-box-tool btn-default" style={{marginRight: 20}} href={"/api/mods/download"} download>
+                                            Download all Mods
+                                        </a>
+                                    </NativeListener>
+                                    : null
+                            }
                             {
                                 this.props.updates_available > 0 ?
                                     <NativeListener onClick={this.props.updateAllMods}>

@@ -208,6 +208,11 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/upload",
 		UploadModHandler,
+	},{
+		"DownloadMods",
+		"GET",
+		"/mods/download",
+		DownloadModsHandler,
 	}, {
 		"ListSaves",
 		"GET",
