@@ -73,7 +73,10 @@ Example:
 ![Factorio Server Manager Screenshot](http://i.imgur.com/M7kBAhI.png "Factorio Server Manager")
 
 ## Manage mods
-![Factorio Server Manager Screenshot](http://i.imgur.com/L62Yb2W.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](https://imgur.com/lLqQxqN.png "Factorio Server Manager")
+
+## Manage modpacks
+![Factorio Server Manager Screenshot](https://imgur.com/O701fB8.png "Factorio Server Manager")
 
 
 
