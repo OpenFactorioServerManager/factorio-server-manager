@@ -4,6 +4,8 @@ go:
  - 1.6.3
  - 1.7.3
  - tip
+ 
+ go_import_path: github.com/mroote/factorio-server-manager
 
 install:
   - go get github.com/apexskier/httpauth
@@ -15,5 +17,3 @@ install:
 
 script:
  - go test -v ./...
-
-go_import_path: github.com/mroote/factorio-server-manager
