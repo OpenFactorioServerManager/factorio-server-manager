@@ -745,7 +745,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp.Success = true
-		resp.Data = fmt.Sprintf("Settings successfully saved: %s", &FactorioServ.Settings)
+		resp.Data = fmt.Sprintf("Settings successfully saved")
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in sending server settings response: %s", err)
 		}
