@@ -4,8 +4,7 @@ go:
  - 1.6.3
  - 1.7.3
  - tip
- 
- go_import_path: github.com/mroote/factorio-server-manager
+
 
 install:
   - go get github.com/apexskier/httpauth
@@ -14,6 +13,7 @@ install:
   - go get github.com/hpcloud/tail
   - go get github.com/gorilla/websocket
   - go get github.com/majormjr/rcon
+  - go get github.com/mroote/factorio-server-manager
 
 script:
  - go test -v ./...
