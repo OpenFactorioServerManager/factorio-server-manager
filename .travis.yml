@@ -15,3 +15,5 @@ install:
 
 script:
  - go test -v ./...
+
+go_import_path: github.com/mroote/factorio-server-manager
