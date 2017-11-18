@@ -5,8 +5,6 @@ go:
  - 1.7.3
  - tip
 
-go_import_path: github.com/mroote/factorio-server-manager/src
-
 install:
   - go get github.com/apexskier/httpauth
   - go get github.com/go-ini/ini
@@ -14,6 +12,7 @@ install:
   - go get github.com/hpcloud/tail
   - go get github.com/gorilla/websocket
   - go get github.com/majormjr/rcon
+  - export GOPATH="$HOME/gopath/src/github.com/mroote/factorio-server-manager/:$GOPATH"
 
 script:
  - go test -v ./...
