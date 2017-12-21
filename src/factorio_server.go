@@ -108,7 +108,7 @@ func (f *FactorioServer) Run() error {
 		"--port", strconv.Itoa(f.Port),
 		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
-		"--rcon-pass", config.FactorioRconPass,
+		"--rcon-password", config.FactorioRconPass,
 	}
 
 	if f.Savefile == "Load Latest" {
