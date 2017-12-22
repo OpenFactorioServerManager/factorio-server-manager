@@ -24,43 +24,42 @@ type ModPackResultList struct {
 
 func newModPackMap() (ModPackMap, error) {
 	var err error
-	//var mod_pack_map ModPackMap
-	mod_pack_map := make(ModPackMap)
+	modPackMap := make(ModPackMap)
 
-	err = mod_pack_map.reload()
+	err = modPackMap.reload()
 	if err != nil {
 		log.Printf("error on loading the modpacks: %s", err)
-		return mod_pack_map, err
+		return modPackMap, err
 	}
 
-	return mod_pack_map, nil
+	return modPackMap, nil
 }
 
-func newModPack(mod_pack_folder string) (*ModPack, error) {
+func newModPack(modPackFolder string) (*ModPack, error) {
 	var err error
-	var mod_pack ModPack
+	var modPack ModPack
 
-	mod_pack.Mods, err = newMods(mod_pack_folder)
+	modPack.Mods, err = newMods(modPackFolder)
 	if err != nil {
 		log.Printf("error on loading mods in mod_pack_dir: %s", err)
-		return &mod_pack, err
+		return &modPack, err
 	}
 
-	return &mod_pack, err
+	return &modPack, err
 }
 
-func (mod_pack_map *ModPackMap) reload() error {
+func (modPackMap *ModPackMap) reload() error {
 	var err error
-	new_mod_pack_map := make(ModPackMap)
+	newModPackMap := make(ModPackMap)
 
 	err = filepath.Walk(config.FactorioModPackDir, func(path string, info os.FileInfo, err error) error {
 		if path == config.FactorioModPackDir || !info.IsDir() {
 			return nil
 		}
 
-		mod_pack_name := filepath.Base(path)
+		modPackName := filepath.Base(path)
 
-		new_mod_pack_map[mod_pack_name], err = newModPack(path)
+		newModPackMap[modPackName], err = newModPack(path)
 		if err != nil {
 			log.Printf("error on creating newModPack: %s", err)
 			return err
@@ -73,43 +72,43 @@ func (mod_pack_map *ModPackMap) reload() error {
 		return err
 	}
 
-	*mod_pack_map = new_mod_pack_map
+	*modPackMap = newModPackMap
 
 	return nil
 }
 
-func (mod_pack_map *ModPackMap) listInstalledModPacks() ModPackResultList {
-	var mod_pack_result_list ModPackResultList
+func (modPackMap *ModPackMap) listInstalledModPacks() ModPackResultList {
+	var modPackResultList ModPackResultList
 
-	for mod_pack_name, mod_pack := range *mod_pack_map {
-		var mod_pack_result ModPackResult
-		mod_pack_result.Name = mod_pack_name
-		mod_pack_result.Mods = mod_pack.Mods.listInstalledMods()
+	for modPackName, modPack := range *modPackMap {
+		var modPackResult ModPackResult
+		modPackResult.Name = modPackName
+		modPackResult.Mods = modPack.Mods.listInstalledMods()
 
-		mod_pack_result_list.ModPacks = append(mod_pack_result_list.ModPacks, mod_pack_result)
+		modPackResultList.ModPacks = append(modPackResultList.ModPacks, modPackResult)
 	}
 
-	return mod_pack_result_list
+	return modPackResultList
 }
 
-func (mod_pack_map *ModPackMap) createModPack(mod_pack_name string) error {
+func (modPackMap *ModPackMap) createModPack(modPackName string) error {
 	var err error
 
-	mod_pack_folder := filepath.Join(config.FactorioModPackDir, mod_pack_name)
+	modPackFolder := filepath.Join(config.FactorioModPackDir, modPackName)
 
-	if mod_pack_map.checkModPackExists(mod_pack_name) == true {
-		log.Printf("ModPack %s already existis", mod_pack_name)
-		return errors.New("ModPack " + mod_pack_name + " already exists, please choose a different name")
+	if modPackMap.checkModPackExists(modPackName) == true {
+		log.Printf("ModPack %s already existis", modPackName)
+		return errors.New("ModPack " + modPackName + " already exists, please choose a different name")
 	}
 
-	source_file_info, err := os.Stat(config.FactorioModsDir)
+	sourceFileInfo, err := os.Stat(config.FactorioModsDir)
 	if err != nil {
 		log.Printf("error when reading factorioModsDir. %s", err)
 		return err
 	}
 
 	//Create the modPack-folder
-	err = os.MkdirAll(mod_pack_folder, source_file_info.Mode())
+	err = os.MkdirAll(modPackFolder, sourceFileInfo.Mode())
 	if err != nil {
 		log.Printf("error on creating the new ModPack directory: %s", err)
 		return err
@@ -123,36 +122,36 @@ func (mod_pack_map *ModPackMap) createModPack(mod_pack_name string) error {
 
 	for _, file := range files {
 		if file.IsDir() == false {
-			source_filepath := filepath.Join(config.FactorioModsDir, file.Name())
-			destination_filepath := filepath.Join(mod_pack_folder, file.Name())
+			sourceFilepath := filepath.Join(config.FactorioModsDir, file.Name())
+			destinationFilepath := filepath.Join(modPackFolder, file.Name())
 
-			source_file, err := os.Open(source_filepath)
+			sourceFile, err := os.Open(sourceFilepath)
 			if err != nil {
-				log.Printf("error on opening source_filepath: %s", err)
+				log.Printf("error on opening sourceFilepath: %s", err)
 				return err
 			}
-			defer source_file.Close()
+			defer sourceFile.Close()
 
-			destination_file, err := os.Create(destination_filepath)
+			destinationFile, err := os.Create(destinationFilepath)
 			if err != nil {
-				log.Printf("error on creating destination_filepath: %s", err)
+				log.Printf("error on creating destinationFilepath: %s", err)
 				return err
 			}
-			defer destination_file.Close()
+			defer destinationFile.Close()
 
-			_, err = io.Copy(destination_file, source_file)
+			_, err = io.Copy(destinationFile, sourceFile)
 			if err != nil {
 				log.Printf("error on copying data from source to destination: %s", err)
 				return err
 			}
 
-			source_file.Close()
-			destination_file.Close()
+			sourceFile.Close()
+			destinationFile.Close()
 		}
 	}
 
 	//reload the ModPackList
-	err = mod_pack_map.reload()
+	err = modPackMap.reload()
 	if err != nil {
 		log.Printf("error on reloading ModPack: %s", err)
 		return err
@@ -161,9 +160,9 @@ func (mod_pack_map *ModPackMap) createModPack(mod_pack_name string) error {
 	return nil
 }
 
-func (mod_pack_map *ModPackMap) checkModPackExists(mod_pack_name string) bool {
-	for mod_pack_id := range *mod_pack_map {
-		if mod_pack_id == mod_pack_name {
+func (modPackMap *ModPackMap) checkModPackExists(modPackName string) bool {
+	for modPackId := range *modPackMap {
+		if modPackId == modPackName {
 			return true
 		}
 	}
@@ -171,18 +170,18 @@ func (mod_pack_map *ModPackMap) checkModPackExists(mod_pack_name string) bool {
 	return false
 }
 
-func (mod_pack_map *ModPackMap) deleteModPack(mod_pack_name string) error {
+func (modPackMap *ModPackMap) deleteModPack(modPackName string) error {
 	var err error
 
-	mod_pack_dir := filepath.Join(config.FactorioModPackDir, mod_pack_name)
+	modPackDir := filepath.Join(config.FactorioModPackDir, modPackName)
 
-	err = os.RemoveAll(mod_pack_dir)
+	err = os.RemoveAll(modPackDir)
 	if err != nil {
 		log.Printf("error on removing the ModPack: %s", err)
 		return err
 	}
 
-	err = mod_pack_map.reload()
+	err = modPackMap.reload()
 	if err != nil {
 		log.Printf("error on reloading the ModPackList: %s", err)
 		return err
@@ -191,16 +190,16 @@ func (mod_pack_map *ModPackMap) deleteModPack(mod_pack_name string) error {
 	return nil
 }
 
-func (mod_pack *ModPack) loadModPack() error {
+func (modPack *ModPack) loadModPack() error {
 	var err error
 
 	//get filemode, so it can be restored
-	file_info, err := os.Stat(config.FactorioModsDir)
+	fileInfo, err := os.Stat(config.FactorioModsDir)
 	if err != nil {
 		log.Printf("error on trying to save folder infos: %s", err)
 		return err
 	}
-	folder_mode := file_info.Mode()
+	folderMode := fileInfo.Mode()
 
 	//clean factorio mod directory
 	err = os.RemoveAll(config.FactorioModsDir)
@@ -209,32 +208,32 @@ func (mod_pack *ModPack) loadModPack() error {
 		return err
 	}
 
-	err = os.Mkdir(config.FactorioModsDir, folder_mode)
+	err = os.Mkdir(config.FactorioModsDir, folderMode)
 	if err != nil {
 		log.Printf("error on recreating mod dir: %s", err)
 		return err
 	}
 
 	//copy the modpack folder to the normal mods directory
-	err = filepath.Walk(mod_pack.Mods.ModInfoList.Destination, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(modPack.Mods.ModInfoList.Destination, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
 		}
-		new_file, err := os.Create(filepath.Join(config.FactorioModsDir, info.Name()))
+		newFile, err := os.Create(filepath.Join(config.FactorioModsDir, info.Name()))
 		if err != nil {
 			log.Printf("error on creting mod file: %s", err)
 			return err
 		}
-		defer new_file.Close()
+		defer newFile.Close()
 
-		old_file, err := os.Open(path)
+		oldFile, err := os.Open(path)
 		if err != nil {
 			log.Printf("error on opening modFile: %s", err)
 			return err
 		}
-		defer old_file.Close()
+		defer oldFile.Close()
 
-		_, err = io.Copy(new_file, old_file)
+		_, err = io.Copy(newFile, oldFile)
 		if err != nil {
 			log.Printf("error on copying data to the new file: %s", err)
 			return err

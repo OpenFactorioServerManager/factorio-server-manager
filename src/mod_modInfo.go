@@ -27,24 +27,24 @@ type ModInfo struct {
 
 func newModInfoList(destination string) (ModInfoList, error) {
 	var err error
-	mod_info_list := ModInfoList{
+	modInfoList := ModInfoList{
 		Destination: destination,
 	}
 
-	err = mod_info_list.listInstalledMods()
+	err = modInfoList.listInstalledMods()
 	if err != nil {
 		log.Printf("ModInfoList ... error listing installed Mods: %s", err)
-		return mod_info_list, err
+		return modInfoList, err
 	}
 
-	return mod_info_list, nil
+	return modInfoList, nil
 }
 
-func (mod_info_list *ModInfoList) listInstalledMods() error {
+func (modInfoList *ModInfoList) listInstalledMods() error {
 	var err error
-	mod_info_list.Mods = nil
+	modInfoList.Mods = nil
 
-	err = filepath.Walk(mod_info_list.Destination, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(modInfoList.Destination, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && filepath.Ext(path) == ".zip" {
 			err = fileLock.RLock(path)
 			if err != nil && err == lockfile.ErrorAlreadyLocked {
@@ -56,20 +56,20 @@ func (mod_info_list *ModInfoList) listInstalledMods() error {
 			}
 			defer fileLock.RUnlock(path)
 
-			zip_file, err := zip.OpenReader(path)
+			zipFile, err := zip.OpenReader(path)
 			if err != nil {
 				log.Fatalln(err)
 				return err
 			}
 
-			var mod_info ModInfo
-			err = mod_info.getModInfo(&zip_file.Reader)
+			var modInfo ModInfo
+			err = modInfo.getModInfo(&zipFile.Reader)
 			if err != nil {
 				log.Fatalf("Error in getModInfo: %s", err)
 			}
 
-			mod_info.FileName = info.Name()
-			mod_info_list.Mods = append(mod_info_list.Mods, mod_info)
+			modInfo.FileName = info.Name()
+			modInfoList.Mods = append(modInfoList.Mods, modInfo)
 		}
 
 		return nil
@@ -83,13 +83,13 @@ func (mod_info_list *ModInfoList) listInstalledMods() error {
 	return nil
 }
 
-func (mod_info_list *ModInfoList) deleteMod(mod_name string) error {
+func (modInfoList *ModInfoList) deleteMod(modName string) error {
 	var err error
 
 	//search for mod, that should be deleted
-	for _, mod := range mod_info_list.Mods {
-		if mod.Name == mod_name {
-			filePath := mod_info_list.Destination + "/" + mod.FileName
+	for _, mod := range modInfoList.Mods {
+		if mod.Name == modName {
+			filePath := modInfoList.Destination + "/" + mod.FileName
 
 			fileLock.LockW(filePath)
 			//delete mod
@@ -101,7 +101,7 @@ func (mod_info_list *ModInfoList) deleteMod(mod_name string) error {
 			}
 
 			//reload mod-list
-			err = mod_info_list.listInstalledMods()
+			err = modInfoList.listInstalledMods()
 			if err != nil {
 				log.Printf("ModInfoList ... error while refreshing installedModList: %s", err)
 				return err
@@ -115,25 +115,25 @@ func (mod_info_list *ModInfoList) deleteMod(mod_name string) error {
 	return nil
 }
 
-func (mod_info *ModInfo) getModInfo(reader *zip.Reader) error {
-	for _, single_file := range reader.File {
-		if single_file.FileInfo().Name() == "info.json" {
+func (modInfo *ModInfo) getModInfo(reader *zip.Reader) error {
+	for _, singleFile := range reader.File {
+		if singleFile.FileInfo().Name() == "info.json" {
 			//interpret info.json
-			rc, err := single_file.Open()
+			rc, err := singleFile.Open()
 
 			if err != nil {
 				log.Fatal(err)
 				return err
 			}
 
-			byte_array, err := ioutil.ReadAll(rc)
+			byteArray, err := ioutil.ReadAll(rc)
 			rc.Close()
 			if err != nil {
 				log.Fatal(err)
 				return err
 			}
 
-			err = json.Unmarshal(byte_array, mod_info)
+			err = json.Unmarshal(byteArray, modInfo)
 			if err != nil {
 				log.Fatalln(err)
 				return err
@@ -146,27 +146,27 @@ func (mod_info *ModInfo) getModInfo(reader *zip.Reader) error {
 	return errors.New("info.json not found in zip-file")
 }
 
-func (mod_info_list *ModInfoList) createMod(mod_name string, file_name string, mod_file io.Reader) error {
+func (modInfoList *ModInfoList) createMod(modName string, fileName string, modFile io.Reader) error {
 	var err error
 
 	//save uploaded file
-	filePath := mod_info_list.Destination + "/" + file_name
-	new_file, err := os.Create(filePath)
+	filePath := modInfoList.Destination + "/" + fileName
+	newFile, err := os.Create(filePath)
 	if err != nil {
-		log.Printf("error on creating new file - %s: %s", file_name, err)
+		log.Printf("error on creating new file - %s: %s", fileName, err)
 		return err
 	}
-	defer new_file.Close()
+	defer newFile.Close()
 
 	fileLock.LockW(filePath)
 
-	_, err = io.Copy(new_file, mod_file)
+	_, err = io.Copy(newFile, modFile)
 	if err != nil {
 		log.Printf("error on copying file to disk: %s", err)
 		return err
 	}
 
-	err = new_file.Close()
+	err = newFile.Close()
 	if err != nil {
 		log.Printf("error on closing new created zip-file: %s", err)
 		return err
@@ -175,7 +175,7 @@ func (mod_info_list *ModInfoList) createMod(mod_name string, file_name string, m
 	fileLock.Unlock(filePath)
 
 	//reload the list
-	err = mod_info_list.listInstalledMods()
+	err = modInfoList.listInstalledMods()
 	if err != nil {
 		log.Printf("error on listing mod-infos: %s", err)
 		return err

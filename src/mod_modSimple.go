@@ -20,33 +20,33 @@ type ModSimpleList struct {
 func newModSimpleList(destination string) (ModSimpleList, error) {
 	var err error
 
-	mod_simple_list := ModSimpleList{
+	modSimpleList := ModSimpleList{
 		Destination: destination,
 	}
 
-	err = mod_simple_list.listInstalledMods()
+	err = modSimpleList.listInstalledMods()
 	if err != nil {
 		log.Printf("ModSimpleList ... error list installed mods: %s", err)
-		return mod_simple_list, err
+		return modSimpleList, err
 	}
 
-	return mod_simple_list, nil
+	return modSimpleList, nil
 }
 
-func (mod_simple_list *ModSimpleList) listInstalledMods() error {
+func (modSimpleList *ModSimpleList) listInstalledMods() error {
 	var err error
 
-	file, err := ioutil.ReadFile(mod_simple_list.Destination + "/mod-list.json")
+	file, err := ioutil.ReadFile(modSimpleList.Destination + "/mod-list.json")
 	if os.IsNotExist(err) {
 		log.Println("no mod-list.json found ... create new one ...")
 
 		//mod-list.json does not exist, create one
-		base_mod := ModSimple{
+		baseMod := ModSimple{
 			Name:    "base",
 			Enabled: true,
 		}
-		mod_simple_list.Mods = append(mod_simple_list.Mods, base_mod)
-		err = mod_simple_list.saveModInfoJson()
+		modSimpleList.Mods = append(modSimpleList.Mods, baseMod)
+		err = modSimpleList.saveModInfoJson()
 		if err != nil {
 			log.Printf("error saving mod-list.json: %s", err)
 			return err
@@ -59,7 +59,7 @@ func (mod_simple_list *ModSimpleList) listInstalledMods() error {
 		return err
 	}
 
-	err = json.Unmarshal(file, mod_simple_list)
+	err = json.Unmarshal(file, modSimpleList)
 	if err != nil {
 		log.Printf("ModSimpleList ... error while decode mod-info.json: %s", err)
 		return err
@@ -68,13 +68,13 @@ func (mod_simple_list *ModSimpleList) listInstalledMods() error {
 	return nil
 }
 
-func (mod_simple_list *ModSimpleList) saveModInfoJson() error {
+func (modSimpleList *ModSimpleList) saveModInfoJson() error {
 	var err error
 
 	//build json of current state
-	new_json, _ := json.MarshalIndent(mod_simple_list, "", "    ")
+	newJson, _ := json.MarshalIndent(modSimpleList, "", "    ")
 
-	err = ioutil.WriteFile(mod_simple_list.Destination+"/mod-list.json", new_json, 0664)
+	err = ioutil.WriteFile(modSimpleList.Destination+"/mod-list.json", newJson, 0664)
 	if err != nil {
 		log.Printf("error when writing new mod-list: %s", err)
 		return err
@@ -83,22 +83,22 @@ func (mod_simple_list *ModSimpleList) saveModInfoJson() error {
 	return nil
 }
 
-func (mod_simple_list *ModSimpleList) deleteMod(mod_name string) error {
+func (modSimpleList *ModSimpleList) deleteMod(modName string) error {
 	var err error
 
-	for index, mod := range mod_simple_list.Mods {
-		if mod.Name == mod_name {
-			slice1 := mod_simple_list.Mods[:index]
-			slice2 := mod_simple_list.Mods[index+1:]
-			var new_mod_list []ModSimple
-			new_mod_list = append(new_mod_list, slice1...)
-			new_mod_list = append(new_mod_list, slice2...)
-			mod_simple_list.Mods = new_mod_list
+	for index, mod := range modSimpleList.Mods {
+		if mod.Name == modName {
+			slice1 := modSimpleList.Mods[:index]
+			slice2 := modSimpleList.Mods[index+1:]
+			var newModList []ModSimple
+			newModList = append(newModList, slice1...)
+			newModList = append(newModList, slice2...)
+			modSimpleList.Mods = newModList
 			break
 		}
 	}
 
-	err = mod_simple_list.saveModInfoJson()
+	err = modSimpleList.saveModInfoJson()
 	if err != nil {
 		log.Printf("error when saving new mod_list: %s", err)
 		return err
@@ -107,9 +107,9 @@ func (mod_simple_list *ModSimpleList) deleteMod(mod_name string) error {
 	return nil
 }
 
-func (mod_simple_list *ModSimpleList) checkModExists(mod_name string) bool {
-	for _, single_mod := range mod_simple_list.Mods {
-		if single_mod.Name == mod_name {
+func (modSimpleList *ModSimpleList) checkModExists(modName string) bool {
+	for _, singleMod := range modSimpleList.Mods {
+		if singleMod.Name == modName {
 			return true
 		}
 	}
@@ -117,17 +117,17 @@ func (mod_simple_list *ModSimpleList) checkModExists(mod_name string) bool {
 	return false
 }
 
-func (mod_simple_list *ModSimpleList) createMod(mod_name string) error {
+func (modSimpleList *ModSimpleList) createMod(modName string) error {
 	var err error
 
-	new_mod_simple := ModSimple{
-		Name:    mod_name,
+	newModSimple := ModSimple{
+		Name:    modName,
 		Enabled: true,
 	}
 
-	mod_simple_list.Mods = append(mod_simple_list.Mods, new_mod_simple)
+	modSimpleList.Mods = append(modSimpleList.Mods, newModSimple)
 
-	err = mod_simple_list.saveModInfoJson()
+	err = modSimpleList.saveModInfoJson()
 	if err != nil {
 		log.Printf("error when saving new Info.json: %s", err)
 		return err
@@ -138,19 +138,19 @@ func (mod_simple_list *ModSimpleList) createMod(mod_name string) error {
 	return nil
 }
 
-func (mod_simple_list *ModSimpleList) toggleMod(mod_name string) (error, bool) {
+func (modSimpleList *ModSimpleList) toggleMod(modName string) (error, bool) {
 	var err error
 	var newEnabled bool
 
-	for index, mod := range mod_simple_list.Mods {
-		if mod.Name == mod_name {
-			newEnabled = !mod_simple_list.Mods[index].Enabled
-			mod_simple_list.Mods[index].Enabled = newEnabled
+	for index, mod := range modSimpleList.Mods {
+		if mod.Name == modName {
+			newEnabled = !modSimpleList.Mods[index].Enabled
+			modSimpleList.Mods[index].Enabled = newEnabled
 			break
 		}
 	}
 
-	err = mod_simple_list.saveModInfoJson()
+	err = modSimpleList.saveModInfoJson()
 	if err != nil {
 		log.Printf("error on savin new ModSimpleList: %s", err)
 		return err, newEnabled

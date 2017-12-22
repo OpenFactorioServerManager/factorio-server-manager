@@ -29,13 +29,13 @@ type FactorioCredentials struct {
 func (credentials *FactorioCredentials) save() error {
 	var err error
 
-	credentials_json, err := json.Marshal(credentials)
+	credentialsJson, err := json.Marshal(credentials)
 	if err != nil {
 		log.Printf("error mashalling the credentials: %s", err)
 		return err
 	}
 
-	err = ioutil.WriteFile(config.FactorioCredentialsFile, credentials_json, 0664)
+	err = ioutil.WriteFile(config.FactorioCredentialsFile, credentialsJson, 0664)
 	if err != nil {
 		log.Printf("error on saving the credentials. %s", err)
 		return err
@@ -51,14 +51,14 @@ func (credentials *FactorioCredentials) load() (bool, error) {
 		return false, nil
 	}
 
-	file_bytes, err := ioutil.ReadFile(config.FactorioCredentialsFile)
+	fileBytes, err := ioutil.ReadFile(config.FactorioCredentialsFile)
 	if err != nil {
 		credentials.del()
 		log.Printf("error reading CredentialsFile: %s", err)
 		return false, err
 	}
 
-	err = json.Unmarshal(file_bytes, credentials)
+	err = json.Unmarshal(fileBytes, credentials)
 	if err != nil {
 		credentials.del()
 		log.Printf("error on unmarshal credentials_file: %s", err)
@@ -99,21 +99,21 @@ func factorioLogin(username string, password string) (string, error, int) {
 
 	defer resp.Body.Close()
 
-	body_bytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Printf("error on reading resp.Body: %s", err)
 		return "", err, http.StatusInternalServerError
 	}
 
-	body_string := string(body_bytes)
+	bodyString := string(bodyBytes)
 
 	if resp.StatusCode != http.StatusOK {
 		log.Println("error Statuscode not 200")
-		return body_string, errors.New(body_string), resp.StatusCode
+		return bodyString, errors.New(bodyString), resp.StatusCode
 	}
 
-	var success_response []string
-	err = json.Unmarshal(body_bytes, &success_response)
+	var successResponse []string
+	err = json.Unmarshal(bodyBytes, &successResponse)
 	if err != nil {
 		log.Printf("error on unmarshal body: %s", err)
 		return err.Error(), err, http.StatusInternalServerError
@@ -121,7 +121,7 @@ func factorioLogin(username string, password string) (string, error, int) {
 
 	credentials := FactorioCredentials{
 		Username: username,
-		Userkey:  success_response[0],
+		Userkey:  successResponse[0],
 	}
 
 	err = credentials.save()
@@ -156,15 +156,15 @@ func searchModPortal(keyword string) (string, error, int) {
 		return "error", err, 500
 	}
 
-	text_string := string(text)
+	textString := string(text)
 
-	return text_string, nil, resp.StatusCode
+	return textString, nil, resp.StatusCode
 }
 
 func getModDetails(modId string) (string, error, int) {
 	var err error
-	new_link := "https://mods.factorio.com/api/mods/" + modId
-	resp, err := http.Get(new_link)
+	newLink := "https://mods.factorio.com/api/mods/" + modId
+	resp, err := http.Get(newLink)
 
 	if err != nil {
 		return "error", err, http.StatusInternalServerError
@@ -174,26 +174,26 @@ func getModDetails(modId string) (string, error, int) {
 	text, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 
-	text_string := string(text)
+	textString := string(text)
 
 	if err != nil {
 		log.Fatal(err)
 		return "error", err, resp.StatusCode
 	}
 
-	return text_string, nil, resp.StatusCode
+	return textString, nil, resp.StatusCode
 }
 
 func deleteAllMods() error {
 	var err error
 
-	mods_dir_info, err := os.Stat(config.FactorioModsDir)
+	modsDirInfo, err := os.Stat(config.FactorioModsDir)
 	if err != nil {
 		log.Printf("error getting stats of FactorioModsDir: %s", err)
 		return err
 	}
 
-	mods_dir_perm := mods_dir_info.Mode().Perm()
+	modsDirPerm := modsDirInfo.Mode().Perm()
 
 	err = os.RemoveAll(config.FactorioModsDir)
 	if err != nil {
@@ -201,7 +201,7 @@ func deleteAllMods() error {
 		return err
 	}
 
-	err = os.Mkdir(config.FactorioModsDir, mods_dir_perm)
+	err = os.Mkdir(config.FactorioModsDir, modsDirPerm)
 	if err != nil {
 		log.Printf("error recreating modPackDir: %s", err)
 		return err
@@ -214,30 +214,30 @@ func modStartUp() {
 	var err error
 
 	//get main-folder info
-	factorioDir_info, err := os.Stat(config.FactorioDir)
+	factorioDirInfo, err := os.Stat(config.FactorioDir)
 	if err != nil {
 		log.Printf("error getting stats from FactorioDir: %s", err)
 		return
 	}
-	factorioDir_perm := factorioDir_info.Mode().Perm()
+	factorioDirPerm := factorioDirInfo.Mode().Perm()
 
 	//create mods dir
 	if _, err = os.Stat(config.FactorioModsDir); os.IsNotExist(err) {
 		log.Println("no mods dir found ... creating one ...")
-		os.Mkdir(config.FactorioModsDir, factorioDir_perm)
+		os.Mkdir(config.FactorioModsDir, factorioDirPerm)
 	}
 
 	//crate mod_pack dir
 	if _, err = os.Stat(config.FactorioModPackDir); os.IsNotExist(err) {
 		log.Println("no ModPackDir found ... creating one ...")
-		os.Mkdir(config.FactorioModPackDir, factorioDir_perm)
+		os.Mkdir(config.FactorioModPackDir, factorioDirPerm)
 	}
 
-	old_modpack_dir := filepath.Join(config.FactorioDir, "modpacks")
-	if _, err := os.Stat(filepath.Join(old_modpack_dir)); !os.IsNotExist(err) {
+	oldModpackDir := filepath.Join(config.FactorioDir, "modpacks")
+	if _, err := os.Stat(filepath.Join(oldModpackDir)); !os.IsNotExist(err) {
 		log.Printf("found old modpack files, rebuild into new system...")
 
-		err = filepath.Walk(old_modpack_dir, func(path string, info os.FileInfo, err error) error {
+		err = filepath.Walk(oldModpackDir, func(path string, info os.FileInfo, err error) error {
 			if info.IsDir() {
 				return nil
 			}
@@ -248,26 +248,26 @@ func modStartUp() {
 
 			filename := info.Name()
 			n := strings.LastIndexByte(info.Name(), '.')
-			mod_pack_name := filename[:n]
+			modPackName := filename[:n]
 
-			log.Printf("loading modPack %s into new system ...", mod_pack_name)
+			log.Printf("loading modPack %s into new system ...", modPackName)
 
-			mod_pack_dir := filepath.Join(config.FactorioModPackDir, mod_pack_name)
+			modPackDir := filepath.Join(config.FactorioModPackDir, modPackName)
 
-			if _, err := os.Stat(mod_pack_dir); !os.IsNotExist(err) {
+			if _, err := os.Stat(modPackDir); !os.IsNotExist(err) {
 				log.Printf("modPack already exists")
 				return errors.New("modPack already exists")
 			}
 
-			err = os.Mkdir(mod_pack_dir, factorioDir_perm)
+			err = os.Mkdir(modPackDir, factorioDirPerm)
 			if err != nil {
 				log.Printf("error creating newModPackDir: %s", err)
 				return err
 			}
 
 			//create mod-info.json
-			mod_simple_list := ModSimpleList{
-				Destination: mod_pack_dir,
+			modSimpleList := ModSimpleList{
+				Destination: modPackDir,
 				Mods: []ModSimple{
 					ModSimple{
 						Name:    "base",
@@ -275,63 +275,63 @@ func modStartUp() {
 					},
 				},
 			}
-			new_json, _ := json.Marshal(mod_simple_list)
+			new_json, _ := json.Marshal(modSimpleList)
 
-			err = ioutil.WriteFile(mod_simple_list.Destination+"/mod-list.json", new_json, 0664)
+			err = ioutil.WriteFile(modSimpleList.Destination+"/mod-list.json", new_json, 0664)
 			if err != nil {
 				log.Printf("error when writing new mod-list: %s", err)
 				return err
 			}
 
-			mod_pack_file, err := zip.OpenReader(path)
+			modPackFile, err := zip.OpenReader(path)
 			if err != nil {
 				return err
 			}
-			defer mod_pack_file.Close()
+			defer modPackFile.Close()
 
-			mods, err := newMods(mod_pack_dir)
+			mods, err := newMods(modPackDir)
 			if err != nil {
 				log.Printf("error reading mods: %s", err)
 				return err
 			}
 
-			for _, mod_file := range mod_pack_file.File {
-				mod_file_rc, err := mod_file.Open()
+			for _, modFile := range modPackFile.File {
+				modFileRc, err := modFile.Open()
 				if err != nil {
 					log.Printf("error opening mod_file: %s", err)
 					return err
 				}
-				defer mod_file_rc.Close()
+				defer modFileRc.Close()
 
-				mod_file_buffer, err := ioutil.ReadAll(mod_file_rc)
+				modFileBuffer, err := ioutil.ReadAll(modFileRc)
 				if err != nil {
 					log.Printf("error reading mod_file_rc: %s", err)
 					return err
 				}
-				mod_file_rc.Close()
+				modFileRc.Close()
 
-				mod_file_byte_reader := bytes.NewReader(mod_file_buffer)
-				mod_file_zip_reader, err := zip.NewReader(mod_file_byte_reader, int64(len(mod_file_buffer)))
+				modFileByteReader := bytes.NewReader(modFileBuffer)
+				modFileZipReader, err := zip.NewReader(modFileByteReader, int64(len(modFileBuffer)))
 				if err != nil {
 					log.Printf("error creating Reader on byte_array: %s", err)
 					return err
 				}
 
-				var mod_info ModInfo
-				err = mod_info.getModInfo(mod_file_zip_reader)
+				var modInfo ModInfo
+				err = modInfo.getModInfo(modFileZipReader)
 				if err != nil {
 					log.Printf("error loading the ModInfo: %s", err)
 					return err
 				}
 
-				err = mods.createMod(mod_info.Name, mod_file.Name, bytes.NewReader(mod_file_buffer))
+				err = mods.createMod(modInfo.Name, modFile.Name, bytes.NewReader(modFileBuffer))
 				if err != nil {
 					log.Printf("error on creating mod: %s", err)
 					return err
 				}
 			}
 
-			log.Printf("loading modPack %s successful", mod_pack_name)
+			log.Printf("loading modPack %s successful", modPackName)
 
 			return nil
 		})
@@ -341,7 +341,7 @@ func modStartUp() {
 		} else {
 			log.Printf("all modPacks are loaded into the new system successfully")
 			log.Printf("deleting old modPackDir")
-			os.RemoveAll(old_modpack_dir)
+			os.RemoveAll(oldModpackDir)
 		}
 	}
 }

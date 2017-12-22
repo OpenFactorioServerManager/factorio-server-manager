@@ -54,8 +54,8 @@ func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	login_status, err, statusCode := factorioLogin(username, password)
-	if login_status == "" && err == nil {
+	loginStatus, err, statusCode := factorioLogin(username, password)
+	if loginStatus == "" && err == nil {
 		resp.Data = true
 	}
 
@@ -137,10 +137,10 @@ func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	search_keyword := r.FormValue("search")
+	searchKeyword := r.FormValue("search")
 
 	var statusCode int
-	resp.Data, err, statusCode = searchModPortal(search_keyword)
+	resp.Data, err, statusCode = searchModPortal(searchKeyword)
 
 	w.WriteHeader(statusCode)
 
@@ -170,10 +170,10 @@ func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	mod_id := r.FormValue("mod_id")
+	modId := r.FormValue("mod_id")
 
 	var statusCode int
-	resp.Data, err, statusCode = getModDetails(mod_id)
+	resp.Data, err, statusCode = getModDetails(modId)
 
 	w.WriteHeader(statusCode)
 
@@ -203,11 +203,11 @@ func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 	//Get Data out of the request
 	downloadUrl := r.FormValue("link")
 	filename := r.FormValue("filename")
-	mod_name := r.FormValue("modName")
+	modName := r.FormValue("modName")
 
 	mods, err := newMods(config.FactorioModsDir)
 	if err == nil {
-		err = mods.downloadMod(downloadUrl, filename, mod_name)
+		err = mods.downloadMod(downloadUrl, filename, modName)
 	}
 
 	if err != nil {
@@ -236,11 +236,11 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	mod_name := r.FormValue("mod_name")
+	modName := r.FormValue("mod_name")
 
 	mods, err := newMods(config.FactorioModsDir)
 	if err == nil {
-		err, resp.Data = mods.ModSimpleList.toggleMod(mod_name)
+		err, resp.Data = mods.ModSimpleList.toggleMod(modName)
 	}
 
 	if err != nil {
@@ -268,11 +268,11 @@ func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	mod_name := r.FormValue("mod_name")
+	modName := r.FormValue("mod_name")
 
 	mods, err := newMods(config.FactorioModsDir)
 	if err == nil {
-		mods.deleteMod(mod_name)
+		mods.deleteMod(modName)
 	}
 
 	if err != nil {
@@ -284,7 +284,7 @@ func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp.Data = mod_name
+	resp.Data = modName
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -329,15 +329,15 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	mod_name := r.FormValue("mod_name")
-	download_url := r.FormValue("downloadUrl")
-	file_name := r.FormValue("filename")
+	modName := r.FormValue("mod_name")
+	downloadUrl := r.FormValue("downloadUrl")
+	fileName := r.FormValue("filename")
 
 	log.Println("--------------------------------------------------------------")
 
 	mods, err := newMods(config.FactorioModsDir)
 	if err == nil {
-		err = mods.updateMod(mod_name, download_url, file_name)
+		err = mods.updateMod(modName, downloadUrl, fileName)
 	}
 
 	if err != nil {
@@ -351,7 +351,7 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
 
 	installedMods := mods.listInstalledMods().ModsResult
 	for _, mod := range installedMods {
-		if mod.Name == mod_name {
+		if mod.Name == modName {
 			resp.Data = mod
 			break
 		}
@@ -375,10 +375,10 @@ func UploadModHandler(w http.ResponseWriter, r *http.Request) {
 
 	mods, err := newMods(config.FactorioModsDir)
 	if err == nil {
-		for file_key, mod_file := range r.MultipartForm.File["mod_file"] {
-			err = mods.uploadMod(mod_file)
+		for fileKey, modFile := range r.MultipartForm.File["mod_file"] {
+			err = mods.uploadMod(modFile)
 			if err != nil {
-				resp.ErrorKeys = append(resp.ErrorKeys, file_key)
+				resp.ErrorKeys = append(resp.ErrorKeys, fileKey)
 				resp.Error = "An error occurred during upload or saving, pls check manually, if all went well and delete invalid files. (This program also could be crashed)"
 			}
 		}
@@ -450,9 +450,9 @@ func DownloadModsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writer_header := w.Header()
-	writer_header.Set("Content-Type", "application/zip;charset=UTF-8")
-	writer_header.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "all_installed_mods.zip"))
+	writerHeader := w.Header()
+	writerHeader.Set("Content-Type", "application/zip;charset=UTF-8")
+	writerHeader.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "all_installed_mods.zip"))
 }
 
 func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {
@@ -463,7 +463,7 @@ func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	mod_pack_map, err := newModPackMap()
+	modPackMap, err := newModPackMap()
 
 	if err != nil {
 		w.WriteHeader(500)
@@ -475,7 +475,7 @@ func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp.Data = mod_pack_map.listInstalledModPacks()
+	resp.Data = modPackMap.listInstalledModPacks()
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -493,9 +493,9 @@ func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	mod_pack_map, err := newModPackMap()
+	modPackMap, err := newModPackMap()
 	if err == nil {
-		err = mod_pack_map.createModPack(name)
+		err = modPackMap.createModPack(name)
 	}
 
 	if err != nil {
@@ -507,7 +507,7 @@ func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp.Data = mod_pack_map.listInstalledModPacks()
+	resp.Data = modPackMap.listInstalledModPacks()
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -521,21 +521,21 @@ func DownloadModPackHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	modpack := vars["modpack"]
 
-	mod_pack_map, err := newModPackMap()
+	modPackMap, err := newModPackMap()
 	if err != nil {
 		log.Printf("error on loading modPacks: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	if mod_pack_map.checkModPackExists(modpack) {
-		zip_writer := zip.NewWriter(w)
-		defer zip_writer.Close()
+	if modPackMap.checkModPackExists(modpack) {
+		zipWriter := zip.NewWriter(w)
+		defer zipWriter.Close()
 
 		//iterate over folder and create everything in the zip
 		err = filepath.Walk(filepath.Join(config.FactorioModPackDir, modpack), func(path string, info os.FileInfo, err error) error {
 			if info.IsDir() == false {
-				writer, err := zip_writer.Create(info.Name())
+				writer, err := zipWriter.Create(info.Name())
 				if err != nil {
 					log.Printf("error on creating new file inside zip: %s", err)
 					return err
@@ -568,9 +568,9 @@ func DownloadModPackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writer_header := w.Header()
-	writer_header.Set("Content-Type", "application/zip;charset=UTF-8")
-	writer_header.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", modpack+".zip"))
+	writerHeader := w.Header()
+	writerHeader.Set("Content-Type", "application/zip;charset=UTF-8")
+	writerHeader.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", modpack+".zip"))
 }
 
 func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
@@ -583,9 +583,9 @@ func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
 
 	name := r.FormValue("name")
 
-	mod_pack_map, err := newModPackMap()
+	modPackMap, err := newModPackMap()
 	if err == nil {
-		err = mod_pack_map.deleteModPack(name)
+		err = modPackMap.deleteModPack(name)
 	}
 
 	if err != nil {
@@ -615,9 +615,9 @@ func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
 
 	name := r.FormValue("name")
 
-	mod_pack_map, err := newModPackMap()
+	modPackMap, err := newModPackMap()
 	if err == nil {
-		mod_pack_map[name].loadModPack()
+		modPackMap[name].loadModPack()
 	}
 
 	if err != nil {
@@ -629,7 +629,7 @@ func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp.Data = mod_pack_map[name].Mods.listInstalledMods()
+	resp.Data = modPackMap[name].Mods.listInstalledMods()
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -645,12 +645,12 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	mod_name := r.FormValue("mod_name")
-	mod_pack_name := r.FormValue("mod_pack")
+	modName := r.FormValue("mod_name")
+	modPackName := r.FormValue("mod_pack")
 
-	mod_pack_map, err := newModPackMap()
+	modPackMap, err := newModPackMap()
 	if err == nil {
-		err, resp.Data = mod_pack_map[mod_pack_name].Mods.ModSimpleList.toggleMod(mod_name)
+		err, resp.Data = modPackMap[modPackName].Mods.ModSimpleList.toggleMod(modName)
 	}
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -676,15 +676,15 @@ func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	mod_name := r.FormValue("mod_name")
-	mod_pack_name := r.FormValue("mod_pack_name")
+	modName := r.FormValue("mod_name")
+	modPackName := r.FormValue("mod_pack_name")
 
-	mod_pack_map, err := newModPackMap()
+	modPackMap, err := newModPackMap()
 	if err == nil {
-		if mod_pack_map.checkModPackExists(mod_pack_name) {
-			err = mod_pack_map[mod_pack_name].Mods.deleteMod(mod_name)
+		if modPackMap.checkModPackExists(modPackName) {
+			err = modPackMap[modPackName].Mods.deleteMod(modName)
 		} else {
-			err = errors.New("ModPack " + mod_pack_name + " does not exist")
+			err = errors.New("ModPack " + modPackName + " does not exist")
 		}
 	}
 	if err != nil {
@@ -715,17 +715,17 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	mod_name := r.FormValue("mod_name")
-	download_url := r.FormValue("downloadUrl")
-	file_name := r.FormValue("filename")
-	mod_pack_name := r.FormValue("mod_pack_name")
+	modName := r.FormValue("mod_name")
+	downloadUrl := r.FormValue("downloadUrl")
+	fileName := r.FormValue("filename")
+	modPackName := r.FormValue("mod_pack_name")
 
-	mod_pack_map, err := newModPackMap()
+	modPackMap, err := newModPackMap()
 	if err == nil {
-		if mod_pack_map.checkModPackExists(mod_pack_name) {
-			err = mod_pack_map[mod_pack_name].Mods.updateMod(mod_name, download_url, file_name)
+		if modPackMap.checkModPackExists(modPackName) {
+			err = modPackMap[modPackName].Mods.updateMod(modName, downloadUrl, fileName)
 		} else {
-			err = errors.New("ModPack " + mod_pack_name + "does not exist")
+			err = errors.New("ModPack " + modPackName + "does not exist")
 		}
 	}
 
@@ -738,9 +738,9 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	installedMods := mod_pack_map[mod_pack_name].Mods.listInstalledMods().ModsResult
+	installedMods := modPackMap[modPackName].Mods.listInstalledMods().ModsResult
 	for _, mod := range installedMods {
-		if mod.Name == mod_name {
+		if mod.Name == modName {
 			resp.Data = mod
 			break
 		}

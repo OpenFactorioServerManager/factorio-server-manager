@@ -50,38 +50,38 @@ func newMods(destination string) (Mods, error) {
 func (mods *Mods) listInstalledMods() ModsResultList {
 	var result ModsResultList
 
-	for _, mod_info := range mods.ModInfoList.Mods {
-		var mods_result ModsResult
-		mods_result.Name = mod_info.Name
-		mods_result.FileName = mod_info.FileName
-		mods_result.Author = mod_info.Author
-		mods_result.Title = mod_info.Title
-		mods_result.Version = mod_info.Version
-		mods_result.FactorioVersion = mod_info.FactorioVersion
+	for _, modInfo := range mods.ModInfoList.Mods {
+		var modsResult ModsResult
+		modsResult.Name = modInfo.Name
+		modsResult.FileName = modInfo.FileName
+		modsResult.Author = modInfo.Author
+		modsResult.Title = modInfo.Title
+		modsResult.Version = modInfo.Version
+		modsResult.FactorioVersion = modInfo.FactorioVersion
 
-		for _, simple_mod := range mods.ModSimpleList.Mods {
-			if simple_mod.Name == mods_result.Name {
-				mods_result.Enabled = simple_mod.Enabled
+		for _, simpleMod := range mods.ModSimpleList.Mods {
+			if simpleMod.Name == modsResult.Name {
+				modsResult.Enabled = simpleMod.Enabled
 				break
 			}
 		}
 
-		result.ModsResult = append(result.ModsResult, mods_result)
+		result.ModsResult = append(result.ModsResult, modsResult)
 	}
 
 	return result
 }
 
-func (mods *Mods) deleteMod(mod_name string) error {
+func (mods *Mods) deleteMod(modName string) error {
 	var err error
 
-	err = mods.ModInfoList.deleteMod(mod_name)
+	err = mods.ModInfoList.deleteMod(modName)
 	if err != nil {
 		log.Printf("error when deleting mod in ModInfoList: %s", err)
 		return err
 	}
 
-	err = mods.ModSimpleList.deleteMod(mod_name)
+	err = mods.ModSimpleList.deleteMod(modName)
 	if err != nil {
 		log.Printf("error when deleting mod in ModSimpleList: %s", err)
 		return err
@@ -90,18 +90,18 @@ func (mods *Mods) deleteMod(mod_name string) error {
 	return nil
 }
 
-func (mods *Mods) createMod(mod_name string, file_name string, file_rc io.Reader) error {
+func (mods *Mods) createMod(modName string, fileName string, fileRc io.Reader) error {
 	var err error
 
 	//check if mod already exists and delete it
-	if mods.ModSimpleList.checkModExists(mod_name) {
-		err = mods.ModSimpleList.deleteMod(mod_name)
+	if mods.ModSimpleList.checkModExists(modName) {
+		err = mods.ModSimpleList.deleteMod(modName)
 		if err != nil {
 			log.Printf("error when deleting mod: %s", err)
 			return err
 		}
 
-		err = mods.ModInfoList.deleteMod(mod_name)
+		err = mods.ModInfoList.deleteMod(modName)
 		if err != nil {
 			log.Printf("error when deleting mod: %s", err)
 			return err
@@ -109,12 +109,12 @@ func (mods *Mods) createMod(mod_name string, file_name string, file_rc io.Reader
 	}
 
 	//create new mod
-	err = mods.ModInfoList.createMod(mod_name, file_name, file_rc)
+	err = mods.ModInfoList.createMod(modName, fileName, fileRc)
 	if err != nil {
 		log.Printf("error on creating mod-file: %s", err)
 		return err
 	}
-	err = mods.ModSimpleList.createMod(mod_name)
+	err = mods.ModSimpleList.createMod(modName)
 	if err != nil {
 		log.Printf("error on adding mod to the mod-list.json: %s", err)
 		return err
@@ -123,7 +123,7 @@ func (mods *Mods) createMod(mod_name string, file_name string, file_rc io.Reader
 	return nil
 }
 
-func (mods *Mods) downloadMod(url string, filename string, mod_id string) error {
+func (mods *Mods) downloadMod(url string, filename string, modId string) error {
 	var err error
 
 	var credentials FactorioCredentials
@@ -138,9 +138,9 @@ func (mods *Mods) downloadMod(url string, filename string, mod_id string) error 
 	}
 
 	//download the mod from the mod portal api
-	complete_url := "https://mods.factorio.com" + url + "?username=" + credentials.Username + "&token=" + credentials.Userkey
+	completeUrl := "https://mods.factorio.com" + url + "?username=" + credentials.Username + "&token=" + credentials.Userkey
 
-	response, err := http.Get(complete_url)
+	response, err := http.Get(completeUrl)
 	if err != nil {
 		log.Printf("error on downloading mod: %s", err)
 		return err
@@ -156,7 +156,7 @@ func (mods *Mods) downloadMod(url string, filename string, mod_id string) error 
 		return errors.New("Statuscode not 200: " + fmt.Sprint(response.StatusCode))
 	}
 
-	err = mods.createMod(mod_id, filename, response.Body)
+	err = mods.createMod(modId, filename, response.Body)
 	if err != nil {
 		log.Printf("error when creating Mod: %s", err)
 		return err
@@ -184,26 +184,26 @@ func (mods *Mods) uploadMod(header *multipart.FileHeader) error {
 	}
 	defer file.Close()
 
-	file_byte_array, err := ioutil.ReadAll(file)
+	fileByteArray, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Printf("error reading file: %s", err)
 		return err
 	}
 
-	zip_reader, err := zip.NewReader(bytes.NewReader(file_byte_array), int64(len(file_byte_array)))
+	zipReader, err := zip.NewReader(bytes.NewReader(fileByteArray), int64(len(fileByteArray)))
 	if err != nil {
 		log.Printf("Uploaded file could not put into zip.Reader: %s", err)
 		return err
 	}
 
-	var mod_info ModInfo
-	err = mod_info.getModInfo(zip_reader)
+	var modInfo ModInfo
+	err = modInfo.getModInfo(zipReader)
 	if err != nil {
 		log.Printf("Error in getModInfo: %s", err)
 		return err
 	}
 
-	err = mods.createMod(mod_info.Name, header.Filename, bytes.NewReader(file_byte_array))
+	err = mods.createMod(modInfo.Name, header.Filename, bytes.NewReader(fileByteArray))
 	if err != nil {
 		log.Printf("error on creating Mod: %s", err)
 		return err
@@ -212,16 +212,10 @@ func (mods *Mods) uploadMod(header *multipart.FileHeader) error {
 	return nil
 }
 
-func (mods *Mods) updateMod(mod_name string, url string, filename string) error {
+func (mods *Mods) updateMod(modName string, url string, filename string) error {
 	var err error
 
-	//err = mods.deleteMod(mod_name)
-	//if err != nil {
-	//    log.Printf("updateMod ... error when deleting mod: %s", err)
-	//    return err
-	//}
-
-	err = mods.downloadMod(url, filename, mod_name)
+	err = mods.downloadMod(url, filename, modName)
 	if err != nil {
 		log.Printf("updateMod ... error when downloading the new Mod: %s", err)
 		return err

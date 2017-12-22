@@ -41,11 +41,11 @@ func (client *Client) Write() {
 	client.socket.Close()
 }
 
-func (c *Client) Close() {
-	for _, ch := range c.stopChannels {
+func (client *Client) Close() {
+	for _, ch := range client.stopChannels {
 		ch <- true
 	}
-	close(c.send)
+	close(client.send)
 }
 
 func NewClient(socket *websocket.Conn, findHandler FindHandler) *Client {
