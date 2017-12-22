@@ -21,6 +21,7 @@ type Config struct {
 	FactorioBinary      string `json:"factorio_binary"`
 	FactorioRconPort    int    `json:"rcon_port"`
 	FactorioRconPass    string `json:"rcon_pass"`
+	FactorioIP          string `json:"factorio_ip"`
 	ServerIP            string `json:"server_ip"`
 	ServerPort          string `json:"server_port"`
 	MaxUploadSize       int64  `json:"max_upload_size"`
@@ -63,7 +64,8 @@ func loadServerConfig(f string) {
 func parseFlags() {
 	confFile := flag.String("conf", "./conf.json", "Specify location of Factorio Server Manager config file.")
 	factorioDir := flag.String("dir", "./", "Specify location of Factorio directory.")
-	factorioIP := flag.String("host", "0.0.0.0", "Specify IP for webserver to listen on.")
+	serverIP := flag.String("host", "0.0.0.0", "Specify IP for webserver to listen on.")
+	factorioIP := flag.String("game-bind-address", "0.0.0.0", "Specify IP for Fcatorio gamer server to listen on.")
 	factorioPort := flag.String("port", "8080", "Specify a port for the server.")
 	factorioConfigFile := flag.String("config", "config/config.ini", "Specify location of Factorio config.ini file")
 	factorioMaxUpload := flag.Int64("max-upload", 1024*1024*20, "Maximum filesize for uploaded files (default 20MB).")
@@ -73,7 +75,8 @@ func parseFlags() {
 
 	config.ConfFile = *confFile
 	config.FactorioDir = *factorioDir
-	config.ServerIP = *factorioIP
+	config.ServerIP = *serverIP
+	config.FactorioIP = *factorioIP
 	config.ServerPort = *factorioPort
 	config.FactorioSavesDir = filepath.Join(config.FactorioDir, "saves")
 	config.FactorioModsDir = filepath.Join(config.FactorioDir, "mods")

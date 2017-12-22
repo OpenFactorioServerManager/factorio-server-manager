@@ -11,6 +11,7 @@ class ServerCtl extends React.Component {
         this.decrementPort = this.decrementPort.bind(this);
 
         this.state = {
+            gameBindIP: "0.0.0.0",
             savefile: "",
             port: 34197,
         }
@@ -19,6 +20,7 @@ class ServerCtl extends React.Component {
     startServer(e) {
         e.preventDefault();
         let serverSettings = {
+            bindip: this.refs.gameBindIP.value,
             savefile: this.refs.savefile.value,
             port: Number(this.refs.port.value),
         }
@@ -83,14 +85,14 @@ class ServerCtl extends React.Component {
         let port = this.state.port - 1;
         this.setState({port: port})
     }
-    
+
     render() {
         return(
             <div className="box">
                 <div className="box-header">
                     <h3 className="box-title">Server Control</h3>
                 </div>
-                
+
                 <div className="box-body">
 
                     <form action="" onSubmit={this.startServer}>
@@ -99,7 +101,7 @@ class ServerCtl extends React.Component {
                                 <div className="col-md-4">
                                 <button className="btn btn-block btn-success" type="submit"><i className="fa fa-play fa-fw"></i>Start Factorio Server</button>
                                 </div>
-                                
+
                                 <div className="col-md-4">
                                 <button className="btn btn-block btn-warning" type="button" onClick={this.stopServer}><i className="fa fa-stop fa-fw"></i>Stop &amp; Save Factorio Server</button>
                                 </div>
@@ -115,8 +117,8 @@ class ServerCtl extends React.Component {
                                 {this.props.saves.map( (save, i) => {
                                     return(
                                         <option key={save.name} value={save.name}>{save.name}</option>
-                                    )                                
-                                    
+                                    )
+
                                 })}
                             </select>
                         </div>
@@ -128,12 +130,23 @@ class ServerCtl extends React.Component {
                                     </div>
                                 </button>
                                 <div className="box-body" style={{display: "none"}}>
+                                <label htmlFor="port">Factorio Server IP</label>
+                                <div id="port" className="input-group">
+                                    <input ref="gameBindIP"
+                                      name="gameBindIP"
+                                      id="gameBindIP"
+                                      type="text"
+                                      className="form-control"
+                                      onChange={this.state.gameBindIP}
+                                      value={this.state.gameBindIP}
+                                      placeholder={this.state.gameBindIP} />
+                                </div>
                                 <label htmlFor="port">Factorio Server Port</label>
                                 <div id="port" className="input-group">
                                     <input ref="port" name="port" id="port" type="text" className="form-control" onChange={this.state.port} value={this.state.port} placeholder={this.state.port} />
                                     <div className="input-group-btn">
-                                    <button type="button" className="btn btn-primary" onClick={this.incrementPort}><i className="fa fa-arrow-up"></i></button>
-                                    <button type="button" className="btn btn-primary" onClick={this.decrementPort}><i className="fa fa-arrow-down"></i></button>
+                                      <button type="button" className="btn btn-primary" onClick={this.incrementPort}><i className="fa fa-arrow-up"></i></button>
+                                      <button type="button" className="btn btn-primary" onClick={this.decrementPort}><i className="fa fa-arrow-down"></i></button>
                                     </div>
                                 </div>
                             </div>

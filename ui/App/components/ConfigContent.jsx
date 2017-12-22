@@ -21,18 +21,26 @@ class ConfigContent extends React.Component {
         this.getConfig();
         this.getServerSettings();
     }
-    
+
     capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     handleServerSettingsChange(name, e) {
+        let fieldValue
         var change = this.state.serverSettings;
-        change[name] = e.target.value;
+
+        if (e.target.value === "true" || e.target.value === "false") {
+          fieldValue = Boolean(e.target.value)
+        } else {
+          fieldValue = e.target.value
+        }
+        console.log(name, fieldValue)
+        change[name] = fieldValue;
+
         this.setState({serverSettings: change});
-        console.log(this.state);
     }
-    
+
     getConfig() {
         $.ajax({
             url: "/api/config",
@@ -63,7 +71,7 @@ class ConfigContent extends React.Component {
             }
         });
     }
-    
+
     updateServerSettings(e) {
         e.preventDefault();
         var serverSettingsJSON = JSON.stringify(this.state.serverSettings)
@@ -75,7 +83,7 @@ class ConfigContent extends React.Component {
             success: (data) => {
                 console.log(data);
                 if (data.success === true) {
-                    console.log("settings updated") 
+                    console.log("settings updated")
                 }
             }
         })
@@ -84,7 +92,7 @@ class ConfigContent extends React.Component {
     formTypeField(key, setting) {
         if (key.startsWith("_comment_")) {
             return (
-                <input 
+                <input
                    key={key}
                    ref={key}
                    id={key}
@@ -93,58 +101,81 @@ class ConfigContent extends React.Component {
                 />
             )
         }
-        if (typeof setting === "number") {
+
+        switch(typeof setting) {
+          case "number":
             return (
                 <input
                     key={key}
-                    ref={key} 
-                    id={key} 
-                    className="form-control" 
-                    defaultValue={setting} 
-                    type="number" 
+                    ref={key}
+                    id={key}
+                    className="form-control"
+                    defaultValue={setting}
+                    type="number"
                     onChange={this.handleServerSettingsChange.bind(this, key)}
                 />
             )
-        } else if (typeof setting === "string") {
-            return (
-                <input 
-                    key={key}
-                    ref={key} 
-                    id={key} 
-                    className="form-control" 
-                    defaultValue={setting} 
-                    type="text" 
-                    onChange={this.handleServerSettingsChange.bind(this, key)}
-                />
-            )
-        } else if (typeof setting === "boolean") {
+          case "string":
+            if (key.includes("password")) {
+              return (
+                  <input
+                      key={key}
+                      ref={key}
+                      id={key}
+                      className="form-control"
+                      defaultValue={setting}
+                      type="password"
+                      onChange={this.handleServerSettingsChange.bind(this, key)}
+                  />
+              )
+            } else {
+              return (
+                  <input
+                      key={key}
+                      ref={key}
+                      id={key}
+                      className="form-control"
+                      defaultValue={setting}
+                      type="text"
+                      onChange={this.handleServerSettingsChange.bind(this, key)}
+                  />
+              )
+            }
+          case "boolean":
+            console.log(key)
             return (
                 <select key={key} ref={key} id={key} className="form-control" onChange={this.handleServerSettingsChange.bind(this, key)}>
                     <option value={true}>True</option>
                     <option value={false}>False</option>
                 </select>
             )
-        } else if (Array.isArray(setting)) {
+          case "object":
+            if (Array.isArray(setting)) {
+              return (
+                  <input
+                      key={key}
+                      ref={key}
+                      id={key}
+                      className="form-control"
+                      defaultValue={setting}
+                      type="text"
+                      onChange={this.handleServerSettingsChange.bind(this, key)}
+                  />
+              )
+            } else {
+              if (Object.keys(setting).length > 0) {
+                //this.formTypeField(key, setting);
+              }
+            }
+          default:
             return (
-                <input 
+                <input
                     key={key}
-                    ref={key} 
-                    id={key} 
-                    className="form-control" 
-                    defaultValue={setting} 
-                    type="password" 
-                    onChange={this.handleServerSettingsChange.bind(this, key)}
-                />
-            )
-        } else {
-            return (
-                <input 
-                    key={key}
-                    ref={key} 
-                    id={key} 
-                    className="form-control" 
-                    defaultValue={setting} 
-                    type="text" 
+                    ref={key}
+                    id={key}
+                    className="form-control"
+                    defaultValue={setting}
+                    type="text"
                     onChange={this.handleServerSettingsChange.bind(this, key)}
                 />
             )
@@ -157,7 +188,7 @@ class ConfigContent extends React.Component {
             <div className="content-wrapper">
                 <section className="content-header">
                 <h1>
-                    Config 
+                    Config
                     <small>Manage game configuration</small>
                 </h1>
                 <ol className="breadcrumb">
@@ -165,7 +196,7 @@ class ConfigContent extends React.Component {
                     <li className="active">Here</li>
                 </ol>
                 </section>
-                
+
                 <section className="content">
                     <div className="box">
                         <div className="box-header">
@@ -185,13 +216,13 @@ class ConfigContent extends React.Component {
                                                 var setting_key = this.capitalizeFirstLetter(key.replace(/_/g, " "))
                                                 var comment = this.state.serverSettings["_comment_" + key]
                                                 return(
-                                                <div className="form-group">
-                                                    <label htmlFor={key} className="control-label col-md-3">{setting_key}</label>
-                                                    <div className="col-md-6">
-                                                        {this.formTypeField(key, setting)}
-                                                        <p className="help-block">{comment}</p>
-                                                    </div>
-                                                </div>
+                                                  <div className="form-group">
+                                                      <label htmlFor={key} className="control-label col-md-3">{setting_key}</label>
+                                                      <div className="col-md-6">
+                                                          {this.formTypeField(key, setting)}
+                                                          <p className="help-block">{comment}</p>
+                                                      </div>
+                                                  </div>
                                                 )
                                             }, this)}
                                             <div className="col-xs-6">
@@ -213,7 +244,7 @@ class ConfigContent extends React.Component {
                         <div className="box-header">
                             <h3 className="box-title">Game Configuration</h3>
                         </div>
-                        
+
                         <div className="box-body">
                         <div className="row">
                             <div className="col-md-10">
@@ -232,7 +263,7 @@ class ConfigContent extends React.Component {
                                             </thead>
                                                 <Settings
                                                     section={key}
-                                                    config={conf}    
+                                                    config={conf}
                                                 />
                                         </table>
                                         </div>

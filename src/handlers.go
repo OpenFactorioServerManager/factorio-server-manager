@@ -593,7 +593,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			resp.Success = false
 			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", "No save file provided")
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: ", err)
+				log.Printf("Error encoding config file JSON reponse: %s", err)
 			}
 			return
 		}
@@ -667,7 +667,6 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func KillServer(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Success: false,
@@ -715,6 +714,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		status["status"] = "running"
 		status["port"] = strconv.Itoa(FactorioServ.Port)
 		status["savefile"] = FactorioServ.Savefile
+		status["address"] = FactorioServ.BindIP
 		resp.Data = status
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: ", err)

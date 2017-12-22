@@ -23,6 +23,7 @@ type FactorioServer struct {
 	Cmd      *exec.Cmd              `json:"-"`
 	Savefile string                 `json:"savefile"`
 	Latency  int                    `json:"latency"`
+	BindIP   string                 `json:"bindip"`
 	Port     int                    `json:"port"`
 	Running  bool                   `json:"running"`
 	StdOut   io.ReadCloser          `json:"-"`
@@ -105,6 +106,7 @@ func (f *FactorioServer) Run() error {
 	}
 
 	args := []string{
+		"--bind", (f.BindIP),
 		"--port", strconv.Itoa(f.Port),
 		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
@@ -307,5 +309,3 @@ func (f *FactorioServer) Kill() error {
 
 	return nil
 }
-
-
