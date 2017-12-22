@@ -199,16 +199,16 @@ var apiRoutes = Routes{
 		"/mods/delete/all",
 		DeleteAllModsHandler,
 	}, {
-        "UpdateMod",
-        "POST",
-        "/mods/update",
-        UpdateModHandler,
-    }, {
+		"UpdateMod",
+		"POST",
+		"/mods/update",
+		UpdateModHandler,
+	}, {
 		"UploadMod",
 		"POST",
 		"/mods/upload",
 		UploadModHandler,
-	},{
+	}, {
 		"DownloadMods",
 		"GET",
 		"/mods/download",
@@ -324,21 +324,21 @@ var apiRoutes = Routes{
 		"/mods/packs/load",
 		LoadModPackHandler,
 	}, {
-	    "ModPackToggleMod",
-	    "POST",
-	    "/mods/packs/mod/toggle",
-	    ModPackToggleModHandler,
-    }, {
-    	"ModPackDeleteMod",
-    	"POST",
-    	"/mods/packs/mod/delete",
-    	ModPackDeleteModHandler,
+		"ModPackToggleMod",
+		"POST",
+		"/mods/packs/mod/toggle",
+		ModPackToggleModHandler,
+	}, {
+		"ModPackDeleteMod",
+		"POST",
+		"/mods/packs/mod/delete",
+		ModPackDeleteModHandler,
 	}, {
 		"ModPackUpdateMod",
 		"POST",
 		"/mods/packs/mod/update",
 		ModPackUpdateModHandler,
-	} ,{
+	}, {
 		"GetServerSettings",
 		"GET",
 		"/settings",

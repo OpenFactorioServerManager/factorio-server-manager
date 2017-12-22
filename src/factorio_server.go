@@ -307,5 +307,3 @@ func (f *FactorioServer) Kill() error {
 
 	return nil
 }
-
-

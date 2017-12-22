@@ -1,6 +1,5 @@
 package main
 
-
 // Stubs for windows-only functions
 
 func sendCtrlCToPid(pid int) {

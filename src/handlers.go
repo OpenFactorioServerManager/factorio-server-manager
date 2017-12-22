@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"log"
@@ -11,7 +12,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
-	"github.com/gorilla/mux"
 )
 
 type JSONResponse struct {
@@ -19,10 +19,10 @@ type JSONResponse struct {
 	Data    interface{} `json:"data,string"`
 }
 type JSONResponseFileInput struct {
-	Success	bool		`json:"success"`
-	Data	interface{}	`json:"data,string"`
-	Error	string		`json:"error"`
-	ErrorKeys	[]int	`json:"errorkeys"`
+	Success   bool        `json:"success"`
+	Data      interface{} `json:"data,string"`
+	Error     string      `json:"error"`
+	ErrorKeys []int       `json:"errorkeys"`
 }
 
 // Lists all save files in the factorio/saves directory
@@ -371,7 +371,6 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error encoding config file JSON reponse: %s", err)
 	}
 }
-
 
 func KillServer(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{

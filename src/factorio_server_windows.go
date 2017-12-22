@@ -22,10 +22,10 @@ func sendCtrlCToPid(pid int) {
 
 func setCtrlHandlingIsDisabledForThisProcess(disabled bool) {
 	disabledInt := 0
-	if(disabled){
+	if disabled {
 		disabledInt = 1
 	}
-	
+
 	d, e := syscall.LoadDLL("kernel32.dll")
 	if e != nil {
 		log.Fatalf("LoadDLL: %v\n", e)

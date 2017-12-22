@@ -12,27 +12,27 @@ import (
 )
 
 type Config struct {
-	FactorioDir         string `json:"factorio_dir"`
-	FactorioSavesDir    string `json:"saves_dir"`
-	FactorioModsDir     string `json:"mods_dir"`
-	FactorioModPackDir	string `json:"mod_pack_dir"`
-	FactorioConfigFile  string `json:"config_file"`
-	FactorioConfigDir   string `json:"config_directory"`
-	FactorioLog         string `json:"logfile"`
-	FactorioBinary      string `json:"factorio_binary"`
-	FactorioRconPort    int    `json:"rcon_port"`
-	FactorioRconPass    string `json:"rcon_pass"`
-	FactorioCredentialsFile	string	`json:"factorio_credentials_file"`
-	ServerIP            string `json:"server_ip"`
-	ServerPort          string `json:"server_port"`
-	MaxUploadSize       int64  `json:"max_upload_size"`
-	Username            string `json:"username"`
-	Password            string `json:"password"`
-	DatabaseFile        string `json:"database_file"`
-	CookieEncryptionKey string `json:"cookie_encryption_key"`
-	SettingsFile        string `json:"settings_file"`
-	LogFile             string `json:"log_file"`
-	ConfFile            string
+	FactorioDir             string `json:"factorio_dir"`
+	FactorioSavesDir        string `json:"saves_dir"`
+	FactorioModsDir         string `json:"mods_dir"`
+	FactorioModPackDir      string `json:"mod_pack_dir"`
+	FactorioConfigFile      string `json:"config_file"`
+	FactorioConfigDir       string `json:"config_directory"`
+	FactorioLog             string `json:"logfile"`
+	FactorioBinary          string `json:"factorio_binary"`
+	FactorioRconPort        int    `json:"rcon_port"`
+	FactorioRconPass        string `json:"rcon_pass"`
+	FactorioCredentialsFile string `json:"factorio_credentials_file"`
+	ServerIP                string `json:"server_ip"`
+	ServerPort              string `json:"server_port"`
+	MaxUploadSize           int64  `json:"max_upload_size"`
+	Username                string `json:"username"`
+	Password                string `json:"password"`
+	DatabaseFile            string `json:"database_file"`
+	CookieEncryptionKey     string `json:"cookie_encryption_key"`
+	SettingsFile            string `json:"settings_file"`
+	LogFile                 string `json:"log_file"`
+	ConfFile                string
 }
 
 var (
