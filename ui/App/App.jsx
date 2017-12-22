@@ -36,7 +36,7 @@ class App extends React.Component {
         }, 1000);
         this.connectWebSocket();
     }
-    
+
     connectWebSocket() {
         var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
         let ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
@@ -107,24 +107,24 @@ class App extends React.Component {
     }
 
     render() {
-        // render main application, 
+        // render main application,
         // if logged in show application
         // if not logged in show Not logged in message
         var resp;
         if (this.state.loggedIn) {
-            var resp = 
+            var resp =
                 <div>
-                    <Header 
+                    <Header
                         username={this.state.username}
                         loggedIn={this.state.loggedIn}
                         messages={this.state.messages}
                     />
 
-                    <Sidebar 
+                    <Sidebar
                         serverStatus={this.facServStatus}
                         serverRunning={this.state.serverRunning}
                     />
-                    
+
                     // Render react-router components and pass in props
                     {React.cloneElement(
                         this.props.children,
@@ -142,7 +142,7 @@ class App extends React.Component {
 
                     <Footer />
 
-                    <HiddenSidebar 
+                    <HiddenSidebar
                         serverStatus={this.state.serverStatus}
                         username={this.state.username}
                         loggedIn={this.state.loggedIn}
