@@ -87,19 +87,23 @@ All api actions are accessible with the /api route.  The frontend is accessible 
 + Go 1.6
 + NodeJS 4.2.6
 
-#### Building the Go backend
-Go Application which manages the Factorio server.
-
-API requests for managing the Factorio server are sent to /api.
-
-The frontend code is served by a HTTP file server running on /.
+#### Building Releases
+Creates a release zip for windows and linux: (this will install the dependencies listed in gopkgdeps)
 ```
 git clone https://github.com/MajorMJR/factorio-server-manager.git
 cd factorio-server-manager
-make build
+make gen_release
 ```
 
-#### Building the React frontend
+#### Building a Testing Binary:
+```
+git clone https://github.com/MajorMJR/factorio-server-manager.git
+cd factorio-server-manager
+make
+./factorio-server-manager/factorio-server-manager
+```
+
+#### Building the React Frontend alone
 Frontend is built using React and the AdminLTE CSS framework. See app/dist/ for AdminLTE included files and license.
 
 The root of the UI application is served at app/index.html.  Run the npm build script and the Go application during development to get live rebuilding of the UI code.
@@ -108,9 +112,7 @@ All necessary CSS and Javascript files are included for running the UI.
 
 Transpiled bundle.js application is output to app/bundle.js, 'npm run build' script starts webpack to build the React application for development.
 ```
- cd ui/
- npm install
- npm run build
+make app/bundle.js
 ```
 
 ### Building for Windows
