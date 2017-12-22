@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mroote/factorio-server-manager.svg?branch=master)](https://travis-ci.org/mroote/factorio-server-manager) 
+[![Build Status](https://travis-ci.org/mroote/factorio-server-manager.svg?branch=master)](https://travis-ci.org/mroote/factorio-server-manager)
 
 # Factorio Server Manager
 
@@ -26,16 +26,16 @@ This tool runs on a Factorio server and allows management of the Factorio server
 
 ## Installation Linux
 1. Download the latest release
-  * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
-2. Download the Factorio Standalone server and install to a known directory. 
+  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+2. Download the Factorio Standalone server and install to a known directory.
 3. Run the server binary file, use the --dir flag to point the management server to your Factorio installation.
   * ```./factorio-server-manager --dir /home/user/.factorio ```
 4. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Installation Windows
 1. Download the latest release
-  * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
-2. Download the Factorio Standalone server and install to a known directory. 
+  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+2. Download the Factorio Standalone server and install to a known directory.
 3. Run the server binary file via cmd or Powershell, use the --dir flag to point the management server to your Factorio installation.
   * ```.\factorio-server-manager --dir C:/Users/username/Factorio```
 4. Visit [localhost:8080](localhost:8080) in your web browser.
@@ -58,7 +58,7 @@ Usage of ./factorio-server-manager:
     	Maximum filesize for uploaded files (default 20MB). (default 20971520)
   -port string
     	Specify a port for the server. (default "8080")
-     
+
 Example:
 
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1
@@ -77,7 +77,7 @@ Example:
 
 
 ## Development
-The backend is built as a REST API via the Go web application.  
+The backend is built as a REST API via the Go web application.
 
 It also acts as the webserver to serve the front end react application
 
@@ -90,14 +90,14 @@ All api actions are accessible with the /api route.  The frontend is accessible 
 #### Building Releases
 Creates a release zip for windows and linux: (this will install the dependencies listed in gopkgdeps)
 ```
-git clone https://github.com/MajorMJR/factorio-server-manager.git
+git clone https://github.com/mroote/factorio-server-manager.git
 cd factorio-server-manager
 make gen_release
 ```
 
 #### Building a Testing Binary:
 ```
-git clone https://github.com/MajorMJR/factorio-server-manager.git
+git clone https://github.com/mroote/factorio-server-manager.git
 cd factorio-server-manager
 make
 ./factorio-server-manager/factorio-server-manager
@@ -117,8 +117,8 @@ make app/bundle.js
 
 ### Building for Windows
 1. Download the latest release source zip file
-  * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
-2. Unzip the Factorio Standalone server and move it to a known directory. 
+  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+2. Unzip the Factorio Standalone server and move it to a known directory.
 3. Download and install Go 1.6 64-bit or 32-bit depending on your operating system, if unsure download 32-bit
   * https://storage.googleapis.com/golang/go1.6.windows-amd64.msi 64-bit
   * https://storage.googleapis.com/golang/go1.6.windows-386.msi 32-bit
@@ -143,7 +143,7 @@ go get github.com/gorilla/mux
 go get github.com/hpcloud/tail
 ```
 
-3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down left shift and right click an empty area of the folder. Then click "Open command windows here" 
+3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down left shift and right click an empty area of the folder. Then click "Open command windows here"
 4. Type this into the command prompt then hit enter:
 
 ```
