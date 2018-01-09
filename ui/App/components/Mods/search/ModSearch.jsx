@@ -3,7 +3,7 @@ import ModFoundOverview from './ModFoundOverview.jsx';
 
 class ModSearch extends React.Component {
     render() {
-        if(this.props.logged_in) {
+        if(this.props.loggedIn) {
             return (
                 <div className="box-body">
                     <form onSubmit={this.props.submitSearchMod}>
@@ -43,7 +43,7 @@ class ModSearch extends React.Component {
 
 ModSearch.propTypes = {
     submitSearchMod: React.PropTypes.func.isRequired,
-    logged_in: React.PropTypes.bool.isRequired,
+    loggedIn: React.PropTypes.bool.isRequired,
     submitFactorioLogin: React.PropTypes.func.isRequired
 }
 

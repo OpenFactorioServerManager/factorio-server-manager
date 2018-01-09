@@ -25,9 +25,9 @@ class ModsContent extends React.Component {
         this.updateCountAdd = this.updateCountAdd.bind(this);
 
         this.state = {
-            logged_in: false,
+            loggedIn: false,
             installedMods: null,
-            updates_available: 0,
+            updatesAvailable: 0,
         };
 
         this.mutex = locks.createMutex();
@@ -68,7 +68,7 @@ class ModsContent extends React.Component {
                 });
 
                 this.setState({
-                    "logged_in": data.data
+                    "loggedIn": data.data
                 });
             },
             error: (jqXHR) => {
@@ -81,14 +81,13 @@ class ModsContent extends React.Component {
     }
 
     checkLoginState() {
-        let this_class = this;
         $.ajax({
             url: "/api/mods/factorio/status",
             method: "POST",
             dataType: "json",
             success: (data) => {
-                this_class.setState({
-                    "logged_in": data.data
+                this.setState({
+                    "loggedIn": data.data
                 })
             },
             error: (jqXHR) => {
@@ -103,15 +102,13 @@ class ModsContent extends React.Component {
         e.preventDefault();
         e.stopPropagation();
 
-        let this_class = this;
-
         $.ajax({
             url: "/api/mods/factorio/logout",
             method: "POST",
             dataType: "JSON",
             success: (data) => {
-                this_class.setState({
-                    logged_in: data.data
+                this.setState({
+                    loggedIn: data.data
                 })
             },
             error: (jqXHR) => {
@@ -125,12 +122,10 @@ class ModsContent extends React.Component {
     }
 
     loadDownloadListSwalHandler() {
-        let $checked_input = $('input[name=version]:checked');
-        let link = $checked_input.data("link");
-        let filename = $checked_input.data("filename");
-        let mod_name = $checked_input.data("modid");
-
-        let this_class = this;
+        let $checkedInput = $('input[name=version]:checked');
+        let link = $checkedInput.data("link");
+        let filename = $checkedInput.data("filename");
+        let modName = $checkedInput.data("modid");
 
         $.ajax({
             method: "POST",
@@ -139,10 +134,10 @@ class ModsContent extends React.Component {
             data: {
                 link: link,
                 filename: filename,
-                modName: mod_name
+                modName: modName
             },
             success: (data) => {
-                this_class.setState({
+                this.setState({
                     installedMods: data.data.mods
                 });
 
@@ -166,31 +161,31 @@ class ModsContent extends React.Component {
         let $button = $(e.target);
         let $loader = $("<div class='loader'></div>");
         $button.prepend($loader);
-        let mod_id = $button.data("modId");
+        let modId = $button.data("modId");
 
         $.ajax({
             method: "POST",
             url: "/api/mods/details",
             data: {
-                mod_id: mod_id
+                modId: modId
             },
             dataType: "json",
             success: (data) => {
                 $loader.remove();
 
-                let correct_data = JSON.parse(data.data);
+                let correctData = JSON.parse(data.data);
 
                 let checkboxes = []
-                correct_data.releases.forEach((release, index) => {
+                correctData.releases.forEach((release, index) => {
                     let date = new Date(release.released_at);
 
-                    let single_box = <tr>
+                    let singleBox = <tr>
                         <td>
                             <input type="radio"
                                    name="version"
                                    data-link={release.download_url}
                                    data-filename={release.file_name}
-                                   data-modid={mod_id}
+                                   data-modid={modId}
                                    checked={index == 0 ? true : false}
                             />
                         </td>
@@ -208,7 +203,7 @@ class ModsContent extends React.Component {
                         </td>
                     </tr>;
 
-                    checkboxes.push(single_box);
+                    checkboxes.push(singleBox);
                 });
 
                 let table = <table>
@@ -264,32 +259,31 @@ class ModsContent extends React.Component {
 
         let $button = $(e.target);
         let $row = $button.parents("tr");
-        let mod_name = $row.data("mod-name");
-        let this_class = this;
+        let modName = $row.data("mod-name");
 
         $.ajax({
             url: "/api/mods/toggle",
             method: "POST",
             data: {
-                mod_name: mod_name
+                modName: modName
             },
             dataType: "JSON",
             success: (data) => {
                 if(data.success) {
-                    this_class.mutex.lock(() => {
-                        let installedMods = this_class.state.installedMods;
+                    this.mutex.lock(() => {
+                        let installedMods = this.state.installedMods;
 
                         $.each(installedMods, (k, v) => {
-                            if(v.name == mod_name) {
+                            if(v.name == modName) {
                                 installedMods[k].enabled = data.data;
                             }
                         });
 
-                        this_class.setState({
+                        this.setState({
                             installedMods: installedMods
                         });
 
-                        this_class.mutex.unlock();
+                        this.mutex.unlock();
                     });
                 }
             },
@@ -314,8 +308,7 @@ class ModsContent extends React.Component {
 
         let $button = $(e.target);
         let $row = $button.parents("tr");
-        let mod_name = $row.data("mod-name");
-        let class_this = this;
+        let modName = $row.data("mod-name");
 
         swal({
             title: "Delete Mod?",
@@ -327,31 +320,31 @@ class ModsContent extends React.Component {
             cancelButtonText: "Close",
             showLoaderOnConfirm: true,
             confirmButtonColor: "#DD6B55",
-        }, function () {
+        }, () => {
             $.ajax({
                 url: "/api/mods/delete",
                 method: "POST",
                 data: {
-                    mod_name: mod_name
+                    modName: modName
                 },
                 dataType: "JSON",
                 success: (data) => {
                     if(data.success) {
-                        class_this.mutex.lock(() => {
-                            swal("Delete of mod " + mod_name + " successful", "", "success");
-                            let installedMods = class_this.state.installedMods;
+                        this.mutex.lock(() => {
+                            swal("Delete of mod " + modName + " successful", "", "success");
+                            let installedMods = this.state.installedMods;
 
                             installedMods.forEach((v, k) => {
-                                if(v.name == mod_name) {
+                                if(v.name == modName) {
                                     delete installedMods[k];
                                 }
                             });
 
-                            class_this.setState({
+                            this.setState({
                                 installedMods: installedMods
                             });
 
-                            class_this.mutex.unlock();
+                            this.mutex.unlock();
                         });
                     }
                 },
@@ -371,8 +364,6 @@ class ModsContent extends React.Component {
         e.preventDefault();
         e.stopPropagation();
 
-        let class_this = this;
-
         swal({
             title: "Delete Mod?",
             text: "This will delete ALL mods and can't be redone!<br> Are you sure?",
@@ -384,14 +375,14 @@ class ModsContent extends React.Component {
             showLoaderOnConfirm: true,
             confirmButtonColor: "#DD6B55",
             html: true,
-        }, function () {
+        }, () => {
             $.ajax({
                 url: "/api/mods/delete/all",
                 method: "POST",
                 dataType: "JSON",
                 success: (data) => {
                     swal("ALL mods deleted successful", "", "success");
-                    class_this.setState({
+                    this.setState({
                         installedMods: data.data
                     });
                 },
@@ -411,7 +402,7 @@ class ModsContent extends React.Component {
     updateModHandler(e, toggleUpdateStatus, removeVersionAvailableStatus) {
         e.preventDefault();
 
-        if(!this.state.logged_in) {
+        if(!this.state.loggedIn) {
             swal({
                 type: "error",
                 title: "Update failed",
@@ -424,11 +415,9 @@ class ModsContent extends React.Component {
             }
         } else {
             let $button = $(e.currentTarget);
-            let download_url = $button.data("downloadUrl");
+            let downloadUrl = $button.data("downloadUrl");
             let filename = $button.data("fileName");
-            let modname = $button.parents("tr").data("modName");
-
-            let this_class = this;
+            let modName = $button.parents("tr").data("modName");
 
             //make button spinning
             toggleUpdateStatus();
@@ -437,32 +426,32 @@ class ModsContent extends React.Component {
                 url: "/api/mods/update",
                 method: "POST",
                 data: {
-                    downloadUrl: download_url,
+                    downloadUrl: downloadUrl,
                     filename: filename,
-                    mod_name: modname,
+                    modName: modName,
                 },
                 success: (data) => {
                     toggleUpdateStatus();
                     removeVersionAvailableStatus();
 
-                    this_class.updateCountSubtract();
+                    this.updateCountSubtract();
 
                     if(data.success) {
-                        this_class.mutex.lock(() => {
-                            swal("Delete of mod " + modname + " successful", "", "success");
-                            let installedMods = this_class.state.installedMods;
+                        this.mutex.lock(() => {
+                            swal("Delete of mod " + modName + " successful", "", "success");
+                            let installedMods = this.state.installedMods;
 
                             installedMods.forEach((v, k) => {
-                                if(v.name == modname) {
+                                if(v.name == modName) {
                                     installedMods[k] = data.data;
                                 }
                             });
 
-                            this_class.setState({
+                            this.setState({
                                 installedMods: installedMods
                             });
 
-                            this_class.mutex.unlock();
+                            this.mutex.unlock();
                         });
                     }
                 },
@@ -481,7 +470,7 @@ class ModsContent extends React.Component {
 
     updatesAvailable() {
         this.setState({
-            updates_available: true
+            updatesAvailable: true
         })
     }
 
@@ -489,46 +478,26 @@ class ModsContent extends React.Component {
         e.preventDefault();
         e.stopPropagation();
 
-        let update_buttons = $('#manage-mods').find(".update-button");
+        let updateButtons = $('#manage-mods').find(".update-button");
         // $('.update-button').click();
-        $.each(update_buttons, function(k, v) {
+        $.each(updateButtons, (k, v) => {
             v.click();
         });
     }
 
     updateCountSubtract() {
         this.setState({
-            updates_available: this.state.updates_available > 0 ? this.state.updates_available - 1 : 0
+            updatesAvailable: this.state.updatesAvailable > 0 ? this.state.updatesAvailable - 1 : 0
         });
     }
 
     updateCountAdd() {
         this.setState({
-            updates_available: this.state.updates_available + 1
+            updatesAvailable: this.state.updatesAvailable + 1
         });
     }
 
     uploadModSuccessHandler(event, data) {
-        // let this_class = this;
-        // console.log(data.response);
-        //
-        // if(data.response.success) {
-        //     this.mutex.lock(() => {
-        //         let installedMods = this_class.state.installedMods;
-        //         console.log(installedMods);
-        //         data.response.data.mods.forEach((key, mod) => {
-        //             if(!installedMods.find((sMod) => mod.name == sMod.name)) {
-        //                 installedMods.push(mod);
-        //             }
-        //         });
-        //
-        //         this_class.setState({
-        //             installedMods: installedMods
-        //         });
-        //
-        //         this_class.mutex.unlock();
-        //     });
-        // }
         this.setState({
             installedMods: data.response.data.mods
         });

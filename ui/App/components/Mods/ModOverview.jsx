@@ -54,7 +54,7 @@ class ModOverview extends React.Component {
                     <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
                         <i className="fa fa-plus"></i>
                         <h3 className="box-title">Add Mod</h3>
-                        {this.props.logged_in ?
+                        {this.props.loggedIn ?
                             <div className="box-tools pull-right">
                                 <NativeListener onClick={this.props.factorioLogoutHandler}>
                                     <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Logout
@@ -98,7 +98,7 @@ class ModOverview extends React.Component {
                                     : null
                             }
                             {
-                                this.props.updates_available > 0 ?
+                                this.props.updatesAvailable > 0 ?
                                     <NativeListener onClick={this.props.updateAllMods}>
                                         <button className="btn btn-box-tool btn-default" style={{marginRight: 20}}>
                                             Update all Mods
@@ -146,9 +146,9 @@ ModOverview.propTypes = {
     deleteAll: React.PropTypes.func.isRequired,
     updateMod: React.PropTypes.func.isRequired,
     uploadModSuccessHandler: React.PropTypes.func.isRequired,
-    logged_in: React.PropTypes.bool.isRequired,
+    loggedIn: React.PropTypes.bool.isRequired,
     factorioLogoutHandler: React.PropTypes.func.isRequired,
-    updates_available: React.PropTypes.number.isRequired,
+    updatesAvailable: React.PropTypes.number.isRequired,
     updateAllMods: React.PropTypes.func.isRequired,
     updateCountAdd: React.PropTypes.func.isRequired,
 

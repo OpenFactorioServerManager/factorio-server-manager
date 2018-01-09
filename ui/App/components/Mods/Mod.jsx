@@ -24,30 +24,29 @@ class Mod extends React.Component {
     }
 
     checkForNewVersion() {
-        let this_class = this;
         //send AJAX that will check this
         $.ajax({
             url: "/api/mods/details",
             method: "POST",
             data: {
-                mod_id: this.props.mod.name
+                modId: this.props.mod.name
             },
             dataType: "JSON",
             success: (data) => {
-                let newest_release = JSON.parse(data.data).releases[0];
-                if(newest_release.version != this.props.mod.version) {
-                    if(this_class.props.updateCountAdd)
-                        this_class.props.updateCountAdd();
+                let newestRelease = JSON.parse(data.data).releases[0];
+                if(newestRelease.version != this.props.mod.version) {
+                    if(this.props.updateCountAdd)
+                        this.props.updateCountAdd();
 
-                    this_class.setState({
+                    this.setState({
                         newVersionAvailable: true,
                         newVersion: {
-                            downloadUrl: newest_release.download_url,
-                            file_name: newest_release.file_name
+                            downloadUrl: newestRelease.download_url,
+                            file_name: newestRelease.file_name
                         }
                     });
                 } else {
-                    this_class.setState({
+                    this.setState({
                         newVersionAvailable: false,
                         newVersion: null
                     });

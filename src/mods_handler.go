@@ -170,7 +170,7 @@ func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	modId := r.FormValue("mod_id")
+	modId := r.FormValue("modId")
 
 	var statusCode int
 	resp.Data, err, statusCode = getModDetails(modId)
@@ -236,7 +236,7 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	modName := r.FormValue("mod_name")
+	modName := r.FormValue("modName")
 
 	mods, err := newMods(config.FactorioModsDir)
 	if err == nil {
@@ -268,7 +268,7 @@ func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	modName := r.FormValue("mod_name")
+	modName := r.FormValue("modName")
 
 	mods, err := newMods(config.FactorioModsDir)
 	if err == nil {
@@ -329,7 +329,7 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	modName := r.FormValue("mod_name")
+	modName := r.FormValue("modName")
 	downloadUrl := r.FormValue("downloadUrl")
 	fileName := r.FormValue("filename")
 
@@ -645,8 +645,8 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	modName := r.FormValue("mod_name")
-	modPackName := r.FormValue("mod_pack")
+	modName := r.FormValue("modName")
+	modPackName := r.FormValue("modPack")
 
 	modPackMap, err := newModPackMap()
 	if err == nil {
@@ -676,8 +676,8 @@ func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	modName := r.FormValue("mod_name")
-	modPackName := r.FormValue("mod_pack_name")
+	modName := r.FormValue("modName")
+	modPackName := r.FormValue("modPackName")
 
 	modPackMap, err := newModPackMap()
 	if err == nil {
@@ -715,10 +715,10 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	modName := r.FormValue("mod_name")
+	modName := r.FormValue("modName")
 	downloadUrl := r.FormValue("downloadUrl")
 	fileName := r.FormValue("filename")
-	modPackName := r.FormValue("mod_pack_name")
+	modPackName := r.FormValue("modPackName")
 
 	modPackMap, err := newModPackMap()
 	if err == nil {

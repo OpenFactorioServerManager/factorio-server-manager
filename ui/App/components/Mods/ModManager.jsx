@@ -4,8 +4,6 @@ import Mod from "./Mod.jsx";
 class ModManager extends React.Component {
     constructor(props) {
         super(props);
-
-
     }
 
     render() {

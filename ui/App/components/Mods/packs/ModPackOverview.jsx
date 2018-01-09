@@ -44,7 +44,6 @@ class ModPackOverview extends React.Component {
     }
 
     createModPack() {
-        let this_class = this;
         swal({
             title: "Create modpack",
             text: "Please enter an unique modpack name:",
@@ -54,7 +53,7 @@ class ModPackOverview extends React.Component {
             inputPlaceholder: "Modpack name",
             showLoaderOnConfirm: true
         },
-        function(inputValue){
+            (inputValue) => {
             if (inputValue === false) return false;
 
             if (inputValue === "") {
@@ -68,8 +67,8 @@ class ModPackOverview extends React.Component {
                 data: {name: inputValue},
                 dataType: "JSON",
                 success: (data) => {
-                    this_class.mutex.lock(() => {
-                        let packList = this_class.state.listPacks;
+                    this.mutex.lock(() => {
+                        let packList = this.state.listPacks;
 
                         data.data.mod_packs.forEach((v, k) => {
                             if(v.name == inputValue) {
@@ -78,7 +77,7 @@ class ModPackOverview extends React.Component {
                             }
                         });
 
-                        this_class.setState({
+                        this.setState({
                             listPacks: packList
                         });
 
@@ -87,16 +86,16 @@ class ModPackOverview extends React.Component {
                             type: "success"
                         });
 
-                        this_class.mutex.unlock();
+                        this.mutex.unlock();
                     });
                 },
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/packs/create', status, err.toString());
 
-                    let json_response = jqXHR.responseJSON;
+                    let jsonResponse = jqXHR.responseJSON;
                     swal({
                         title: "Error on creating modpack",
-                        text: json_response.data,
+                        text: jsonResponse.data,
                         type: "error"
                     });
                 }
@@ -107,7 +106,6 @@ class ModPackOverview extends React.Component {
     deleteModPack(e) {
         e.stopPropagation();
 
-        let this_class = this;
         let name = $(e.target).parent().prev().html();
 
         swal({
@@ -118,7 +116,7 @@ class ModPackOverview extends React.Component {
             closeOnConfirm: false,
             showLoaderOnConfirm: true
         },
-        function() {
+            () => {
             $.ajax({
                 url: "/api/mods/packs/delete",
                 method: "POST",
@@ -126,17 +124,17 @@ class ModPackOverview extends React.Component {
                 dataType: "JSON",
                 success: (data) => {
                     if(data.success) {
-                        this_class.mutex.lock(() => {
-                            let mod_packs = this_class.state.listPacks;
+                        this.mutex.lock(() => {
+                            let modPacks = this.state.listPacks;
 
-                            mod_packs.forEach((v, k) => {
+                            modPacks.forEach((v, k) => {
                                 if(v.name == name) {
-                                    delete mod_packs[k];
+                                    delete modPacks[k];
                                 }
                             });
 
-                            this_class.setState({
-                                listPacks: mod_packs
+                            this.setState({
+                                listPacks: modPacks
                             });
 
                             swal({
@@ -144,19 +142,19 @@ class ModPackOverview extends React.Component {
                                 type: "success"
                             });
 
-                            this_class.mutex.unlock();
+                            this.mutex.unlock();
                         });
                     }
                 },
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/packs/delete', status, err.toString());
 
-                    let json_response = jqXHR.responseJSON || err.toString();
-                    json_response = json_response.data || err.toString();
+                    let jsonResponse = jqXHR.responseJSON || err.toString();
+                    jsonResponse = jsonResponse.data || err.toString();
 
                     swal({
                         title: "Error on creating modpack",
-                        text: json_response,
+                        text: jsonResponse,
                         type: "error"
                     });
                 }
@@ -167,7 +165,6 @@ class ModPackOverview extends React.Component {
     loadModPack(e) {
         e.stopPropagation();
 
-        let this_class = this
         let name = $(e.target).parent().prev().html();
 
         swal({
@@ -178,7 +175,8 @@ class ModPackOverview extends React.Component {
             closeOnConfirm: false,
             showLoaderOnConfirm: true
         },
-        function() {
+        () => {
+            console.log("inside swal:", this);
             $.ajax({
                 url: "/api/mods/packs/load",
                 method: "POST",
@@ -190,19 +188,19 @@ class ModPackOverview extends React.Component {
                         type: "success"
                     });
 
-                    this_class.props.modContentClass.setState({
+                    this.props.modContentClass.setState({
                         installedMods: data.data.mods
                     });
                 },
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/packs/load', status, err.toString());
 
-                    let json_response = jqXHR.responseJSON || err.toString();
-                    json_response = json_response.data || err.toString();
+                    let jsonResponse = jqXHR.responseJSON || err.toString();
+                    jsonResponse = jsonResponse.data || err.toString();
 
                     swal({
                         title: "Error on loading ModPack",
-                        text: json_response,
+                        text: jsonResponse,
                         type: "error"
                     });
                 }
@@ -225,27 +223,27 @@ class ModPackOverview extends React.Component {
 
         let $button = $(e.target);
         let $row = $button.parents("tr");
-        let mod_name = $row.data("mod-name");
-        let mod_pack = $row.parents(".single-modpack").find("h3").html();
-        let this_class = this;
+        let modName = $row.data("mod-name");
+        let modPackName = $row.parents(".single-modpack").find("h3").html();
 
         $.ajax({
             url: "/api/mods/packs/mod/toggle",
             method: "POST",
             data: {
-                mod_name: mod_name,
-                mod_pack: mod_pack
+                modName: modName,
+                modPack: modPackName
             },
             dataType: "JSON",
             success: (data) => {
                 if(data.success) {
-                    this_class.mutex.lock(() => {
-                        let packList = this_class.state.listPacks;
+                    this.mutex.lock(() => {
+                        let packList = this.state.listPacks;
+                        console.log(this);
 
                         packList.forEach((modPack, modPackKey) => {
-                            if(modPack.name == mod_pack) {
+                            if(modPack.name == modPackName) {
                                 packList[modPackKey].mods.mods.forEach((mod, modKey) => {
-                                    if(mod.name == mod_name) {
+                                    if(mod.name == modName) {
                                         packList[modPackKey].mods.mods[modKey].enabled = data.data;
                                         return false;
                                     }
@@ -253,11 +251,11 @@ class ModPackOverview extends React.Component {
                             }
                         });
 
-                        this_class.setState({
+                        this.setState({
                             listPacks: packList
                         });
 
-                        this_class.mutex.unlock();
+                        this.mutex.unlock();
                     });
                 }
             },
@@ -282,9 +280,8 @@ class ModPackOverview extends React.Component {
 
         let $button = $(e.target);
         let $row = $button.parents("tr");
-        let mod_name = $row.data("mod-name");
-        let mod_pack = $row.parents(".single-modpack").find("h3").html();
-        let class_this = this;
+        let modName = $row.data("mod-name");
+        let modPackName = $row.parents(".single-modpack").find("h3").html();
 
         swal({
             title: "Delete Mod?",
@@ -296,26 +293,26 @@ class ModPackOverview extends React.Component {
             cancelButtonText: "Close",
             showLoaderOnConfirm: true,
             confirmButtonColor: "#DD6B55",
-        }, function () {
+        }, () => {
             $.ajax({
                 url: "/api/mods/packs/mod/delete",
                 method: "POST",
                 data: {
-                    mod_name: mod_name,
-                    mod_pack_name: mod_pack
+                    modName: modName,
+                    modPackName: modPackName
                 },
                 dataType: "JSON",
                 success: (data) => {
                     if(data.success) {
-                        class_this.mutex.lock(() => {
-                            swal("Delete of mod " + mod_name + " inside modPack " + mod_pack + " successful", "", "success");
+                        this.mutex.lock(() => {
+                            swal("Delete of mod " + modName + " inside modPack " + modPackName + " successful", "", "success");
 
-                            let packList = class_this.state.listPacks;
+                            let packList = this.state.listPacks;
 
                             packList.forEach((modPack, modPackKey) => {
-                                if(modPack.name == mod_pack) {
+                                if(modPack.name == modPackName) {
                                     packList[modPackKey].mods.mods.forEach((mod, modKey) => {
-                                        if(mod.name == mod_name) {
+                                        if(mod.name == modName) {
                                             delete packList[modPackKey].mods.mods[modKey];
                                             return false;
                                         }
@@ -323,11 +320,11 @@ class ModPackOverview extends React.Component {
                                 }
                             });
 
-                            class_this.setState({
+                            this.setState({
                                 listPacks: packList
                             });
 
-                            class_this.mutex.unlock();
+                            this.mutex.unlock();
                         });
                     }
                 },
@@ -346,7 +343,7 @@ class ModPackOverview extends React.Component {
     modPackUpdateModHandler(e, toggleUpdateStatus, removeVersionAvailableStatus) {
         e.preventDefault();
 
-        if(!this.props.modContentClass.state.logged_in) {
+        if(!this.props.modContentClass.state.loggedIn) {
             swal({
                 type: "error",
                 title: "Update failed",
@@ -362,10 +359,8 @@ class ModPackOverview extends React.Component {
             let download_url = $button.data("downloadUrl");
             let filename = $button.data("fileName");
             let $row = $button.parents("tr");
-            let modname = $row.data("modName");
-            let mod_pack = $row.parents(".single-modpack").find("h3").html();
-
-            let this_class = this;
+            let modName = $row.data("modName");
+            let modPackName = $row.parents(".single-modpack").find("h3").html();
 
             //make button spinning
             toggleUpdateStatus();
@@ -376,21 +371,21 @@ class ModPackOverview extends React.Component {
                 data: {
                     downloadUrl: download_url,
                     filename: filename,
-                    mod_name: modname,
-                    mod_pack_name: mod_pack
+                    modName: modName,
+                    modPackName: modPackName
                 },
                 success: (data) => {
                     toggleUpdateStatus();
                     removeVersionAvailableStatus();
 
                     if(data.success) {
-                        this_class.mutex.lock(() => {
-                            let packList = this_class.state.listPacks;
+                        this.mutex.lock(() => {
+                            let packList = this.state.listPacks;
 
                             packList.forEach((modPack, modPackKey) => {
-                                if(modPack.name == mod_pack) {
+                                if(modPack.name == modPackName) {
                                     packList[modPackKey].mods.mods.forEach((mod, modKey) => {
-                                        if(mod.name == modname) {
+                                        if(mod.name == modName) {
                                             packList[modPackKey].mods.mods[modKey] = data.data;
                                             return false;
                                         }
@@ -398,11 +393,11 @@ class ModPackOverview extends React.Component {
                                 }
                             });
 
-                            this_class.setState({
+                            this.setState({
                                 listPacks: packList
                             });
 
-                            this_class.mutex.unlock();
+                            this.mutex.unlock();
                         });
                     }
                 },

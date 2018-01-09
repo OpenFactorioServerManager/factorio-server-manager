@@ -2,13 +2,13 @@ import React from 'react';
 
 class ModFoundOverview extends React.Component {
     render() {
-        let img_style= {
+        let imgStyle= {
             width: 144,
             height: 144,
             border: "1px outset #333",
             borderRadius: 2,
         }
-        let no_img_style = {
+        let noImgStyle = {
             container: {
                 width: 144,
                 height: 144,
@@ -23,7 +23,7 @@ class ModFoundOverview extends React.Component {
                 borderRadius: 2,
             },
         }
-        let information_style = {
+        let informationStyle = {
             container: {
                 marginLeft: 20,
             }
@@ -34,9 +34,9 @@ class ModFoundOverview extends React.Component {
             if(index == 10) return true;
             let img =
                 (mod.first_media_file != null) ?
-                    <img src={mod.first_media_file.urls.thumb} style={img_style} />
+                    <img src={mod.first_media_file.urls.thumb} style={imgStyle} />
                     :
-                    <div style={no_img_style.container}>
+                    <div style={noImgStyle.container}>
                         <div>No picture</div>
                     </div>;
 
@@ -44,7 +44,7 @@ class ModFoundOverview extends React.Component {
                 <div className="list-group-item" key={mod.title}>
                     <div style={{display: "flex"}}>
                         {img}
-                        <div style={information_style.container}>
+                        <div style={informationStyle.container}>
                             <h4 className="list-group-item-heading">{mod.title} <small>by {mod.owner}</small></h4>
                             <div className="list-group-item-text">{mod.summary}</div>
                             <button style={{marginTop: 10, display: "flex"}} onClick={this.props.loadDownloadList} data-mod-id={mod.name}>INSTALL</button>
