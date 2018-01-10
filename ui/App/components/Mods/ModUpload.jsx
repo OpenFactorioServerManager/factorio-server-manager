@@ -4,8 +4,6 @@ class ModUpload extends React.Component {
     componentDidMount() {
         $("#mod_upload_input").fileinput({
             uploadUrl: '/api/mods/upload',
-            // hiddenThumbnailContent: true,
-            // showPreview: false,
             showCancel: false,
             showUploadedThumbs: false,
             browseOnZoneClick: true,

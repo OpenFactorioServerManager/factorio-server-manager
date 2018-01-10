@@ -135,7 +135,6 @@ func factorioLogin(username string, password string) (string, error, int) {
 
 //Search inside the factorio mod portal
 func searchModPortal(keyword string) (string, error, int) {
-	//resp, get_err := http.Get
 	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods", nil)
 	if err != nil {
 		return "error", err, 500
