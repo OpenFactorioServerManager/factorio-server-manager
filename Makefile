@@ -1,29 +1,49 @@
 # Build tool for Factorio Server Manager
-#
 
 NODE_ENV:=production
 
-build:
-# make sure this project is located within GOPATH, I.E. $GOPATH/src/factorio-server-manager
+#TODO add support for a mac build maybe?
+UNAME := $(shell uname)
+ifeq ($(UNAME), Linux)
+	release := build/factorio-server-manager-linux.zip
+else
+	release := build/factorio-server-manager-windows.zip
+endif
 
-	# Build Linux release
-	mkdir build
-	GOOS=linux GOARCH=amd64 go build -o factorio-server-manager/factorio-server-manager factorio-server-manager/src
-#	ui/node_modules/webpack/bin/webpack.js ui/webpack.config.js app/bundle.js --progress --profile --colors 
-	cp -r app/ factorio-server-manager/
-	cp conf.json.example factorio-server-manager/conf.json
-	zip -r build/factorio-server-manager-linux-x64.zip factorio-server-manager
-	rm -rf factorio-server-manager
-	# Build Windows release
-	GOOS=windows GOARCH=386 go build -o factorio-server-manager/factorio-server-manager.exe factorio-server-manager/src
-	cp -r app/ factorio-server-manager/
-	cp conf.json.example factorio-server-manager/conf.json
-	zip -r build/factorio-server-manager-windows.zip factorio-server-manager
-	rm -rf factorio-server-manager
+build: $(release)
 
-dev:
-	mkdir dev
-	GOOS=linux GOARCH=amd64 go build -o factorio-server-linux/factorio-server-manager factorio-server-manager/src
-	cp -r app/ dev/
-	cp conf.json.example dev/conf.json
-	mv factorio-server-linux/factorio-server-manager dev/factorio-server-manager
+$(shell mkdir -p build)
+build/factorio-server-manager-%.zip: app/bundle.js factorio-server-manager-%
+	@echo "Packaging Build - $@"
+	@cp -r app/ factorio-server-manager/
+	@cp conf.json.example factorio-server-manager/conf.json
+	@zip -r $@ factorio-server-manager > /dev/null
+	@rm -r factorio-server-manager
+
+app/bundle.js:
+	@echo "Building Frontend"
+	@cd ui && npm install && npm run build
+
+factorio-server-manager-linux: godeps
+	@echo "Building Backend - Linux"
+	@GOPATH="${GOPATH}:${PDW}"
+	@mkdir -p factorio-server-manager
+	@GOOS=linux GOARCH=amd64 go build -o factorio-server-manager/factorio-server-manager ./src
+
+factorio-server-manager-windows: godeps
+	@echo "Building Backend - Windows"
+	@GOPATH="${GOPATH}:${PDW}"
+	@mkdir -p factorio-server-manager
+	@GOOS=windows GOARCH=386 go build -o factorio-server-manager/factorio-server-manager.exe ./src
+
+godeps:
+	@echo "Installing Packages"
+	@cat gopkglist | xargs go get
+
+gen_release: build/factorio-server-manager-linux.zip build/factorio-server-manager-windows.zip
+	@echo "Done"
+
+clean:
+	@echo "Cleaning"
+	@rm -r build/
+	@rm app/bundle.js

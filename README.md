@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mroote/factorio-server-manager.svg?branch=master)](https://travis-ci.org/mroote/factorio-server-manager) 
+[![Build Status](https://travis-ci.org/mroote/factorio-server-manager.svg?branch=master)](https://travis-ci.org/mroote/factorio-server-manager)
 
 # Factorio Server Manager
 
@@ -27,16 +27,16 @@ This tool runs on a Factorio server and allows management of the Factorio server
 
 ## Installation Linux
 1. Download the latest release
-  * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
-2. Download the Factorio Standalone server and install to a known directory. 
+  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+2. Download the Factorio Standalone server and install to a known directory.
 3. Run the server binary file, use the --dir flag to point the management server to your Factorio installation.
   * ```./factorio-server-manager --dir /home/user/.factorio ```
 4. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Installation Windows
 1. Download the latest release
-  * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
-2. Download the Factorio Standalone server and install to a known directory. 
+  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+2. Download the Factorio Standalone server and install to a known directory.
 3. Run the server binary file via cmd or Powershell, use the --dir flag to point the management server to your Factorio installation.
   * ```.\factorio-server-manager --dir C:/Users/username/Factorio```
 4. Visit [localhost:8080](localhost:8080) in your web browser.
@@ -59,7 +59,7 @@ Usage of ./factorio-server-manager:
     	Maximum filesize for uploaded files (default 20MB). (default 20971520)
   -port string
     	Specify a port for the server. (default "8080")
-     
+
 Example:
 
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1
@@ -81,7 +81,7 @@ Example:
 
 
 ## Development
-The backend is built as a REST API via the Go web application.  
+The backend is built as a REST API via the Go web application.
 
 It also acts as the webserver to serve the front end react application
 
@@ -91,19 +91,23 @@ All api actions are accessible with the /api route.  The frontend is accessible 
 + Go 1.6
 + NodeJS 4.2.6
 
-#### Building the Go backend
-Go Application which manages the Factorio server.
-
-API requests for managing the Factorio server are sent to /api.
-
-The frontend code is served by a HTTP file server running on /.
+#### Building Releases
+Creates a release zip for windows and linux: (this will install the dependencies listed in gopkgdeps)
 ```
-git clone https://github.com/MajorMJR/factorio-server-manager.git
+git clone https://github.com/mroote/factorio-server-manager.git
 cd factorio-server-manager
-make build
+make gen_release
 ```
 
-#### Building the React frontend
+#### Building a Testing Binary:
+```
+git clone https://github.com/mroote/factorio-server-manager.git
+cd factorio-server-manager
+make
+./factorio-server-manager/factorio-server-manager
+```
+
+#### Building the React Frontend alone
 Frontend is built using React and the AdminLTE CSS framework. See app/dist/ for AdminLTE included files and license.
 
 The root of the UI application is served at app/index.html.  Run the npm build script and the Go application during development to get live rebuilding of the UI code.
@@ -112,15 +116,13 @@ All necessary CSS and Javascript files are included for running the UI.
 
 Transpiled bundle.js application is output to app/bundle.js, 'npm run build' script starts webpack to build the React application for development.
 ```
- cd ui/
- npm install
- npm run build
+make app/bundle.js
 ```
 
 ### Building for Windows
 1. Download the latest release source zip file
-  * [https://github.com/MajorMJR/factorio-server-manager/releases](https://github.com/MajorMJR/factorio-server-manager/releases)
-2. Unzip the Factorio Standalone server and move it to a known directory. 
+  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+2. Unzip the Factorio Standalone server and move it to a known directory.
 3. Download and install Go 1.6 64-bit or 32-bit depending on your operating system, if unsure download 32-bit
   * https://storage.googleapis.com/golang/go1.6.windows-amd64.msi 64-bit
   * https://storage.googleapis.com/golang/go1.6.windows-386.msi 32-bit
@@ -147,7 +149,7 @@ go get github.com/gorilla/websocket
 go get github.com/majormjr/rcon
 ```
 
-3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down left shift and right click an empty area of the folder. Then click "Open command windows here" 
+3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down left shift and right click an empty area of the folder. Then click "Open command windows here"
 4. Type this into the command prompt then hit enter:
 
 ```

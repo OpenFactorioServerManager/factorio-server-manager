@@ -419,6 +419,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		status["status"] = "running"
 		status["port"] = strconv.Itoa(FactorioServ.Port)
 		status["savefile"] = FactorioServ.Savefile
+		status["address"] = FactorioServ.BindIP
 		resp.Data = status
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error encoding config file JSON reponse: %s", err)
