@@ -23,7 +23,7 @@ type Config struct {
 	FactorioRconPort        int    `json:"rcon_port"`
 	FactorioRconPass        string `json:"rcon_pass"`
 	FactorioCredentialsFile string `json:"factorio_credentials_file"`
-  FactorioIP              string `json:"factorio_ip"`
+	FactorioIP              string `json:"factorio_ip"`
 	ServerIP                string `json:"server_ip"`
 	ServerPort              string `json:"server_port"`
 	MaxUploadSize           int64  `json:"max_upload_size"`
