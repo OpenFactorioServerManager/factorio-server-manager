@@ -12,26 +12,28 @@ import (
 )
 
 type Config struct {
-	FactorioDir         string `json:"factorio_dir"`
-	FactorioSavesDir    string `json:"saves_dir"`
-	FactorioModsDir     string `json:"mods_dir"`
-	FactorioConfigFile  string `json:"config_file"`
-	FactorioConfigDir   string `json:"config_directory"`
-	FactorioLog         string `json:"logfile"`
-	FactorioBinary      string `json:"factorio_binary"`
-	FactorioRconPort    int    `json:"rcon_port"`
-	FactorioRconPass    string `json:"rcon_pass"`
-	FactorioIP          string `json:"factorio_ip"`
-	ServerIP            string `json:"server_ip"`
-	ServerPort          string `json:"server_port"`
-	MaxUploadSize       int64  `json:"max_upload_size"`
-	Username            string `json:"username"`
-	Password            string `json:"password"`
-	DatabaseFile        string `json:"database_file"`
-	CookieEncryptionKey string `json:"cookie_encryption_key"`
-	SettingsFile        string `json:"settings_file"`
-	LogFile             string `json:"log_file"`
-	ConfFile            string
+	FactorioDir             string `json:"factorio_dir"`
+	FactorioSavesDir        string `json:"saves_dir"`
+	FactorioModsDir         string `json:"mods_dir"`
+	FactorioModPackDir      string `json:"mod_pack_dir"`
+	FactorioConfigFile      string `json:"config_file"`
+	FactorioConfigDir       string `json:"config_directory"`
+	FactorioLog             string `json:"logfile"`
+	FactorioBinary          string `json:"factorio_binary"`
+	FactorioRconPort        int    `json:"rcon_port"`
+	FactorioRconPass        string `json:"rcon_pass"`
+	FactorioCredentialsFile string `json:"factorio_credentials_file"`
+	FactorioIP              string `json:"factorio_ip"`
+	ServerIP                string `json:"server_ip"`
+	ServerPort              string `json:"server_port"`
+	MaxUploadSize           int64  `json:"max_upload_size"`
+	Username                string `json:"username"`
+	Password                string `json:"password"`
+	DatabaseFile            string `json:"database_file"`
+	CookieEncryptionKey     string `json:"cookie_encryption_key"`
+	SettingsFile            string `json:"settings_file"`
+	LogFile                 string `json:"log_file"`
+	ConfFile                string
 }
 
 var (
@@ -80,9 +82,11 @@ func parseFlags() {
 	config.ServerPort = *factorioPort
 	config.FactorioSavesDir = filepath.Join(config.FactorioDir, "saves")
 	config.FactorioModsDir = filepath.Join(config.FactorioDir, "mods")
+	config.FactorioModPackDir = "./mod_packs"
 	config.FactorioConfigDir = filepath.Join(config.FactorioDir, "config")
 	config.FactorioConfigFile = filepath.Join(config.FactorioDir, *factorioConfigFile)
 	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)
+	config.FactorioCredentialsFile = "./factorio.auth"
 	config.MaxUploadSize = *factorioMaxUpload
 
 	if runtime.GOOS == "windows" {
@@ -100,8 +104,8 @@ func main() {
 	parseFlags()
 	// Load server config from file
 	loadServerConfig(config.ConfFile)
-	// Create mod pack dir if missing
-	createModPackDir()
+	// create mod-stuff
+	modStartUp()
 
 	// Initialize Factorio Server struct
 	FactorioServ, err = initFactorio()
@@ -118,6 +122,6 @@ func main() {
 	// Initialize HTTP router
 	router := NewRouter()
 
-	fmt.Printf("Starting server on: %s:%s", config.ServerIP, config.ServerPort)
+	log.Printf("Starting server on: %s:%s", config.ServerIP, config.ServerPort)
 	log.Fatal(http.ListenAndServe(config.ServerIP+":"+config.ServerPort, router))
 }

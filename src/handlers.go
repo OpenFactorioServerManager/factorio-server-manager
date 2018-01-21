@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"log"
@@ -11,313 +12,17 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 type JSONResponse struct {
 	Success bool        `json:"success"`
 	Data    interface{} `json:"data,string"`
 }
-
-type ModPack struct {
-	Mods  []string `json:"mods"`
-	Title string   `json:"title"`
-}
-
-// Returns JSON response of all mods installed in factorio/mods
-func ListInstalledMods(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	resp.Data, err = listInstalledMods(config.FactorioModsDir)
-	if err != nil {
-		resp.Data = fmt.Sprintf("Error in ListInstalledMods handler: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in list mods: %s", err)
-		}
-		return
-	}
-
-	resp.Success = true
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error in list mods: %s", err)
-	}
-}
-
-// Toggles mod passed in through mod variable
-// Updates mod-list.json file to toggle the enabled status of mods
-func ToggleMod(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	vars := mux.Vars(r)
-	modName := vars["mod"]
-
-	m, err := parseModList()
-	if err != nil {
-		resp.Data = fmt.Sprintf("Could not parse mod list: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in list mods: %s", err)
-		}
-		return
-	}
-
-	err = m.toggleMod(modName)
-	if err != nil {
-		resp.Success = false
-		resp.Data = fmt.Sprintf("Could not toggle mod: %s error: %s", modName, err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in list mods: %s", err)
-		}
-		return
-	}
-
-	resp.Success = true
-	resp.Data = m
-
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error in toggle mod: %s", err)
-	}
-}
-
-// Returns JSON response of all mods in the mod-list.json file
-func ListMods(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	resp.Data, err = parseModList()
-	if err != nil {
-		resp.Data = fmt.Sprintf("Could not parse mod list: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in list mods: %s", err)
-		}
-		return
-	}
-
-	resp.Success = true
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error listing mods: %s", err)
-	}
-}
-
-// Uploads mod to the mods directory
-func UploadMod(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	switch r.Method {
-	case "GET":
-		resp.Data = "Unsupported method"
-		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing mods: %s", err)
-		}
-	case "POST":
-		log.Println("Uploading file")
-		r.ParseMultipartForm(32 << 20)
-		file, header, err := r.FormFile("modfile")
-		if err != nil {
-			log.Printf("No mod filename provided for upload: %s", err)
-			json.NewEncoder(w).Encode("No mod file provided.")
-			return
-		}
-		defer file.Close()
-
-		out, err := os.Create(config.FactorioModsDir + "/" + header.Filename)
-		if err != nil {
-			resp.Data = err.Error()
-			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in out")
-			return
-		}
-		defer out.Close()
-
-		_, err = io.Copy(out, file)
-		if err != nil {
-			resp.Data = err.Error()
-			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in io copy")
-			return
-		}
-		log.Printf("Uploaded mod file: %s", header.Filename)
-		resp.Data = "File '" + header.Filename + "' submitted successfully"
-		resp.Success = true
-		json.NewEncoder(w).Encode(resp)
-
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-}
-
-func RemoveMod(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	vars := mux.Vars(r)
-	modName := vars["mod"]
-
-	err = rmMod(modName)
-	if err == nil {
-		// No error returned means mod was removed
-		resp.Data = fmt.Sprintf("Removed mod: %s", modName)
-		resp.Success = true
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing mod: %s", err)
-		}
-	} else {
-		log.Printf("Error in remove mod handler: %s", err)
-		resp.Data = fmt.Sprintf("Error in remove mod handler: %s", err)
-
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing mod: %s", err)
-		}
-		return
-	}
-}
-
-func DownloadMod(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	vars := mux.Vars(r)
-	mod := vars["mod"]
-	modFile := filepath.Join(config.FactorioModsDir, mod)
-
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", mod))
-	log.Printf("%s downloading: %s", r.Host, modFile)
-
-	http.ServeFile(w, r, modFile)
-}
-
-func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	switch r.Method {
-	case "GET":
-		resp.Data = "Unsupported method"
-		resp.Success = false
-		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Get request to modpack handler: %s", err)
-		}
-	case "POST":
-		var mods ModPack
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Printf("Error in create mod pack handler body: %s", err)
-			return
-		}
-
-		log.Printf("Creating modpack with contents: %v", string(body))
-
-		err = json.Unmarshal(body, &mods)
-		if err != nil {
-			log.Printf("Error unmarshaling server settings JSON: %s", err)
-			return
-		}
-
-		err = createModPack(mods.Title, mods.Mods...)
-		if err != nil {
-			log.Printf("Error in creating modpack handler: %s", err)
-			return
-		}
-
-		resp.Success = true
-		resp.Data = fmt.Sprintf("Created modpack: %s", mods.Title)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing saves: %s", err)
-		}
-	}
-}
-
-func ListModPacks(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	resp.Data, err = listModPacks(filepath.Join(config.FactorioDir, "modpacks"))
-	if err != nil {
-		resp.Success = false
-		resp.Data = fmt.Sprintf("Error listing modpack files: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing modpacks: %s", err)
-		}
-		return
-	}
-
-	resp.Success = true
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error listing saves: %s", err)
-	}
-}
-
-func DownloadModPack(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	vars := mux.Vars(r)
-	modpack := vars["modpack"]
-	modFile := filepath.Join(config.FactorioDir, "modpacks", modpack)
-
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", modpack))
-	log.Printf("%s downloading: %s", r.Host, modFile)
-
-	http.ServeFile(w, r, modFile)
-}
-
-func DeleteModPack(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	vars := mux.Vars(r)
-	modPack := vars["modpack"]
-
-	err = rmModPack(modPack)
-	if err == nil {
-		// Modpack removed
-		resp.Data = fmt.Sprintf("Removed modpack: %s", modPack)
-		resp.Success = true
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing modpack %s", err)
-		}
-	} else {
-		log.Printf("Error in remove modpack handler: %s", err)
-		resp.Data = fmt.Sprintf("Error in remove modpack handler: %s", err)
-
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing modpack: %s", err)
-		}
-	}
+type JSONResponseFileInput struct {
+	Success   bool        `json:"success"`
+	Data      interface{} `json:"data,string"`
+	Error     string      `json:"error"`
+	ErrorKeys []int       `json:"errorkeys"`
 }
 
 // Lists all save files in the factorio/saves directory
@@ -514,7 +219,7 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error tailing logfile", err)
+		log.Printf("Error tailing logfile: %s", err)
 	}
 }
 
@@ -532,7 +237,7 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Could not retrieve config.ini: %s", err)
 		resp.Data = "Error getting config.ini"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error tailing logfile", err)
+			log.Printf("Error tailing logfile: %s", err)
 		}
 	} else {
 		resp.Data = configContents
@@ -540,7 +245,7 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: ", err)
+		log.Printf("Error encoding config file JSON reponse: %s", err)
 	}
 
 	log.Printf("Sent config.ini response")
@@ -557,7 +262,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	if FactorioServ.Running {
 		resp.Data = "Factorio server is already running"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding JSON response: ", err)
+			log.Printf("Error encoding JSON response: %s", err)
 		}
 		return
 	}
@@ -614,7 +319,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 				resp.Success = true
 				log.Printf("Factorio server started on port: %v", FactorioServ.Port)
 				if err := json.NewEncoder(w).Encode(resp); err != nil {
-					log.Printf("Error encoding config file JSON reponse: ", err)
+					log.Printf("Error encoding config file JSON reponse: %s", err)
 				}
 				break
 			} else {
@@ -627,7 +332,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error starting Factorio server: %s", err)
 			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding start server JSON response: ", err)
+				log.Printf("Error encoding start server JSON response: %s", err)
 			}
 		}
 	}
@@ -646,7 +351,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error in stop server handler: %s", err)
 			resp.Data = fmt.Sprintf("Error in stop server handler: %s", err)
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: ", err)
+				log.Printf("Error encoding config file JSON reponse: %s", err)
 			}
 			return
 		}
@@ -657,13 +362,13 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	} else {
 		resp.Data = "Factorio server is not running"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Error encoding config file JSON reponse: %s", err)
 		}
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: ", err)
+		log.Printf("Error encoding config file JSON reponse: %s", err)
 	}
 }
 
@@ -680,7 +385,7 @@ func KillServer(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error in kill server handler: %s", err)
 			resp.Data = fmt.Sprintf("Error in kill server handler: %s", err)
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: ", err)
+				log.Printf("Error encoding config file JSON reponse: %s", err)
 			}
 			return
 		}
@@ -691,13 +396,13 @@ func KillServer(w http.ResponseWriter, r *http.Request) {
 	} else {
 		resp.Data = "Factorio server is not running"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Error encoding config file JSON reponse: %s", err)
 		}
 		return
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: ", err)
+		log.Printf("Error encoding config file JSON reponse: %s", err)
 	}
 }
 
@@ -717,7 +422,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		status["address"] = FactorioServ.BindIP
 		resp.Data = status
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Error encoding config file JSON reponse: %s", err)
 		}
 	} else {
 		resp.Success = true
@@ -725,7 +430,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 		status["status"] = "stopped"
 		resp.Data = status
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: ", err)
+			log.Printf("Error encoding config file JSON reponse: %s", err)
 		}
 	}
 }
@@ -836,7 +541,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	users, err := Auth.listUsers()
 	if err != nil {
-		log.Printf("Error in ListUsers handler: ", err)
+		log.Printf("Error in ListUsers handler: %s", err)
 		resp.Data = fmt.Sprint("Error listing users")
 		resp.Success = false
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -982,7 +687,7 @@ func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding server settings JSON reponse: ", err)
+		log.Printf("Error encoding server settings JSON reponse: %s", err)
 	}
 
 	log.Printf("Sent server settings response")
@@ -1040,7 +745,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp.Success = true
-		resp.Data = fmt.Sprintf("Settings successfully saved: %s", &FactorioServ.Settings)
+		resp.Data = fmt.Sprintf("Settings successfully saved")
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in sending server settings response: %s", err)
 		}
