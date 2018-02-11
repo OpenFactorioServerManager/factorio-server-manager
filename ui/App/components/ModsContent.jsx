@@ -179,6 +179,7 @@ class ModsContent extends React.Component {
                 let correctData = JSON.parse(data.data);
 
                 let checkboxes = []
+                correctData.releases.reverse();
                 correctData.releases.forEach((release, index) => {
                     let date = new Date(release.released_at);
 
