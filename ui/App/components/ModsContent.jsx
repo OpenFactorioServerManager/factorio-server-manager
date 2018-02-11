@@ -438,7 +438,7 @@ class ModsContent extends React.Component {
 
                     if(data.success) {
                         this.mutex.lock(() => {
-                            swal("Delete of mod " + modName + " successful", "", "success");
+                            swal("Update of mod " + modName + " successful", "", "success");
                             let installedMods = this.state.installedMods;
 
                             installedMods.forEach((v, k) => {
