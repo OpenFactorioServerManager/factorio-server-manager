@@ -435,6 +435,18 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func FactorioVersion(w http.ResponseWriter, r *http.Request) {
+	resp := JSONResponse{
+		Success: true,
+	}
+
+	status := map[string]string{}
+	status["version"] = FactorioServ.Version
+	status["base_mod_version"] = FactorioServ.BaseModVersion
+
+	resp.Data = status
+}
+
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Success: false,

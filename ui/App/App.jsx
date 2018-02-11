@@ -15,9 +15,12 @@ class App extends React.Component {
         this.getSaves = this.getSaves.bind(this);
         this.getStatus = this.getStatus.bind(this);
         this.connectWebSocket = this.connectWebSocket.bind(this);
+        this.getFactorioVersion = this.getFactorioVersion.bind(this);
+
         this.state = {
             serverRunning: "stopped",
             serverStatus: {},
+            factorioVersion: {},
             saves: [],
             loggedIn: false,
             username: "",
@@ -35,6 +38,7 @@ class App extends React.Component {
             }
         }, 1000);
         this.connectWebSocket();
+        this.getFactorioVersion(); //Init serverStatus, so i know, which factorio-version is installed
     }
     
     connectWebSocket() {
@@ -67,7 +71,9 @@ class App extends React.Component {
             url: "/api/server/status",
             dataType: "json",
             success: (data) => {
-                this.setState({serverRunning: data.data.status})
+                this.setState({
+                    serverRunning: data.data.status
+                })
             }
         })
     }
@@ -98,7 +104,22 @@ class App extends React.Component {
             url: "/api/server/status",
             dataType: "json",
             success: (data) => {
-                this.setState({serverStatus: data.data})
+                this.setState({
+                    serverStatus: data.data
+                })
+            },
+            error: (xhr, status, err) => {
+                console.log('api/server/status', status, err.toString());
+            }
+        })
+    }
+
+    getFactorioVersion() {
+        $:ajax({
+            url: "/api/server/facVersion",
+            dataType: "json",
+            success: (data) => {
+
             },
             error: (xhr, status, err) => {
                 console.log('api/server/status', status, err.toString());

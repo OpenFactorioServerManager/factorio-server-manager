@@ -24,6 +24,9 @@ class ModsContent extends React.Component {
         this.updateCountSubtract = this.updateCountSubtract.bind(this);
         this.updateCountAdd = this.updateCountAdd.bind(this);
 
+
+        this.test = this.test.bind(this);
+
         this.state = {
             loggedIn: false,
             installedMods: null,
@@ -479,7 +482,6 @@ class ModsContent extends React.Component {
         e.stopPropagation();
 
         let updateButtons = $('#manage-mods').find(".update-button");
-        // $('.update-button').click();
         $.each(updateButtons, (k, v) => {
             v.click();
         });
@@ -501,6 +503,10 @@ class ModsContent extends React.Component {
         this.setState({
             installedMods: data.response.data.mods
         });
+    }
+
+    test() {
+        console.log(this.props);
     }
 
     render() {
@@ -533,6 +539,7 @@ class ModsContent extends React.Component {
                         factorioLogoutHandler={this.factorioLogoutHandler}
                     />
                 </section>
+                <section onClick={this.test}>TEST</section>
             </div>
         )
     }

@@ -274,6 +274,11 @@ var apiRoutes = Routes{
 		"/server/status",
 		CheckServer,
 	}, {
+		"FactorioVersion",
+		"GET",
+		"/server/facVersion",
+		FactorioVersion,
+	}, {
 		"LogoutUser",
 		"GET",
 		"/logout",
