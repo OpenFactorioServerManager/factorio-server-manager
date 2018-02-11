@@ -31,7 +31,21 @@ class ConfigContent extends React.Component {
         var change = this.state.serverSettings;
 
         if (e.target.value === "true" || e.target.value === "false") {
+          // Ensure Boolean type is used if required
+          if (e.target.id === "lan" || e.target.id === "public") {
+            if (e.target.value == "true") {
+              fieldValue = true
+            } else {
+              fieldValue = false
+            }
+            change["visibility"][e.target.id] = fieldValue
+            this.setState({serverSettings: change});
+            return;
+          }
           fieldValue = Boolean(e.target.value)
+        } else if (e.target.id === "admins" || e.target.id === "tags") {
+          // Split settings values that are stored as arrays
+          fieldValue = e.target.value.split(",")
         } else {
           fieldValue = e.target.value
         }
@@ -105,66 +119,78 @@ class ConfigContent extends React.Component {
         switch(typeof setting) {
           case "number":
             return (
-                <input
-                    key={key}
-                    ref={key}
-                    id={key}
-                    className="form-control"
-                    defaultValue={setting}
-                    type="number"
-                    onChange={this.handleServerSettingsChange.bind(this, key)}
-                />
+              <input
+              key={key}
+              ref={key}
+              id={key}
+              className="form-control"
+              defaultValue={setting}
+              type="number"
+              onChange={this.handleServerSettingsChange.bind(this, key)}
+              />
             )
           case "string":
             if (key.includes("password")) {
               return (
-                  <input
-                      key={key}
-                      ref={key}
-                      id={key}
-                      className="form-control"
-                      defaultValue={setting}
-                      type="password"
-                      onChange={this.handleServerSettingsChange.bind(this, key)}
-                  />
+                <input
+                key={key}
+                ref={key}
+                id={key}
+                className="form-control"
+                defaultValue={setting}
+                type="password"
+                onChange={this.handleServerSettingsChange.bind(this, key)}
+                />
               )
             } else {
               return (
-                  <input
-                      key={key}
-                      ref={key}
-                      id={key}
-                      className="form-control"
-                      defaultValue={setting}
-                      type="text"
-                      onChange={this.handleServerSettingsChange.bind(this, key)}
-                  />
+                <input
+                key={key}
+                ref={key}
+                id={key}
+                className="form-control"
+                defaultValue={setting}
+                type="text"
+                onChange={this.handleServerSettingsChange.bind(this, key)}
+                />
               )
             }
           case "boolean":
-            console.log(key)
             return (
-                <select key={key} ref={key} id={key} className="form-control" onChange={this.handleServerSettingsChange.bind(this, key)}>
-                    <option value={true}>True</option>
-                    <option value={false}>False</option>
-                </select>
+              <select key={key} ref={key} id={key} className="form-control" onChange={this.handleServerSettingsChange.bind(this, key)}>
+                <option value={true}>True</option>
+                <option value={false}>False</option>
+              </select>
             )
           case "object":
             if (Array.isArray(setting)) {
               return (
-                  <input
-                      key={key}
-                      ref={key}
-                      id={key}
-                      className="form-control"
-                      defaultValue={setting}
-                      type="text"
-                      onChange={this.handleServerSettingsChange.bind(this, key)}
-                  />
+                <input
+                key={key}
+                ref={key}
+                id={key}
+                className="form-control"
+                defaultValue={setting}
+                type="text"
+                onChange={this.handleServerSettingsChange.bind(this, key)}
+                />
               )
             } else {
-              if (Object.keys(setting).length > 0) {
-                //this.formTypeField(key, setting);
+              if (key.includes("visibility")) {
+                let vis_fields = []
+                for (const key in setting) {
+                  const field =
+                    <div>
+                      <p>{key}</p>
+                      <select label={key} key={key} ref={key} id={key} className="form-control" onChange={this.handleServerSettingsChange.bind(this, key)}>
+                        <option selected={setting[key] ? "selected" : ""} value={true}>True</option>
+                        <option selected={!setting[key] ? "selected" : ""} value={false}>False</option>
+                      </select>
+                    </div>
+                  vis_fields.push(field)
+                }
+
+                return vis_fields
               }
             }
           default:
