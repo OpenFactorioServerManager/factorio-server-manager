@@ -156,12 +156,15 @@ class ModsContent extends React.Component {
         });
     }
 
+    //TODO remove modIdInput, when the factorio-mod-portal-api is fixed
+    // all outcommented needs to be reimplemented, when it will work again
     loadDownloadList(e) {
         e.preventDefault();
-        let $button = $(e.target);
-        let $loader = $("<div class='loader'></div>");
-        $button.prepend($loader);
-        let modId = $button.data("modId");
+        // let $button = $(e.target);
+        // let $loader = $("<div class='loader'></div>");
+        // $button.prepend($loader);
+        let modId = $(e.target).find("input[name=modId]").val();
+        // let modId = $button.data("modId");
 
         $.ajax({
             method: "POST",
@@ -171,11 +174,12 @@ class ModsContent extends React.Component {
             },
             dataType: "json",
             success: (data) => {
-                $loader.remove();
+                // $loader.remove();
 
                 let correctData = JSON.parse(data.data);
 
                 let checkboxes = []
+                correctData.releases.reverse();
                 correctData.releases.forEach((release, index) => {
                     let date = new Date(release.released_at);
 
@@ -244,7 +248,7 @@ class ModsContent extends React.Component {
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/details', status, err.toString());
-                $loader.remove();
+                // $loader.remove();
             }
         })
     }
@@ -438,7 +442,7 @@ class ModsContent extends React.Component {
 
                     if(data.success) {
                         this.mutex.lock(() => {
-                            swal("Delete of mod " + modName + " successful", "", "success");
+                            swal("Update of mod " + modName + " successful", "", "success");
                             let installedMods = this.state.installedMods;
 
                             installedMods.forEach((v, k) => {
