@@ -4,7 +4,8 @@ import ModFoundOverview from './ModFoundOverview.jsx';
 class ModSearch extends React.Component {
     render() {
         if(this.props.loggedIn) {
-            return (
+            //TODO switch back to currently commented out code, when the mod-portal-api is back with all features!!
+            /*return (
                 <div className="box-body">
                     <form onSubmit={this.props.submitSearchMod}>
                         <div className="input-group col-lg-5">
@@ -18,6 +19,18 @@ class ModSearch extends React.Component {
                     <ModFoundOverview
                         {...this.props}
                     />
+                </div>
+            )*/
+            return (
+                <div className="box-body">
+                    <form onSubmit={this.props.loadDownloadList}>
+                        <div className="input-group col-lg-5">
+                            <input type="text" className="form-control" placeholder="Download mod by ID" name="modId" />
+                            <span className="input-group-btn">
+                                <input className="btn btn-default" type="submit" value="Go!"/>
+                            </span>
+                        </div>
+                    </form>
                 </div>
             )
         } else {
@@ -44,7 +57,8 @@ class ModSearch extends React.Component {
 ModSearch.propTypes = {
     submitSearchMod: React.PropTypes.func.isRequired,
     loggedIn: React.PropTypes.bool.isRequired,
-    submitFactorioLogin: React.PropTypes.func.isRequired
+    submitFactorioLogin: React.PropTypes.func.isRequired,
+    loadDownloadList: React.PropTypes.func.isRequired
 }
 
 export default ModSearch;

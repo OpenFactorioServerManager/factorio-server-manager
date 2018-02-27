@@ -33,7 +33,8 @@ class Mod extends React.Component {
             },
             dataType: "JSON",
             success: (data) => {
-                let newestRelease = JSON.parse(data.data).releases[0];
+                let newData = JSON.parse(data.data);
+                let newestRelease = newData.releases[newData.releases.length - 1];
                 if(newestRelease.version != this.props.mod.version) {
                     if(this.props.updateCountAdd)
                         this.props.updateCountAdd();

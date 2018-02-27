@@ -4,7 +4,7 @@ FROM frolvlad/alpine-glibc
 MAINTAINER Mitch Roote <mitch@r00t.ca>
 
 ENV FACTORIO_VERSION=latest \
-    MANAGER_VERSION=0.6.1 \
+    MANAGER_VERSION=0.7.1 \
     ADMIN_PASSWORD=factorio
 
 VOLUME /opt/factorio/saves /opt/factorio/mods /opt/factorio/config /security
@@ -16,9 +16,9 @@ WORKDIR /opt/
 RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/headless/linux64 -o /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
     tar Jxf /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
     rm /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
-    curl -s -L -S -k https://github.com/mroote/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux-x64.zip --cacert /opt/github.pem -o /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
-    unzip -qq /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
-    rm /tmp/factorio-server-manager-linux-x64_$MANAGER_VERSION.zip && \
+    curl -s -L -S -k https://github.com/mroote/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux.zip --cacert /opt/github.pem -o /tmp/factorio-server-manager-linux_$MANAGER_VERSION.zip && \
+    unzip -qq /tmp/factorio-server-manager-linux_$MANAGER_VERSION.zip && \
+    rm /tmp/factorio-server-manager-linux_$MANAGER_VERSION.zip && \
     mkdir -p /run/nginx && \
     chown nginx:root /var/lib/nginx
 
