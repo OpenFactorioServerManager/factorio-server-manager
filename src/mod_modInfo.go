@@ -10,6 +10,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
+	"github.com/Masterminds/semver"
 )
 
 type ModInfoList struct {
@@ -17,12 +19,14 @@ type ModInfoList struct {
 	Destination string    `json:"-"`
 }
 type ModInfo struct {
-	Name            string `json:"name"`
-	Version         string `json:"version"`
-	Title           string `json:"title"`
-	Author          string `json:"author"`
-	FileName        string `json:"file_name"`
-	FactorioVersion string `json:"factorio_version"`
+	Name            string      `json:"name"`
+	Version         string      `json:"version"`
+	Title           string      `json:"title"`
+	Author          string      `json:"author"`
+	FileName        string      `json:"file_name"`
+	FactorioVersion string      `json:"factorio_version"`
+	Dependencies    []string    `json:"dependencies"`
+	Compatibility   bool        `json:"compatibility"`
 }
 
 func newModInfoList(destination string) (ModInfoList, error) {
@@ -46,6 +50,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 
 	err = filepath.Walk(modInfoList.Destination, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && filepath.Ext(path) == ".zip" {
+
 			err = fileLock.RLock(path)
 			if err != nil && err == lockfile.ErrorAlreadyLocked {
 				log.Println(err)
@@ -69,6 +74,18 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 			}
 
 			modInfo.FileName = info.Name()
+
+			baseDependency := strings.TrimPrefix(modInfo.Dependencies[0], "base ")
+			modInfoConstraint, err := semver.NewConstraint(baseDependency)
+			if err != nil {
+				log.Printf("error reading dependency semver: %s", err)
+			}
+			baseModVersion, err := semver.NewVersion(FactorioServ.BaseModVersion)
+			if err != nil {
+				log.Printf("error getting baseModVersion: %s", err)
+			}
+			modInfo.Compatibility = modInfoConstraint.Check(baseModVersion)
+
 			modInfoList.Mods = append(modInfoList.Mods, modInfo)
 		}
 

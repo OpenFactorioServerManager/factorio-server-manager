@@ -58,6 +58,7 @@ func (mods *Mods) listInstalledMods() ModsResultList {
 		modsResult.Title = modInfo.Title
 		modsResult.Version = modInfo.Version
 		modsResult.FactorioVersion = modInfo.FactorioVersion
+		modsResult.Compatibility = modInfo.Compatibility
 
 		for _, simpleMod := range mods.ModSimpleList.Mods {
 			if simpleMod.Name == modsResult.Name {

@@ -112,6 +112,16 @@ class Mod extends React.Component {
             version = this.props.mod.version;
         }
 
+        let factorioVersion;
+        if(!this.props.mod.compatibility) {
+            factorioVersion = <span style={{color: "red"}}>
+                {this.props.mod.factorio_version}&nbsp;&nbsp;
+                <sup>not compatible</sup>
+            </span>
+        } else {
+            factorioVersion = this.props.mod.factorio_version;
+        }
+
         return(
             <tr data-mod-name={this.props.mod.name}
                 data-file-name={this.props.mod.file_name}
@@ -120,7 +130,7 @@ class Mod extends React.Component {
                 <td>{this.props.mod.title}</td>
                 <td>{modStatus}</td>
                 <td>{version}</td>
-                <td>{this.props.mod.factorio_version}</td>
+                <td>{factorioVersion}</td>
                 <td>
                     <input className='btn btn-default btn-sm'
                         ref='modName'
