@@ -18,6 +18,7 @@ import (
 
 	"github.com/majormjr/rcon"
 	"regexp"
+	"github.com/Masterminds/semver"
 )
 
 type FactorioServer struct {
@@ -29,6 +30,7 @@ type FactorioServer struct {
 	Running        bool                   `json:"running"`
 	Version        string                 `json:"fac_version"`
 	BaseModVersion string                 `json:"base_mod_version"`
+	SemVerVersion  *semver.Version        `json:"-"`
 	StdOut         io.ReadCloser          `json:"-"`
 	StdErr         io.ReadCloser          `json:"-"`
 	StdIn          io.WriteCloser         `json:"-"`
@@ -122,6 +124,10 @@ func initFactorio() (f *FactorioServer, err error) {
 	}
 
 	f.BaseModVersion = modInfo.Version
+	f.SemVerVersion, err = semver.NewVersion(modInfo.Version)
+	if err != nil {
+		log.Fatalf("error loading semver-factorio-version: %s", err)
+	}
 
 	return
 }

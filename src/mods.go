@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"github.com/Masterminds/semver"
 )
 
 type LoginErrorResponse struct {
@@ -274,9 +275,9 @@ func modStartUp() {
 					},
 				},
 			}
-			new_json, _ := json.Marshal(modSimpleList)
+			newJson, _ := json.Marshal(modSimpleList)
 
-			err = ioutil.WriteFile(modSimpleList.Destination+"/mod-list.json", new_json, 0664)
+			err = ioutil.WriteFile(modSimpleList.Destination+"/mod-list.json", newJson, 0664)
 			if err != nil {
 				log.Printf("error when writing new mod-list: %s", err)
 				return err
@@ -343,4 +344,19 @@ func modStartUp() {
 			os.RemoveAll(oldModpackDir)
 		}
 	}
+}
+
+func checkModCompatibility(modVersion string) (compatible bool, err error) {
+	compatible = false
+	if !strings.HasPrefix(modVersion, "^") {
+		modVersion = "^" + modVersion
+	}
+
+	constraint, err := semver.NewConstraint(modVersion)
+	if err != nil {
+		log.Printf("error loading constraint: %s", err)
+		return
+	}
+
+	return constraint.Check(FactorioServ.SemVerVersion), nil
 }

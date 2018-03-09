@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"github.com/Masterminds/semver"
 )
 
 type ModInfoList struct {
@@ -75,16 +74,12 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 
 			modInfo.FileName = info.Name()
 
-			baseDependency := strings.TrimPrefix(modInfo.Dependencies[0], "base ")
-			modInfoConstraint, err := semver.NewConstraint(baseDependency)
+			baseDependency := strings.Split(modInfo.Dependencies[0], "=")[1]
+			modInfo.Compatibility, err = checkModCompatibility(baseDependency)
 			if err != nil {
-				log.Printf("error reading dependency semver: %s", err)
+				log.Printf("error checking mod compatibility: %s", err)
+				return err
 			}
-			baseModVersion, err := semver.NewVersion(FactorioServ.BaseModVersion)
-			if err != nil {
-				log.Printf("error getting baseModVersion: %s", err)
-			}
-			modInfo.Compatibility = modInfoConstraint.Check(baseModVersion)
 
 			modInfoList.Mods = append(modInfoList.Mods, modInfo)
 		}

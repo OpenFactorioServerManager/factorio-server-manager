@@ -34,6 +34,10 @@ class Mod extends React.Component {
             dataType: "JSON",
             success: (data) => {
                 let newData = JSON.parse(data.data);
+                //get newest COMPATIBLE release
+                newData.releases.forEach((release) => {
+                    console.log(release);
+                })
                 let newestRelease = newData.releases[newData.releases.length - 1];
                 if(newestRelease.version != this.props.mod.version) {
                     if(this.props.updateCountAdd)
