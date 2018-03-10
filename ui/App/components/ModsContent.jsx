@@ -26,8 +26,6 @@ class ModsContent extends React.Component {
         this.updateCountAdd = this.updateCountAdd.bind(this);
 
 
-        this.test = this.test.bind(this);
-
         this.state = {
             loggedIn: false,
             installedMods: null,
@@ -522,10 +520,6 @@ class ModsContent extends React.Component {
         });
     }
 
-    test() {
-        console.log(this.props);
-    }
-
     render() {
         return(
             <div className="content-wrapper">
@@ -557,7 +551,6 @@ class ModsContent extends React.Component {
                         factorioLogoutHandler={this.factorioLogoutHandler}
                     />
                 </section>
-                <section onClick={this.test}>TEST</section>
             </div>
         )
     }
