@@ -522,10 +522,6 @@ class ModsContent extends React.Component {
         });
     }
 
-    test() {
-        console.log(this.props);
-    }
-
     render() {
         return(
             <div className="content-wrapper">
@@ -557,7 +553,6 @@ class ModsContent extends React.Component {
                         factorioLogoutHandler={this.factorioLogoutHandler}
                     />
                 </section>
-                <section onClick={this.test}>TEST</section>
             </div>
         )
     }
