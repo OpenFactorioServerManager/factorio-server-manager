@@ -147,6 +147,7 @@ go get github.com/gorilla/mux
 go get github.com/hpcloud/tail
 go get github.com/gorilla/websocket
 go get github.com/majormjr/rcon
+go get github.com/Masterminds/semver
 ```
 
 3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down left shift and right click an empty area of the folder. Then click "Open command windows here"
