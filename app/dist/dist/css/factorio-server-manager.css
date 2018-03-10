@@ -69,5 +69,12 @@ div.console-prompt-box {
 }
 
 .sweet-alert table tr:nth-child(even) {
-    background: rgba(68, 68, 68, 0.31);
+    background: rgba(68, 68, 68, 0.21);
+}
+
+.sweet-alert table tr.incompatible {
+    background: rgba(255, 68, 68, 0.21);
+}
+.sweet-alert table tr:nth-child(even).incompatible {
+    background: rgba(255, 0, 0, 0.31);
 }

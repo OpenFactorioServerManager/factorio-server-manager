@@ -3,6 +3,7 @@ import ReactDOMServer from 'react-dom/server';
 import {IndexLink} from 'react-router';
 import ModOverview from './Mods/ModOverview.jsx';
 import locks from "locks";
+import SemVer from 'semver';
 
 class ModsContent extends React.Component {
     constructor(props) {
@@ -181,19 +182,31 @@ class ModsContent extends React.Component {
 
                 let correctData = JSON.parse(data.data);
 
-                let checkboxes = []
+                let checkboxes = [];
+                let compatibleReleaseFound = false;
+
                 correctData.releases.reverse();
-                correctData.releases.forEach((release, index) => {
+                correctData.releases.forEach((release) => {
+                    let incompatibleClass = "";
+                    let isChecked = false;
+
+                    if(!SemVer.satisfies(this.props.factorioVersion, release.info_json.factorio_version + ".x")) {
+                        incompatibleClass = "incompatible";
+                    } else if(compatibleReleaseFound == false) {
+                        compatibleReleaseFound = true;
+                        isChecked = true;
+                    }
+
                     let date = new Date(release.released_at);
 
-                    let singleBox = <tr>
+                    let singleBox = <tr className={incompatibleClass}>
                         <td>
                             <input type="radio"
                                    name="version"
                                    data-link={release.download_url}
                                    data-filename={release.file_name}
                                    data-modid={modId}
-                                   checked={index == 0 ? true : false}
+                                   checked={isChecked}
                             />
                         </td>
                         <td>
@@ -549,5 +562,9 @@ class ModsContent extends React.Component {
         )
     }
 }
+
+ModsContent.propTypes = {
+    factorioVersion: React.PropTypes.string,
+};
 
 export default ModsContent;

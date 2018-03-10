@@ -20,7 +20,7 @@ class App extends React.Component {
         this.state = {
             serverRunning: "stopped",
             serverStatus: {},
-            factorioVersion: {},
+            factorioVersion: "",
             saves: [],
             loggedIn: false,
             username: "",

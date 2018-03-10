@@ -181,6 +181,7 @@ Mod.propTypes = {
     deleteMod: React.PropTypes.func.isRequired,
     updateMod: React.PropTypes.func.isRequired,
     updateCountAdd: React.PropTypes.func,
+    factorioVersion: React.PropTypes.string,
 };
 
 export default Mod
