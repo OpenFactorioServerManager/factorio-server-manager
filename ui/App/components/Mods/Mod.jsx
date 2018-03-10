@@ -1,4 +1,5 @@
 import React from 'react';
+import SemVer from 'semver';
 
 class Mod extends React.Component {
     constructor(props) {
@@ -35,11 +36,19 @@ class Mod extends React.Component {
             success: (data) => {
                 let newData = JSON.parse(data.data);
                 //get newest COMPATIBLE release
+                let newestRelease;
                 newData.releases.forEach((release) => {
-                    console.log(release);
-                })
-                let newestRelease = newData.releases[newData.releases.length - 1];
-                if(newestRelease.version != this.props.mod.version) {
+                    //TODO change to info_json dependency (when mod-portal-api is working again)
+                    if(SemVer.satisfies(this.props.factorioVersion, release.info_json.factorio_version + ".x")) {
+                        if(!newestRelease) {
+                            newestRelease = release;
+                        } else if(SemVer.gt(release.version, newestRelease.version)) {
+                            newestRelease = release;
+                        }
+                    }
+                });
+
+                if(newestRelease && newestRelease.version != this.props.mod.version) {
                     if(this.props.updateCountAdd)
                         this.props.updateCountAdd();
 
@@ -47,7 +56,8 @@ class Mod extends React.Component {
                         newVersionAvailable: true,
                         newVersion: {
                             downloadUrl: newestRelease.download_url,
-                            file_name: newestRelease.file_name
+                            file_name: newestRelease.file_name,
+                            version: newestRelease.version
                         }
                     });
                 } else {
@@ -87,6 +97,13 @@ class Mod extends React.Component {
 
         let version;
         if(this.state.newVersionAvailable) {
+            let faArrow;
+            if(SemVer.gt(this.state.newVersion.version, this.props.mod.version)) {
+                faArrow = "fa fa-arrow-circle-up";
+            } else {
+                faArrow = "fa fa-arrow-circle-down";
+            }
+
             version = <span>{this.props.mod.version}
                 <a className="btn btn-xs btn-default update-button"
                    style={{
@@ -108,7 +125,7 @@ class Mod extends React.Component {
                         this.state.updateInProgress ?
                             <div className='loader' style={{width: 15, height: 15, marginRight: 0, borderWidth: 3,}}></div>
                             :
-                            <i className="fa fa-arrow-circle-up" title="Update Mod" style={{fontSize: "15pt"}}></i>
+                            <i className={faArrow} title="Update Mod" style={{fontSize: "15pt"}}></i>
                     }
                 </a>
             </span>;

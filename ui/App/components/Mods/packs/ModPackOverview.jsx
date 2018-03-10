@@ -446,6 +446,7 @@ class ModPackOverview extends React.Component {
                                         </div>
                                         <div className="box-body">
                                             <ModManager
+                                                {...this.props}
                                                 installedMods={modpack.mods.mods}
                                                 deleteMod={this.modPackDeleteModHandler}
                                                 toggleMod={this.modPackToggleModHandler}

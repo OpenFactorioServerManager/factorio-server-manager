@@ -530,6 +530,7 @@ class ModsContent extends React.Component {
                 <section className="content">
                     <ModOverview
                         {...this.state}
+                        {...this.props}
                         loadDownloadList={this.loadDownloadList}
                         submitFactorioLogin={this.handlerFactorioLogin}
                         toggleMod={this.toggleModHandler}

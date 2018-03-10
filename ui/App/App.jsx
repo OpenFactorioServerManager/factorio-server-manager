@@ -59,8 +59,10 @@ class App extends React.Component {
             dataType: "json",
             success: (data) => {
                 if (data.success === true) {
-                    this.setState({loggedIn: true,
-                        username: data.data.Username})
+                    this.setState({
+                        loggedIn: true,
+                        username: data.data.Username
+                    });
                 }
             }
         })
@@ -115,11 +117,13 @@ class App extends React.Component {
     }
 
     getFactorioVersion() {
-        $:ajax({
+        $.ajax({
             url: "/api/server/facVersion",
-            dataType: "json",
+            // dataType: "json",
             success: (data) => {
-
+                this.setState({
+                    factorioVersion: data.data.base_mod_version
+                });
             },
             error: (xhr, status, err) => {
                 console.log('api/server/status', status, err.toString());
@@ -149,16 +153,19 @@ class App extends React.Component {
                     // Render react-router components and pass in props
                     {React.cloneElement(
                         this.props.children,
-                        {message: "",
-                        messages: this.state.messages,
-                        flashMessage: this.flashMessage,
-                        facServStatus: this.facServStatus,
-                        serverStatus: this.state.serverStatus,
-                        getStatus: this.getStatus,
-                        saves: this.state.saves,
-                        getSaves: this.getSaves,
-                        username: this.state.username,
-                        socket: this.socket}
+                        {
+                            message: "",
+                            messages: this.state.messages,
+                            flashMessage: this.flashMessage,
+                            facServStatus: this.facServStatus,
+                            serverStatus: this.state.serverStatus,
+                            factorioVersion: this.state.factorioVersion,
+                            getStatus: this.getStatus,
+                            saves: this.state.saves,
+                            getSaves: this.getSaves,
+                            username: this.state.username,
+                            socket: this.socket
+                        }
                     )}
 
                     <Footer />
