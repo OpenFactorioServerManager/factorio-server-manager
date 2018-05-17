@@ -3,7 +3,7 @@ FROM frolvlad/alpine-glibc
 
 MAINTAINER Mitch Roote <mitch@r00t.ca>
 
-ENV FACTORIO_VERSION=latest \
+ENV FACTORIO_VERSION=stable \
     MANAGER_VERSION=0.7.2 \
     ADMIN_PASSWORD=factorio
 
