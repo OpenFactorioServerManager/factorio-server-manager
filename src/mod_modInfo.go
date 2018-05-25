@@ -74,11 +74,21 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 
 			modInfo.FileName = info.Name()
 
-			baseDependency := strings.Split(modInfo.Dependencies[0], "=")[1]
-			modInfo.Compatibility, err = checkModCompatibility(baseDependency)
-			if err != nil {
-				log.Printf("error checking mod compatibility: %s", err)
-				return err
+			var baseDependency string
+			for _, dependency := range modInfo.Dependencies {
+				if strings.HasPrefix(dependency, "base") {
+					baseDependency = strings.Split(dependency, "=")[1]
+					break
+				}
+			}
+			if baseDependency != "" {
+				modInfo.Compatibility, err = checkModCompatibility(baseDependency)
+				if err != nil {
+					log.Printf("error checking mod compatibility: %s", err)
+					return err
+				}
+			} else {
+				modInfo.Compatibility = true
 			}
 
 			modInfoList.Mods = append(modInfoList.Mods, modInfo)
