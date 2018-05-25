@@ -348,8 +348,9 @@ func modStartUp() {
 
 func checkModCompatibility(modVersion string) (compatible bool, err error) {
 	compatible = false
-	if !strings.HasPrefix(modVersion, "^") {
-		modVersion = "^" + modVersion
+	modVersion = strings.TrimSpace(modVersion)
+	if !strings.HasPrefix(modVersion, "~") {
+		modVersion = "~" + modVersion
 	}
 
 	constraint, err := semver.NewConstraint(modVersion)
