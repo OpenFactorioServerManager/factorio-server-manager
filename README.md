@@ -88,7 +88,7 @@ It also acts as the webserver to serve the front end react application
 All api actions are accessible with the /api route.  The frontend is accessible from /.
 
 #### Requirements
-+ Go 1.6
++ Go 1.7
 + NodeJS 4.2.6
 
 #### Building Releases
@@ -123,9 +123,7 @@ make app/bundle.js
 1. Download the latest release source zip file
   * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
 2. Unzip the Factorio Standalone server and move it to a known directory.
-3. Download and install Go 1.6 64-bit or 32-bit depending on your operating system, if unsure download 32-bit
-  * https://storage.googleapis.com/golang/go1.6.windows-amd64.msi 64-bit
-  * https://storage.googleapis.com/golang/go1.6.windows-386.msi 32-bit
+3. Download and install Go 1.7 or newer. https://golang.org/dl/
 4. Download and install NodeJS 4.2.6 64-bit or 32-bit depending on your operating system, if unsure download 32-bit
   * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x64.msi 64-bit
   * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x86.msi 32-bit
