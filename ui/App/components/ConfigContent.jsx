@@ -2,6 +2,15 @@ import React from 'react';
 import {IndexLink} from 'react-router';
 import Settings from './Config/Settings.jsx';
 
+//https://stackoverflow.com/a/1414175
+function stringToBoolean(string){
+    switch(string.toLowerCase().trim()){
+        case "true": case "yes": case "1": return true;
+        case "false": case "no": case "0": case null: return false;
+        default: return Boolean(string);
+    }
+}
+
 class ConfigContent extends React.Component {
     constructor(props) {
         super(props);
@@ -42,7 +51,7 @@ class ConfigContent extends React.Component {
             this.setState({serverSettings: change});
             return;
           }
-          fieldValue = Boolean(e.target.value)
+          fieldValue = stringToBoolean(e.target.value)
         } else if (e.target.id === "admins" || e.target.id === "tags") {
           // Split settings values that are stored as arrays
           fieldValue = e.target.value.split(",")
