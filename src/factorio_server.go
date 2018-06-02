@@ -17,21 +17,26 @@ import (
 	"time"
 
 	"github.com/majormjr/rcon"
+	"regexp"
+	"github.com/Masterminds/semver"
 )
 
 type FactorioServer struct {
-	Cmd      *exec.Cmd              `json:"-"`
-	Savefile string                 `json:"savefile"`
-	Latency  int                    `json:"latency"`
-	BindIP   string                 `json:"bindip"`
-	Port     int                    `json:"port"`
-	Running  bool                   `json:"running"`
-	StdOut   io.ReadCloser          `json:"-"`
-	StdErr   io.ReadCloser          `json:"-"`
-	StdIn    io.WriteCloser         `json:"-"`
-	Settings map[string]interface{} `json:"-"`
-	Rcon     *rcon.RemoteConsole    `json:"-"`
-	LogChan  chan []string          `json:"-"`
+	Cmd            *exec.Cmd              `json:"-"`
+	Savefile       string                 `json:"savefile"`
+	Latency        int                    `json:"latency"`
+	BindIP         string                 `json:"bindip"`
+	Port           int                    `json:"port"`
+	Running        bool                   `json:"running"`
+	Version        string                 `json:"fac_version"`
+	BaseModVersion string                 `json:"base_mod_version"`
+	SemVerVersion  *semver.Version        `json:"-"`
+	StdOut         io.ReadCloser          `json:"-"`
+	StdErr         io.ReadCloser          `json:"-"`
+	StdIn          io.WriteCloser         `json:"-"`
+	Settings       map[string]interface{} `json:"-"`
+	Rcon           *rcon.RemoteConsole    `json:"-"`
+	LogChan        chan []string          `json:"-"`
 }
 
 func randomPort() int {
@@ -91,6 +96,38 @@ func initFactorio() (f *FactorioServer, err error) {
 	}
 
 	log.Printf("Loaded Factorio settings from %s\n", settingsPath)
+
+
+	//Load factorio version
+	out, err := exec.Command(config.FactorioBinary, "--version").Output()
+	if err != nil {
+		log.Printf("error on loading factorio version: %s", err)
+		return
+	}
+
+	reg := regexp.MustCompile("Version.*?((\\d+\\.)?(\\d+\\.)?(\\*|\\d+)+)")
+	found := reg.FindStringSubmatch(string(out))
+	f.Version = found[1]
+
+	//Load baseMod version
+	baseModInfoFile := filepath.Join(config.FactorioDir, "data", "base", "info.json")
+	bmifBa, err := ioutil.ReadFile(baseModInfoFile)
+	if err != nil {
+		log.Printf("couldn't open baseMods info.json: %s", err)
+		return
+	}
+	var modInfo ModInfo
+	err = json.Unmarshal(bmifBa, &modInfo)
+	if err != nil {
+		log.Printf("error unmarshalling baseMods info.json to a modInfo: %s", err)
+		return
+	}
+
+	f.BaseModVersion = modInfo.Version
+	f.SemVerVersion, err = semver.NewVersion(modInfo.Version)
+	if err != nil {
+		log.Fatalf("error loading semver-factorio-version: %s", err)
+	}
 
 	return
 }

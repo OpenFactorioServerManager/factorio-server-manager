@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type ModInfoList struct {
@@ -17,12 +18,14 @@ type ModInfoList struct {
 	Destination string    `json:"-"`
 }
 type ModInfo struct {
-	Name            string `json:"name"`
-	Version         string `json:"version"`
-	Title           string `json:"title"`
-	Author          string `json:"author"`
-	FileName        string `json:"file_name"`
-	FactorioVersion string `json:"factorio_version"`
+	Name            string      `json:"name"`
+	Version         string      `json:"version"`
+	Title           string      `json:"title"`
+	Author          string      `json:"author"`
+	FileName        string      `json:"file_name"`
+	FactorioVersion string      `json:"factorio_version"`
+	Dependencies    []string    `json:"dependencies"`
+	Compatibility   bool        `json:"compatibility"`
 }
 
 func newModInfoList(destination string) (ModInfoList, error) {
@@ -46,6 +49,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 
 	err = filepath.Walk(modInfoList.Destination, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && filepath.Ext(path) == ".zip" {
+
 			err = fileLock.RLock(path)
 			if err != nil && err == lockfile.ErrorAlreadyLocked {
 				log.Println(err)
@@ -69,6 +73,29 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 			}
 
 			modInfo.FileName = info.Name()
+
+			var baseDependency string
+			for _, dependency := range modInfo.Dependencies {
+				if strings.HasPrefix(dependency, "base") {
+					baseDependency = strings.Split(dependency, "=")[1]
+					break
+				}
+			}
+			if baseDependency != "" {
+				modInfo.Compatibility, err = checkModCompatibility(baseDependency)
+				if err != nil {
+					log.Printf("error checking mod compatibility: %s", err)
+					return err
+				}
+			} else {
+				log.Println("error finding basemodDependency. Using FactorioVersion...")
+				modInfo.Compatibility, err = checkModCompatibility(modInfo.FactorioVersion + ".0")
+				if err != nil {
+					log.Printf("error checking Compatibility with FactorioVersion: %s", err)
+					return err
+				}
+			}
+
 			modInfoList.Mods = append(modInfoList.Mods, modInfo)
 		}
 
