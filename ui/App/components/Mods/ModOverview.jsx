@@ -5,6 +5,7 @@ import ModUpload from "./ModUpload.jsx";
 import ModManager from "./ModManager.jsx";
 import ModPacks from "./packs/ModPackOverview.jsx";
 import {instanceOfModsContent} from "./ModsPropTypes.js";
+import ModLoadSave from "./ModLoadSave.jsx";
 
 class ModOverview extends React.Component {
     constructor(props) {
@@ -82,6 +83,17 @@ class ModOverview extends React.Component {
                         {...this.props}
                     />
                 </div>
+
+                <div className="box collapsed-box">
+                    <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
+                        <i className="fa fa-plus"></i>
+                        <h3 className="box-title">Load Mods From Save</h3>
+                    </div>
+
+                    <ModLoadSave
+                        {...this.props}
+                    />
+               </div>
 
                 <div className="box" id="manage-mods">
                     <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
