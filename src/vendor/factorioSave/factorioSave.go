@@ -2,61 +2,65 @@ package factorioSave
 
 import (
 	"log"
-	"os"
 	"encoding/binary"
+	"errors"
+	"io"
 )
 
 type version16 struct {
 	versionShort16
-	Revision    uint16
+	Revision    uint16  `json:"revision"`
 }
 type versionShort16 struct {
-	Major       uint16
-	Minor       uint16
-	Build       uint16
+	Major       uint16  `json:"major"`
+	Minor       uint16  `json:"minor"`
+	Build       uint16  `json:"build"`
 }
 type versionShort8 struct {
-	Major       uint8
-	Minor       uint8
-	Build       uint8
+	Major       uint8   `json:"major"`
+	Minor       uint8   `json:"minor"`
+	Build       uint8   `json:"build"`
 }
 type Header struct {
-	FactorioVersion           version16
-	Campaign                  string
-	Name                      string
-	BaseMod                   string
-	Difficulty                uint8
-	Finished                  bool
-	PlayerWon                 bool
-	NextLevel                 string
-	CanContinue               bool
-	FinishedButContinuing     bool
-	SavingReplay              bool
-	AllowNonAdminDebugOptions bool
-	LoadedFrom                versionShort8
-	LoadedFromBuild           uint16
-	AllowedCommads            uint8
-	NumMods                   uint8
-	Mods                      []singleMod
+	FactorioVersion           version16     `json:"factorio_version"`
+	Campaign                  string        `json:"campaign"`
+	Name                      string        `json:"name"`
+	BaseMod                   string        `json:"base_mod"`
+	Difficulty                uint8         `json:"difficulty"`
+	Finished                  bool          `json:"finished"`
+	PlayerWon                 bool          `json:"player_won"`
+	NextLevel                 string        `json:"next_level"`
+	CanContinue               bool          `json:"can_continue"`
+	FinishedButContinuing     bool          `json:"finished_but_continuing"`
+	SavingReplay              bool          `json:"saving_replay"`
+	AllowNonAdminDebugOptions bool          `json:"allow_non_admin_debug_options"`
+	LoadedFrom                versionShort8 `json:"loaded_from"`
+	LoadedFromBuild           uint16        `json:"loaded_from_build"`
+	AllowedCommads            uint8         `json:"allowed_commads"`
+	NumMods                   uint8         `json:"num_mods"`
+	Mods                      []singleMod   `json:"mods"`
 }
 type singleMod struct {
-	Name    string
-	Version versionShort8
-	CRC     uint32
+	Name    string          `json:"name"`
+	Version versionShort8   `json:"version"`
+	CRC     uint32          `json:"crc"`
 }
+
+var ErrorIncompatible = errors.New("incompatible save")
 
 
 func ReadHeader(filePath string) (Header, error) {
 	var data Header
+	var err error
 
-	fp, err := os.Open(filePath)
+	datFile, err := openSave(filePath)
 	if err != nil {
 		log.Printf("error opening file: %s", err)
 		return data, err
 	}
-	defer fp.Close()
+	defer datFile.Close()
 
-	data.FactorioVersion, err = readVersion16(fp)
+	data.FactorioVersion, err = readVersion16(datFile)
 	if err != nil {
 		log.Printf("Cant read FactorioVersion: %s", err)
 		return data, err
@@ -64,101 +68,102 @@ func ReadHeader(filePath string) (Header, error) {
 
 	if !data.FactorioVersion.CheckCompatibility(0, 16, 0) {
 		log.Printf("NOT COMPATIBLE Save-File")
-		return data, err
+		log.Println(data)
+		return data, ErrorIncompatible
 	}
 
-	data.Campaign, err = readUTF8String(fp)
+	data.Campaign, err = readUTF8String(datFile)
 	if err != nil {
 		log.Printf("Cant read Campaign: %s", err)
 		return data, err
 	}
 
-	data.Name, err = readUTF8String(fp)
+	data.Name, err = readUTF8String(datFile)
 	if err != nil {
 		log.Printf("Cant read Name: %s", err)
 		return data, err
 	}
 
-	data.BaseMod, err = readUTF8String(fp)
+	data.BaseMod, err = readUTF8String(datFile)
 	if err != nil {
 		log.Printf("Cant read BaseMod: %s", err)
 		return data, err
 	}
 
-	data.Difficulty, err = readUint8(fp)
+	data.Difficulty, err = readUint8(datFile)
 	if err != nil {
 		log.Printf("Cant read Difficulty: %s", err)
 		return data, err
 	}
 
-	data.Finished, err = readBool(fp)
+	data.Finished, err = readBool(datFile)
 	if err != nil {
 		log.Printf("Couln't read Finished bool: %s", err)
 		return data, err
 	}
 
-	data.PlayerWon, err = readBool(fp)
+	data.PlayerWon, err = readBool(datFile)
 	if err != nil {
 		log.Printf("Couldn't read PlayerWon: %s", err)
 		return data, err
 	}
 
-	data.NextLevel, err = readUTF8String(fp)
+	data.NextLevel, err = readUTF8String(datFile)
 	if err != nil {
 		log.Printf("Couldn't read NextLevel: %s", err)
 		return data, err
 	}
 
-	data.CanContinue, err = readBool(fp)
+	data.CanContinue, err = readBool(datFile)
 	if err != nil {
 		log.Printf("Couldn't read CanContinue: %s", err)
 		return data, err
 	}
 
-	data.FinishedButContinuing, err = readBool(fp)
+	data.FinishedButContinuing, err = readBool(datFile)
 	if err != nil {
 		log.Printf("Couldn't read FinishedButContinuing: %s", err)
 		return data, err
 	}
 
-	data.SavingReplay, err = readBool(fp)
+	data.SavingReplay, err = readBool(datFile)
 	if err != nil {
 		log.Printf("Couldn't read SavingReplay: %s", err)
 		return data, err
 	}
 
-	data.AllowNonAdminDebugOptions, err = readBool(fp)
+	data.AllowNonAdminDebugOptions, err = readBool(datFile)
 	if err != nil {
 		log.Printf("Couldn't read allow_non_admin_debug_options: %s", err)
 		return data, err
 	}
 
-	data.LoadedFrom, err = readVersionShort8(fp)
+	data.LoadedFrom, err = readVersionShort8(datFile)
 	if err != nil {
 		log.Printf("Couldn't read LoadedFrom: %s", err)
 		return data, err
 	}
 
-	data.LoadedFromBuild, err = readUint16(fp)
+	data.LoadedFromBuild, err = readUint16(datFile)
 	if err != nil {
 		log.Printf("Couldn't read LoadedFromBuild: %s", err)
 		return data, err
 	}
 
-	data.AllowedCommads, err = readUint8(fp)
+	data.AllowedCommads, err = readUint8(datFile)
 	if err != nil {
 		log.Printf("Couldn't read AllowedCommands: %s", err)
 		return data, err
 	}
 
-	data.NumMods, err = readUint8(fp)
+	data.NumMods, err = readUint8(datFile)
 	if err != nil {
 		log.Printf("Couldn't read NumMods: %s", err)
 		return data, err
 	}
 
 	for i := uint8(0); i < data.NumMods; i++ {
-		SingleMod, err := readSingleMod(fp)
+		SingleMod, err := readSingleMod(datFile)
 		if err != nil {
 			log.Printf("Couldn't read SingleMod: %s", err)
 			return data, err
@@ -167,11 +172,10 @@ func ReadHeader(filePath string) (Header, error) {
 		data.Mods = append(data.Mods, SingleMod)
 	}
 
-	log.Println(data)
 	return data, nil
 }
 
-func readUTF8String(file *os.File) (string, error) {
+func readUTF8String(file io.ReadCloser) (string, error) {
 	var err error
 	infoByte := make([]byte, 1)
 
@@ -193,7 +197,7 @@ func readUTF8String(file *os.File) (string, error) {
 	return finalizedString, nil
 }
 
-func readUint8(file *os.File) (uint8, error) {
+func readUint8(file io.ReadCloser) (uint8, error) {
 	var err error
 	var temp [1]byte
 	_, err = file.Read(temp[:])
@@ -205,7 +209,7 @@ func readUint8(file *os.File) (uint8, error) {
 	return uint8(temp[0]), nil
 }
 
-func readUint16(file *os.File) (uint16, error) {
+func readUint16(file io.ReadCloser) (uint16, error) {
 	var err error
 	var temp [2]byte
 
@@ -218,7 +222,7 @@ func readUint16(file *os.File) (uint16, error) {
 	return binary.LittleEndian.Uint16(temp[:]), nil
 }
 
-func readUint32(file *os.File) (uint32, error) {
+func readUint32(file io.ReadCloser) (uint32, error) {
 	var err error
 	var temp [4]byte
 
@@ -231,7 +235,7 @@ func readUint32(file *os.File) (uint32, error) {
 	return binary.LittleEndian.Uint32(temp[:]), nil
 }
 
-func readBool(file *os.File) (bool, error) {
+func readBool(file io.ReadCloser) (bool, error) {
 	byteAsInt, err := readUint8(file)
 	if err != nil {
 		log.Printf("error loading Uint8: %s", err)
@@ -241,7 +245,7 @@ func readBool(file *os.File) (bool, error) {
 	return byteAsInt != 0, nil
 }
 
-func readVersion16(file *os.File) (version16, error) {
+func readVersion16(file io.ReadCloser) (version16, error) {
 	var Version version16
 	var VersionShort versionShort16
 	var err error
@@ -265,7 +269,7 @@ func readVersion16(file *os.File) (version16, error) {
 	return Version, nil
 }
 
-func readVersionShort16(file *os.File) (versionShort16, error) {
+func readVersionShort16(file io.ReadCloser) (versionShort16, error) {
 	var Version versionShort16
 	var err error
 
@@ -290,7 +294,7 @@ func readVersionShort16(file *os.File) (versionShort16, error) {
 	return Version, err
 }
 
-func readVersionShort8(file *os.File) (versionShort8, error) {
+func readVersionShort8(file io.ReadCloser) (versionShort8, error) {
 	var Version versionShort8
 	var err error
 
@@ -315,7 +319,7 @@ func readVersionShort8(file *os.File) (versionShort8, error) {
 	return Version, nil
 }
 
-func readSingleMod(file *os.File) (singleMod, error) {
+func readSingleMod(file io.ReadCloser) (singleMod, error) {
 	var Mod singleMod
 	var err error
 
@@ -341,5 +345,5 @@ func readSingleMod(file *os.File) (singleMod, error) {
 }
 
 func (Version *versionShort16) CheckCompatibility(Major uint16, Minor uint16, Build uint16) (bool) {
-	return Major >= Version.Major && Minor >= Version.Minor && Build >= Version.Build
+	return Version.Major >= Major && Version.Minor >= Minor && Version.Build >= Build
 }

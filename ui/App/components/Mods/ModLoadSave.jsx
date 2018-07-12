@@ -1,6 +1,6 @@
 import React from 'react';
 
-class ModOverview extends React.Component {
+class ModLoadSave extends React.Component {
     constructor(props) {
         super(props);
 
@@ -12,8 +12,27 @@ class ModOverview extends React.Component {
         this.props.getSaves();
     }
 
-    loadMods() {
-        console.log("baum");
+    loadMods(e) {
+        e.preventDefault();
+
+        // let save = $(e.target).find("select").val();
+
+        $.ajax({
+            url: "/api/mods/save/load",
+            method: "POST",
+            data: $(e.target).serialize(),
+            dataType: "JSON",
+            success: (data) => {
+            },
+            error: (jqXHR) => {
+                let json_data = JSON.parse(jqXHR.responseJSON.data);
+
+                swal({
+                    title: json_data.detail,
+                    type: "error"
+                });
+            }
+        });
     }
 
     render() {
@@ -32,17 +51,19 @@ class ModOverview extends React.Component {
 
         return (
             <div className="box-body">
-                <div className="input-group">
-                    <select className="custom-select form-control" id="inputGroupSelect04">
-                        {saves}
-                    </select>
-                    <div className="input-group-append">
-                        <button className="btn btn-outline-secondary" type="button" onClick={this.loadMods}>Load Mods</button>
+                <form action="" onSubmit={this.loadMods}>
+                    <div className="input-group">
+                        <select className="custom-select form-control" name="saveFile">
+                            {saves}
+                        </select>
+                        <div className="input-group-append">
+                            <button className="btn btn-outline-secondary" type="submit">Load Mods</button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         )
     }
 }
 
-export default ModOverview;
+export default ModLoadSave;

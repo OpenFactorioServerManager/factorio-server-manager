@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"factorioSave"
 )
 
 // Returns JSON response of all mods installed in factorio/mods
@@ -453,6 +454,45 @@ func DownloadModsHandler(w http.ResponseWriter, r *http.Request) {
 	writerHeader := w.Header()
 	writerHeader.Set("Content-Type", "application/zip;charset=UTF-8")
 	writerHeader.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "all_installed_mods.zip"))
+}
+
+//Returns JSON response with the found mods
+func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	//Get Data out of the request
+	SaveFile := r.FormValue("saveFile")
+
+	SaveFileComplete := filepath.Join(config.FactorioSavesDir, SaveFile)
+	resp.Data, err = factorioSave.ReadHeader(SaveFileComplete)
+
+	if err == factorioSave.ErrorIncompatible {
+		w.WriteHeader(500)
+		resp.Data = fmt.Sprintf("%s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in loadModsFromSave: %s", err)
+		}
+		return
+	}
+	if err != nil {
+		w.WriteHeader(500)
+		resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in loadModsFromSave: %s", err)
+		}
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in LoadModsFromSave: %s", err)
+	}
 }
 
 func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {

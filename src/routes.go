@@ -214,6 +214,11 @@ var apiRoutes = Routes{
 		"/mods/download",
 		DownloadModsHandler,
 	}, {
+		"LoadModsFromSave",
+		"POST",
+		"/mods/save/load",
+		LoadModsFromSaveHandler,
+	}, {
 		"ListSaves",
 		"GET",
 		"/saves/list",
