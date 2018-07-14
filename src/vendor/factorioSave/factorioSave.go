@@ -5,6 +5,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+	"strconv"
+	"github.com/Masterminds/semver"
 )
 
 type version16 struct {
@@ -66,7 +68,13 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, err
 	}
 
-	if !data.FactorioVersion.CheckCompatibility(0, 16, 0) {
+	Constraint, _ := semver.NewConstraint("0.16.0 - 0.17.0")
+	Compatible, err := data.FactorioVersion.CheckCompatibility(Constraint)
+	if err != nil {
+		log.Printf("Error checking compatibility: %s", err)
+		return data, err
+	}
+	if !Compatible {
 		log.Printf("NOT COMPATIBLE Save-File")
 		log.Println(data)
 		return data, ErrorIncompatible
@@ -344,6 +352,12 @@ func readSingleMod(file io.ReadCloser) (singleMod, error) {
 	return Mod, err
 }
 
-func (Version *versionShort16) CheckCompatibility(Major uint16, Minor uint16, Build uint16) (bool) {
-	return Version.Major >= Major && Version.Minor >= Minor && Version.Build >= Build
+func (Version *versionShort16) CheckCompatibility(constraints *semver.Constraints) (bool, error) {
+	Ver, err := semver.NewVersion(strconv.Itoa(int(Version.Major)) + "." + strconv.Itoa(int(Version.Minor)) + "." + strconv.Itoa(int(Version.Build)))
+	if err != nil {
+		log.Printf("Error creating semver-version: %s", err)
+		return false, err
+	}
+
+	return constraints.Check(Ver), nil
 }
