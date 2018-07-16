@@ -1,10 +1,12 @@
 import React from 'react';
+import ReactDOMServer from 'react-dom/server';
 
 class ModLoadSave extends React.Component {
     constructor(props) {
         super(props);
 
         this.loadMods = this.loadMods.bind(this);
+        this.loadModsSwalHandler = this.loadModsSwalHandler.bind(this);
     }
 
     componentDidMount() {
@@ -23,6 +25,57 @@ class ModLoadSave extends React.Component {
             data: $(e.target).serialize(),
             dataType: "JSON",
             success: (data) => {
+                let checkboxes = [];
+
+                data.data.mods.forEach((mod) => {
+                    let singleCheckbox = <tr key={mod.name}>
+                        <td>
+                            {mod.name}
+                            <input type="hidden" name="mod_name[]" value={mod.name}/>
+                        </td>
+                        <td>
+                            {mod.version.major + "." + mod.version.minor + "." + mod.version.build}
+                            <input type="hidden" name="mod_version[]"/>
+                        </td>
+                    </tr>
+
+                    checkboxes.push(singleCheckbox);
+                });
+
+                let table = <div>
+                    All Mods will be installed
+                    <div style={{display: "flex", width: "100%", justifyContent: "center"}}>
+                        <form id="swalForm">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            ModName
+                                        </th>
+                                        <th>
+                                            ModVersion
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        {checkboxes}
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+
+                swal({
+                    title: "Mods to install",
+                    text: ReactDOMServer.renderToStaticMarkup(table),
+                    html: true,
+                    type: 'info',
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: "Download Mods!",
+                    cancelButtonText: "Cancel",
+                    showLoaderOnConfirm: true
+                }, this.loadModsSwalHandler);
             },
             error: (jqXHR) => {
                 let json_data = JSON.parse(jqXHR.responseJSON.data);
@@ -33,6 +86,13 @@ class ModLoadSave extends React.Component {
                 });
             }
         });
+    }
+
+    loadModsSwalHandler() {
+        $.ajax({
+            url: "/api/mods/install/multiple"
+        })
+        console.log($("#swalForm").serialize());
     }
 
     render() {
