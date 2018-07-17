@@ -49,10 +49,9 @@ type singleMod struct {
 }
 
 var ErrorIncompatible = errors.New("incompatible save")
-
+var data Header
 
 func ReadHeader(filePath string) (Header, error) {
-	var data Header
 	var err error
 
 	datFile, err := openSave(filePath)
@@ -140,10 +139,18 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, err
 	}
 
-	data.AllowNonAdminDebugOptions, err = readBool(datFile)
+	Constraint, _ = semver.NewConstraint(">= 0.16.0")
+	Used, err := data.FactorioVersion.CheckCompatibility(Constraint)
 	if err != nil {
-		log.Printf("Couldn't read allow_non_admin_debug_options: %s", err)
+		log.Printf("Error checking if used: %s", err)
 		return data, err
+	}
+	if Used {
+		data.AllowNonAdminDebugOptions, err = readBool(datFile)
+		if err != nil {
+			log.Printf("Couldn't read allow_non_admin_debug_options: %s", err)
+			return data, err
+		}
 	}
 
 	data.LoadedFrom, err = readVersionShort8(datFile)
@@ -180,6 +187,7 @@ func ReadHeader(filePath string) (Header, error) {
 		data.Mods = append(data.Mods, SingleMod)
 	}
 
+	log.Println(data)
 	return data, nil
 }
 
@@ -343,10 +351,18 @@ func readSingleMod(file io.ReadCloser) (singleMod, error) {
 		return Mod, err
 	}
 
-	Mod.CRC, err = readUint32(file)
+	Constraint, _ := semver.NewConstraint("> 0.15.0")
+	Used, err := data.FactorioVersion.CheckCompatibility(Constraint)
 	if err != nil {
-		log.Printf("error loading CRC: %s", err)
+		log.Printf("Error checking used of CRC: %s", err)
 		return Mod, err
+	}
+	if Used {
+		Mod.CRC, err = readUint32(file)
+		if err != nil {
+			log.Printf("error loading CRC: %s", err)
+			return Mod, err
+		}
 	}
 
 	return Mod, err

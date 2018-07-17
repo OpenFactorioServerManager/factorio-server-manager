@@ -80,10 +80,9 @@ class ModLoadSave extends React.Component {
                 }, this.loadModsSwalHandler);
             },
             error: (jqXHR) => {
-                let json_data = JSON.parse(jqXHR.responseJSON.data);
-
                 swal({
-                    title: json_data.detail,
+                    title: jqXHR.responseJSON.data,
+                    html: true,
                     type: "error",
                 });
             }

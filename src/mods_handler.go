@@ -575,15 +575,15 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	resp.Data, err = factorioSave.ReadHeader(SaveFileComplete)
 
 	if err == factorioSave.ErrorIncompatible {
-		w.WriteHeader(500)
-		resp.Data = fmt.Sprintf("%s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("%s<br>Only can read 0.16.x save files", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in loadModsFromSave: %s", err)
 		}
 		return
 	}
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in loadModsFromSave: %s", err)
