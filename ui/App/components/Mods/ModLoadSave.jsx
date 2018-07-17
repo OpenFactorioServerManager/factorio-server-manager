@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
+import {instanceOfModsContent} from "./ModsPropTypes";
 
 class ModLoadSave extends React.Component {
     constructor(props) {
@@ -17,8 +18,6 @@ class ModLoadSave extends React.Component {
     loadMods(e) {
         e.preventDefault();
 
-        // let save = $(e.target).find("select").val();
-
         $.ajax({
             url: "/api/mods/save/load",
             method: "POST",
@@ -28,14 +27,17 @@ class ModLoadSave extends React.Component {
                 let checkboxes = [];
 
                 data.data.mods.forEach((mod) => {
+                    if(mod.name == "base") return;
+
+                    let modVersion = mod.version.major + "." + mod.version.minor + "." + mod.version.build;
                     let singleCheckbox = <tr key={mod.name}>
                         <td>
                             {mod.name}
-                            <input type="hidden" name="mod_name[]" value={mod.name}/>
+                            <input type="hidden" name="mod_name" value={mod.name}/>
                         </td>
                         <td>
-                            {mod.version.major + "." + mod.version.minor + "." + mod.version.build}
-                            <input type="hidden" name="mod_version[]"/>
+                            {modVersion}
+                            <input type="hidden" name="mod_version" value={modVersion}/>
                         </td>
                     </tr>
 
@@ -82,7 +84,7 @@ class ModLoadSave extends React.Component {
 
                 swal({
                     title: json_data.detail,
-                    type: "error"
+                    type: "error",
                 });
             }
         });
@@ -90,14 +92,32 @@ class ModLoadSave extends React.Component {
 
     loadModsSwalHandler() {
         $.ajax({
-            url: "/api/mods/install/multiple"
+            url: "/api/mods/install/multiple",
+            method: "POST",
+            dataType: "JSON",
+            data: $("#swalForm").serialize(),
+            success: (data) => {
+                swal({
+                    title: "All Mods installed successfully!",
+                    type: "success"
+                });
+
+                this.props.modContentClass.setState({
+                    installedMods: data.data.mods
+                });
+            },
+            error: (jqXHR) => {
+                let json_data = JSON.parse(jqXHR.responseJSON.data);
+
+                swal({
+                    title: json_data.detail,
+                    type: "error",
+                });
+            }
         })
-        console.log($("#swalForm").serialize());
     }
 
     render() {
-        console.log(this.props.saves);
-
         let saves = [];
         this.props.saves.forEach((value, index) => {
             if(index != this.props.saves.length - 1) {
@@ -124,6 +144,10 @@ class ModLoadSave extends React.Component {
             </div>
         )
     }
+}
+
+ModLoadSave.propTypes = {
+    modContentClass: instanceOfModsContent.isRequired,
 }
 
 export default ModLoadSave;

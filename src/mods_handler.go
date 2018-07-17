@@ -13,7 +13,26 @@ import (
 	"os"
 	"path/filepath"
 	"factorioSave"
+	"time"
 )
+
+type ModPortalStruct struct {
+	DownloadsCount int    `json:"downloads_count"`
+	Name           string `json:"name"`
+	Owner          string `json:"owner"`
+	Releases       []struct {
+		DownloadURL string `json:"download_url"`
+		FileName    string `json:"file_name"`
+		InfoJSON    struct {
+			FactorioVersion string `json:"factorio_version"`
+		} `json:"info_json"`
+		ReleasedAt time.Time `json:"released_at"`
+		Sha1       string    `json:"sha1"`
+		Version    string    `json:"version"`
+	} `json:"releases"`
+	Summary string `json:"summary"`
+	Title   string `json:"title"`
+}
 
 // Returns JSON response of all mods installed in factorio/mods
 func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
@@ -212,7 +231,7 @@ func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		resp.Data = fmt.Sprintf("Error in installMod: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in installMod: %s", err)
@@ -225,6 +244,90 @@ func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error in ModPortalInstallHandler: %s", err)
+	}
+}
+
+func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+	r.ParseForm()
+
+	modsList := make([]string, 0)
+	versionsList := make([]string, 0)
+
+	//Parse incoming data
+	for key, values := range r.PostForm {
+		if key == "mod_name" {
+			for _, v := range values {
+				modsList = append(modsList, v)
+			}
+		} else if key == "mod_version" {
+			for _, v := range values {
+				versionsList = append(versionsList, v)
+			}
+		}
+	}
+
+	mods, err := newMods(config.FactorioModsDir)
+	if err != nil {
+		log.Printf("error creating mods: %s", err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in searchModPortal: %s", err)
+		}
+		return
+	}
+
+	for modIndex, mod := range modsList {
+		var err error
+
+		//get details of mod
+		modDetails, err, statusCode := getModDetails(mod)
+		if err != nil {
+			w.WriteHeader(statusCode)
+			resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error in searchModPortal: %s", err)
+			}
+			return
+		}
+
+		modDetailsArray := []byte(modDetails)
+		var modDetailsStruct ModPortalStruct
+
+		//read mod-data into Struct
+		err = json.Unmarshal(modDetailsArray, &modDetailsStruct)
+		if err != nil {
+			log.Printf("error reading modPortalDetails: %s", err)
+
+			w.WriteHeader(http.StatusInternalServerError)
+			resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				log.Printf("Error in searchModPortal: %s", err)
+			}
+			return
+		}
+
+		//find correct mod-version
+		for _, release := range modDetailsStruct.Releases {
+			if release.Version == versionsList[modIndex] {
+				mods.downloadMod(release.DownloadURL, release.FileName, modDetailsStruct.Name)
+				break
+			}
+		}
+	}
+
+	resp.Data = mods.listInstalledMods()
+
+	resp.Success = true
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in ToggleModHandler: %s", err)
 	}
 }
 
@@ -245,7 +348,7 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		resp.Data = fmt.Sprintf("Error in listInstalledModsByFolder: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in listInstalledModsByFolder: %s", err)
@@ -277,7 +380,7 @@ func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		resp.Data = fmt.Sprintf("Error in deleteMod: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in DeleteModHandler: %s", err)

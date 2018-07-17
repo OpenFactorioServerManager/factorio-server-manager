@@ -184,6 +184,11 @@ var apiRoutes = Routes{
 		"/mods/install",
 		ModPortalInstallHandler,
 	}, {
+		"ModPortalInstallMultiple",
+		"POST",
+		"/mods/install/multiple",
+		ModPortalInstallMultipleHandler,
+	}, {
 		"ToggleMod",
 		"POST",
 		"/mods/toggle",
