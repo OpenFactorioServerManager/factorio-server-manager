@@ -39,7 +39,7 @@ type Header struct {
 	LoadedFrom                versionShort8 `json:"loaded_from"`
 	LoadedFromBuild           uint16        `json:"loaded_from_build"`
 	AllowedCommads            uint8         `json:"allowed_commads"`
-	NumMods                   uint8         `json:"num_mods"`
+	NumMods                   uint32        `json:"num_mods"`
 	Mods                      []singleMod   `json:"mods"`
 }
 type singleMod struct {
@@ -50,9 +50,12 @@ type singleMod struct {
 
 var ErrorIncompatible = errors.New("incompatible save")
 var data Header
+var constraintGreaterThan0_16 *semver.Constraints
 
 func ReadHeader(filePath string) (Header, error) {
 	var err error
+
+	constraintGreaterThan0_16, _ = semver.NewConstraint(">= 0.16.0")
 
 	datFile, err := openSave(filePath)
 	if err != nil {
@@ -67,7 +70,7 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, err
 	}
 
-	Constraint, _ := semver.NewConstraint("0.16.0 - 0.17.0")
+	Constraint, _ := semver.NewConstraint("0.14.14 - 0.17.0")
 	Compatible, err := data.FactorioVersion.CheckCompatibility(Constraint)
 	if err != nil {
 		log.Printf("Error checking compatibility: %s", err)
@@ -79,19 +82,19 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, ErrorIncompatible
 	}
 
-	data.Campaign, err = readUTF8String(datFile)
+	data.Campaign, err = readUTF8String(datFile, false)
 	if err != nil {
 		log.Printf("Cant read Campaign: %s", err)
 		return data, err
 	}
 
-	data.Name, err = readUTF8String(datFile)
+	data.Name, err = readUTF8String(datFile, false)
 	if err != nil {
 		log.Printf("Cant read Name: %s", err)
 		return data, err
 	}
 
-	data.BaseMod, err = readUTF8String(datFile)
+	data.BaseMod, err = readUTF8String(datFile, false)
 	if err != nil {
 		log.Printf("Cant read BaseMod: %s", err)
 		return data, err
@@ -115,7 +118,7 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, err
 	}
 
-	data.NextLevel, err = readUTF8String(datFile)
+	data.NextLevel, err = readUTF8String(datFile, false)
 	if err != nil {
 		log.Printf("Couldn't read NextLevel: %s", err)
 		return data, err
@@ -139,8 +142,7 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, err
 	}
 
-	Constraint, _ = semver.NewConstraint(">= 0.16.0")
-	Used, err := data.FactorioVersion.CheckCompatibility(Constraint)
+	Used, err := data.FactorioVersion.CheckCompatibility(constraintGreaterThan0_16)
 	if err != nil {
 		log.Printf("Error checking if used: %s", err)
 		return data, err
@@ -171,13 +173,25 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, err
 	}
 
-	data.NumMods, err = readUint8(datFile)
+	New, err := data.FactorioVersion.CheckCompatibility(constraintGreaterThan0_16)
+	if err != nil {
+		log.Printf("error checking compatibility: %s", err)
+		return data, err
+	}
+
+	if New {
+		numMods8, err2 := readUint8(datFile) //TODO read Optim. int
+		err = err2
+		data.NumMods = uint32(numMods8)
+	} else {
+		data.NumMods, err = readUint32(datFile)
+	}
 	if err != nil {
 		log.Printf("Couldn't read NumMods: %s", err)
 		return data, err
 	}
 
-	for i := uint8(0); i < data.NumMods; i++ {
+	for i := uint32(0); i < data.NumMods; i++ {
 		SingleMod, err := readSingleMod(datFile)
 		if err != nil {
 			log.Printf("Couldn't read SingleMod: %s", err)
@@ -191,18 +205,30 @@ func ReadHeader(filePath string) (Header, error) {
 	return data, nil
 }
 
-func readUTF8String(file io.ReadCloser) (string, error) {
+func readUTF8String(file io.ReadCloser, forcedOptim bool) (string, error) {
 	var err error
-	infoByte := make([]byte, 1)
 
-	_, err = file.Read(infoByte)
+	New, err :=  data.FactorioVersion.CheckCompatibility(constraintGreaterThan0_16)
 	if err != nil {
-		log.Printf("Error reading infoByte: %s", err)
-		return "", nil
+		log.Printf("Couldn't checkCompatibility: %s", err)
+		return "", err
 	}
-	stringLengthInBytes := int8(infoByte[0])
 
-	stringBytes := make([]byte, stringLengthInBytes)
+	var infoByteStringLength uint32
+	if New || forcedOptim {
+		infoByteInt8, err2 := readUint8(file) //TODO read optimized int
+		err = err2
+		infoByteStringLength = uint32(infoByteInt8)
+	} else {
+		infoByteStringLength, err = readUint32(file) //uint32
+	}
+
+	if err != nil {
+		log.Printf("Couldn't read infoByteStringLength: %s", err)
+		return "", err
+	}
+
+	stringBytes := make([]byte, infoByteStringLength)
 	_, err = file.Read(stringBytes)
 	if err != nil {
 		log.Printf("error reading bytes: %s", err)
@@ -339,7 +365,7 @@ func readSingleMod(file io.ReadCloser) (singleMod, error) {
 	var Mod singleMod
 	var err error
 
-	Mod.Name, err = readUTF8String(file)
+	Mod.Name, err = readUTF8String(file, true)
 	if err != nil {
 		log.Printf("error loading modName: %s", err)
 		return Mod, err
