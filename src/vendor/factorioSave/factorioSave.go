@@ -50,13 +50,13 @@ type singleMod struct {
 
 var ErrorIncompatible = errors.New("incompatible save")
 var data Header
-var constraintGreaterThan0_16 *semver.Constraints
+var constraintGreaterThan016 *semver.Constraints
 
 func ReadHeader(filePath string) (Header, error) {
 	var err error
 	data = Header{}
 
-	constraintGreaterThan0_16, _ = semver.NewConstraint(">= 0.16.0")
+	constraintGreaterThan016, _ = semver.NewConstraint(">= 0.16.0")
 
 	datFile, err := openSave(filePath)
 	if err != nil {
@@ -143,7 +143,7 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, err
 	}
 
-	Used, err := data.FactorioVersion.CheckCompatibility(constraintGreaterThan0_16)
+	Used, err := data.FactorioVersion.CheckCompatibility(constraintGreaterThan016)
 	if err != nil {
 		log.Printf("Error checking if used: %s", err)
 		return data, err
@@ -174,7 +174,7 @@ func ReadHeader(filePath string) (Header, error) {
 		return data, err
 	}
 
-	New, err := data.FactorioVersion.CheckCompatibility(constraintGreaterThan0_16)
+	New, err := data.FactorioVersion.CheckCompatibility(constraintGreaterThan016)
 	if err != nil {
 		log.Printf("error checking compatibility: %s", err)
 		return data, err
@@ -208,7 +208,7 @@ func ReadHeader(filePath string) (Header, error) {
 func readUTF8String(file io.ReadCloser, forcedOptim bool) (string, error) {
 	var err error
 
-	New, err :=  data.FactorioVersion.CheckCompatibility(constraintGreaterThan0_16)
+	New, err :=  data.FactorioVersion.CheckCompatibility(constraintGreaterThan016)
 	if err != nil {
 		log.Printf("Couldn't checkCompatibility: %s", err)
 		return "", err
