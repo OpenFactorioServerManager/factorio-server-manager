@@ -44,6 +44,14 @@ class ModLoadSave extends React.Component {
                     checkboxes.push(singleCheckbox);
                 });
 
+                if(checkboxes.length == 0) {
+                    swal({
+                        title: "No mods in this save!",
+                        type: "error"
+                    });
+                    return;
+                }
+
                 let table = <div>
                     All Mods will be installed
                     <div style={{display: "flex", width: "100%", justifyContent: "center"}}>

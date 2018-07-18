@@ -54,6 +54,7 @@ var constraintGreaterThan0_16 *semver.Constraints
 
 func ReadHeader(filePath string) (Header, error) {
 	var err error
+	data = Header{}
 
 	constraintGreaterThan0_16, _ = semver.NewConstraint(">= 0.16.0")
 
@@ -201,7 +202,6 @@ func ReadHeader(filePath string) (Header, error) {
 		data.Mods = append(data.Mods, SingleMod)
 	}
 
-	log.Println(data)
 	return data, nil
 }
 
