@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class UploadSave extends React.Component {
     constructor(props) {
@@ -52,7 +53,7 @@ class UploadSave extends React.Component {
 }
 
 UploadSave.propTypes = {
-    getSaves: React.PropTypes.func.isRequired,
+    getSaves: PropTypes.func.isRequired,
 }
 
 export default UploadSave

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import Mod from "./Mod.jsx";
 
 class ModManager extends React.Component {
@@ -41,11 +42,11 @@ class ModManager extends React.Component {
 }
 
 ModManager.propTypes = {
-    installedMods: React.PropTypes.array,
-    toggleMod: React.PropTypes.func.isRequired,
-    deleteMod: React.PropTypes.func.isRequired,
-    updateMod: React.PropTypes.func.isRequired,
-    updateCountAdd: React.PropTypes.func,
+    installedMods: PropTypes.array,
+    toggleMod: PropTypes.func.isRequired,
+    deleteMod: PropTypes.func.isRequired,
+    updateMod: PropTypes.func.isRequired,
+    updateCountAdd: PropTypes.func,
 }
 
 export default ModManager;

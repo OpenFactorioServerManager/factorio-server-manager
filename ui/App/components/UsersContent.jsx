@@ -1,5 +1,5 @@
 import React from 'react';
-import {IndexLink} from 'react-router';
+import {Link} from 'react-router-dom';
 import UserTable from './Users/UserTable.jsx';
 import AddUser from './Users/AddUser.jsx';
 
@@ -35,14 +35,14 @@ class UsersContent extends React.Component {
         return(
             <div className="content-wrapper">
                 <section className="content-header">
-                <h1>
-                    Settings
-                    <small>Manage Factorio Server Manager settings</small>
-                </h1>
-                <ol className="breadcrumb">
-                    <li><IndexLink to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</IndexLink></li>
-                    <li className="active">Here</li>
-                </ol>
+                    <h1>
+                        Settings
+                        <small>Manage Factorio Server Manager settings</small>
+                    </h1>
+                    <ol className="breadcrumb">
+                        <li><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</Link></li>
+                        <li className="active">Here</li>
+                    </ol>
                 </section>
   
                 <section className="content">
@@ -53,7 +53,6 @@ class UsersContent extends React.Component {
                     <AddUser 
                         listUsers={this.listUsers}
                     />
-
                 </section>
             </div>
         )

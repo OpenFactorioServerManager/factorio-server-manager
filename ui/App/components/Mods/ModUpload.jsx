@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class ModUpload extends React.Component {
     componentDidMount() {
@@ -34,8 +35,8 @@ class ModUpload extends React.Component {
     }
 }
 
-ModUpload.PropTypes = {
-    uploadModSuccessHandler: React.PropTypes.func.isRequired
+ModUpload.propTypes = {
+    uploadModSuccessHandler: PropTypes.func.isRequired
 };
 
 export default ModUpload;

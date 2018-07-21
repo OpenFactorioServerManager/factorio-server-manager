@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import swal from 'sweetalert';
 
 class UserTable extends React.Component {
@@ -76,8 +77,8 @@ class UserTable extends React.Component {
 }
 
 UserTable.propTypes = {
-    users: React.PropTypes.array.isRequired,
-    listUsers: React.PropTypes.func.isRequired,
+    users: PropTypes.array.isRequired,
+    listUsers: PropTypes.func.isRequired,
 }
 
 export default UserTable

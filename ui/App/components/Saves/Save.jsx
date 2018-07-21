@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class Save extends React.Component {
     render() {
@@ -33,10 +34,10 @@ class Save extends React.Component {
 }
 
 Save.propTypes = {
-    save: React.PropTypes.object.isRequired,
-    saves: React.PropTypes.array.isRequired,
-    index: React.PropTypes.number.isRequired,
-    removeSave: React.PropTypes.func.isRequired
+    save: PropTypes.object.isRequired,
+    saves: PropTypes.array.isRequired,
+    index: PropTypes.number.isRequired,
+    removeSave: PropTypes.func.isRequired
 }
 
 export default Save

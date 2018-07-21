@@ -1,5 +1,6 @@
 import React from 'react';
-import {Link, IndexLink} from 'react-router';
+import {Link, NavLink} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -9,26 +10,23 @@ class Sidebar extends React.Component {
     render() {
         if (this.props.serverRunning === "running") {
             var serverStatus = 
-                <IndexLink to="/"><i className="fa fa-circle text-success"></i>Server Online</IndexLink>
+                <Link to="/"><i className="fa fa-circle text-success"></i>Server Online</Link>
         } else {
             var serverStatus = 
-                <IndexLink to="/"><i className="fa fa-circle text-danger"></i>Server Offline</IndexLink>
+                <Link to="/"><i className="fa fa-circle text-danger"></i>Server Offline</Link>
         }
 
         return(
             <aside className="main-sidebar">
-
                 <section className="sidebar" style={{height: "100%"}}>
 
                 <div className="user-panel">
                     <div className="pull-left image">
-                    <img src="./dist/dist/img/factorio.jpg" className="img-circle" alt="User Image" />
+                        <img src="./dist/dist/img/factorio.jpg" className="img-circle" alt="User Image" />
                     </div>
                     <div className="pull-left info">
-                    <p>Factorio Server Manager</p>
-
-                    {serverStatus}
-
+                        <p>Factorio Server Manager</p>
+                        {serverStatus}
                     </div>
                 </div>
 
@@ -44,13 +42,41 @@ class Sidebar extends React.Component {
 
                 <ul className="sidebar-menu">
                     <li className="header">MENU</li>
-                    <li><IndexLink to="/" activeClassName="active"><i className="fa fa-tachometer"></i><span>Server Control</span></IndexLink></li>
-                    <li><Link to="/mods" activeClassName="active"><i className="fa fa-pencil"></i><span>Mods</span></Link></li>
-                    <li><Link to="/logs" activeClassName="active"><i className="fa fa-file-text-o"></i> <span>Logs</span></Link></li>
-                    <li><Link to="/saves" activeClassName="active"><i className="fa fa-floppy-o"></i> <span>Saves</span></Link></li>
-                    <li><Link to="/config" activeClassName="active"><i className="fa fa-cogs"></i> <span>Game Configuration</span></Link></li>
-                    <li><Link to="/settings" activeClassName="active"><i className="fa fa-cog"></i> <span>Settings</span></Link></li>
-                    <li><Link to="/console" activeClassName="active"><i className="fa fa-terminal"></i> <span>Console</span></Link></li>
+                    <li>
+                        <NavLink exact to="/" activeClassName="active">
+                            <i className="fa fa-tachometer"></i><span>Server Control</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/mods" activeClassName="active">
+                            <i className="fa fa-pencil"></i><span>Mods</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/logs" activeClassName="active">
+                            <i className="fa fa-file-text-o"></i><span>Logs</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/saves" activeClassName="active">
+                            <i className="fa fa-floppy-o"></i><span>Saves</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/config" activeClassName="active">
+                            <i className="fa fa-cogs"></i><span>Game Configuration</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/settings" activeClassName="active">
+                            <i className="fa fa-cog"></i><span>Settings</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/console" activeClassName="active">
+                            <i className="fa fa-terminal"></i><span>Console</span>
+                        </NavLink>
+                    </li>
                 </ul>
                 </section>
                 <div style={{height: "100%"}}></div>
@@ -60,8 +86,8 @@ class Sidebar extends React.Component {
 }
 
 Sidebar.propTypes = {
-    serverStatus: React.PropTypes.func.isRequired,
-    serverRunning: React.PropTypes.string.isRequired,
+    serverStatus: PropTypes.func.isRequired,
+    serverRunning: PropTypes.string.isRequired,
 }
 
 export default Sidebar

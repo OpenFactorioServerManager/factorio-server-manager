@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class LogLines extends React.Component {
     updateLog() {
@@ -29,8 +30,8 @@ class LogLines extends React.Component {
 }
 
 LogLines.propTypes = {
-    log: React.PropTypes.array.isRequired,
-    getLastLog: React.PropTypes.func.isRequired
+    log: PropTypes.array.isRequired,
+    getLastLog: PropTypes.func.isRequired
 }
 
 export default LogLines

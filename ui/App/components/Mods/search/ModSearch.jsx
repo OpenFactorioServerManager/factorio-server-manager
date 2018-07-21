@@ -1,5 +1,5 @@
 import React from 'react';
-import ModFoundOverview from './ModFoundOverview.jsx';
+import PropTypes from 'prop-types';
 
 class ModSearch extends React.Component {
     render() {
@@ -55,10 +55,10 @@ class ModSearch extends React.Component {
 }
 
 ModSearch.propTypes = {
-    submitSearchMod: React.PropTypes.func.isRequired,
-    loggedIn: React.PropTypes.bool.isRequired,
-    submitFactorioLogin: React.PropTypes.func.isRequired,
-    loadDownloadList: React.PropTypes.func.isRequired
+    submitSearchMod: PropTypes.func.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
+    submitFactorioLogin: PropTypes.func.isRequired,
+    loadDownloadList: PropTypes.func.isRequired
 }
 
 export default ModSearch;

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import {IndexLink} from 'react-router';
+import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom';
 import ModOverview from './Mods/ModOverview.jsx';
 import locks from "locks";
 import SemVer from 'semver';
@@ -529,7 +530,7 @@ class ModsContent extends React.Component {
                         <small>Manage your mods</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><IndexLink to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</IndexLink></li>
+                        <li><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</Link></li>
                         <li className="active">Here</li>
                     </ol>
                 </section>
@@ -557,7 +558,7 @@ class ModsContent extends React.Component {
 }
 
 ModsContent.propTypes = {
-    factorioVersion: React.PropTypes.string,
+    factorioVersion: PropTypes.string,
 };
 
 export default ModsContent;

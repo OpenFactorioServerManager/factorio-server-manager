@@ -1,5 +1,6 @@
 import React from 'react';
-import {Link, browserHistory} from 'react-router';
+import {NavLink} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class HiddenSidebar extends React.Component {
     constructor(props) {
@@ -28,14 +29,14 @@ class HiddenSidebar extends React.Component {
                     <h3 className="control-sidebar-heading">Recent Activity</h3>
                     <ul className="control-sidebar-menu">
                         <li>
-                            <Link to="/login" activeClassName="active">
+                            <NavLink to="/login" activeClassName="active">
                             <i className="menu-icon fa fa-birthday-cake bg-red"></i>
 
                             <div className="menu-info">
                                 <i className="menu-icon fa fa-lock bg-green"></i>
                                 <h4 className="control-sidebar-subheading">Login</h4>
                             </div>
-                            </Link>
+                            </NavLink>
                         </li>
                         <li>
                             <a href="javascript:void(0)">
@@ -188,10 +189,10 @@ class HiddenSidebar extends React.Component {
 }
 
 HiddenSidebar.propTypes = {
-    serverStatus: React.PropTypes.object.isRequired,
-    username: React.PropTypes.string.isRequired,
-    loggedIn: React.PropTypes.bool.isRequired,
-    checkLogin: React.PropTypes.func.isRequired,
+    serverStatus: PropTypes.object.isRequired,
+    username: PropTypes.string.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
+    checkLogin: PropTypes.func.isRequired,
 }
 
 

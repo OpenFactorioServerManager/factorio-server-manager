@@ -1,0 +1,44 @@
+{
+  "name": "factorio-mod-manager",
+  "version": "0.2.0",
+  "description": "Factorio Server Manager UI",
+  "main": "ui/index.js",
+  "scripts": {
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "build": "npm run production",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mroote/factorio-server-manager.git"
+  },
+  "author": "Mitch Roote <mitch@r00t.ca>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mroote/factorio-server-manager/issues"
+  },
+  "homepage": "https://github.com/mroote/factorio-server-manager#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-react": "^6.24.1",
+    "cross-env": "^5.2.0",
+    "laravel-mix": "^2.1.11",
+    "locks": "^0.2.2",
+    "node-sass": "^4.9.2",
+    "react": "^16.4.1",
+    "react-console-component": "^0.6.1",
+    "react-dom": "^16.4.1",
+    "react-native-listener": "^1.0.2",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "semver": "^5.5.0",
+    "sweetalert": "^2.1.0",
+    "prop-types": "latest"
+  }
+}

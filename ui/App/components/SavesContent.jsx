@@ -1,5 +1,5 @@
 import React from 'react';
-import {IndexLink} from 'react-router';
+import {Link} from 'react-router-dom';
 import SavesList from './Saves/SavesList.jsx';
 import CreateSave from './Saves/CreateSave.jsx';
 import UploadSave from './Saves/UploadSave.jsx';
@@ -37,7 +37,7 @@ class SavesContent extends React.Component {
                     <small>Factorio Save Files</small>
                 </h1>
                 <ol className="breadcrumb">
-                    <li><IndexLink to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</IndexLink></li>
+                    <li><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</Link></li>
                     <li className="active">Here</li>
                 </ol>
                 </section>

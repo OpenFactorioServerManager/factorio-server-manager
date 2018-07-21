@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import SemVer from 'semver';
 
 class Mod extends React.Component {
@@ -12,6 +13,8 @@ class Mod extends React.Component {
             newVersionAvailable: false,
             updateInProgress: false
         }
+
+        this.versionAjax = {};
     }
 
     componentDidMount() {
@@ -24,9 +27,13 @@ class Mod extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        this.versionAjax.abort();
+    }
+
     checkForNewVersion() {
         //send AJAX that will check this
-        $.ajax({
+        this.versionAjax = $.ajax({
             url: "/api/mods/details",
             method: "POST",
             data: {
@@ -176,12 +183,12 @@ class Mod extends React.Component {
 }
 
 Mod.propTypes = {
-    mod: React.PropTypes.object.isRequired,
-    toggleMod: React.PropTypes.func.isRequired,
-    deleteMod: React.PropTypes.func.isRequired,
-    updateMod: React.PropTypes.func.isRequired,
-    updateCountAdd: React.PropTypes.func,
-    factorioVersion: React.PropTypes.string,
+    mod: PropTypes.object.isRequired,
+    toggleMod: PropTypes.func.isRequired,
+    deleteMod: PropTypes.func.isRequired,
+    updateMod: PropTypes.func.isRequired,
+    updateCountAdd: PropTypes.func,
+    factorioVersion: PropTypes.string,
 };
 
 export default Mod

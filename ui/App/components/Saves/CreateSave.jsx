@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class CreateSave extends React.Component {
     constructor(props) {
@@ -68,7 +69,7 @@ class CreateSave extends React.Component {
 }
 
 CreateSave.propTypes = {
-    getSaves: React.PropTypes.func.isRequired,
+    getSaves: PropTypes.func.isRequired,
 }
 
 export default CreateSave

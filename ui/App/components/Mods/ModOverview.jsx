@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import NativeListener from 'react-native-listener';
 import ModSearch from './search/ModSearch.jsx';
 import ModUpload from "./ModUpload.jsx";
@@ -151,18 +152,18 @@ class ModOverview extends React.Component {
 }
 
 ModOverview.propTypes = {
-    installedMods: React.PropTypes.array,
-    submitFactorioLogin: React.PropTypes.func.isRequired,
-    toggleMod: React.PropTypes.func.isRequired,
-    deleteMod: React.PropTypes.func.isRequired,
-    deleteAll: React.PropTypes.func.isRequired,
-    updateMod: React.PropTypes.func.isRequired,
-    uploadModSuccessHandler: React.PropTypes.func.isRequired,
-    loggedIn: React.PropTypes.bool.isRequired,
-    factorioLogoutHandler: React.PropTypes.func.isRequired,
-    updatesAvailable: React.PropTypes.number.isRequired,
-    updateAllMods: React.PropTypes.func.isRequired,
-    updateCountAdd: React.PropTypes.func.isRequired,
+    installedMods: PropTypes.array,
+    submitFactorioLogin: PropTypes.func.isRequired,
+    toggleMod: PropTypes.func.isRequired,
+    deleteMod: PropTypes.func.isRequired,
+    deleteAll: PropTypes.func.isRequired,
+    updateMod: PropTypes.func.isRequired,
+    uploadModSuccessHandler: PropTypes.func.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
+    factorioLogoutHandler: PropTypes.func.isRequired,
+    updatesAvailable: PropTypes.number.isRequired,
+    updateAllMods: PropTypes.func.isRequired,
+    updateCountAdd: PropTypes.func.isRequired,
 
     modContentClass: instanceOfModsContent.isRequired,
 };

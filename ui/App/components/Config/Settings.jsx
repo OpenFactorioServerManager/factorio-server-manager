@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class Settings extends React.Component {
     constructor(props) {
@@ -23,8 +24,8 @@ class Settings extends React.Component {
 }
 
 Settings.propTypes = {
-    section: React.PropTypes.string.isRequired,
-    config: React.PropTypes.object.isRequired,
+    section: PropTypes.string.isRequired,
+    config: PropTypes.object.isRequired,
 }
 
 export default Settings

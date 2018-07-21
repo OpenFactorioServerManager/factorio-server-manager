@@ -1,10 +1,17 @@
 import React from 'react';
-import {browserHistory} from 'react-router';
+import {Switch, Route} from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Footer from './components/Footer.jsx';
 import HiddenSidebar from './components/HiddenSidebar.jsx';
 import Socket from '../socket.js';
+import Index from "./components/Index";
+import UsersContent from "./components/UsersContent";
+import ModsContent from "./components/ModsContent";
+import LogsContent from "./components/LogsContent";
+import SavesContent from "./components/SavesContent";
+import ConfigContent from "./components/ConfigContent";
+import ConsoleContent from "./components/ConsoleContent";
 
 class App extends React.Component {
     constructor(props) {
@@ -94,10 +101,10 @@ class App extends React.Component {
             error: (xhr, status, err) => {
                 console.log('api/saves/list', status, err.toString());
             }
-        })
+        });
 
         if (!this.state.saves) {
-            this.setState({saves:[]})
+            this.setState({saves:[]});
         }
     }
 
@@ -135,9 +142,23 @@ class App extends React.Component {
         // render main application,
         // if logged in show application
         // if not logged in show Not logged in message
-        var resp;
+        let appProps = {
+            message: "",
+            messages: this.state.messages,
+            flashMessage: this.flashMessage,
+            facServStatus: this.facServStatus,
+            serverStatus: this.state.serverStatus,
+            factorioVersion: this.state.factorioVersion,
+            getStatus: this.getStatus,
+            saves: this.state.saves,
+            getSaves: this.getSaves,
+            username: this.state.username,
+            socket: this.socket
+        };
+
+        let resp;
         if (this.state.loggedIn) {
-            var resp =
+            resp =
                 <div>
                     <Header
                         username={this.state.username}
@@ -151,22 +172,16 @@ class App extends React.Component {
                     />
 
                     // Render react-router components and pass in props
-                    {React.cloneElement(
-                        this.props.children,
-                        {
-                            message: "",
-                            messages: this.state.messages,
-                            flashMessage: this.flashMessage,
-                            facServStatus: this.facServStatus,
-                            serverStatus: this.state.serverStatus,
-                            factorioVersion: this.state.factorioVersion,
-                            getStatus: this.getStatus,
-                            saves: this.state.saves,
-                            getSaves: this.getSaves,
-                            username: this.state.username,
-                            socket: this.socket
-                        }
-                    )}
+                    <Switch>
+                        <Route path="/server" render={(props) => {return <Index {...props} {...appProps}/>}}/>
+                        <Route path="/settings" render={(props) => {return <UsersContent {...props} {...appProps}/>}}/>
+                        <Route path="/mods" render={(props) => {return <ModsContent {...props} {...appProps}/>}}/>
+                        <Route path="/logs" render={(props) => {return <LogsContent {...props} {...appProps}/>}}/>
+                        <Route path="/saves" render={(props) => {return <SavesContent {...props} {...appProps}/>}}/>
+                        <Route path="/config" render={(props) => {return <ConfigContent {...props} {...appProps}/>}}/>
+                        <Route path="/console" render={(props) => {return <ConsoleContent {...props} {...appProps}/>}}/>
+                        <Route exakt path="/" render={(props) => {return <Index {...props} {...appProps} />}}/>
+                    </Switch>
 
                     <Footer />
 
@@ -178,12 +193,12 @@ class App extends React.Component {
                     />
                 </div>
         } else {
-            var resp = <div><p>Not Logged in</p></div>;
+            resp = <div><p>Not Logged in</p></div>;
         }
 
         return(
             <div className="wrapper">
-            {resp}
+                {resp}
             </div>
         )
     }

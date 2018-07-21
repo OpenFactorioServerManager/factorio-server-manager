@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class ModFoundOverview extends React.Component {
     render() {
@@ -63,8 +64,8 @@ class ModFoundOverview extends React.Component {
 }
 
 ModFoundOverview.propTypes = {
-    shownModList: React.PropTypes.array.isRequired,
-    loadDownloadList: React.PropTypes.func.isRequired
+    shownModList: PropTypes.array.isRequired,
+    loadDownloadList: PropTypes.func.isRequired
 }
 
 export default ModFoundOverview;

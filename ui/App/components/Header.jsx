@@ -1,5 +1,6 @@
 import React from 'react';
-import {Link, IndexLink, browserHistory} from 'react-router';
+import {Link, withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 class Header extends React.Component {
     constructor(props) {
@@ -16,9 +17,10 @@ class Header extends React.Component {
                 console.log(resp)
             }
         });
+
         // Wait for 1 second for logout callback to complete
         setTimeout(() => {
-            browserHistory.push("/login");
+            this.props.history.push("/login")
         }, 1000);
     }
 
@@ -38,7 +40,7 @@ class Header extends React.Component {
         return(
             <header className="main-header">
                 
-                <IndexLink className="logo" to="/"><span className="logo-lg"><b>Factorio</b>SM</span></IndexLink>
+                <Link className="logo" to="/"><span className="logo-lg"><b>Factorio</b>SM</span></Link>
                 
                 <nav className="navbar navbar-static-top" role="navigation">
                 <a href="#" className="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -54,8 +56,8 @@ class Header extends React.Component {
 }
 
 Header.propTypes = {
-    username: React.PropTypes.string.isRequired,
-    loggedIn: React.PropTypes.bool.isRequired,
+    username: PropTypes.string.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
 }
 
-export default Header
+export default withRouter(Header);

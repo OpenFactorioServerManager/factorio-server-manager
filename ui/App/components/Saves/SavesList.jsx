@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Save from './Save.jsx';
 import swal from 'sweetalert';
 
@@ -87,9 +88,9 @@ class SavesList extends React.Component {
 }
 
 SavesList.propTypes = {
-    saves: React.PropTypes.array.isRequired,
-    dlSave: React.PropTypes.func.isRequired,
-    getSaves: React.PropTypes.func.isRequired
+    saves: PropTypes.array.isRequired,
+    dlSave: PropTypes.func.isRequired,
+    getSaves: PropTypes.func.isRequired
 }
 
 export default SavesList
