@@ -198,7 +198,7 @@ class ModsContent extends React.Component {
 
                     let date = new Date(release.released_at);
 
-                    let singleBox = <tr className={incompatibleClass}>
+                    let singleBox = <tr className={incompatibleClass} key={release.info_json.version}>
                         <td>
                             <input type="radio"
                                    name="version"
