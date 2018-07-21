@@ -198,18 +198,18 @@ class ModsContent extends React.Component {
 
                     let date = new Date(release.released_at);
 
-                    let singleBox = <tr className={incompatibleClass} key={release.info_json.version}>
+                    let singleBox = <tr className={incompatibleClass} key={release.version}>
                         <td>
                             <input type="radio"
                                    name="version"
                                    data-link={release.download_url}
                                    data-filename={release.file_name}
                                    data-modid={modId}
-                                   checked={isChecked}
+                                   defaultChecked={isChecked}
                             />
                         </td>
                         <td>
-                            {release.info_json.version}
+                            {release.version}
                         </td>
                         <td>
                             {release.info_json.factorio_version}
@@ -217,9 +217,9 @@ class ModsContent extends React.Component {
                         <td>
                             {date.toLocaleDateString()}
                         </td>
-                        <td>
-                            {release.downloads_count}
-                        </td>
+                        {/*<td>*/}
+                            {/*{release.downloads_count}*/}
+                        {/*</td>*/}
                     </tr>;
 
                     checkboxes.push(singleBox);
@@ -238,9 +238,9 @@ class ModsContent extends React.Component {
                             <th>
                                 Release Date
                             </th>
-                            <th>
-                                Downloads
-                            </th>
+                            {/*<th>*/}
+                                {/*Downloads*/}
+                            {/*</th>*/}
                         </tr>
                     </thead>
 
