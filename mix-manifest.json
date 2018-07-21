@@ -1,4 +1,6 @@
 {
     "/app/bundle.js": "/app/bundle.js",
-    "/app/bundle.js.map": "/app/bundle.js.map"
+    "/app/bundle.css": "/app/bundle.css",
+    "/app/bundle.js.map": "/app/bundle.js.map",
+    "/app/bundle.css.map": "/app/bundle.css.map"
 }

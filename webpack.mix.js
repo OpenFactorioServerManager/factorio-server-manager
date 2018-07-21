@@ -1,7 +1,7 @@
 const mix = require('laravel-mix');
 
-mix.react('ui/index.js', 'app/bundle.js');
-    // .sass('resources/sass/app.scss', 'public/css');
+mix.react('ui/index.js', 'app/bundle.js')
+    .sass('ui/index.scss', 'app/bundle.css');
 
 if (!mix.inProduction()) {
     mix.webpackConfig({
