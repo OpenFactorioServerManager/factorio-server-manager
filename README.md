@@ -177,6 +177,9 @@ go build
 
 * **Mitch Roote** - [roote.ca](https://roote.ca)
 
+## Special Thanks
+- **mickael9** for reverseengineering the factorio-save-file: https://forums.factorio.com/viewtopic.php?f=5&t=8568#
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
