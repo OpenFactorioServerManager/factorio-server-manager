@@ -208,7 +208,7 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 
 		line := strings.Fields(stdScanner.Text())
 		// Ensure logline slice is in bounds
-		if len(line) > 0 {
+		if len(line) > 1 {
 			// Check if Factorio Server reports any errors if so handle it
 			if line[1] == "Error" {
 				err := f.checkLogError(line)
