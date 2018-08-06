@@ -159,7 +159,7 @@ class App extends React.Component {
         let resp;
         if (this.state.loggedIn) {
             resp =
-                <div>
+                <div className="wrapper">
                     <Header
                         username={this.state.username}
                         loggedIn={this.state.loggedIn}
@@ -171,7 +171,7 @@ class App extends React.Component {
                         serverRunning={this.state.serverRunning}
                     />
 
-                    // Render react-router components and pass in props
+                    {/*Render react-router components and pass in props*/}
                     <Switch>
                         <Route path="/server" render={(props) => {return <Index {...props} {...appProps}/>}}/>
                         <Route path="/settings" render={(props) => {return <UsersContent {...props} {...appProps}/>}}/>
@@ -196,11 +196,7 @@ class App extends React.Component {
             resp = <div><p>Not Logged in</p></div>;
         }
 
-        return(
-            <div className="wrapper">
-                {resp}
-            </div>
-        )
+        return resp;
     }
 }
 

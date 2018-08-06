@@ -8,78 +8,81 @@ class Sidebar extends React.Component {
     }
 
     render() {
-        if (this.props.serverRunning === "running") {
-            var serverStatus = 
-                <Link to="/"><i className="fa fa-circle text-success"></i>Server Online</Link>
+        if(this.props.serverRunning === "running") {
+            var serverStatus = <Link to="/" className="d-block text-success"><i className="fa fa-circle"></i>Server Online</Link>
         } else {
-            var serverStatus = 
-                <Link to="/"><i className="fa fa-circle text-danger"></i>Server Offline</Link>
+            var serverStatus = <Link to="/" className="d-block text-danger"><i className="fa fa-circle"></i>Server Offline</Link>
         }
 
-        return(
-            <aside className="main-sidebar">
-                <section className="sidebar" style={{height: "100%"}}>
+        return (
+            <aside className="main-sidebar sidebar-dark-primary elevation-4">
+                <Link className="brand-link" to="/">
+                    <span className="logo-lg"><b>Factorio</b>SM</span>
+                </Link>
 
-                <div className="user-panel">
-                    <div className="pull-left image">
-                        <img src="./dist/dist/img/factorio.jpg" className="img-circle" alt="User Image" />
+                <div className="sidebar">
+                    <div className="user-panel">
+                        <div className="image">
+                            <img src="./dist/img/factorio.jpg" className="img-circle" alt="User Image"/>
+                        </div>
+                        <div className="info">
+                            <div className="text-white">Factorio Server Manager</div>
+                            {serverStatus}
+                        </div>
                     </div>
-                    <div className="pull-left info">
-                        <p>Factorio Server Manager</p>
-                        {serverStatus}
-                    </div>
-                </div>
 
-                <form action="#" method="get" className="sidebar-form">
-                    <div className="input-group">
-                    <input type="text" name="q" className="form-control" placeholder="Search..." />
-                        <span className="input-group-btn">
-                            <button type="submit" name="search" id="search-btn" className="btn btn-flat"><i className="fa fa-search"></i>
+                    {/*<form action="#" method="get" className="sidebar-form">
+                        <div className="input-group">
+                            <input type="text" name="q" className="form-control" placeholder="Search..."/>
+                            <span className="input-group-btn">
+                            <button type="submit" name="search" id="search-btn" className="btn btn-flat"><i
+                                className="fa fa-search"></i>
                             </button>
                         </span>
-                    </div>
-                </form>
+                        </div>
+                    </form>*/}
 
-                <ul className="sidebar-menu">
-                    <li className="header">MENU</li>
-                    <li>
-                        <NavLink exact to="/" activeClassName="active">
-                            <i className="fa fa-tachometer"></i><span>Server Control</span>
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/mods" activeClassName="active">
-                            <i className="fa fa-pencil"></i><span>Mods</span>
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/logs" activeClassName="active">
-                            <i className="fa fa-file-text-o"></i><span>Logs</span>
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/saves" activeClassName="active">
-                            <i className="fa fa-floppy-o"></i><span>Saves</span>
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/config" activeClassName="active">
-                            <i className="fa fa-cogs"></i><span>Game Configuration</span>
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/settings" activeClassName="active">
-                            <i className="fa fa-cog"></i><span>Settings</span>
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/console" activeClassName="active">
-                            <i className="fa fa-terminal"></i><span>Console</span>
-                        </NavLink>
-                    </li>
-                </ul>
-                </section>
-                <div style={{height: "100%"}}></div>
+                    <nav className="mt-2">
+                        <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li className="nav-header">MENU</li>
+                            <li className="nav-item">
+                                <NavLink exact to="/" activeClassName="active" className="nav-link">
+                                    <i className="nav-icon fa fa-tachometer"></i><p>Server Control</p>
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink to="/mods" activeClassName="active" className="nav-link">
+                                    <i className="nav-icon fa fa-pencil"></i><p>Mods</p>
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink to="/logs" activeClassName="active" className="nav-link">
+                                    <i className="nav-icon fa fa-file-text-o"></i><p>Logs</p>
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink to="/saves" activeClassName="active" className="nav-link">
+                                    <i className="nav-icon fa fa-floppy-o"></i><p>Saves</p>
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink to="/config" activeClassName="active" className="nav-link">
+                                    <i className="nav-icon fa fa-cogs"></i><p>Game Configuration</p>
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink to="/settings" activeClassName="active" className="nav-link">
+                                    <i className="nav-icon fa fa-cog"></i><p>Settings</p>
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink to="/console" activeClassName="active" className="nav-link">
+                                    <i className="nav-icon fa fa-terminal"></i><p>Console</p>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </aside>
         )
     }

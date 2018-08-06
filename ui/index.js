@@ -1,3 +1,8 @@
+global.$ = global.jQuery = require('jquery');
+require('bootstrap');
+require('admin-lte/build/js/AdminLTE.js');
+
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Route} from 'react-router';

@@ -28,29 +28,44 @@ class Header extends React.Component {
         var loginMenu; 
         if (this.props.loggedIn) {
             loginMenu = 
-                <ul className="nav navbar-nav">
-                    <li>
-                        <Link to="/settings"><i className="fa fa-gears fa-fw"></i>Settings</Link>
+                <ul className="navbar-nav ml-auto">
+                    <li className="nav-item">
+                        <Link className="nav-link" to="/settings">
+                            <i className="fa fa-gears fa-fw"></i>Settings
+                        </Link>
                     </li>
-                    <li>
-                        <a href="javascript:void(0)" onClick={this.onLogout}><i className="fa fa-lock fa-fw"></i>Logout</a>
+                    <li className="nav-item">
+                        <a href="javascript:void(0)" onClick={this.onLogout} className="nav-link">
+                            <i className="fa fa-lock fa-fw"></i>Logout
+                        </a>
                     </li>
                 </ul>
         }
         return(
-            <header className="main-header">
-                
-                <Link className="logo" to="/"><span className="logo-lg"><b>Factorio</b>SM</span></Link>
-                
-                <nav className="navbar navbar-static-top" role="navigation">
-                <a href="#" className="sidebar-toggle" data-toggle="offcanvas" role="button">
-                <span className="sr-only">Toggle navigation</span>
-                </a>
-                <div className="navbar-custom-menu">
-                    {loginMenu}
-                </div>
-                </nav>
-            </header>
+            <nav className="main-header navbar navbar-expand bg-white navbar-light border-bottom">
+                <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <a className="nav-link" data-widget="pushmenu" href="#">
+                            <i className="fa fa-bars"></i>
+                        </a>
+                    </li>
+                </ul>
+
+                {loginMenu}
+            </nav>
+
+            // <header className="main-header">
+            //     <Link className="logo" to="/"><span className="logo-lg"><b>Factorio</b>SM</span></Link>
+            //
+            //     <nav className="navbar navbar-static-top" role="navigation">
+            //         <a href="#" className="sidebar-toggle" data-toggle="offcanvas" role="button">
+            //             <span className="sr-only">Toggle navigation</span>
+            //         </a>
+            //         <div className="navbar-custom-menu">
+            //             {loginMenu}
+            //         </div>
+            //     </nav>
+            // </header>
         )
     }
 }

@@ -1,7 +1,6 @@
-html {
-    width: 100%;
+@import "../node_modules/bootstrap/scss/bootstrap";
+@import "../node_modules/admin-lte/build/scss/AdminLTE-raw";
 
-    body {
-        height: 100%;
-    }
-}
+
+@import "scss/sidebar";
+@import "scss/content";
