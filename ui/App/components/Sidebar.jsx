@@ -23,7 +23,7 @@ class Sidebar extends React.Component {
                 <div className="sidebar">
                     <div className="user-panel">
                         <div className="image">
-                            <img src="./dist/img/factorio.jpg" className="img-circle" alt="User Image"/>
+                            <img src="./images/factorio.jpg" className="img-circle" alt="User Image"/>
                         </div>
                         <div className="info">
                             <div className="text-white">Factorio Server Manager</div>
