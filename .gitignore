@@ -17,3 +17,4 @@ npm-debug.log
 factorio.auth
 /pkg/
 mix-manifest.json
+/app/images/vendor/

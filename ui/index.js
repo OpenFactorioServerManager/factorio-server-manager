@@ -1,6 +1,7 @@
 global.$ = global.jQuery = require('jquery');
 require('bootstrap');
 require('admin-lte/build/js/AdminLTE.js');
+require('bootstrap-fileinput');
 
 
 import React from 'react';
