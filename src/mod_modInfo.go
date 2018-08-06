@@ -77,6 +77,13 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 			var baseDependency string
 			for _, dependency := range modInfo.Dependencies {
 				if strings.HasPrefix(dependency, "base") {
+					splittedDep := strings.Split(dependency, "=")
+
+					if len(splittedDep) == 1 {
+						log.Printf("basemod without version specified!")
+						break
+					}
+
 					baseDependency = strings.Split(dependency, "=")[1]
 					break
 				}
