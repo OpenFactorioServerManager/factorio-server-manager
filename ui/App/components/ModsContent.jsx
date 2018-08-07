@@ -528,11 +528,14 @@ class ModsContent extends React.Component {
                     <h1>
                         Mods
                         <small>Manage your mods</small>
+
+                        <small className="float-sm-right">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</Link></li>
+                                <li className="breadcrumb-item active">Mods</li>
+                            </ol>
+                        </small>
                     </h1>
-                    <ol className="breadcrumb">
-                        <li><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</Link></li>
-                        <li className="active">Here</li>
-                    </ol>
                 </section>
 
                 <section className="content">

@@ -36,13 +36,16 @@ class LogsContent extends React.Component {
                 <h1>
                     Logs
                     <small>Analyze Factorio Logs</small>
-                </h1>
-                <ol className="breadcrumb">
-                    <li><Link to="/"><i className="fa fa-dashboard"></i>Server Control</Link></li>
-                    <li className="active">Here</li>
-                </ol>
-                </section>
 
+                    <small className="float-sm-right">
+                        <ol className="breadcrumb">
+                            <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard"></i>Server Control</Link></li>
+                            <li className="breadcrumb-item active">Logs</li>
+                        </ol>
+                    </small>
+                </h1>
+
+                </section>
                 <section className="content">
 
                 <LogLines 

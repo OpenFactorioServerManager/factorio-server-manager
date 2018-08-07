@@ -29,39 +29,43 @@ class SavesContent extends React.Component {
     }
 
     render() {
-        return(
+        return (
             <div className="content-wrapper">
                 <section className="content-header">
-                <h1>
-                    Saves
-                    <small>Factorio Save Files</small>
-                </h1>
-                <ol className="breadcrumb">
-                    <li><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</Link></li>
-                    <li className="active">Here</li>
-                </ol>
+                    <h1>
+                        Saves
+                        <small>Factorio Save Files</small>
+
+                        <small className="float-sm-right">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server
+                                    Control</Link></li>
+                                <li className="breadcrumb-item active">Saves</li>
+                            </ol>
+                        </small>
+                    </h1>
                 </section>
 
                 <section className="content">
-                <div className="row">
-                    <div className="col-md-6">
-                        <CreateSave 
-                            getSaves={this.props.getSaves}
-                        />
+                    <div className="row">
+                        <div className="col-md-6">
+                            <CreateSave
+                                getSaves={this.props.getSaves}
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <UploadSave
+                                getSaves={this.props.getSaves}
+                            />
+                        </div>
                     </div>
-                    <div className="col-md-6">
-                        <UploadSave 
-                            getSaves={this.props.getSaves}
-                        />
-                    </div>
-                </div>
 
-                <SavesList 
-                    {...this.state}
-                    saves={this.props.saves}
-                    dlSave={this.dlSave}
-                    getSaves={this.props.getSaves}
-                />
+                    <SavesList
+                        {...this.state}
+                        saves={this.props.saves}
+                        dlSave={this.dlSave}
+                        getSaves={this.props.getSaves}
+                    />
 
 
                 </section>

@@ -94,11 +94,14 @@ class ConsoleContent extends React.Component {
                     <h1>
                         Server Console
                         <small>Send commands and messages to the Factorio server</small>
+
+                        <small className="float-sm-right">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard"></i>Server Control</Link></li>
+                                <li className="breadcrumb-item active">Console</li>
+                            </ol>
+                        </small>
                     </h1>
-                    <ol className="breadcrumb">
-                        <li><Link to="/"><i className="fa fa-dashboard"></i>Server Control</Link></li>
-                        <li className="active">Here</li>
-                    </ol>
                 </section>
 
                 <section className="content">

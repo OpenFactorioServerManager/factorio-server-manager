@@ -12,7 +12,6 @@ class Index extends React.Component {
         this.props.facServStatus();
         this.props.getSaves();
         this.props.getStatus();
-        console.log(this.props.serverStatus);
     }
 
     componentWillUnmount() {
@@ -26,10 +25,13 @@ class Index extends React.Component {
                     <h1>
                         Factorio Server
                         <small>Control your Factorio server</small>
+
+                        <small className="float-sm-right">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item active"><i className="fa fa-dashboard"></i>Server Control</li>
+                            </ol>
+                        </small>
                     </h1>
-                    <ol className="breadcrumb">
-                        <li><Link to="/"><i className="fa fa-dashboard"></i>Server Control</Link></li>
-                    </ol>
                 </section>
 
                 <section className="content">
