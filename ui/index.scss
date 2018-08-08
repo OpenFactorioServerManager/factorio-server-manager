@@ -3,6 +3,7 @@
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/admin-lte/build/scss/AdminLTE-raw";
 @import "../node_modules/bootstrap-fileinput/scss/fileinput";
+@import "../node_modules/font-awesome/scss/font-awesome";
 
 @import "scss/buttons";
 @import "scss/badges";
@@ -10,3 +11,5 @@
 
 @import "scss/sidebar";
 @import "scss/content";
+@import "scss/navigation";
+@import "scss/breadcrumbs";

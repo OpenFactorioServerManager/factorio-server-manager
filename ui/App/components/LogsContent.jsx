@@ -40,7 +40,7 @@ class LogsContent extends React.Component {
                     <small className="float-sm-right">
                         <ol className="breadcrumb">
                             <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard"></i>Server Control</Link></li>
-                            <li className="breadcrumb-item active">Logs</li>
+                            <li className="breadcrumb-item active"><i className="fa fa-file-text-o"></i>Logs</li>
                         </ol>
                     </small>
                 </h1>

@@ -40,7 +40,7 @@ class SavesContent extends React.Component {
                             <ol className="breadcrumb">
                                 <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server
                                     Control</Link></li>
-                                <li className="breadcrumb-item active">Saves</li>
+                                <li className="breadcrumb-item active"><i className="fa fa-floppy-o"></i>Saves</li>
                             </ol>
                         </small>
                     </h1>

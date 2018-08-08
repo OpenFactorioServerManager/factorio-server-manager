@@ -244,7 +244,7 @@ class ConfigContent extends React.Component {
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
                                 <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard"></i>Server Control</Link></li>
-                                <li className="breadcrumb-item active">Game configurations</li>
+                                <li className="breadcrumb-item active"><i className="fa fa-cogs"></i>Game configurations</li>
                             </ol>
                         </small>
                     </h1>

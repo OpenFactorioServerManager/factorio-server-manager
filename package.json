@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/mroote/factorio-server-manager#readme",
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.2.0",
     "admin-lte": "^3.0.0-alpha.2",
     "babel-core": "^6.26.3",
     "babel-preset-react": "^6.24.1",
