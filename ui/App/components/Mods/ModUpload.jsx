@@ -19,8 +19,11 @@ class ModUpload extends React.Component {
     }
 
     render() {
+        let classes = "box-body" + " " + this.props.className;
+        let ids = this.props.id;
+
         return(
-            <div className="box-body">
+            <div id={ids} className={classes}>
                 <div className="alert alert-warning alert-dismissible" role="alert">
                     <button type="button" className="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     The mods you upload will override every mod, that is already uploaded!<br/>
@@ -36,7 +39,9 @@ class ModUpload extends React.Component {
 }
 
 ModUpload.propTypes = {
-    uploadModSuccessHandler: PropTypes.func.isRequired
+    uploadModSuccessHandler: PropTypes.func.isRequired,
+    className: PropTypes.string,
+    id: PropTypes.string
 };
 
 export default ModUpload;

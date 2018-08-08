@@ -1,7 +1,11 @@
+@import "scss/variables";
+
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/admin-lte/build/scss/AdminLTE-raw";
 @import "../node_modules/bootstrap-fileinput/scss/fileinput";
 
+@import "scss/buttons";
+@import "scss/adminLTE3-box";
 
 @import "scss/sidebar";
 @import "scss/content";

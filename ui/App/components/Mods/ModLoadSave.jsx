@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import {instanceOfModsContent} from "./ModsPropTypes";
+import PropTypes from "prop-types";
 
 class ModLoadSave extends React.Component {
     constructor(props) {
@@ -136,8 +137,11 @@ class ModLoadSave extends React.Component {
             }
         });
 
+        let classes = "box-body" + " " + this.props.className;
+        let ids = this.props.id;
+
         return (
-            <div className="box-body">
+            <div id={ids} className={classes}>
                 <form action="" onSubmit={this.loadMods}>
                     <div className="input-group">
                         <select className="custom-select form-control" name="saveFile">
@@ -155,6 +159,8 @@ class ModLoadSave extends React.Component {
 
 ModLoadSave.propTypes = {
     modContentClass: instanceOfModsContent.isRequired,
+    className: PropTypes.string,
+    id: PropTypes.string
 }
 
 export default ModLoadSave;

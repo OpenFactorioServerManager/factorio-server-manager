@@ -3,6 +3,7 @@ import ModManager from "../ModManager.jsx";
 import NativeListener from 'react-native-listener';
 import {instanceOfModsContent} from "../ModsPropTypes.js";
 import locks from "locks";
+import PropTypes from "prop-types";
 
 class ModPackOverview extends React.Component {
     constructor(props) {
@@ -419,8 +420,11 @@ class ModPackOverview extends React.Component {
     }
 
     render() {
+        let classes = "box-body" + " " + this.props.className;
+        let ids = this.props.id;
+
         return(
-            <div className="box-body">
+            <div id={ids} className={classes}>
                 {
                     this.state.listPacks != null ?
                         this.state.listPacks.map(
@@ -473,6 +477,8 @@ class ModPackOverview extends React.Component {
 
 ModPackOverview.propTypes = {
     modContentClass: instanceOfModsContent.isRequired,
+    className: PropTypes.string,
+    id: PropTypes.string
 };
 
 export default ModPackOverview
