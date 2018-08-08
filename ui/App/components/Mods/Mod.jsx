@@ -97,9 +97,9 @@ class Mod extends React.Component {
     render() {
         let modStatus;
         if(this.props.mod.enabled === false) {
-            modStatus = <span className="label label-danger">Disabled</span>
+            modStatus = <span className="badge badge-danger">Disabled</span>
         } else {
-            modStatus = <span className="label label-success">Enabled</span>
+            modStatus = <span className="badge badge-success">Enabled</span>
         }
 
         let version;
