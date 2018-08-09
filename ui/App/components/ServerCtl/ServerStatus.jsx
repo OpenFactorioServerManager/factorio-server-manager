@@ -15,10 +15,10 @@ class ServerStatus extends React.Component {
         var result = {};
 
         if (serverStatus === "running") {
-            result = <span className="label label-success">Running</span>;
+            result = <span className="badge badge-success">Running</span>;
             return result;
         } else if (serverStatus == "stopped") {
-            result = <span className="label label-danger">Not Running</span>;
+            result = <span className="badge badge-danger">Not Running</span>;
             return result;
         } 
 

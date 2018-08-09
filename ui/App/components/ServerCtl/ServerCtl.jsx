@@ -88,35 +88,40 @@ class ServerCtl extends React.Component {
     }
 
     render() {
-        return(
-            <div className="box">
+        return (
+            <div id="serverCtl" className="box">
                 <div className="box-header">
                     <h3 className="box-title">Server Control</h3>
                 </div>
 
                 <div className="box-body">
-
                     <form action="" onSubmit={this.startServer}>
                         <div className="form-group">
                             <div className="row">
                                 <div className="col-md-4">
-                                    <button className="btn btn-block btn-success" type="submit"><i className="fa fa-play fa-fw"></i>Start Factorio Server</button>
+                                    <button className="btn btn-block btn-success" type="submit">
+                                        <i className="fa fa-play fa-fw"></i>Start Factorio Server
+                                    </button>
                                 </div>
 
                                 <div className="col-md-4">
-                                    <button className="btn btn-block btn-warning" type="button" onClick={this.stopServer}><i className="fa fa-stop fa-fw"></i>Stop &amp; Save Factorio Server</button>
+                                    <button className="btn btn-block btn-warning" type="button" onClick={this.stopServer}>
+                                        <i className="fa fa-stop fa-fw"></i>Stop &amp; Save Factorio Server
+                                    </button>
                                 </div>
 
                                 <div className="col-md-4">
-                                    <button className="btn btn-block btn-danger" type="button" onClick={this.killServer}><i className="fa fa-close fa-fw"></i>Stop Factorio Server without Saving</button>
+                                    <button className="btn btn-block btn-danger" type="button" onClick={this.killServer}>
+                                        <i className="fa fa-close fa-fw"></i>Stop Factorio Server without Saving
+                                    </button>
                                 </div>
                             </div>
 
-                            <hr />
+                            <hr/>
                             <label>Select Save File</label>
                             <select ref="savefile" className="form-control">
-                                {this.props.saves.map( (save, i) => {
-                                    return(
+                                {this.props.saves.map((save, i) => {
+                                    return (
                                         <option key={save.name} value={save.name}>{save.name}</option>
                                     )
 
@@ -124,23 +129,29 @@ class ServerCtl extends React.Component {
                             </select>
                         </div>
 
-                        <div className="box box-success collapsed-box">
-                                <button type="button" className="btn btn-box-tool" data-widget="collapse">
-                                    <div className="box-header with-border">
-                                        <i className="fa fa-plus fa-fw"></i>
-                                        <h4 className="box-title">Advanced</h4>
-                                    </div>
-                                </button>
-                                <div className="box-body" style={{display: "none"}}>
+                        <div className="box box-success advanced">
+                            <button type="button"
+                                    className="btn btn-box-tool"
+                                    data-toggle="collapse"
+                                    data-target="#serverCtlAdvanced"
+                                    aria-expanded="false"
+                                    aria-controls="serverCtlAdvanced"
+                            >
+                                <div className="box-header with-border">
+                                    <i className="fa fa-plus fa-fw"></i>
+                                    <div className="box-title">Advanced</div>
+                                </div>
+                            </button>
+                            <div id="serverCtlAdvanced" className="box-body collapse">
                                 <label htmlFor="port">Factorio Server IP</label>
                                 <div id="port" className="input-group">
                                     <input ref="gameBindIP"
-                                      name="gameBindIP"
-                                      id="gameBindIP"
-                                      type="text"
-                                      className="form-control"
-                                      defaultValue={this.state.gameBindIP}
-                                      placeholder={this.state.gameBindIP} />
+                                           name="gameBindIP"
+                                           id="gameBindIP"
+                                           type="text"
+                                           className="form-control"
+                                           defaultValue={this.state.gameBindIP}
+                                           placeholder={this.state.gameBindIP}/>
                                 </div>
                                 <label htmlFor="port">Factorio Server Port</label>
                                 <div id="port" className="input-group">
@@ -153,8 +164,12 @@ class ServerCtl extends React.Component {
                                            placeholder={this.state.port}
                                     />
                                     <div className="input-group-btn">
-                                      <button type="button" className="btn btn-primary" onClick={this.incrementPort}><i className="fa fa-arrow-up"></i></button>
-                                      <button type="button" className="btn btn-primary" onClick={this.decrementPort}><i className="fa fa-arrow-down"></i></button>
+                                        <button type="button" className="btn btn-primary" onClick={this.incrementPort}>
+                                            <i className="fa fa-arrow-up"></i>
+                                        </button>
+                                        <button type="button" className="btn btn-primary" onClick={this.decrementPort}>
+                                            <i className="fa fa-arrow-down"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
