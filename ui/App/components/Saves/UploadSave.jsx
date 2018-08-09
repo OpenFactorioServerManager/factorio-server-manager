@@ -31,6 +31,7 @@ class UploadSave extends React.Component {
     }
 
     render() {
+        //TODO use bootstrap-fileinput for pretty uploading saves
         return(
             <div className="box">
                 <div className="box-header">

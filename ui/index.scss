@@ -1,16 +1,27 @@
 @import "scss/variables";
 
+/**
+ * Modules
+ */
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/admin-lte/build/scss/AdminLTE-raw";
 @import "../node_modules/bootstrap-fileinput/scss/fileinput";
 @import "../node_modules/font-awesome/scss/font-awesome";
 
-@import "scss/buttons";
-@import "scss/badges";
-@import "scss/adminLTE3-box";
-
-@import "scss/sidebar";
+/**
+ * Customizations
+ */
+@import "scss/bt-lte-customizations/buttons";
+@import "scss/bt-lte-customizations/badges";
+@import "scss/bt-lte-customizations/adminLTE3-box";
+@import "scss/bt-lte-customizations/sidebar";
 @import "scss/content";
-@import "scss/navigation";
-@import "scss/breadcrumbs";
-@import "scss/serverCtl";
+@import "scss/bt-lte-customizations/navigation";
+@import "scss/bt-lte-customizations/breadcrumbs";
+
+/**
+ * Pages
+ */
+@import "scss/pages/serverCtl";
+@import "scss/pages/logs";
+@import "scss/pages/saves";

@@ -30,28 +30,28 @@ class LogsContent extends React.Component {
     }
 
     render() {
-        return(
+        return (
             <div className="content-wrapper">
                 <section className="content-header">
-                <h1>
-                    Logs
-                    <small>Analyze Factorio Logs</small>
+                    <h1>
+                        Logs
+                        <small>Analyze Factorio Logs</small>
 
-                    <small className="float-sm-right">
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard"></i>Server Control</Link></li>
-                            <li className="breadcrumb-item active"><i className="fa fa-file-text-o"></i>Logs</li>
-                        </ol>
-                    </small>
-                </h1>
-
+                        <small className="float-sm-right">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard"></i>Server
+                                    Control</Link></li>
+                                <li className="breadcrumb-item active"><i className="fa fa-file-text-o"></i>Logs</li>
+                            </ol>
+                        </small>
+                    </h1>
                 </section>
-                <section className="content">
 
-                <LogLines 
-                    getLastLog={this.getLastLog}
-                    {...this.state} 
-                />
+                <section className="content">
+                    <LogLines
+                        getLastLog={this.getLastLog}
+                        {...this.state}
+                    />
 
                 </section>
             </div>

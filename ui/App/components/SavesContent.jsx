@@ -30,7 +30,7 @@ class SavesContent extends React.Component {
 
     render() {
         return (
-            <div className="content-wrapper">
+            <div id="saves" className="content-wrapper">
                 <section className="content-header">
                     <h1>
                         Saves
@@ -66,8 +66,6 @@ class SavesContent extends React.Component {
                         dlSave={this.dlSave}
                         getSaves={this.props.getSaves}
                     />
-
-
                 </section>
             </div>
         )

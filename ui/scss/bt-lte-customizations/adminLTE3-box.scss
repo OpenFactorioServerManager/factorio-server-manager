@@ -40,5 +40,18 @@
         h4 {
             font-size: 18px;
         }
+
+        h5 {
+            font-size: 16px;
+        }
+
+        samp {
+            font-size: 12px;
+
+            p {
+                margin-bottom: 5px;
+                color: #333;
+            }
+        }
     }
 }
