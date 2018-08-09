@@ -49,9 +49,9 @@ class App extends React.Component {
     }
 
     connectWebSocket() {
-        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        let ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
         let ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
-        let socket = this.socket = new Socket(ws);
+        this.socket = new Socket(ws);
     }
 
     flashMessage(message) {
