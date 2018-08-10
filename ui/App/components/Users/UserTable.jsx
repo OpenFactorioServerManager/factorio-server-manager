@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
 
 class UserTable extends React.Component {
     constructor(props) {
@@ -9,7 +9,7 @@ class UserTable extends React.Component {
     }
 
     removeUser(user) {
-        swal({   
+        /*swal({
             title: "Are you sure?",  
             text: "User: " + user + " will be deleted",   
             type: "warning",   
@@ -31,7 +31,7 @@ class UserTable extends React.Component {
                     }
                 }
             })
-        });
+        });*/
 
         this.props.listUsers();
 

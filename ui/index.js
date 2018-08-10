@@ -40,5 +40,4 @@ ReactDOM.render((
             <Route component={App} />
         </Switch>
     </BrowserRouter>
-), document.getElementById('app'))
-
+), document.getElementById('app'));
