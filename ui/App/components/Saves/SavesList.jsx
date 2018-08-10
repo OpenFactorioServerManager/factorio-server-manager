@@ -18,10 +18,9 @@ class SavesList extends React.Component {
         let self = this;
         ReactSwalDanger.fire({
             title: "Are you sure?",
-            html: <p style={{width: "100%", textAlign: "center"}}>Save: {saveName} will be deleted</p>,
+            html: <p>Save: {saveName} will be deleted</p>,
             type: "question",
             showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
             confirmButtonText: "Yes, delete it!",
             showLoaderOnConfirm: true,
             preConfirm: () => {
@@ -42,9 +41,7 @@ class SavesList extends React.Component {
                     });
                 });
             },
-            allowOutsideClick: () => !ReactSwalDanger.isLoading()
         }).then((result) => {
-            console.log(result);
             if(result.value) {
                 ReactSwalNormal.fire({
                     title: "Deleted!",
@@ -54,7 +51,6 @@ class SavesList extends React.Component {
             }
             self.updateSavesList();
         }).catch((result) => {
-            console.log(result);
             ReactSwalNormal.fire({
                 title: "An error occurred!",
                 text: result,

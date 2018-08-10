@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import swal from 'sweetalert';
+import {ReactSwalDanger, ReactSwalNormal} from './../../../js/customSwal';
 
 class UserTable extends React.Component {
     constructor(props) {
@@ -9,31 +9,50 @@ class UserTable extends React.Component {
     }
 
     removeUser(user) {
-        /*swal({
-            title: "Are you sure?",  
-            text: "User: " + user + " will be deleted",   
-            type: "warning",   
-            showCancelButton: true,   
-            confirmButtonColor: "#DD6B55",   
-            confirmButtonText: "Yes, delete it!",   
-            closeOnConfirm: false 
-        }, 
-        () => {
-            user = {username: user}
-            $.ajax({
-                type: "POST",
-                url: "/api/user/remove",
-                dataType: "json",
-                data: JSON.stringify(user),
-                success: (resp) => {
-                    if (resp.success === true) {
-                        swal("Deleted!", resp.data, "success"); 
-                    }
-                }
-            })
-        });*/
-
-        this.props.listUsers();
+        ReactSwalDanger.fire({
+            title: "Are you sure?",
+            html: <p>User {user} will be deleted!</p>,
+            type: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            showLoaderOnConfirm: true,
+            preConfirm: () => {
+                return new Promise((resolve, reject) => {
+                    user = {username: user};
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/user/remove",
+                        dataType: "json",
+                        data: JSON.stringify(user),
+                        success: (resp) => {
+                            if (resp.success === true) {
+                                resolve(resp.data);
+                            } else {
+                                reject("Unknown error");
+                            }
+                        },
+                        error: () => {
+                            reject("Unknown error");
+                        }
+                    });
+                });
+            }
+        }).then((result) => {
+            if (result.value) {
+                ReactSwalNormal.fire({
+                    title: "Deleted!",
+                    text: result.value,
+                    type: "success"
+                });
+                this.props.listUsers();
+            }
+        }).catch((result) => {
+            ReactSwalNormal.fire({
+                title: "An error occurred!",
+                text: result,
+                type: "error"
+            });
+        });
 
     }
 

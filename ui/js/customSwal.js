@@ -6,7 +6,9 @@ const ReactSwalTemp = ReactSwal.mixin({
     confirmButtonClass: "swal-btn btn-primary",
     cancelButtonClass: "swal-btn btn-secondary",
     customClass: "swal-design",
-    buttonsStyling: false
+    buttonsStyling: false,
+
+    allowOutsideClick: () => !ReactSwalDanger.isLoading()
 });
 
 export const ReactSwalNormal = ReactSwalTemp.mixin({
