@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {ReactSwalNormal} from './../../../js/customSwal';
 
 class ServerCtl extends React.Component {
     constructor(props) {
@@ -34,17 +35,25 @@ class ServerCtl extends React.Component {
                 this.props.facServStatus();
                 this.props.getStatus();
                 if (resp.success === true) {
-                    swal("Factorio Server Started", resp.data)
+                    ReactSwalNormal.fire({
+                        title: "Factorio server started",
+                        text: resp.data,
+                        type: "success"
+                    });
                 } else {
-                    var err = "Error starting Factorio Server: " + resp.data
-                    swal("Error", err, "error")
+                    ReactSwalNormal.fire({
+                        title: "Error starting Factorio server",
+                        text: resp.data,
+                        type: "error"
+                    });
                 }
             }
-        })
+        });
+
         this.setState({
             savefile: this.refs.savefile.value,
             port: Number(this.refs.port.value),
-        })
+        });
     }
 
     stopServer(e) {
@@ -55,8 +64,10 @@ class ServerCtl extends React.Component {
             success: (resp) => {
                 this.props.facServStatus();
                 this.props.getStatus();
-                console.log(resp)
-                swal(resp.data)
+
+                ReactSwalNormal.fire({
+                    title: resp.data
+                });
             }
         });
         e.preventDefault();
@@ -70,8 +81,10 @@ class ServerCtl extends React.Component {
             success: (resp) => {
                 this.props.facServStatus();
                 this.props.getStatus();
-                console.log(resp)
-                swal(resp.data)
+
+                ReactSwalNormal.fire({
+                    title: resp.data
+                });
             }
         });
         e.preventDefault();
