@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {ReactSwalNormal} from './../../../js/customSwal';
 
 class AddUser extends React.Component {
     constructor(props) {
@@ -40,10 +41,16 @@ class AddUser extends React.Component {
             data: JSON.stringify(user),
             success: (resp) => {
                 if (resp.success === true) {
-                    alert("User: " + user.username + " added successfully.");
+                    ReactSwalNormal.fire({
+                        title: <p>User: {user.username} added successfully</p>,
+                        type: "success"
+                    });
                     this.props.listUsers();
                 } else {
-                    alert("Error adding user: ", resp.data)
+                    ReactSwalNormal.fire({
+                        title: <p>Error adding user: {resp.data}</p>,
+                        type: "error"
+                    })
                 }
             }
         })
