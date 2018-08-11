@@ -5,18 +5,15 @@ import classNames from 'classnames';
 class FontAwesomeIcon extends React.Component {
     constructor(props) {
         super(props);
-
-        console.log("huhu");
     }
 
     render() {
         let classes = classNames(this.props.prefix, {
             "fas": !this.props.prefix,
         }, 'fa-' + this.props.icon, this.props.className);
-        console.log(classes);
 
         return (
-            <i className={classes} {...this.props}></i>
+            <i className={classes}></i>
         );
     }
 }
