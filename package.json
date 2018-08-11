@@ -35,16 +35,15 @@
     "jquery": "^3.3.1",
     "laravel-mix": "^2.1.11",
     "locks": "^0.2.2",
-    "node-sass": "^4.9.2",
+    "node-sass": "^4.9.3",
     "prop-types": "latest",
     "react": "^16.4.2",
-    "react-console-component": "^0.6.1",
     "react-dom": "^16.4.2",
     "react-native-listener": "^1.0.2",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "semver": "^5.5.0",
-    "sweetalert2": "^7.26.10",
+    "sweetalert2": "^7.26.11",
     "sweetalert2-react-content": "^1.0.1"
   }
 }
