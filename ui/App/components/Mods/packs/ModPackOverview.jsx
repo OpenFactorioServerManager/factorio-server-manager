@@ -441,7 +441,13 @@ class ModPackOverview extends React.Component {
                             (modpack, index) => {
                                 return(
                                     <div key={modpack.name} className="box single-modpack collapsed-box">
-                                        <div className="box-header" data-widget="collapse" style={{cursor: "pointer"}}>
+                                        <div className="box-header"
+                                             data-toggle="collapse"
+                                             data-target={"#" + modpack.name}
+                                             aria-expanded="false"
+                                             aria-controls={modpack.name}
+                                             style={{cursor: "pointer"}}
+                                        >
                                             <i className="fa fa-plus"></i>
                                             <h3 className="box-title">{modpack.name}</h3>
                                             <div className="box-tools pull-right">
@@ -458,15 +464,16 @@ class ModPackOverview extends React.Component {
                                                 </NativeListener>
                                             </div>
                                         </div>
-                                        <div className="box-body">
-                                            <ModManager
-                                                {...this.props}
-                                                installedMods={modpack.mods.mods}
-                                                deleteMod={this.modPackDeleteModHandler}
-                                                toggleMod={this.modPackToggleModHandler}
-                                                updateMod={this.modPackUpdateModHandler}
-                                            />
-                                        </div>
+
+                                        <ModManager
+                                            {...this.props}
+                                            className="collapse"
+                                            id={modpack.name}
+                                            installedMods={modpack.mods.mods}
+                                            deleteMod={this.modPackDeleteModHandler}
+                                            toggleMod={this.modPackToggleModHandler}
+                                            updateMod={this.modPackUpdateModHandler}
+                                        />
                                     </div>
                                 )
                             }
