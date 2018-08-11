@@ -43,7 +43,7 @@ class Header extends React.Component {
                 </ul>
         }
         return(
-            <nav className="main-header navbar navbar-expand bg-white navbar-light border-bottom">
+            <nav className="main-header navbar navbar-expand navbar-light border-bottom">
                 <ul className="navbar-nav">
                     <li className="nav-item">
                         <a className="nav-link" data-widget="pushmenu" href="#">
