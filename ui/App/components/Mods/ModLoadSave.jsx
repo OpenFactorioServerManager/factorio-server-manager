@@ -1,7 +1,7 @@
 import React from 'react';
 import {instanceOfModsContent} from "./ModsPropTypes";
 import PropTypes from "prop-types";
-import {ReactSwalNormal, ReactSwalDanger} from './../../../js/customSwal';
+import {ReactSwalNormal} from './../../../js/customSwal';
 
 class ModLoadSave extends React.Component {
     constructor(props) {
@@ -76,7 +76,7 @@ class ModLoadSave extends React.Component {
                     </div>
                 </div>
 
-                ReactSwalDanger.fire({
+                ReactSwalNormal.fire({
                     title: "Mods to install",
                     html: table,
                     type: 'question',
