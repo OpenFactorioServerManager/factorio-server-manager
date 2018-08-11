@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import Settings from './Config/Settings.jsx';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 //https://stackoverflow.com/a/1414175
 function stringToBoolean(string) {
@@ -243,8 +244,12 @@ class ConfigContent extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-tachometer-alt"></i>Server Control</Link></li>
-                                <li className="breadcrumb-item active"><i className="fa fa-cogs"></i>Game configurations</li>
+                                <li className="breadcrumb-item">
+                                    <Link to="/"><FontAwesomeIcon icon="tachometer-alt"/>Server Control</Link>
+                                </li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="cogs"/>Game configurations
+                                </li>
                             </ol>
                         </small>
                     </h1>

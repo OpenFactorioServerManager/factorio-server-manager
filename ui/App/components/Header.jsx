@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link, withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class Header extends React.Component {
     constructor(props) {
@@ -31,12 +32,12 @@ class Header extends React.Component {
                 <ul className="navbar-nav ml-auto">
                     <li className="nav-item">
                         <Link className="nav-link" to="/settings">
-                            <i className="fa fa-cogs fa-fw"></i>Settings
+                            <FontAwesomeIcon icon="cogs" className="fa-fw"/>Settings
                         </Link>
                     </li>
                     <li className="nav-item">
                         <a href="javascript:void(0)" onClick={this.onLogout} className="nav-link">
-                            <i className="fa fa-lock fa-fw"></i>Logout
+                            <FontAwesomeIcon icon="lock" className="fa-fw"/>Logout
                         </a>
                     </li>
                 </ul>
@@ -46,26 +47,13 @@ class Header extends React.Component {
                 <ul className="navbar-nav">
                     <li className="nav-item">
                         <a className="nav-link" data-widget="pushmenu" href="#">
-                            <i className="fa fa-bars"></i>
+                            <FontAwesomeIcon icon="bars"/>
                         </a>
                     </li>
                 </ul>
 
                 {loginMenu}
             </nav>
-
-            // <header className="main-header">
-            //     <Link className="logo" to="/"><span className="logo-lg"><b>Factorio</b>SM</span></Link>
-            //
-            //     <nav className="navbar navbar-static-top" role="navigation">
-            //         <a href="#" className="sidebar-toggle" data-toggle="offcanvas" role="button">
-            //             <span className="sr-only">Toggle navigation</span>
-            //         </a>
-            //         <div className="navbar-custom-menu">
-            //             {loginMenu}
-            //         </div>
-            //     </nav>
-            // </header>
         )
     }
 }

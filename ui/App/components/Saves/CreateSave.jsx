@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class CreateSave extends React.Component {
     constructor(props) {
@@ -39,7 +40,7 @@ class CreateSave extends React.Component {
         if (this.state.loading) {
             loadingOverlay = 
                 <div className="overlay">
-                    <i className="fa fa-refresh fa-spin"></i>
+                    <FontAwesomeIcon icon="refresh" className="fa-spin"/>
                 </div>
         } else {
             loadingOverlay = ""

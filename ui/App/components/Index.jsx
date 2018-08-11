@@ -1,7 +1,7 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
 import ServerCtl from './ServerCtl/ServerCtl.jsx';
 import ServerStatus from './ServerCtl/ServerStatus.jsx';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class Index extends React.Component {
     constructor(props) {
@@ -28,7 +28,9 @@ class Index extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item active"><i className="fa fa-tachometer-alt"></i>Server Control</li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="tachometer-alt"/>Server Control
+                                </li>
                             </ol>
                         </small>
                     </h1>

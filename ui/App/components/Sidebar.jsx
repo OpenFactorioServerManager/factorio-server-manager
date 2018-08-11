@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link, NavLink} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import FontAwesomeIcon from './FontAwesomeIcon.jsx';
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -9,9 +10,9 @@ class Sidebar extends React.Component {
 
     render() {
         if(this.props.serverRunning === "running") {
-            var serverStatus = <Link to="/" className="d-block text-success"><i className="fa fa-circle"></i>Server Online</Link>
+            var serverStatus = <Link to="/" className="d-block text-success"><FontAwesomeIcon icon="circle"/>Server Online</Link>
         } else {
-            var serverStatus = <Link to="/" className="d-block text-danger"><i className="fa fa-circle"></i>Server Offline</Link>
+            var serverStatus = <Link to="/" className="d-block text-danger"><FontAwesomeIcon icon="circle"/>Server Offline</Link>
         }
 
         return (
@@ -47,37 +48,37 @@ class Sidebar extends React.Component {
                             <li className="nav-header">MENU</li>
                             <li className="nav-item">
                                 <NavLink exact to="/" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-tachometer-alt"></i><p>Server Control</p>
+                                    <FontAwesomeIcon icon="tachometer-alt" className="nav-icon"/><p>Server Control</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/mods" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-pencil-alt"></i><p>Mods</p>
+                                    <FontAwesomeIcon icon="pencil-alt" className="nav-icon"/><p>Mods</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/logs" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon far fa-file-alt"></i><p>Logs</p>
+                                    <FontAwesomeIcon icon="file-alt" className="nav-icon" prefix="far"/><p>Logs</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/saves" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon far fa-save"></i><p>Saves</p>
+                                    <FontAwesomeIcon icon="save" className="nav-icon" prefix="far"/><p>Saves</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/config" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-cogs"></i><p>Game Configuration</p>
+                                    <FontAwesomeIcon icon="cogs" className="nav-icon"/><p>Game Configuration</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/settings" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-cog"></i><p>Settings</p>
+                                    <FontAwesomeIcon icon="cog" className="nav-icon"/><p>Settings</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/console" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-terminal"></i><p>Console</p>
+                                    <FontAwesomeIcon icon="terminal" className="nav-icon"/><p>Console</p>
                                 </NavLink>
                             </li>
                         </ul>

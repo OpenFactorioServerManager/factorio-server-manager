@@ -5,6 +5,7 @@ import {instanceOfModsContent} from "../ModsPropTypes.js";
 import locks from "locks";
 import PropTypes from "prop-types";
 import {ReactSwalNormal, ReactSwalDanger} from './../../../../js/customSwal';
+import FontAwesomeIcon from "../../FontAwesomeIcon";
 
 class ModPackOverview extends React.Component {
     constructor(props) {
@@ -448,7 +449,7 @@ class ModPackOverview extends React.Component {
                                              aria-controls={modpack.name}
                                              style={{cursor: "pointer"}}
                                         >
-                                            <i className="fa fa-plus"></i>
+                                            <FontAwesomeIcon icon="plus"/>
                                             <h3 className="box-title">{modpack.name}</h3>
                                             <div className="box-tools pull-right">
                                                 <NativeListener onClick={this.downloadModPack}>
@@ -483,7 +484,7 @@ class ModPackOverview extends React.Component {
 
                 <div className="box">
                     <div className="box-header" style={{cursor: "pointer"}} onClick={this.createModPack}>
-                        <i className="fa fa-plus"></i>
+                        <FontAwesomeIcon icon="plus"/>
                         <h3 className="box-title">Add ModPack with current installed mods</h3>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {ReactSwalNormal} from './../../../js/customSwal';
+import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class ServerCtl extends React.Component {
     constructor(props) {
@@ -113,19 +114,19 @@ class ServerCtl extends React.Component {
                             <div className="row">
                                 <div className="col-md-4">
                                     <button className="btn btn-block btn-success" type="submit">
-                                        <i className="fa fa-play fa-fw"></i>Start Factorio Server
+                                        <FontAwesomeIcon icon="play" className="fa-fw"/>Start Factorio Server
                                     </button>
                                 </div>
 
                                 <div className="col-md-4">
                                     <button className="btn btn-block btn-warning" type="button" onClick={this.stopServer}>
-                                        <i className="fa fa-stop fa-fw"></i>Stop &amp; Save Factorio Server
+                                        <FontAwesomeIcon icon="stop" className="fa-fw"/>Stop &amp; Save Factorio Server
                                     </button>
                                 </div>
 
                                 <div className="col-md-4">
                                     <button className="btn btn-block btn-danger" type="button" onClick={this.killServer}>
-                                        <i className="fa fa-close fa-fw"></i>Stop Factorio Server without Saving
+                                        <FontAwesomeIcon icon="close" className="fa-fw"/>Stop Factorio Server without Saving
                                     </button>
                                 </div>
                             </div>
@@ -151,7 +152,7 @@ class ServerCtl extends React.Component {
                                     aria-controls="serverCtlAdvanced"
                             >
                                 <div className="box-header with-border">
-                                    <i className="fa fa-plus fa-fw"></i>
+                                    <FontAwesomeIcon icon="plus" className="fa-fw"/>
                                     <div className="box-title">Advanced</div>
                                 </div>
                             </button>
@@ -178,10 +179,10 @@ class ServerCtl extends React.Component {
                                     />
                                     <div className="input-group-btn">
                                         <button type="button" className="btn btn-primary" onClick={this.incrementPort}>
-                                            <i className="fa fa-arrow-up"></i>
+                                            <FontAwesomeIcon icon="arrow-up"/>
                                         </button>
                                         <button type="button" className="btn btn-primary" onClick={this.decrementPort}>
-                                            <i className="fa fa-arrow-down"></i>
+                                            <FontAwesomeIcon icon="arrow-down"/>
                                         </button>
                                     </div>
                                 </div>

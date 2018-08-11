@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import SemVer from 'semver';
+import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class Mod extends React.Component {
     constructor(props) {
@@ -106,9 +107,9 @@ class Mod extends React.Component {
         if(this.state.newVersionAvailable) {
             let faArrow;
             if(SemVer.gt(this.state.newVersion.version, this.props.mod.version)) {
-                faArrow = "fa fa-arrow-circle-up";
+                faArrow = "arrow-circle-up";
             } else {
-                faArrow = "fa fa-arrow-circle-down";
+                faArrow = "arrow-circle-down";
             }
 
             version = <span>{this.props.mod.version}
@@ -132,7 +133,7 @@ class Mod extends React.Component {
                         this.state.updateInProgress ?
                             <div className='loader' style={{width: 15, height: 15, marginRight: 0, borderWidth: 3,}}></div>
                             :
-                            <i className={faArrow} title="Update Mod" style={{fontSize: "15pt"}}></i>
+                            <FontAwesomeIcon icon={faArrow} title="Update Mod" style={{fontSize: "15pt"}}/>
                     }
                 </a>
             </span>;

@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import SavesList from './Saves/SavesList.jsx';
 import CreateSave from './Saves/CreateSave.jsx';
 import UploadSave from './Saves/UploadSave.jsx';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class SavesContent extends React.Component {
     constructor(props) {
@@ -38,9 +39,12 @@ class SavesContent extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-tachometer-alt fa-fw"></i>Server
-                                    Control</Link></li>
-                                <li className="breadcrumb-item active"><i className="far fa-save"></i>Saves</li>
+                                <li className="breadcrumb-item">
+                                    <Link to="/"><FontAwesomeIcon icon="tachometer-alt" className="fa-fw"/>Server Control</Link>
+                                </li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="save" prefix="far"/>Saves
+                                </li>
                             </ol>
                         </small>
                     </h1>

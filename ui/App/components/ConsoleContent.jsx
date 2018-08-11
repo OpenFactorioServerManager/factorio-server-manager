@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class ConsoleContent extends React.Component {
     constructor(props) {
@@ -97,8 +98,12 @@ class ConsoleContent extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-tachometer-alt"></i>Server Control</Link></li>
-                                <li className="breadcrumb-item active"><i className="fa fa-terminal"></i>Console</li>
+                                <li className="breadcrumb-item">
+                                    <Link to="/"><FontAwesomeIcon icon="tachometer-alt"/>Server Control</Link>
+                                </li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="terminal"/>Console
+                                </li>
                             </ol>
                         </small>
                     </h1>

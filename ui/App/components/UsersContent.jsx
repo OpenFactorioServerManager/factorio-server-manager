@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import UserTable from './Users/UserTable.jsx';
 import AddUser from './Users/AddUser.jsx';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class UsersContent extends React.Component {
     constructor(props) {
@@ -41,8 +42,12 @@ class UsersContent extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-tachometer-alt fa-fw"></i>Server Control</Link></li>
-                                <li className="breadcrumb-item active"><i className="fa fa-cog"></i>Settings</li>
+                                <li className="breadcrumb-item">
+                                    <Link to="/"><FontAwesomeIcon icon="tachometer-alt"/>Server Control</Link>
+                                </li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="cog"/>Settings
+                                </li>
                             </ol>
                         </small>
                     </h1>

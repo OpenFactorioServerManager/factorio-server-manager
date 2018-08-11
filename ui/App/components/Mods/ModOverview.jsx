@@ -8,6 +8,7 @@ import ModPacks from "./packs/ModPackOverview.jsx";
 import {instanceOfModsContent} from "./ModsPropTypes.js";
 import ModLoadSave from "./ModLoadSave.jsx";
 import {ReactSwalNormal} from './../../../js/customSwal';
+import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class ModOverview extends React.Component {
     constructor(props) {
@@ -62,7 +63,7 @@ class ModOverview extends React.Component {
                          role="button"
                          style={{cursor: "pointer"}}
                     >
-                        <i className="fa fa-plus"></i>
+                        <FontAwesomeIcon icon="plus"/>
                         <h3 className="box-title">Add Mod</h3>
                         {this.props.loggedIn ?
                             <div className="box-tools pull-right">
@@ -94,7 +95,7 @@ class ModOverview extends React.Component {
                          role="button"
                          style={{cursor: "pointer"}}
                     >
-                        <i className="fa fa-plus"></i>
+                        <FontAwesomeIcon icon="plus"/>
                         <h3 className="box-title">Upload Mod</h3>
                     </div>
 
@@ -114,7 +115,7 @@ class ModOverview extends React.Component {
                          role="button"
                          style={{cursor: "pointer"}}
                     >
-                        <i className="fa fa-plus"></i>
+                        <FontAwesomeIcon icon="plus"/>
                         <h3 className="box-title">Load Mods From Save</h3>
                     </div>
 
@@ -134,7 +135,7 @@ class ModOverview extends React.Component {
                          role="button"
                          style={{cursor: "pointer"}}
                     >
-                        <i className="fa fa-minus"></i>
+                        <FontAwesomeIcon icon="minus"/>
                         <h3 className="box-title">Manage Mods</h3>
                         <div className="box-tools float-sm-right">
                             {
@@ -183,7 +184,7 @@ class ModOverview extends React.Component {
                          role="button"
                          style={{cursor: "pointer"}}
                     >
-                        <i className="fa fa-plus"></i>
+                        <FontAwesomeIcon icon="plus"/>
                         <h3 className="box-title">Manage Modpacks</h3>
                     </div>
 

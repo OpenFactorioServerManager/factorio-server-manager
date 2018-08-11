@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import LogLines from './Logs/LogLines.jsx';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class LogsContent extends React.Component {
     constructor(props) {
@@ -39,9 +40,12 @@ class LogsContent extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-tachometer-alt"></i>Server
-                                    Control</Link></li>
-                                <li className="breadcrumb-item active"><i className="far fa-file-alt"></i>Logs</li>
+                                <li className="breadcrumb-item">
+                                    <Link to="/"><FontAwesomeIcon icon="tachometer-alt"/>Server Control</Link>
+                                </li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="file-alt" prefix="far"/>Logs
+                                </li>
                             </ol>
                         </small>
                     </h1>

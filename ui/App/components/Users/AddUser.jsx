@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {ReactSwalNormal} from './../../../js/customSwal';
+import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class AddUser extends React.Component {
     constructor(props) {
@@ -110,7 +111,7 @@ class AddUser extends React.Component {
                                 </div> 
                             
                                 <button className="btn btn-block btn-success" type="submit">
-                                    <i className="fa fa-plus fa-fw"></i>
+                                    <FontAwesomeIcon icon="plus" className="fa-fw"/>
                                     Add User
                                 </button>
                             </form>
