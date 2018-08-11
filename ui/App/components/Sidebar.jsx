@@ -47,22 +47,22 @@ class Sidebar extends React.Component {
                             <li className="nav-header">MENU</li>
                             <li className="nav-item">
                                 <NavLink exact to="/" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-tachometer"></i><p>Server Control</p>
+                                    <i className="nav-icon fa fa-tachometer-alt"></i><p>Server Control</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/mods" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-pencil"></i><p>Mods</p>
+                                    <i className="nav-icon fa fa-pencil-alt"></i><p>Mods</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/logs" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-file-text-o"></i><p>Logs</p>
+                                    <i className="nav-icon far fa-file-alt"></i><p>Logs</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
                                 <NavLink to="/saves" activeClassName="active" className="nav-link">
-                                    <i className="nav-icon fa fa-floppy-o"></i><p>Saves</p>
+                                    <i className="nav-icon far fa-save"></i><p>Saves</p>
                                 </NavLink>
                             </li>
                             <li className="nav-item">

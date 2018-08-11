@@ -22,7 +22,7 @@ class HiddenSidebar extends React.Component {
             <ul className="nav nav-tabs nav-justified control-sidebar-tabs">
             <li className="active"><a href="control-sidebar-theme-demo-options-tab" data-toggle="tab"><i className="fa fa-wrench"></i></a></li>
             <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i className="fa fa-home"></i></a></li>
-            <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i className="fa fa-gears"></i></a></li>
+            <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i className="fa fa-cogs"></i></a></li>
             </ul>
             <div className="tab-content">
                 <div className="tab-pane" id="control-sidebar-home-tab">
@@ -177,7 +177,7 @@ class HiddenSidebar extends React.Component {
                     <div className="form-group">
                         <label className="control-sidebar-subheading">
                         Delete chat history
-                        <a href="javascript:void(0)" className="text-red pull-right"><i className="fa fa-trash-o"></i></a>
+                        <a href="javascript:void(0)" className="text-red pull-right"><i className="far fa-trash-alt"></i></a>
                         </label>
                     </div>
                     </form>

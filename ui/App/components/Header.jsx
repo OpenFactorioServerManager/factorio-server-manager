@@ -31,7 +31,7 @@ class Header extends React.Component {
                 <ul className="navbar-nav ml-auto">
                     <li className="nav-item">
                         <Link className="nav-link" to="/settings">
-                            <i className="fa fa-gears fa-fw"></i>Settings
+                            <i className="fa fa-cogs fa-fw"></i>Settings
                         </Link>
                     </li>
                     <li className="nav-item">

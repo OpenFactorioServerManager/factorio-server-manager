@@ -2,6 +2,7 @@ global.$ = global.jQuery = require('jquery');
 require('bootstrap');
 require('admin-lte/build/js/AdminLTE.js');
 require('bootstrap-fileinput');
+require('bootstrap-fileinput/themes/fas/theme');
 
 
 /**

@@ -12,6 +12,8 @@
 .swal2-popup {
     .swal2-content {
         text-align: center;
+        display: flex;
+        justify-content: center;
     }
 
     .swal2-actions.swal2-loading {

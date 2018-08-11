@@ -41,7 +41,7 @@ class UsersContent extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</Link></li>
+                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-tachometer-alt fa-fw"></i>Server Control</Link></li>
                                 <li className="breadcrumb-item active"><i className="fa fa-cog"></i>Settings</li>
                             </ol>
                         </small>

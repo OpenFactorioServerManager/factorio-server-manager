@@ -1,10 +1,10 @@
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 import ModOverview from './Mods/ModOverview.jsx';
 import locks from "locks";
 import SemVer from 'semver';
+import {ReactSwalNormal, ReactSwalDanger} from './../../js/customSwal';
 
 class ModsContent extends React.Component {
     constructor(props) {
@@ -65,7 +65,7 @@ class ModsContent extends React.Component {
             data: $form.serialize(),
             dataType: "JSON",
             success: (data) => {
-                swal({
+                ReactSwalNormal.fire({
                     title: "Logged in Successfully",
                     type: "success"
                 });
@@ -75,7 +75,7 @@ class ModsContent extends React.Component {
                 });
             },
             error: (jqXHR) => {
-                swal({
+                ReactSwalNormal.fire({
                     title: jqXHR.responseJSON.data,
                     type: "error"
                 });
@@ -115,7 +115,7 @@ class ModsContent extends React.Component {
                 })
             },
             error: (jqXHR) => {
-                swal({
+                ReactSwalNormal.fire({
                     title: "error logging out of factorio",
                     text: jqXHR.responseJSON.data,
                     type: "error"
@@ -144,16 +144,16 @@ class ModsContent extends React.Component {
                     installedMods: data.data.mods
                 });
 
-                swal({
-                    type: "success",
-                    title: "Mod installed"
+                ReactSwalNormal.fire({
+                    title: "Mod installed",
+                    type: "success"
                 });
             },
             error: (jqXHR, status, err) => {
-                swal({
-                    type: "error",
-                    title: "some error occured",
-                    text: err.toString()
+                ReactSwalNormal.fire({
+                    title: "An error occurred",
+                    text: err.toString(),
+                    type: "error"
                 });
             }
         });
@@ -249,17 +249,15 @@ class ModsContent extends React.Component {
                     </tbody>
                 </table>;
 
-                swal({
+                ReactSwalDanger.fire({
                     title: "Choose version",
-                    text: ReactDOMServer.renderToStaticMarkup(table),
-                    html: true,
-                    type: "info",
+                    html: table,
+                    type: "question",
                     showCancelButton: true,
-                    closeOnConfirm: false,
                     confirmButtonText: "Download it!",
-                    cancelButtonText: "Close",
                     showLoaderOnConfirm: true,
-                }, this.loadDownloadListSwalHandler);
+                    preConfirm: this.loadDownloadListSwalHandler
+                });
             },
             error: (xhr, status, err) => {
                 console.log('api/mods/details', status, err.toString());
@@ -272,7 +270,11 @@ class ModsContent extends React.Component {
         e.preventDefault();
 
         if(updatesInProgress) {
-            swal("Toggle mod failed", "Can't toggle the mod, when an update is still in progress", "error");
+            ReactSwalNormal.fire({
+                title: "Toggle mods failed",
+                text: "Can't toggle the mod, when an update is still in progress",
+                type: "error"
+            });
             return false;
         }
 
@@ -308,7 +310,7 @@ class ModsContent extends React.Component {
             },
             error: (jqXHR, status, err) => {
                 console.log('api/mods/toggle', status, err.toString());
-                swal({
+                ReactSwalNormal.fire({
                     title: "Toggle Mod went wrong",
                     text: err.toString(),
                     type: "error"
@@ -329,53 +331,55 @@ class ModsContent extends React.Component {
         let $row = $button.parents("tr");
         let modName = $row.data("mod-name");
 
-        swal({
+        ReactSwalDanger({
             title: "Delete Mod?",
             text: "This will delete the mod and can break the save file",
-            type: "info",
+            type: "question",
             showCancelButton: true,
             closeOnConfirm: false,
             confirmButtonText: "Delete it!",
-            cancelButtonText: "Close",
             showLoaderOnConfirm: true,
-            confirmButtonColor: "#DD6B55",
-        }, () => {
-            $.ajax({
-                url: "/api/mods/delete",
-                method: "POST",
-                data: {
-                    modName: modName
-                },
-                dataType: "JSON",
-                success: (data) => {
-                    if(data.success) {
-                        this.mutex.lock(() => {
-                            swal("Delete of mod " + modName + " successful", "", "success");
-                            let installedMods = this.state.installedMods;
+            preConfirm: () => {
+                $.ajax({
+                    url: "/api/mods/delete",
+                    method: "POST",
+                    data: {
+                        modName: modName
+                    },
+                    dataType: "JSON",
+                    success: (data) => {
+                        if (data.success) {
+                            this.mutex.lock(() => {
+                                ReactSwalNormal.fire({
+                                    title: <p>Delete of mod {modName} successful</p>,
+                                    type: "success"
+                                });
+                                let installedMods = this.state.installedMods;
 
-                            installedMods.forEach((v, k) => {
-                                if(v.name == modName) {
-                                    delete installedMods[k];
-                                }
+                                installedMods.forEach((v, k) => {
+                                    if (v.name == modName) {
+                                        delete installedMods[k];
+                                    }
+                                });
+
+                                this.setState({
+                                    installedMods: installedMods
+                                });
+
+                                this.mutex.unlock();
                             });
-
-                            this.setState({
-                                installedMods: installedMods
-                            });
-
-                            this.mutex.unlock();
+                        }
+                    },
+                    error: (jqXHR, status, err) => {
+                        console.log('api/mods/delete', status, err.toString());
+                        ReactSwalNormal.fire({
+                            title: "Delete Mod went wrong",
+                            text: err.toString(),
+                            type: "error"
                         });
                     }
-                },
-                error: (jqXHR, status, err) => {
-                    console.log('api/mods/delete', status, err.toString());
-                    swal({
-                        title: "Delete Mod went wrong",
-                        text: err.toString(),
-                        type: "error"
-                    });
-                }
-            });
+                });
+            }
         });
     }
 
@@ -383,38 +387,38 @@ class ModsContent extends React.Component {
         e.preventDefault();
         e.stopPropagation();
 
-        swal({
+        ReactSwalDanger.fire({
             title: "Delete Mod?",
-            text: "This will delete ALL mods and can't be redone!<br> Are you sure?",
-            type: "info",
+            html: <p>This will delete ALL mods and can't be redone!<br/> Are you sure?</p>,
+            type: "question",
             showCancelButton: true,
             closeOnConfirm: false,
             confirmButtonText: "Yes, Delete ALL!",
-            cancelButtonText: "Cancel",
             showLoaderOnConfirm: true,
-            confirmButtonColor: "#DD6B55",
-            html: true,
-        }, () => {
-            $.ajax({
-                url: "/api/mods/delete/all",
-                method: "POST",
-                dataType: "JSON",
-                success: (data) => {
-                    swal("ALL mods deleted successful", "", "success");
-                    this.setState({
-                        installedMods: data.data
-                    });
-                },
-                error: (jqXHR, status, err) => {
-                    console.log('api/mods/delete/all', status, err.toString());
-                    swal({
-                        title: "Delete all mods went wrong",
-                        text: err.toString() + "<br>" + jqXHR.responseJSON.data,
-                        type: "error",
-                        html: true
-                    });
-                }
-            });
+            preConfirm: () => {
+                $.ajax({
+                    url: "/api/mods/delete/all",
+                    method: "POST",
+                    dataType: "JSON",
+                    success: (data) => {
+                        ReactSwalNormal.fire({
+                            title: "ALL mods deleted successful",
+                            type: "success"
+                        })
+                        this.setState({
+                            installedMods: data.data
+                        });
+                    },
+                    error: (jqXHR, status, err) => {
+                        console.log('api/mods/delete/all', status, err.toString());
+                        ReactSwalNormal.fire({
+                            title: "Delete all mods went wrong",
+                            html: <p>{err.toString()}<br/>{jqXHR.responseJSON.data}</p>,
+                            type: "error",
+                        });
+                    }
+                })
+            }
         });
     }
 
@@ -422,10 +426,10 @@ class ModsContent extends React.Component {
         e.preventDefault();
 
         if(!this.state.loggedIn) {
-            swal({
-                type: "error",
+            ReactSwalNormal.fire({
                 title: "Update failed",
-                text: "please login into Factorio to update mod"
+                text: "Please login into Factorio to update mod",
+                type: "error",
             });
 
             let $addModBox = $('#add-mod-box');
@@ -457,7 +461,10 @@ class ModsContent extends React.Component {
 
                     if(data.success) {
                         this.mutex.lock(() => {
-                            swal("Update of mod " + modName + " successful", "", "success");
+                            ReactSwalNormal.fire({
+                                title: <p>Update of mod {modName} successful</p>,
+                                type: "success"
+                            })
                             let installedMods = this.state.installedMods;
 
                             installedMods.forEach((v, k) => {
@@ -477,7 +484,8 @@ class ModsContent extends React.Component {
                 error: (jqXHR, status, err) => {
                     console.log('api/mods/delete', status, err.toString());
                     toggleUpdateStatus();
-                    swal({
+
+                    ReactSwalNormal.fire({
                         title: "Update Mod went wrong",
                         text: err.toString(),
                         type: "error"
@@ -490,7 +498,7 @@ class ModsContent extends React.Component {
     updatesAvailable() {
         this.setState({
             updatesAvailable: true
-        })
+        });
     }
 
     updateAllModsHandler(e) {
@@ -531,8 +539,8 @@ class ModsContent extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</Link></li>
-                                <li className="breadcrumb-item active"><i className="fa fa-pencil"></i>Mods</li>
+                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-tachometer-alt fa-fw"></i>Server Control</Link></li>
+                                <li className="breadcrumb-item active"><i className="fa fa-pencil-alt"></i>Mods</li>
                             </ol>
                         </small>
                     </h1>

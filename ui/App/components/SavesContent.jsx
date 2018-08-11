@@ -38,9 +38,9 @@ class SavesContent extends React.Component {
 
                         <small className="float-sm-right">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-dashboard fa-fw"></i>Server
+                                <li className="breadcrumb-item"><Link to="/"><i className="fa fa-tachometer-alt fa-fw"></i>Server
                                     Control</Link></li>
-                                <li className="breadcrumb-item active"><i className="fa fa-floppy-o"></i>Saves</li>
+                                <li className="breadcrumb-item active"><i className="far fa-save"></i>Saves</li>
                             </ol>
                         </small>
                     </h1>

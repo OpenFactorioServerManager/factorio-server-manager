@@ -12,6 +12,7 @@ class ModUpload extends React.Component {
             allowedFileExtensions: ['zip'],
             browseLabel: "Select Mods...",
             browseIcon: '<i class="fa fa-upload text-muted" style="color: white;"></i>&nbsp;',
+            theme: "fas",
             slugCallback: function(filename) {
                 return filename;
             },
