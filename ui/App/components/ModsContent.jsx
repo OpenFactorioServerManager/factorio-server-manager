@@ -340,7 +340,6 @@ class ModsContent extends React.Component {
             text: "This will delete the mod and can break the save file",
             type: "question",
             showCancelButton: true,
-            closeOnConfirm: false,
             confirmButtonText: "Delete it!",
             showLoaderOnConfirm: true,
             preConfirm: () => {
@@ -396,7 +395,6 @@ class ModsContent extends React.Component {
             html: <p>This will delete ALL mods and can't be redone!<br/> Are you sure?</p>,
             type: "question",
             showCancelButton: true,
-            closeOnConfirm: false,
             confirmButtonText: "Yes, Delete ALL!",
             showLoaderOnConfirm: true,
             preConfirm: () => {

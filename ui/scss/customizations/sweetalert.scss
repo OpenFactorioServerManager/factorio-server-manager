@@ -14,6 +14,13 @@
         text-align: center;
         display: flex;
         justify-content: center;
+        flex-direction: column;
+
+        .swal2-input {
+            @extend .form-control;
+            height: 2.625em;
+            padding: 0.75em;
+        }
     }
 
     .swal2-actions.swal2-loading {

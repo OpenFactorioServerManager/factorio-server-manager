@@ -10,8 +10,8 @@ require('bootstrap-fileinput/themes/fas/theme');
  */
 $('body').on("show.bs.collapse hide.bs.collapse", (e) => {
     let $target = $(e.target);
-    let $box = $target.parents(".box");
-    let $fontAwesome = $box.find(".box-header").find("i");
+    let $box = $target.parent(".box");
+    let $fontAwesome = $box.children(".box-header").children("i");
 
     if(e.type == "show") {
         $fontAwesome.removeClass("fa-plus").addClass("fa-minus");

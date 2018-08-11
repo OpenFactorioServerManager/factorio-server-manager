@@ -81,7 +81,6 @@ class ModLoadSave extends React.Component {
                     html: table,
                     type: 'question',
                     showCancelButton: true,
-                    closeOnConfirm: false,
                     confirmButtonText: "Download Mods!",
                     showLoaderOnConfirm: true,
                     preConfirm: this.loadModsSwalHandler
