@@ -7,6 +7,7 @@ import ModManager from "./ModManager.jsx";
 import ModPacks from "./packs/ModPackOverview.jsx";
 import {instanceOfModsContent} from "./ModsPropTypes.js";
 import ModLoadSave from "./ModLoadSave.jsx";
+import {ReactSwalNormal} from './../../../js/customSwal';
 
 class ModOverview extends React.Component {
     constructor(props) {
@@ -37,7 +38,7 @@ class ModOverview extends React.Component {
             error: (jqXHR) => {
                 let json_data = JSON.parse(jqXHR.responseJSON.data);
 
-                swal({
+                ReactSwalNormal.fire({
                     title: json_data.detail,
                     type: "error"
                 });

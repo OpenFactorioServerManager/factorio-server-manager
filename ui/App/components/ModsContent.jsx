@@ -323,7 +323,11 @@ class ModsContent extends React.Component {
         e.preventDefault();
 
         if(updatesInProgress) {
-            swal("Delete failed", "Can't delete the mod, when an update is still in progress", "error");
+            ReactSwalNormal.fire({
+                title: "Delete failed!",
+                text: "Can't delete the mod, when an update is still in progress",
+                type: "error"
+            });
             return false;
         }
 
