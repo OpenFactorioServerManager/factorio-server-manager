@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Save from './Save.jsx';
-import {ReactSwalDanger, ReactSwalNormal} from './../../../js/customSwal';
+import {ReactSwalDanger, ReactSwalNormal} from 'Utilities/customSwal';
 
 class SavesList extends React.Component {
    constructor(props) {

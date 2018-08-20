@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {ReactSwalNormal} from './../../../js/customSwal';
+import {ReactSwalNormal} from 'Utilities/customSwal';
 import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class ServerCtl extends React.Component {

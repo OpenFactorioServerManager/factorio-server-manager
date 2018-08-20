@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import ModOverview from './Mods/ModOverview.jsx';
 import locks from "locks";
 import SemVer from 'semver';
-import {ReactSwalNormal, ReactSwalDanger} from './../../js/customSwal';
+import {ReactSwalNormal, ReactSwalDanger} from 'Utilities/customSwal';
 import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class ModsContent extends React.Component {

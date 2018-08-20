@@ -4,7 +4,7 @@ import NativeListener from 'react-native-listener';
 import {instanceOfModsContent} from "../ModsPropTypes.js";
 import locks from "locks";
 import PropTypes from "prop-types";
-import {ReactSwalNormal, ReactSwalDanger} from './../../../../js/customSwal';
+import {ReactSwalNormal, ReactSwalDanger} from 'Utilities/customSwal';
 import FontAwesomeIcon from "../../FontAwesomeIcon";
 
 class ModPackOverview extends React.Component {

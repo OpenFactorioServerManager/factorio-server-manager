@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {ReactSwalDanger, ReactSwalNormal} from './../../../js/customSwal';
+import {ReactSwalDanger, ReactSwalNormal} from 'Utilities/customSwal';
 
 class UserTable extends React.Component {
     constructor(props) {

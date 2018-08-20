@@ -7,7 +7,7 @@ import ModManager from "./ModManager.jsx";
 import ModPacks from "./packs/ModPackOverview.jsx";
 import {instanceOfModsContent} from "./ModsPropTypes.js";
 import ModLoadSave from "./ModLoadSave.jsx";
-import {ReactSwalNormal} from './../../../js/customSwal';
+import {ReactSwalNormal} from 'Utilities/customSwal';
 import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class ModOverview extends React.Component {

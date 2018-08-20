@@ -1,7 +1,7 @@
 import React from 'react';
 import {instanceOfModsContent} from "./ModsPropTypes";
 import PropTypes from "prop-types";
-import {ReactSwalNormal} from './../../../js/customSwal';
+import {ReactSwalNormal} from 'Utilities/customSwal';
 
 class ModLoadSave extends React.Component {
     constructor(props) {
