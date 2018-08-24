@@ -14,7 +14,7 @@ module.exports = {
         alias: {
             Utilities: path.resolve(__dirname, 'ui/js/')
         },
-        extensions: ['.wasm', '.mjs', '.js', '.json', '.jsx']
+        extensions: ['.js', '.json', '.jsx']
     },
     module: {
         rules: [
@@ -39,24 +39,18 @@ module.exports = {
                     {
                         loader: "file-loader",
                         options: {
-                            name: path => {
-                                console.log("es ist ein BILD!");
-                                console.log(path);
-                                if(!/node_modules|bower_components/.test(path)) {
+                            name: loader_path => {
+                                if(!/node_modules|bower_components/.test(loader_path)) {
                                     return "app/images/[name].[ext]?[hash]";
                                 }
 
                                 return (
                                     "app/images/vendor/" +
-                                    path.replace(/\\/g, "/")
-                                        .replace(
-                                            /((.*(node_modules|bower_components))|images|image|img|assets)\//g,
-                                            ''
-                                        ) +
+                                    loader_path.replace(/\\/g, "/")
+                                        .replace(/((.*(node_modules))|images|image|img|assets)\//g, '') +
                                     '?[hash]'
                                 );
                             },
-                            publicPath: 'app/'
                         }
                     }
                 ]
@@ -67,26 +61,19 @@ module.exports = {
                     {
                         loader: "file-loader",
                         options: {
-                            name: path => {
-                                console.log("testausgabe");
-                                console.log(path);
-                                if (!/node_modules|bower_components/.test(path)) {
+                            name: loader_path => {
+                                if (!/node_modules|bower_components/.test(loader_path)) {
                                     return 'app/fonts/[name].[ext]?[hash]';
                                 }
 
                                 return (
-                                    'app/fonts' +
-                                    '/vendor/' +
-                                    path
+                                    'app/fonts/vendor/' +
+                                    loader_path
                                         .replace(/\\/g, '/')
-                                        .replace(
-                                            /((.*(node_modules|bower_components))|fonts|font|assets)\//g,
-                                            ''
-                                        ) +
+                                        .replace(/((.*(node_modules))|fonts|font|assets)\//g, '') +
                                     '?[hash]'
                                 );
                             },
-                            publicPath: 'app/'
                         }
                     }
                 ]
