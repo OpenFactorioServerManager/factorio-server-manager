@@ -8,7 +8,8 @@ module.exports = {
     },
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'app')
+        path: path.resolve('app'),
+        publicPath: path.resolve('app')
     },
     resolve: {
         alias: {
@@ -30,7 +31,8 @@ module.exports = {
                 use: [
                     MiniCssExtractPlugin.loader,
                     "css-loader",
-                    "sass-loader"
+                    "resolve-url-loader",
+                    "sass-loader?sourceMap"
                 ]
             },
             {
@@ -40,7 +42,7 @@ module.exports = {
                         loader: "file-loader",
                         options: {
                             name: loader_path => {
-                                if(!/node_modules|bower_components/.test(loader_path)) {
+                                if(!/node_modules/.test(loader_path)) {
                                     return "app/images/[name].[ext]?[hash]";
                                 }
 
@@ -62,7 +64,7 @@ module.exports = {
                         loader: "file-loader",
                         options: {
                             name: loader_path => {
-                                if (!/node_modules|bower_components/.test(loader_path)) {
+                                if (!/node_modules/.test(loader_path)) {
                                     return 'app/fonts/[name].[ext]?[hash]';
                                 }
 

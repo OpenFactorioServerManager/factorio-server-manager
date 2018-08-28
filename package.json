@@ -47,6 +47,7 @@
     "react-native-listener": "^1.0.2",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
+    "resolve-url-loader": "^2.3.0",
     "sass-loader": "^7.1.0",
     "semver": "^5.5.0",
     "sweetalert2": "^7.26.11",
