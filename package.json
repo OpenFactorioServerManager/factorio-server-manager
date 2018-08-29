@@ -34,7 +34,7 @@
     "bootstrap-fileinput": "^4.4.9",
     "classnames": "^2.2.6",
     "css-loader": "^1.0.0",
-    "file-loader": "^1.1.11",
+    "file-loader": "^2.0.0",
     "jquery": "^3.3.1",
     "locks": "^0.2.2",
     "mini-css-extract-plugin": "^0.4.1",
@@ -53,6 +53,6 @@
     "sweetalert2-react-content": "^1.0.1",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
-    "webpack-fix-style-only-entries": "0.0.2"
+    "webpack-fix-style-only-entries": "0.0.3"
   }
 }
