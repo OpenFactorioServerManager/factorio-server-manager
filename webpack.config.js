@@ -8,12 +8,12 @@ module.exports = {
     },
     output: {
         filename: 'bundle.js',
-        path: path.resolve('app'),
-        publicPath: path.resolve('app')
+        path: path.resolve(__dirname, 'app'),
+        publicPath: ""
     },
     resolve: {
         alias: {
-            Utilities: path.resolve(__dirname, 'ui/js/')
+            Utilities: path.resolve('ui/js/')
         },
         extensions: ['.js', '.json', '.jsx']
     },
@@ -43,11 +43,11 @@ module.exports = {
                         options: {
                             name: loader_path => {
                                 if(!/node_modules/.test(loader_path)) {
-                                    return "app/images/[name].[ext]?[hash]";
+                                    return "/images/[name].[ext]?[hash]";
                                 }
 
                                 return (
-                                    "app/images/vendor/" +
+                                    "/images/vendor/" +
                                     loader_path.replace(/\\/g, "/")
                                         .replace(/((.*(node_modules))|images|image|img|assets)\//g, '') +
                                     '?[hash]'
@@ -65,11 +65,11 @@ module.exports = {
                         options: {
                             name: loader_path => {
                                 if (!/node_modules/.test(loader_path)) {
-                                    return 'app/fonts/[name].[ext]?[hash]';
+                                    return '/fonts/[name].[ext]?[hash]';
                                 }
 
                                 return (
-                                    'app/fonts/vendor/' +
+                                    '/fonts/vendor/' +
                                     loader_path
                                         .replace(/\\/g, '/')
                                         .replace(/((.*(node_modules))|fonts|font|assets)\//g, '') +
