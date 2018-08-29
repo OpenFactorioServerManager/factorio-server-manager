@@ -1,6 +1,17 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+/* TODO remove when webpack fixed this error:
+ * Links to this error:
+ * https://github.com/webpack/webpack/issues/7300
+ * https://github.com/JeffreyWay/laravel-mix/pull/1495
+ * https://github.com/webpack-contrib/mini-css-extract-plugin/issues/151
+ * and more...
+ *
+ * This will be, as far as i know, fixed in webpack 5, it is currently in development
+ */
+const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
+
 module.exports = {
     entry: {
         // js: './ui/index.js',
@@ -86,6 +97,7 @@ module.exports = {
         hints: false
     },
     plugins: [
+        new FixStyleOnlyEntriesPlugin(),
         new MiniCssExtractPlugin({
             filename: "bundle.css"
         })

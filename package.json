@@ -53,6 +53,7 @@
     "sweetalert2": "^7.26.11",
     "sweetalert2-react-content": "^1.0.1",
     "webpack": "^4.16.5",
-    "webpack-cli": "^3.1.0"
+    "webpack-cli": "^3.1.0",
+    "webpack-fix-style-only-entries": "0.0.2"
   }
 }
