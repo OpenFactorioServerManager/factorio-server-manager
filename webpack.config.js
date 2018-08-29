@@ -13,102 +13,108 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
  * ~knoxfighter
  */
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
-const isProduction = process.env.NODE_ENV == 'production';
 
-module.exports = {
-    entry: {
-        bundle: './ui/index.js',
-        style: './ui/index.scss'
-    },
-    output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, 'app'),
-        publicPath: ""
-    },
-    resolve: {
-        alias: {
-            Utilities: path.resolve('ui/js/')
+module.exports = (env, argv) => {
+    const isProduction = argv.mode == 'production';
+
+    return {
+        entry: {
+            bundle: './ui/index.js',
+            style: './ui/index.scss'
         },
-        extensions: ['.js', '.json', '.jsx']
-    },
-    devtool: (isProduction) ? "none" : "source-map",
-    module: {
-        rules: [
-            {
-                test: /\.jsx?$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader'
+        output: {
+            filename: '[name].js',
+            path: path.resolve(__dirname, 'app'),
+            publicPath: ""
+        },
+        resolve: {
+            alias: {
+                Utilities: path.resolve('ui/js/')
+            },
+            extensions: ['.js', '.json', '.jsx']
+        },
+        devtool: (isProduction) ? "none" : "source-map",
+        module: {
+            rules: [
+                {
+                    test: /\.jsx?$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader'
+                    }
+                },
+                {
+                    test: /\.scss$/,
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        {
+                            loader: "css-loader",
+                            options: {
+                                "sourceMap": !isProduction,
+                            }
+                        },
+                        "resolve-url-loader",
+                        "sass-loader?sourceMap"
+                    ]
+                },
+                {
+                    test: /(\.(png|jpe?g|gif)$|^((?!font).)*\.svg$)/,
+                    loaders: [
+                        {
+                            loader: "file-loader",
+                            options: {
+                                name: loader_path => {
+                                    if (!/node_modules/.test(loader_path)) {
+                                        return "/images/[name].[ext]?[hash]";
+                                    }
+
+                                    return (
+                                        "/images/vendor/" +
+                                        loader_path.replace(/\\/g, "/")
+                                            .replace(/((.*(node_modules))|images|image|img|assets)\//g, '') +
+                                        '?[hash]'
+                                    );
+                                },
+                            }
+                        }
+                    ]
+                },
+                {
+                    test: /(\.(woff2?|ttf|eot|otf)$|font.*\.svg$)/,
+                    loaders: [
+                        {
+                            loader: "file-loader",
+                            options: {
+                                name: loader_path => {
+                                    if (!/node_modules/.test(loader_path)) {
+                                        return '/fonts/[name].[ext]?[hash]';
+                                    }
+
+                                    return (
+                                        '/fonts/vendor/' +
+                                        loader_path
+                                            .replace(/\\/g, '/')
+                                            .replace(/((.*(node_modules))|fonts|font|assets)\//g, '') +
+                                        '?[hash]'
+                                    );
+                                },
+                            }
+                        }
+                    ]
                 }
-            },
-            {
-                test: /\.scss$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    {
-                        loader: "css-loader",
-                        options: {
-                            "sourceMap": !isProduction,
-                        }
-                    },
-                    "resolve-url-loader",
-                    "sass-loader?sourceMap"
-                ]
-            },
-            {
-                test: /(\.(png|jpe?g|gif)$|^((?!font).)*\.svg$)/,
-                loaders: [
-                    {
-                        loader: "file-loader",
-                        options: {
-                            name: loader_path => {
-                                if(!/node_modules/.test(loader_path)) {
-                                    return "/images/[name].[ext]?[hash]";
-                                }
-
-                                return (
-                                    "/images/vendor/" +
-                                    loader_path.replace(/\\/g, "/")
-                                        .replace(/((.*(node_modules))|images|image|img|assets)\//g, '') +
-                                    '?[hash]'
-                                );
-                            },
-                        }
-                    }
-                ]
-            },
-            {
-                test: /(\.(woff2?|ttf|eot|otf)$|font.*\.svg$)/,
-                loaders: [
-                    {
-                        loader: "file-loader",
-                        options: {
-                            name: loader_path => {
-                                if (!/node_modules/.test(loader_path)) {
-                                    return '/fonts/[name].[ext]?[hash]';
-                                }
-
-                                return (
-                                    '/fonts/vendor/' +
-                                    loader_path
-                                        .replace(/\\/g, '/')
-                                        .replace(/((.*(node_modules))|fonts|font|assets)\//g, '') +
-                                    '?[hash]'
-                                );
-                            },
-                        }
-                    }
-                ]
-            }
+            ]
+        },
+        performance: {
+            hints: false
+        },
+        stats: {
+            children: false
+        },
+        plugins: [
+            new FixStyleOnlyEntriesPlugin(),
+            new MiniCssExtractPlugin({
+                filename: "[name].css"
+            })
         ]
-    },
-    performance: {
-        hints: false
-    },
-    plugins: [
-        new FixStyleOnlyEntriesPlugin(),
-        new MiniCssExtractPlugin({
-            filename: "[name].css"
-        })
-    ]
+    }
 }
