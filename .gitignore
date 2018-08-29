@@ -1,9 +1,5 @@
 node_modules/
 dev/
-bundle.js
-bundle.js.map
-bundle.css
-bundle.css.map
 /factorio-server-manager*
 /factorio_server_manager*
 auth.leveldb*
@@ -18,3 +14,5 @@ factorio.auth
 /pkg/
 mix-manifest.json
 /app/**/vendor/
+/app/*.js*
+/app/*.css*

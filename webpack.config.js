@@ -14,11 +14,11 @@ const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 
 module.exports = {
     entry: {
-        // js: './ui/index.js',
-        sass: './ui/index.scss'
+        bundle: './ui/index.js',
+        style: './ui/index.scss'
     },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'app'),
         publicPath: ""
     },
@@ -99,7 +99,7 @@ module.exports = {
     plugins: [
         new FixStyleOnlyEntriesPlugin(),
         new MiniCssExtractPlugin({
-            filename: "bundle.css"
+            filename: "[name].css"
         })
     ]
 }
