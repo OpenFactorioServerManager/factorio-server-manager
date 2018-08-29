@@ -39,7 +39,7 @@
     "locks": "^0.2.2",
     "mini-css-extract-plugin": "^0.4.1",
     "node-sass": "^4.9.3",
-    "prop-types": "latest",
+    "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-native-listener": "^1.0.2",
