@@ -1,6 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
+var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 /**
  * TODO remove when webpack fixed this error:
  * Links to this error:
@@ -61,6 +61,7 @@ module.exports = (env, argv) => {
                             loader: "css-loader",
                             options: {
                                 "sourceMap": !isProduction,
+                                "minimize": isProduction
                             }
                         },
                         "resolve-url-loader",
@@ -124,7 +125,13 @@ module.exports = (env, argv) => {
             new FixStyleOnlyEntriesPlugin(),
             new MiniCssExtractPlugin({
                 filename: "[name].css"
-            })
+            }),
+            (isProduction) ?
+                new OptimizeCssAssetsPlugin({
+                    cssProcessorPluginOptions: {
+                        preset: ['default', { discardComments: { removeAll: true } }],
+                    },
+                }) : () => {}
         ]
     }
 }

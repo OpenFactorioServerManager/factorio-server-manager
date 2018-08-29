@@ -39,6 +39,7 @@
     "locks": "^0.2.2",
     "mini-css-extract-plugin": "^0.4.1",
     "node-sass": "^4.9.3",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
