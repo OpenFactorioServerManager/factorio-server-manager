@@ -1,16 +1,19 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-/* TODO remove when webpack fixed this error:
+/**
+ * TODO remove when webpack fixed this error:
  * Links to this error:
  * https://github.com/webpack/webpack/issues/7300
  * https://github.com/JeffreyWay/laravel-mix/pull/1495
  * https://github.com/webpack-contrib/mini-css-extract-plugin/issues/151
  * and more...
  *
- * This will be, as far as i know, fixed in webpack 5, it is currently in development
+ * As far as i know, this will be fixed in webpack 5
+ * ~knoxfighter
  */
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
+const isProduction = process.env.NODE_ENV == 'production';
 
 module.exports = {
     entry: {
@@ -28,6 +31,7 @@ module.exports = {
         },
         extensions: ['.js', '.json', '.jsx']
     },
+    devtool: (isProduction) ? "none" : "source-map",
     module: {
         rules: [
             {
@@ -41,7 +45,12 @@ module.exports = {
                 test: /\.scss$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    "css-loader",
+                    {
+                        loader: "css-loader",
+                        options: {
+                            "sourceMap": !isProduction,
+                        }
+                    },
                     "resolve-url-loader",
                     "sass-loader?sourceMap"
                 ]
