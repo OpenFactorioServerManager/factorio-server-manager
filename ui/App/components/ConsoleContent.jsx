@@ -1,5 +1,7 @@
 import React from 'react';
-import {IndexLink} from 'react-router';
+import {Link} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class ConsoleContent extends React.Component {
     constructor(props) {
@@ -11,6 +13,8 @@ class ConsoleContent extends React.Component {
         this.addHistory = this.addHistory.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.newLogLine = this.newLogLine.bind(this);
+        this.subscribeLogToSocket = this.subscribeLogToSocket.bind(this);
+
         this.state = {
             commands: {},
             history: [],
@@ -19,16 +23,27 @@ class ConsoleContent extends React.Component {
     }
 
     componentDidMount() {
-        this.props.socket.emit("log subscribe");
+        this.subscribeLogToSocket();
+    }
+
+    subscribeLogToSocket() {
+        let wsReadyState = this.props.socket.emit("log subscribe");
+        if(wsReadyState != WebSocket.OPEN) {
+            setTimeout(() => {
+                this.subscribeLogToSocket();
+            }, 50);
+
+            return;
+        }
         this.setState({connected: true});
-        
+
         this.props.socket.on('log update', this.newLogLine.bind(this));
     }
 
     componentDidUpdate() {
-      var el = this.refs.output;
-      var container = document.getElementById("console-output");
-      container.scrollTop = this.refs.output.scrollHeight;
+        var el = this.refs.output;
+        var container = document.getElementById("console-output");
+        container.scrollTop = this.refs.output.scrollHeight;
     }
 
     handleInput(e) {
@@ -80,11 +95,18 @@ class ConsoleContent extends React.Component {
                     <h1>
                         Server Console
                         <small>Send commands and messages to the Factorio server</small>
+
+                        <small className="float-sm-right">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item">
+                                    <Link to="/"><FontAwesomeIcon icon="tachometer-alt"/>Server Control</Link>
+                                </li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="terminal"/>Console
+                                </li>
+                            </ol>
+                        </small>
                     </h1>
-                    <ol className="breadcrumb">
-                        <li><IndexLink to="/"><i className="fa fa-dashboard"></i>Server Control</IndexLink></li>
-                        <li className="active">Here</li>
-                    </ol>
                 </section>
 
                 <section className="content">
@@ -105,7 +127,7 @@ class ConsoleContent extends React.Component {
 }
 
 ConsoleContent.propTypes = {
-    socket: React.PropTypes.object.isRequired,
+    socket: PropTypes.object.isRequired,
 }
 
 export default ConsoleContent;

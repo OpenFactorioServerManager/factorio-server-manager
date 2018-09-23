@@ -1,8 +1,7 @@
 node_modules/
 dev/
-bundle.js
-factorio-server-manager
-factorio_server_manager
+/factorio-server-manager*
+/factorio_server_manager*
 auth.leveldb*
 conf.json
 *.exe
@@ -10,6 +9,10 @@ build/
 /mod_packs/*
 npm-debug.log
 .idea/
-/ui/package-lock.json
+/package-lock.json
 factorio.auth
 /pkg/
+mix-manifest.json
+/app/**/vendor/
+/app/*.js*
+/app/*.css*

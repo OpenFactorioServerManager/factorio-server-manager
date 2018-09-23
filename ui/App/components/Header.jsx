@@ -1,5 +1,7 @@
 import React from 'react';
-import {Link, IndexLink, browserHistory} from 'react-router';
+import {Link, withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class Header extends React.Component {
     constructor(props) {
@@ -16,9 +18,10 @@ class Header extends React.Component {
                 console.log(resp)
             }
         });
+
         // Wait for 1 second for logout callback to complete
         setTimeout(() => {
-            browserHistory.push("/login");
+            this.props.history.push("/login")
         }, 1000);
     }
 
@@ -26,36 +29,38 @@ class Header extends React.Component {
         var loginMenu; 
         if (this.props.loggedIn) {
             loginMenu = 
-                <ul className="nav navbar-nav">
-                    <li>
-                        <Link to="/settings"><i className="fa fa-gears fa-fw"></i>Settings</Link>
+                <ul className="navbar-nav ml-auto">
+                    <li className="nav-item">
+                        <Link className="nav-link" to="/settings">
+                            <FontAwesomeIcon icon="cogs" className="fa-fw"/>Settings
+                        </Link>
                     </li>
-                    <li>
-                        <a href="javascript:void(0)" onClick={this.onLogout}><i className="fa fa-lock fa-fw"></i>Logout</a>
+                    <li className="nav-item">
+                        <a href="javascript:void(0)" onClick={this.onLogout} className="nav-link">
+                            <FontAwesomeIcon icon="lock" className="fa-fw"/>Logout
+                        </a>
                     </li>
                 </ul>
         }
         return(
-            <header className="main-header">
-                
-                <IndexLink className="logo" to="/"><span className="logo-lg"><b>Factorio</b>SM</span></IndexLink>
-                
-                <nav className="navbar navbar-static-top" role="navigation">
-                <a href="#" className="sidebar-toggle" data-toggle="offcanvas" role="button">
-                <span className="sr-only">Toggle navigation</span>
-                </a>
-                <div className="navbar-custom-menu">
-                    {loginMenu}
-                </div>
-                </nav>
-            </header>
+            <nav className="main-header navbar navbar-expand navbar-light border-bottom">
+                <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <a className="nav-link" data-widget="pushmenu" href="#">
+                            <FontAwesomeIcon icon="bars"/>
+                        </a>
+                    </li>
+                </ul>
+
+                {loginMenu}
+            </nav>
         )
     }
 }
 
 Header.propTypes = {
-    username: React.PropTypes.string.isRequired,
-    loggedIn: React.PropTypes.bool.isRequired,
+    username: PropTypes.string.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
 }
 
-export default Header
+export default withRouter(Header);
