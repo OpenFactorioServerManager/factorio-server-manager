@@ -10,7 +10,7 @@
     "watch-poll": "npm run watch -- --watch-poll",
     "build": "npm run production",
     "prod": "npm run production",
-    "production": "webpack --config=webpack.config.js --mode=production --hide-modules",
+    "production": "webpack --config=webpack.config.js --mode=production --hide-modules --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
