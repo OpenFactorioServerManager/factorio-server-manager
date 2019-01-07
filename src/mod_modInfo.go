@@ -18,14 +18,14 @@ type ModInfoList struct {
 	Destination string    `json:"-"`
 }
 type ModInfo struct {
-	Name            string      `json:"name"`
-	Version         string      `json:"version"`
-	Title           string      `json:"title"`
-	Author          string      `json:"author"`
-	FileName        string      `json:"file_name"`
-	FactorioVersion string      `json:"factorio_version"`
-	Dependencies    []string    `json:"dependencies"`
-	Compatibility   bool        `json:"compatibility"`
+	Name            string   `json:"name"`
+	Version         string   `json:"version"`
+	Title           string   `json:"title"`
+	Author          string   `json:"author"`
+	FileName        string   `json:"file_name"`
+	FactorioVersion Version  `json:"factorio_version"`
+	Dependencies    []string `json:"dependencies"`
+	Compatibility   bool     `json:"compatibility"`
 }
 
 func newModInfoList(destination string) (ModInfoList, error) {
@@ -74,33 +74,37 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 
 			modInfo.FileName = info.Name()
 
-			var baseDependency string
-			for _, dependency := range modInfo.Dependencies {
-				if strings.HasPrefix(dependency, "base") {
-					splittedDep := strings.Split(dependency, "=")
-
-					if len(splittedDep) == 1 {
-						log.Printf("basemod without version specified!")
-						break
-					}
-
-					baseDependency = strings.Split(dependency, "=")[1]
-					break
+			var base Version
+			for _, dep := range modInfo.Dependencies {
+				dep = strings.TrimSpace(dep)
+				if dep == "" {
+					continue
 				}
+
+				parts := strings.Split(dep, " ")
+				if len(parts) != 3 {
+					log.Printf("skipping dependency '%s' in '%s': invalid format\n", dep, modInfo.Name)
+				}
+				if parts[0] != "base" {
+					continue
+				}
+
+				if parts[1] != ">=" {
+					log.Printf("skipping dependency '%s' in '%s': unsupported comparison\n", dep, modInfo.Name)
+				}
+
+				if err := base.UnmarshalText([]byte(parts[2])); err != nil {
+					log.Printf("skipping dependency '%s' in '%s': %v\n", dep, modInfo.Name, err)
+				}
+
+				break
 			}
-			if baseDependency != "" {
-				modInfo.Compatibility, err = checkModCompatibility(baseDependency)
-				if err != nil {
-					log.Printf("error checking mod compatibility: %s", err)
-					return err
-				}
+
+			if !base.Equals(NilVersion) {
+				modInfo.Compatibility = !FactorioServ.Version.Less(base)
 			} else {
 				log.Println("error finding basemodDependency. Using FactorioVersion...")
-				modInfo.Compatibility, err = checkModCompatibility(modInfo.FactorioVersion + ".0")
-				if err != nil {
-					log.Printf("error checking Compatibility with FactorioVersion: %s", err)
-					return err
-				}
+				modInfo.Compatibility = !FactorioServ.Version.Less(modInfo.FactorioVersion)
 			}
 
 			modInfoList.Mods = append(modInfoList.Mods, modInfo)
