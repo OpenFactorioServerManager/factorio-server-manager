@@ -82,19 +82,26 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 				}
 
 				parts := strings.Split(dep, " ")
-				if len(parts) != 3 {
+				if len(parts) > 3 {
 					log.Printf("skipping dependency '%s' in '%s': invalid format\n", dep, modInfo.Name)
+					continue
 				}
 				if parts[0] != "base" {
+					continue
+				}
+				if len(parts) == 1 {
+					base = modInfo.FactorioVersion
 					continue
 				}
 
 				if parts[1] != ">=" {
 					log.Printf("skipping dependency '%s' in '%s': unsupported comparison\n", dep, modInfo.Name)
+					continue
 				}
 
 				if err := base.UnmarshalText([]byte(parts[2])); err != nil {
 					log.Printf("skipping dependency '%s' in '%s': %v\n", dep, modInfo.Name, err)
+					continue
 				}
 
 				break
