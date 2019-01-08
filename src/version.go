@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// NilVersion represents an empty version number
 var NilVersion = Version{0, 0, 0}
 
 // Version represents a semantic version
@@ -49,5 +50,32 @@ func (v Version) Less(b Version) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+// Greater returns true if the receiver version is greater than the argument version
+func (v Version) Greater(b Version) bool { return !v.Equals(b) && !v.Less(b) }
+
+func (v Version) ge(b Version) bool { return v.Equals(b) || v.Greater(b) }
+func (v Version) le(b Version) bool { return v.Equals(b) || v.Less(b) }
+
+// Compare returns true if the comparison between the two version operands is valid.
+// Supported ops are: ==, !=, >, <, >=, <=
+func (v Version) Compare(b Version, op string) bool {
+	switch op {
+	case "==":
+		return v.Equals(b)
+	case "!=":
+		return !v.Equals(b)
+	case ">":
+		return v.Greater(b)
+	case "<":
+		return v.Less(b)
+	case ">=":
+		return v.ge(b)
+	case "<=":
+		return v.le(b)
+	default:
+		panic("unsupported operator")
 	}
 }

@@ -75,6 +75,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 			modInfo.FileName = info.Name()
 
 			var base Version
+			var op string
 			for _, dep := range modInfo.Dependencies {
 				dep = strings.TrimSpace(dep)
 				if dep == "" {
@@ -91,13 +92,11 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 				}
 				if len(parts) == 1 {
 					base = modInfo.FactorioVersion
+					op = ">="
 					continue
 				}
 
-				if parts[1] != ">=" {
-					log.Printf("skipping dependency '%s' in '%s': unsupported comparison\n", dep, modInfo.Name)
-					continue
-				}
+				op = parts[1]
 
 				if err := base.UnmarshalText([]byte(parts[2])); err != nil {
 					log.Printf("skipping dependency '%s' in '%s': %v\n", dep, modInfo.Name, err)
@@ -108,7 +107,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 			}
 
 			if !base.Equals(NilVersion) {
-				modInfo.Compatibility = !FactorioServ.Version.Less(base)
+				modInfo.Compatibility = FactorioServ.Version.Compare(base, op)
 			} else {
 				log.Println("error finding basemodDependency. Using FactorioVersion...")
 				modInfo.Compatibility = !FactorioServ.Version.Less(modInfo.FactorioVersion)
