@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"log"
@@ -12,6 +11,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type JSONResponse struct {
@@ -443,7 +444,7 @@ func FactorioVersion(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	status := map[string]string{}
-	status["version"] = FactorioServ.Version
+	status["version"] = FactorioServ.Version.String()
 	status["base_mod_version"] = FactorioServ.BaseModVersion
 
 	resp.Data = status

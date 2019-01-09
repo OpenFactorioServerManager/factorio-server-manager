@@ -12,7 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"github.com/Masterminds/semver"
 )
 
 type LoginErrorResponse struct {
@@ -344,20 +343,4 @@ func modStartUp() {
 			os.RemoveAll(oldModpackDir)
 		}
 	}
-}
-
-func checkModCompatibility(modVersion string) (compatible bool, err error) {
-	compatible = false
-	modVersion = strings.TrimSpace(modVersion)
-	if !strings.HasPrefix(modVersion, "~") {
-		modVersion = "~" + modVersion
-	}
-
-	constraint, err := semver.NewConstraint(modVersion)
-	if err != nil {
-		log.Printf("error loading constraint: %s", err)
-		return
-	}
-
-	return constraint.Check(FactorioServ.SemVerVersion), nil
 }
