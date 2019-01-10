@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io"
 	"lockfile"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"factorioSave"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type ModPortalStruct struct {
@@ -571,26 +571,58 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	//Get Data out of the request
 	SaveFile := r.FormValue("saveFile")
 
-	SaveFileComplete := filepath.Join(config.FactorioSavesDir, SaveFile)
-	resp.Data, err = factorioSave.ReadHeader(SaveFileComplete)
-
-	if err == factorioSave.ErrorIncompatible {
-		w.WriteHeader(http.StatusInternalServerError)
-		resp.Data = fmt.Sprintf("%s<br>Only can read 0.16.x save files", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in loadModsFromSave: %s", err)
-		}
-		return
-	}
+	path := filepath.Join(config.FactorioSavesDir, SaveFile)
+	archive, err := zip.OpenReader(path)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+		log.Printf("cannot open save file: %v", err)
+		resp.Data = "Error opening save file"
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in loadModsFromSave: %s", err)
+		}
+		return
+	}
+	defer archive.Close()
+
+	var data io.ReadCloser
+	for _, file := range archive.File {
+		if file.FileInfo().Name() == "level.dat" {
+			data, err = file.Open()
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				log.Printf("cannot open save level file: %v", err)
+				resp.Data = "Error opening save file"
+				if err := json.NewEncoder(w).Encode(resp); err != nil {
+					log.Printf("Error in loadModsFromSave: %s", err)
+				}
+				return
+			}
+			defer data.Close()
+		}
+	}
+	if data == nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("could not find level.dat file in save file")
+		resp.Data = "Error opening save file"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in loadModsFromSave: %s", err)
 		}
 		return
 	}
 
+	var header SaveHeader
+	err = header.ReadFrom(data)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("cannot read save header: %v", err)
+		resp.Data = "Error reading save file"
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in loadModsFromSave: %s", err)
+		}
+		return
+	}
+
+	resp.Data = header
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {

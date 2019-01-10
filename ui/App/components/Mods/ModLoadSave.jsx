@@ -30,7 +30,7 @@ class ModLoadSave extends React.Component {
                 data.data.mods.forEach((mod) => {
                     if(mod.name == "base") return;
 
-                    let modVersion = mod.version.major + "." + mod.version.minor + "." + mod.version.build;
+                    let modVersion = mod.version[0] + "." + mod.version[1] + "." + mod.version[2];
                     let singleCheckbox = <tr key={mod.name}>
                         <td>
                             {mod.name}
@@ -61,10 +61,10 @@ class ModLoadSave extends React.Component {
                                 <thead>
                                     <tr>
                                         <th>
-                                            ModName
+                                            Name
                                         </th>
                                         <th>
-                                            ModVersion
+                                            Version
                                         </th>
                                     </tr>
                                 </thead>
