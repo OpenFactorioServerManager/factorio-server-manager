@@ -28,7 +28,7 @@ type ModPortalStruct struct {
 		} `json:"info_json"`
 		ReleasedAt time.Time `json:"released_at"`
 		Sha1       string    `json:"sha1"`
-		Version    string    `json:"version"`
+		Version    Version   `json:"version"`
 	} `json:"releases"`
 	Summary string `json:"summary"`
 	Title   string `json:"title"`
@@ -256,8 +256,8 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	r.ParseForm()
 
-	modsList := make([]string, 0)
-	versionsList := make([]string, 0)
+	var modsList []string
+	var versionsList []Version
 
 	//Parse incoming data
 	for key, values := range r.PostForm {
@@ -266,7 +266,15 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 				modsList = append(modsList, v)
 			}
 		} else if key == "mod_version" {
-			for _, v := range values {
+			for _, value := range values {
+				var v Version
+				if err := v.UnmarshalText([]byte(value)); err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+					if err := json.NewEncoder(w).Encode(resp); err != nil {
+						log.Printf("Error in searchModPortal: %s", err)
+					}
+				}
 				versionsList = append(versionsList, v)
 			}
 		}
@@ -316,7 +324,7 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 
 		//find correct mod-version
 		for _, release := range modDetailsStruct.Releases {
-			if release.Version == versionsList[modIndex] {
+			if release.Version.Equals(versionsList[modIndex]) {
 				mods.downloadMod(release.DownloadURL, release.FileName, modDetailsStruct.Name)
 				break
 			}
