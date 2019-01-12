@@ -572,46 +572,20 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	SaveFile := r.FormValue("saveFile")
 
 	path := filepath.Join(config.FactorioSavesDir, SaveFile)
-	archive, err := zip.OpenReader(path)
+	f, err := OpenArchiveFile(path, "level.dat")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("cannot open save file: %v", err)
+		log.Printf("cannot open save level file: %v", err)
 		resp.Data = "Error opening save file"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in loadModsFromSave: %s", err)
 		}
 		return
 	}
-	defer archive.Close()
-
-	var data io.ReadCloser
-	for _, file := range archive.File {
-		if file.FileInfo().Name() == "level.dat" {
-			data, err = file.Open()
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				log.Printf("cannot open save level file: %v", err)
-				resp.Data = "Error opening save file"
-				if err := json.NewEncoder(w).Encode(resp); err != nil {
-					log.Printf("Error in loadModsFromSave: %s", err)
-				}
-				return
-			}
-			defer data.Close()
-		}
-	}
-	if data == nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("could not find level.dat file in save file")
-		resp.Data = "Error opening save file"
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in loadModsFromSave: %s", err)
-		}
-		return
-	}
+	defer f.Close()
 
 	var header SaveHeader
-	err = header.ReadFrom(data)
+	err = header.ReadFrom(f)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Printf("cannot read save header: %v", err)

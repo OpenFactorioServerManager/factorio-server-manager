@@ -9,13 +9,13 @@ import (
 )
 
 // NilVersion represents an empty version number
-var NilVersion = Version{0, 0, 0}
+var NilVersion = Version{0, 0, 0, 0}
 
-// Version represents a semantic version
-type Version [3]uint
+// Version represents a semantic version and build number
+type Version [4]uint
 
 func (v Version) String() string {
-	return fmt.Sprintf("%d.%d.%d", v[0], v[1], v[2])
+	return fmt.Sprintf("%d.%d.%d.%d", v[0], v[1], v[2], v[3])
 }
 
 // MarshalText implements encoding.TextMarshaller for Version
@@ -25,7 +25,7 @@ func (v Version) MarshalText() (text []byte, err error) {
 
 // UnmarshalText implements encoding.TextUnmarshaller for Version
 func (v *Version) UnmarshalText(text []byte) error {
-	parts := strings.SplitN(string(text), ".", 3)
+	parts := strings.SplitN(string(text), ".", 4)
 	for i, part := range parts {
 		p, err := strconv.ParseUint(part, 10, 32)
 		if err != nil {
@@ -38,7 +38,7 @@ func (v *Version) UnmarshalText(text []byte) error {
 
 // Equals returns true if both version are equal
 func (v Version) Equals(b Version) bool {
-	return v[0] == b[0] && v[1] == b[1] && v[2] == b[2]
+	return v[0] == b[0] && v[1] == b[1] && v[2] == b[2] && v[3] == b[3]
 }
 
 // Less returns true if the receiver version is less than the argument version
@@ -49,6 +49,8 @@ func (v Version) Less(b Version) bool {
 	case v[0] == b[0] && v[1] < b[1]:
 		return true
 	case v[0] == b[0] && v[1] == b[1] && v[2] < b[2]:
+		return true
+	case v[0] == b[0] && v[1] == b[1] && v[2] == b[2] && v[3] < b[3]:
 		return true
 	default:
 		return false
@@ -122,17 +124,14 @@ func (v *version48) UnmarshalBinary(data []byte) error {
 }
 
 // version64 is the 64-bit (16, 16, 16, 16) version structure with build component.
-type version64 struct {
-	Version
-	Build uint
-}
+type version64 Version
 
 func (v version64) MarshalBinary() (data []byte, err error) {
 	data = make([]byte, 8)
-	binary.LittleEndian.PutUint16(data[0:2], uint16(v.Version[0]))
-	binary.LittleEndian.PutUint16(data[2:4], uint16(v.Version[1]))
-	binary.LittleEndian.PutUint16(data[4:6], uint16(v.Version[2]))
-	binary.LittleEndian.PutUint16(data[6:8], uint16(v.Build))
+	binary.LittleEndian.PutUint16(data[0:2], uint16(v[0]))
+	binary.LittleEndian.PutUint16(data[2:4], uint16(v[1]))
+	binary.LittleEndian.PutUint16(data[4:6], uint16(v[2]))
+	binary.LittleEndian.PutUint16(data[6:8], uint16(v[3]))
 	return data, nil
 }
 
@@ -140,25 +139,9 @@ func (v *version64) UnmarshalBinary(data []byte) error {
 	if len(data) < 8 {
 		return errors.New("version64.UnmarshalBinary: too few bytes")
 	}
-	v.Version[0] = uint(binary.LittleEndian.Uint16(data[0:2]))
-	v.Version[1] = uint(binary.LittleEndian.Uint16(data[2:4]))
-	v.Version[2] = uint(binary.LittleEndian.Uint16(data[4:6]))
-	v.Build = uint(binary.LittleEndian.Uint16(data[6:8]))
-	return nil
-}
-
-func (v version64) String() string {
-	return fmt.Sprintf("%d.%d.%d.%d", v.Version[0], v.Version[1], v.Version[2], v.Build)
-}
-
-func (v *version64) UnmarshalText(text []byte) error {
-	parts := strings.SplitN(string(text), ".", 4)
-	for i, part := range parts {
-		p, err := strconv.ParseUint(part, 10, 32)
-		if err != nil {
-			return err
-		}
-		v.Version[i] = uint(p)
-	}
+	v[0] = uint(binary.LittleEndian.Uint16(data[0:2]))
+	v[1] = uint(binary.LittleEndian.Uint16(data[2:4]))
+	v[2] = uint(binary.LittleEndian.Uint16(data[4:6]))
+	v[3] = uint(binary.LittleEndian.Uint16(data[6:8]))
 	return nil
 }
