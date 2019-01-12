@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 )
@@ -102,24 +103,17 @@ func (v *version24) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// version24 is the 48-bit (16, 16, 16) version structure
+// version24 is a 48-bit (16, 16, 16) optimized version structure
 type version48 Version
 
-func (v version48) MarshalBinary() (data []byte, err error) {
-	data = make([]byte, 6)
-	binary.LittleEndian.PutUint16(data[0:2], uint16(v[0]))
-	binary.LittleEndian.PutUint16(data[2:4], uint16(v[1]))
-	binary.LittleEndian.PutUint16(data[4:6], uint16(v[2]))
-	return data, nil
-}
-
-func (v *version48) UnmarshalBinary(data []byte) error {
-	if len(data) < 6 {
-		return errors.New("version48.UnmarshalBinary: too few bytes")
+func (v *version48) ReadFrom(r io.Reader, game Version) error {
+	for i := 0; i < 3; i++ {
+		n, err := readOptimUint(r, game, 16)
+		if err != nil {
+			return fmt.Errorf("read part %d of version: %v", i, err)
+		}
+		v[i] = uint(n)
 	}
-	v[0] = uint(binary.LittleEndian.Uint16(data[0:2]))
-	v[1] = uint(binary.LittleEndian.Uint16(data[2:4]))
-	v[2] = uint(binary.LittleEndian.Uint16(data[4:6]))
 	return nil
 }
 

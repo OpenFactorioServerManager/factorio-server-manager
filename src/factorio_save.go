@@ -90,17 +90,17 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 
 	atLeast016 := !h.FactorioVersion.Less(Version{0, 16, 0, 0})
 
-	h.Campaign, err = readString(r, atLeast016)
+	h.Campaign, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read Campaign: %v", err)
 	}
 
-	h.Name, err = readString(r, atLeast016)
+	h.Name, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read Name: %v", err)
 	}
 
-	h.BaseMod, err = readString(r, atLeast016)
+	h.BaseMod, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read BaseMod: %v", err)
 	}
@@ -123,7 +123,7 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 	}
 	h.PlayerWon = scratch[0] != 0
 
-	h.NextLevel, err = readString(r, atLeast016)
+	h.NextLevel, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read NextLevel: %v", err)
 	}
@@ -156,12 +156,9 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 		h.AllowNonAdminDebugOptions = scratch[0] != 0
 	}
 
-	var loadedFrom version24
-	_, err = r.Read(scratch[:3])
+	var loadedFrom version48
+	err = loadedFrom.ReadFrom(r, Version(h.FactorioVersion))
 	if err != nil {
-		return err
-	}
-	if err := loadedFrom.UnmarshalBinary(scratch[:3]); err != nil {
 		return fmt.Errorf("read LoadedFrom: %v", err)
 	}
 	h.LoadedFrom = Version(loadedFrom)
@@ -194,7 +191,7 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 
 	var n uint32
 	if atLeast016 {
-		n, err = readOptimUint32(r)
+		n, err = readOptimUint(r, Version(h.FactorioVersion), 32)
 		if err != nil {
 			return fmt.Errorf("read num mods: %v", err)
 		}
@@ -217,27 +214,42 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 	return nil
 }
 
-func readOptimUint32(r io.Reader) (uint32, error) {
+func readOptimUint(r io.Reader, v Version, bitSize int) (uint32, error) {
 	var b [4]byte
-	_, err := r.Read(b[:1])
+	if !v.Less(Version{0, 14, 14, 0}) {
+		_, err := r.Read(b[:1])
+		if err != nil {
+			return 0, err
+		}
+		if b[0] != 0xFF {
+			return uint32(b[0]), nil
+		}
+	}
+
+	if bitSize < 0 || bitSize > 64 || (bitSize%8 != 0) {
+		panic("invalid bit size")
+	}
+
+	_, err := r.Read(b[:bitSize/8])
 	if err != nil {
 		return 0, err
 	}
-	if b[0] != 0xFF {
-		return uint32(b[0]), nil
+
+	switch bitSize {
+	case 16:
+		return uint32(binary.LittleEndian.Uint16(b[:2])), nil
+	case 32:
+		return binary.LittleEndian.Uint32(b[:4]), nil
+	default:
+		panic("invalid bit size")
 	}
-	_, err = r.Read(b[:4])
-	if err != nil {
-		return 0, err
-	}
-	return binary.LittleEndian.Uint32(b[:4]), nil
 }
 
-func readString(r io.Reader, optimized bool) (s string, err error) {
+func readString(r io.Reader, game Version, forceOptimized bool) (s string, err error) {
 	var n uint32
 
-	if optimized {
-		n, err = readOptimUint32(r)
+	if !game.Less(Version{0, 16, 0, 0}) || forceOptimized {
+		n, err = readOptimUint(r, game, 32)
 		if err != nil {
 			return "", err
 		}
@@ -302,22 +314,19 @@ func (h SaveHeader) readStats(r io.Reader) (stats map[byte][]map[uint16]uint32, 
 }
 
 func (m *Mod) ReadFrom(r io.Reader, game Version) (err error) {
-	m.Name, err = readString(r, true)
+	m.Name, err = readString(r, game, true)
 	if err != nil {
 		return fmt.Errorf("read Name: %v", err)
 	}
 
-	var scratch [4]byte
-	var version version24
-	_, err = r.Read(scratch[:3])
+	var version version48
+	err = version.ReadFrom(r, game)
 	if err != nil {
 		return err
 	}
-	if err := version.UnmarshalBinary(scratch[:3]); err != nil {
-		return fmt.Errorf("read Version: %v", err)
-	}
 	m.Version = Version(version)
 
+	var scratch [4]byte
 	if game.Greater(Version{0, 15, 0, 91}) {
 		_, err = r.Read(scratch[:4])
 		if err != nil {
