@@ -51,8 +51,8 @@
     "semver": "^5.6.0",
     "sweetalert2": "^7.33.1",
     "sweetalert2-react-content": "^1.0.1",
-    "webpack": "^4.28.3",
-    "webpack-cli": "^3.2.0",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1",
     "webpack-fix-style-only-entries": "0.1.0"
   }
 }
