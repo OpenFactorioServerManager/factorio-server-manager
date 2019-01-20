@@ -21,6 +21,13 @@
             height: 2.625em;
             padding: 0.75em;
         }
+
+        table tr.incompatible {
+            background: rgba(255, 68, 68, 0.21);
+        }
+        table tr:nth-child(even).incompatible {
+            background: rgba(255, 0, 0, 0.31);
+        }
     }
 
     .swal2-actions.swal2-loading {

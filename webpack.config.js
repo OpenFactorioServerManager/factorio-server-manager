@@ -61,7 +61,6 @@ module.exports = (env, argv) => {
                             loader: "css-loader",
                             options: {
                                 "sourceMap": !isProduction,
-                                "minimize": isProduction
                             }
                         },
                         "resolve-url-loader",
