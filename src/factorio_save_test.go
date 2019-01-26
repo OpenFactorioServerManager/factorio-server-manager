@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test0_16(t *testing.T) {
+func TestFactorioSave0_16(t *testing.T) {
 	file, err := OpenArchiveFile("factorio_save_testfiles/test_0_16.zip", "level.dat")
 	if err != nil {
 		t.Fatalf("Error opening level.dat: %s", err)
@@ -48,7 +48,7 @@ func Test0_16(t *testing.T) {
 	header.Equals(testHeader, t)
 }
 
-func Test0_15(t *testing.T) {
+func TestFactorioSave0_15(t *testing.T) {
 	file, err := OpenArchiveFile("factorio_save_testfiles/test_0_15.zip", "level.dat")
 	if err != nil {
 		t.Fatalf("Error opening level.dat: %s", err)
@@ -91,7 +91,7 @@ func Test0_15(t *testing.T) {
 	header.Equals(testHeader, t)
 }
 
-func Test0_14(t *testing.T) {
+func TestFactorioSave0_14(t *testing.T) {
 	file, err := OpenArchiveFile("factorio_save_testfiles/test_0_14.zip", "level.dat")
 	if err != nil {
 		t.Fatalf("Error opening level.dat: %s", err)
@@ -134,7 +134,7 @@ func Test0_14(t *testing.T) {
 	header.Equals(testHeader, t)
 }
 
-func Test0_13(t *testing.T) {
+func TestFactorioSave0_13(t *testing.T) {
 	file, err := OpenArchiveFile("factorio_save_testfiles/test_0_13.zip", "level.dat")
 	if err != nil {
 		t.Fatalf("Error opening level.dat: %s", err)
