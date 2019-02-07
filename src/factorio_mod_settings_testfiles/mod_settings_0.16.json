@@ -1,0 +1,485 @@
+{
+  "startup": {
+    "charxpmod_xpinilevel": {
+      "value": 600.0
+    },
+    "charxpmod_xpmult": {
+      "value": 1.6
+    },
+    "charxpmod_xp_multiplier_bonus": {
+      "value": 1.0
+    },
+    "crash-sequence": {
+      "value": true
+    },
+    "5d-change-inventory": {
+      "value": 60.0
+    },
+    "5d-change-stack": {
+      "value": 1.0
+    },
+    "5d-long-reach": {
+      "value": 6.0
+    },
+    "5d-long-mine": {
+      "value": 6.0
+    },
+    "5d-mining-speed": {
+      "value": 0.01
+    },
+    "5d-light-radius": {
+      "value": 25.0
+    },
+    "5d-ores": {
+      "value": false
+    },
+    "5d-yield": {
+      "value": false
+    },
+    "5d-tree": {
+      "value": false
+    },
+    "5d-item-start": {
+      "value": "Nothing"
+    },
+    "5d-equip-start": {
+      "value": "Nothing"
+    },
+    "5d-train-tech": {
+      "value": false
+    },
+    "5d-robot-tech": {
+      "value": false
+    },
+    "5d-hp": {
+      "value": 250.0
+    },
+    "5d-healing": {
+      "value": 0.15
+    },
+    "5d-bicho-spawner-hp": {
+      "value": 1.0
+    },
+    "5d-bicho-hp": {
+      "value": 1.0
+    },
+    "5d-bicho-healing": {
+      "value": 1.0
+    },
+    "5d-suicide": {
+      "value": true
+    },
+    "5d-exp": {
+      "value": true
+    },
+    "5d-swimmer": {
+      "value": true
+    },
+    "5d-climber": {
+      "value": true
+    },
+    "5d-worm": {
+      "value": true
+    },
+    "5d-trash": {
+      "value": false
+    },
+    "5d-logistics": {
+      "value": false
+    },
+    "5d-storage": {
+      "value": true
+    },
+    "5d-stack": {
+      "value": true
+    },
+    "5d-speed": {
+      "value": true
+    },
+    "5d-speed-gun-turret": {
+      "value": true
+    },
+    "5d-braking": {
+      "value": true
+    },
+    "5d-grid": {
+      "value": true
+    },
+    "5d-grid-override": {
+      "value": false
+    },
+    "start-with-random-color": {
+      "value": true
+    },
+    "start-with-unit-remote-control": {
+      "value": true
+    },
+    "start-with-vehicle-miner": {
+      "value": true
+    },
+    "SpaceX-research": {
+      "value": 1.0
+    },
+    "SpaceX-production": {
+      "value": 1.0
+    },
+    "SpaceX-launch-profile": {
+      "value": "Classic"
+    },
+    "SpaceX-ignore-tech-multiplier": {
+      "value": false
+    },
+    "SpaceX-no-space-sci": {
+      "value": false
+    },
+    "SpaceX-cheaper-fusion-reactor": {
+      "value": false
+    },
+    "SpaceX-no-bob": {
+      "value": false
+    },
+    "bobmods-assembly-chemicalplants": {
+      "value": true
+    },
+    "bobmods-assembly-electrolysers": {
+      "value": true
+    },
+    "bobmods-assembly-electronicmachines": {
+      "value": true
+    },
+    "bobmods-assembly-furnaces": {
+      "value": true
+    },
+    "bobmods-assembly-multipurposefurnaces": {
+      "value": true
+    },
+    "bobmods-assembly-oilrefineries": {
+      "value": true
+    },
+    "bobmods-enemies-aliensdropartifacts": {
+      "value": true
+    },
+    "bobmods-enemies-enableartifacts": {
+      "value": false
+    },
+    "bobmods-enemies-enablenewartifacts": {
+      "value": false
+    },
+    "bobmods-enemies-enablesmallartifacts": {
+      "value": false
+    },
+    "bobmods-inserters-long2": {
+      "value": true
+    },
+    "bobmods-inserters-more2": {
+      "value": true
+    },
+    "bobmods-logistics-beltoverhaul": {
+      "value": false
+    },
+    "bobmods-logistics-beltoverhaulspeed": {
+      "value": true
+    },
+    "bobmods-logistics-beltperlevel": {
+      "value": 4.0
+    },
+    "bobmods-logistics-beltrequireprevious": {
+      "value": true
+    },
+    "bobmods-logistics-beltstarting": {
+      "value": 3.0
+    },
+    "bobmods-logistics-disableroboports": {
+      "value": false
+    },
+    "bobmods-logistics-drainlessinserters": {
+      "value": false
+    },
+    "bobmods-logistics-flyingrobotframes": {
+      "value": true
+    },
+    "bobmods-logistics-inserteroverhaul": {
+      "value": false
+    },
+    "bobmods-logistics-inserterrequireprevious": {
+      "value": true
+    },
+    "bobmods-logistics-pipeperlevel": {
+      "value": 4.0
+    },
+    "bobmods-logistics-pipestarting": {
+      "value": 11.0
+    },
+    "bobmods-logistics-roboportrecipeupdate": {
+      "value": true
+    },
+    "bobmods-logistics-robotparts": {
+      "value": true
+    },
+    "bobmods-logistics-robotrequireprevious": {
+      "value": true
+    },
+    "bobmods-logistics-ugdistanceoverhaul": {
+      "value": false
+    },
+    "bobmods-mining-areadrills": {
+      "value": true
+    },
+    "bobmods-mining-miningaxes": {
+      "value": true
+    },
+    "bobmods-mining-miningdrills": {
+      "value": true
+    },
+    "bobmods-mining-pumpjacks": {
+      "value": true
+    },
+    "bobmods-mining-waterminers": {
+      "value": true
+    },
+    "replace-electronics": {
+      "value": true
+    },
+    "replace-logistics": {
+      "value": true
+    },
+    "replace-warfare": {
+      "value": true
+    },
+    "bobmods-modules-enablegodmodules": {
+      "value": false
+    },
+    "bobmods-modules-enablegreenmodules": {
+      "value": true
+    },
+    "bobmods-modules-enableproductivitylimitation": {
+      "value": true
+    },
+    "bobmods-modules-enablerawproductivitymodules": {
+      "value": true
+    },
+    "bobmods-modules-enablerawspeedmodules": {
+      "value": true
+    },
+    "bobmods-modules-perlevel-bonus-consumption": {
+      "value": 0.1
+    },
+    "bobmods-modules-perlevel-bonus-pollution": {
+      "value": 0.15
+    },
+    "bobmods-modules-perlevel-bonus-pollutioncreate": {
+      "value": 0.5
+    },
+    "bobmods-modules-perlevel-bonus-productivity": {
+      "value": 0.05
+    },
+    "bobmods-modules-perlevel-bonus-speed": {
+      "value": 0.2
+    },
+    "bobmods-modules-perlevel-penalty-consumption": {
+      "value": 0.1
+    },
+    "bobmods-modules-perlevel-penalty-pollution": {
+      "value": 0.15
+    },
+    "bobmods-modules-perlevel-penalty-speed": {
+      "value": 0.05
+    },
+    "bobmods-modules-productivityhasspeed": {
+      "value": false
+    },
+    "bobmods-modules-start-bonus-consumption": {
+      "value": 0.0
+    },
+    "bobmods-modules-start-bonus-pollution": {
+      "value": 0.0
+    },
+    "bobmods-modules-start-bonus-pollutioncreate": {
+      "value": 0.0
+    },
+    "bobmods-modules-start-bonus-productivity": {
+      "value": 0.0
+    },
+    "bobmods-modules-start-bonus-speed": {
+      "value": 0.0
+    },
+    "bobmods-modules-start-penalty-consumption": {
+      "value": 0.0
+    },
+    "bobmods-modules-start-penalty-pollution": {
+      "value": 0.0
+    },
+    "bobmods-modules-start-penalty-speed": {
+      "value": 0.2
+    },
+    "bobmods-modules-transmitproductivity": {
+      "value": false
+    },
+    "bobmods-gems-amethystratio": {
+      "value": 0.5
+    },
+    "bobmods-gems-diamondratio": {
+      "value": 0.2
+    },
+    "bobmods-gems-emeraldratio": {
+      "value": 0.6
+    },
+    "bobmods-gems-rubyratio": {
+      "value": 1.0
+    },
+    "bobmods-gems-sapphireratio": {
+      "value": 0.8
+    },
+    "bobmods-gems-topazratio": {
+      "value": 0.4
+    },
+    "bobmods-ores-enablebauxite": {
+      "value": false
+    },
+    "bobmods-ores-enablecobaltore": {
+      "value": false
+    },
+    "bobmods-ores-enablegemsore": {
+      "value": false
+    },
+    "bobmods-ores-enablegoldore": {
+      "value": false
+    },
+    "bobmods-ores-enableleadore": {
+      "value": false
+    },
+    "bobmods-ores-enablenickelore": {
+      "value": false
+    },
+    "bobmods-ores-enablequartz": {
+      "value": false
+    },
+    "bobmods-ores-enablerutile": {
+      "value": false
+    },
+    "bobmods-ores-enablesilverore": {
+      "value": false
+    },
+    "bobmods-ores-enablesulfur": {
+      "value": false
+    },
+    "bobmods-ores-enablethoriumore": {
+      "value": false
+    },
+    "bobmods-ores-enabletinore": {
+      "value": false
+    },
+    "bobmods-ores-enabletungstenore": {
+      "value": false
+    },
+    "bobmods-ores-enablewaterores": {
+      "value": false
+    },
+    "bobmods-ores-enablezincore": {
+      "value": false
+    },
+    "bobmods-ores-enhancestone": {
+      "value": false
+    },
+    "bobmods-ores-gemprobability": {
+      "value": 0.05
+    },
+    "bobmods-ores-gemsfromotherores": {
+      "value": false
+    },
+    "bobmods-ores-infiniteore": {
+      "value": false
+    },
+    "bobmods-ores-leadgivesnickel": {
+      "value": false
+    },
+    "bobmods-ores-leadnickelratio": {
+      "value": 0.6
+    },
+    "bobmods-ores-nickelcobaltratio": {
+      "value": 0.4
+    },
+    "bobmods-ores-nickelgivescobalt": {
+      "value": false
+    },
+    "bobmods-ores-unsortedgemore": {
+      "value": false
+    },
+    "bobmods-plates-batteryupdate": {
+      "value": true
+    },
+    "bobmods-plates-cheapersteel": {
+      "value": true
+    },
+    "bobmods-plates-groundwater": {
+      "value": false
+    },
+    "bobmods-plates-inventorysize": {
+      "value": 60.0
+    },
+    "bobmods-plates-oreoverride": {
+      "value": true
+    },
+    "bobmods-plates-purewater": {
+      "value": true
+    },
+    "bobmods-plates-vanillabarrelling": {
+      "value": false
+    },
+    "bobmods-tech-colorupdate": {
+      "value": false
+    },
+    "bobmods-vehicleequipment-enablevehiclegrids": {
+      "value": true
+    },
+    "bobmods-warfare-drainlesslaserturrets": {
+      "value": false
+    },
+    "bobmods-warfare-robotupdate": {
+      "value": true
+    }
+  },
+  "runtime-global": {
+    "extra behaviors": {
+      "value": true
+    },
+    "infinite evolution": {
+      "value": true
+    },
+    "evolution scaling factor": {
+      "value": 1.0
+    },
+    "charxpmod_afk": {
+      "value": 15.0
+    },
+    "charxpmod_death_penal": {
+      "value": 10.0
+    },
+    "charxpmod_time_ratio_xp": {
+      "value": true
+    },
+    "aai-max-structs-per-tick": {
+      "value": 0.0
+    },
+    "path-visualisation": {
+      "value": true
+    },
+    "vehicle-mining-multiplier": {
+      "value": 100.0
+    }
+  },
+  "runtime-per-user": {
+    "charxpmod_print_xp_user": {
+      "value": false
+    },
+    "folk-fill-ammo-stack-size": {
+      "value": 10.0
+    },
+    "folk-fill-fuel-stack-size": {
+      "value": 100.0
+    },
+    "hand-deploy-vehicle-ai-default": {
+      "value": "Auto"
+    }
+  }
+}

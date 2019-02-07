@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -114,16 +113,6 @@ func main() {
 		log.Printf("Error occurred during FactorioServer initializaion: %v\n", err)
 		return
 	}
-
-	var test FModData
-	test.Decode()
-	test.Encode()
-
-	data, _ := ioutil.ReadFile(filepath.Join(config.FactorioModsDir, "mod-settings.dat"))
-	log.Println(data)
-	data2, _ := ioutil.ReadFile(filepath.Join(config.FactorioModsDir, "mod-settings.dat.new"))
-	log.Println(data2)
-	return
 
 	// Initialize authentication system
 	Auth = initAuth()

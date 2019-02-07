@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"log"
-	"os"
-	"path/filepath"
 	"reflect"
 )
 
@@ -24,18 +23,11 @@ type FModData struct {
 	Data    interface{}
 }
 
-//func (d *FModData) Decode(file *os.File) error {
-func (d *FModData) Decode() error {
+func (d *FModData) Decode(file io.Reader) error {
 	var version version64
 	var versionB [8]byte
 
-	file, err := os.Open(filepath.Join(config.FactorioModsDir, "mod-settings.dat"))
-	if err != nil {
-		log.Printf("could not open mod-settings.dat")
-		return err
-	}
-
-	err = binary.Read(file, binary.LittleEndian, versionB[:])
+	err := binary.Read(file, binary.LittleEndian, versionB[:])
 	if err != nil {
 		log.Printf("could not read version: %s", err)
 	}
@@ -55,7 +47,7 @@ func (d *FModData) Decode() error {
 	return nil
 }
 
-func (d *FModData) unmarshalTree(file *os.File) (interface{}, error) {
+func (d *FModData) unmarshalTree(file io.Reader) (interface{}, error) {
 	//type of embedded data
 	var _type byte
 	err := binary.Read(file, binary.LittleEndian, &_type)
@@ -87,7 +79,7 @@ func (d *FModData) unmarshalTree(file *os.File) (interface{}, error) {
 	}
 }
 
-func (d *FModData) unmarshalBool(file *os.File) (bool, error) {
+func (d *FModData) unmarshalBool(file io.Reader) (bool, error) {
 	var _data byte
 	err := binary.Read(file, binary.LittleEndian, &_data)
 	if err != nil {
@@ -98,7 +90,7 @@ func (d *FModData) unmarshalBool(file *os.File) (bool, error) {
 	return _data != 0, nil
 }
 
-func (d *FModData) unmarshalDouble(file *os.File) (float64, error) {
+func (d *FModData) unmarshalDouble(file io.Reader) (float64, error) {
 	var _data float64
 	err := binary.Read(file, binary.LittleEndian, &_data)
 	if err != nil {
@@ -109,7 +101,7 @@ func (d *FModData) unmarshalDouble(file *os.File) (float64, error) {
 	return _data, nil
 }
 
-func (d *FModData) unmarshalList(file *os.File) ([]interface{}, error) {
+func (d *FModData) unmarshalList(file io.Reader) ([]interface{}, error) {
 	var length uint32
 	length, err := readOptimUint(file, Version(d.Version), 32)
 	if err != nil {
@@ -129,7 +121,7 @@ func (d *FModData) unmarshalList(file *os.File) ([]interface{}, error) {
 	return list, nil
 }
 
-func (d *FModData) unmarshalDict(file *os.File) (map[string]interface{}, error) {
+func (d *FModData) unmarshalDict(file io.Reader) (map[string]interface{}, error) {
 	var length uint32
 	err := binary.Read(file, binary.LittleEndian, &length)
 	if err != nil {
@@ -144,20 +136,20 @@ func (d *FModData) unmarshalDict(file *os.File) (map[string]interface{}, error) 
 
 		if err != nil {
 			log.Printf("error loading key: %s", err)
-			return nil, err
+			return dict, err
 		}
 
 		dict[key], err = d.unmarshalTree(file)
 		if err != nil {
 			log.Printf("error loading unmarshalTree: %s", err)
-			return nil, err
+			return dict, err
 		}
 	}
 
 	return dict, nil
 }
 
-func (d *FModData) unmarshalString(file *os.File) (string, error) {
+func (d *FModData) unmarshalString(file io.Reader) (string, error) {
 	// read "empty" flag
 	empty, err := d.unmarshalBool(file)
 	if err != nil {
@@ -213,22 +205,105 @@ func (d *FModData) marshalTree(data interface{}) (output []byte , err error) {
 	case reflect.Bool:
 		typeByte = BOOL
 		marshalledBytes = []byte{d.marshalBool(data.(bool))}
-		break
-	case reflect.Float64:
-		{
-			floatValue, err := d.marshalFloat64(data.(float64))
-			if err != nil {
-				log.Printf("could not read float64-value: %s", err)
-				return nil, err
-			}
-			typeByte = DOUBLE
-			marshalledBytes = floatValue
+	case reflect.Int:
+		floatValue, err := d.marshalFloat64(float64(data.(int)))
+		if err != nil {
+			log.Printf("could not write int to float64-value: %s", err)
+			return nil, err
 		}
-		break
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Int8:
+		floatValue, err := d.marshalFloat64(float64(data.(int8)))
+		if err != nil {
+			log.Printf("could not write int8 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Int16:
+		floatValue, err := d.marshalFloat64(float64(data.(int16)))
+		if err != nil {
+			log.Printf("could not write int16 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Int32:
+		floatValue, err := d.marshalFloat64(float64(data.(int32)))
+		if err != nil {
+			log.Printf("could not write int32 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Int64:
+		floatValue, err := d.marshalFloat64(float64(data.(int64)))
+		if err != nil {
+			log.Printf("could not write int64 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Uint:
+		floatValue, err := d.marshalFloat64(float64(data.(uint)))
+		if err != nil {
+			log.Printf("could not write uint to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Uint8:
+		floatValue, err := d.marshalFloat64(float64(data.(uint8)))
+		if err != nil {
+			log.Printf("could not write uint8 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Uint16:
+		floatValue, err := d.marshalFloat64(float64(data.(uint16)))
+		if err != nil {
+			log.Printf("could not write uint16 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Uint32:
+		floatValue, err := d.marshalFloat64(float64(data.(uint32)))
+		if err != nil {
+			log.Printf("could not write uint32 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Uint64:
+		floatValue, err := d.marshalFloat64(float64(data.(uint64)))
+		if err != nil {
+			log.Printf("could not write uint64 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Float32:
+		floatValue, err := d.marshalFloat64(float64(data.(float32)))
+		if err != nil {
+			log.Printf("could not write float32 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
+	case reflect.Float64:
+		floatValue, err := d.marshalFloat64(data.(float64))
+		if err != nil {
+			log.Printf("could not write float64 to float64-value: %s", err)
+			return nil, err
+		}
+		typeByte = DOUBLE
+		marshalledBytes = floatValue
 	case reflect.String:
 		typeByte = STRING
 		marshalledBytes = d.marshalString(data.(string))
-		break
 	case reflect.Array:
 		// List
 		list, err := d.marshalList(data.([]interface{}))
@@ -238,7 +313,6 @@ func (d *FModData) marshalTree(data interface{}) (output []byte , err error) {
 		}
 		typeByte = LIST
 		marshalledBytes = list
-		break
 	case reflect.Map:
 		// Dict
 		_map, err := d.marshalDict(data.(map[string]interface{}))
@@ -248,7 +322,9 @@ func (d *FModData) marshalTree(data interface{}) (output []byte , err error) {
 		}
 		typeByte = DICT
 		marshalledBytes = _map
-		break
+	default:
+		log.Println("Unknown Datatype")
+		return output, fmt.Errorf("unknown datatype")
 	}
 
 	output = append(output, typeByte)
