@@ -11,6 +11,10 @@ import (
 )
 
 func TestModSettings0_16(t *testing.T) {
+	FactorioServ = &FactorioServer {
+		Version: Version{0, 16, 0, 0},
+	}
+
 	// Read dat and compare to JSON
 	file, err := os.Open(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.16.dat"))
 	if err != nil {

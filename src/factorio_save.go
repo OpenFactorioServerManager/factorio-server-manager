@@ -214,63 +214,6 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 	return nil
 }
 
-func readOptimUint(r io.Reader, v Version, bitSize int) (uint32, error) {
-	var b [4]byte
-	if !v.Less(Version{0, 14, 14, 0}) {
-		_, err := r.Read(b[:1])
-		if err != nil {
-			return 0, err
-		}
-		if b[0] != 0xFF {
-			return uint32(b[0]), nil
-		}
-	}
-
-	if bitSize < 0 || bitSize > 64 || (bitSize%8 != 0) {
-		panic("invalid bit size")
-	}
-
-	_, err := r.Read(b[:bitSize/8])
-	if err != nil {
-		return 0, err
-	}
-
-	switch bitSize {
-	case 16:
-		return uint32(binary.LittleEndian.Uint16(b[:2])), nil
-	case 32:
-		return binary.LittleEndian.Uint32(b[:4]), nil
-	default:
-		panic("invalid bit size")
-	}
-}
-
-func readString(r io.Reader, game Version, forceOptimized bool) (s string, err error) {
-	var n uint32
-
-	if !game.Less(Version{0, 16, 0, 0}) || forceOptimized {
-		n, err = readOptimUint(r, game, 32)
-		if err != nil {
-			return "", err
-		}
-	} else {
-		var b [4]byte
-		_, err := r.Read(b[:])
-		if err != nil {
-			return "", fmt.Errorf("failed to read string length: %v", err)
-		}
-		n = uint32(binary.LittleEndian.Uint32(b[:]))
-	}
-
-	d := make([]byte, n)
-	_, err = r.Read(d)
-	if err != nil {
-		return "", fmt.Errorf("failed to read string: %v", err)
-	}
-
-	return string(d), nil
-}
-
 func (h SaveHeader) readStats(r io.Reader) (stats map[byte][]map[uint16]uint32, err error) {
 	var scratch [4]byte
 	stats = make(map[byte][]map[uint16]uint32)
