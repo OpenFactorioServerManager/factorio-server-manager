@@ -151,6 +151,7 @@ Once everything is installed and ready to go you will need to compile the source
 ```
 go get github.com/apexskier/httpauth
 go get github.com/go-ini/ini
+go get github.com/go-test/deep
 go get github.com/gorilla/mux
 go get github.com/hpcloud/tail
 go get github.com/gorilla/websocket
