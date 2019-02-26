@@ -57,6 +57,11 @@ class Sidebar extends React.Component {
                                 </NavLink>
                             </li>
                             <li className="nav-item">
+                                <NavLink to="/mod-config" activeClassName="active" className="nav-link">
+                                    <FontAwesomeIcon icon="cogs" className="nav-icon"/><p>Mod Configuration</p>
+                                </NavLink>
+                            </li>
+                            <li className="nav-item">
                                 <NavLink to="/logs" activeClassName="active" className="nav-link">
                                     <FontAwesomeIcon icon="file-alt" className="nav-icon" prefix="far"/><p>Logs</p>
                                 </NavLink>

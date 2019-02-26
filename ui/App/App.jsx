@@ -12,6 +12,7 @@ import LogsContent from "./components/LogsContent";
 import SavesContent from "./components/SavesContent";
 import ConfigContent from "./components/ConfigContent";
 import ConsoleContent from "./components/ConsoleContent";
+import ModConfigContent from "./components/ModConfigContent";
 
 class App extends React.Component {
     constructor(props) {
@@ -180,6 +181,7 @@ class App extends React.Component {
                         <Route path="/saves" render={(props) => {return <SavesContent {...props} {...appProps}/>}}/>
                         <Route path="/config" render={(props) => {return <ConfigContent {...props} {...appProps}/>}}/>
                         <Route path="/console" render={(props) => {return <ConsoleContent {...props} {...appProps}/>}}/>
+                        <Route path="/mod-config" render={(props) => {return <ModConfigContent {...props} {...appProps}/>}}/>
                         <Route exakt path="/" render={(props) => {return <Index {...props} {...appProps} />}}/>
                     </Switch>
 

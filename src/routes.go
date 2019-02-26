@@ -76,6 +76,10 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Mods").
 		Handler(AuthorizeHandler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
+	r.Path("/mod-config").
+		Methods("GET").
+		Name("ModConfig").
+		Handler(AuthorizeHandler(http.StripPrefix("/mod-config", http.FileServer(http.Dir("./app/")))))
 	r.Path("/saves").
 		Methods("GET").
 		Name("Saves").
@@ -363,5 +367,15 @@ var apiRoutes = Routes{
 		"POST",
 		"/settings/update",
 		UpdateServerSettings,
+	}, {
+		"GetModConfigs",
+		"GET",
+		"/mods/settings",
+		GetModConfig,
+	}, {
+		"UpdateModsConfigs",
+		"POST",
+		"/mods/settings",
+		UpdateModConfig,
 	},
 }
