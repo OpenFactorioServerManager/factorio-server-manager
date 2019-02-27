@@ -1,5 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import SemVer from 'semver';
+import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class Mod extends React.Component {
     constructor(props) {
@@ -12,6 +14,8 @@ class Mod extends React.Component {
             newVersionAvailable: false,
             updateInProgress: false
         }
+
+        this.versionAjax = {};
     }
 
     componentDidMount() {
@@ -24,9 +28,13 @@ class Mod extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        this.versionAjax.abort();
+    }
+
     checkForNewVersion() {
         //send AJAX that will check this
-        $.ajax({
+        this.versionAjax = $.ajax({
             url: "/api/mods/details",
             method: "POST",
             data: {
@@ -90,18 +98,18 @@ class Mod extends React.Component {
     render() {
         let modStatus;
         if(this.props.mod.enabled === false) {
-            modStatus = <span className="label label-danger">Disabled</span>
+            modStatus = <span className="badge badge-danger">Disabled</span>
         } else {
-            modStatus = <span className="label label-success">Enabled</span>
+            modStatus = <span className="badge badge-success">Enabled</span>
         }
 
         let version;
         if(this.state.newVersionAvailable) {
             let faArrow;
             if(SemVer.gt(this.state.newVersion.version, this.props.mod.version)) {
-                faArrow = "fa fa-arrow-circle-up";
+                faArrow = "arrow-circle-up";
             } else {
-                faArrow = "fa fa-arrow-circle-down";
+                faArrow = "arrow-circle-down";
             }
 
             version = <span>{this.props.mod.version}
@@ -125,7 +133,7 @@ class Mod extends React.Component {
                         this.state.updateInProgress ?
                             <div className='loader' style={{width: 15, height: 15, marginRight: 0, borderWidth: 3,}}></div>
                             :
-                            <i className={faArrow} title="Update Mod" style={{fontSize: "15pt"}}></i>
+                            <FontAwesomeIcon icon={faArrow} title="Update Mod" style={{fontSize: "15pt"}}/>
                     }
                 </a>
             </span>;
@@ -176,12 +184,12 @@ class Mod extends React.Component {
 }
 
 Mod.propTypes = {
-    mod: React.PropTypes.object.isRequired,
-    toggleMod: React.PropTypes.func.isRequired,
-    deleteMod: React.PropTypes.func.isRequired,
-    updateMod: React.PropTypes.func.isRequired,
-    updateCountAdd: React.PropTypes.func,
-    factorioVersion: React.PropTypes.string,
+    mod: PropTypes.object.isRequired,
+    toggleMod: PropTypes.func.isRequired,
+    deleteMod: PropTypes.func.isRequired,
+    updateMod: PropTypes.func.isRequired,
+    updateCountAdd: PropTypes.func,
+    factorioVersion: PropTypes.string,
 };
 
 export default Mod

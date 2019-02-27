@@ -1,4 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import {ReactSwalNormal} from 'Utilities/customSwal';
+import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class AddUser extends React.Component {
     constructor(props) {
@@ -39,10 +42,16 @@ class AddUser extends React.Component {
             data: JSON.stringify(user),
             success: (resp) => {
                 if (resp.success === true) {
-                    alert("User: " + user.username + " added successfully.");
+                    ReactSwalNormal.fire({
+                        title: <p>User: {user.username} added successfully</p>,
+                        type: "success"
+                    });
                     this.props.listUsers();
                 } else {
-                    alert("Error adding user: ", resp.data)
+                    ReactSwalNormal.fire({
+                        title: <p>Error adding user: {resp.data}</p>,
+                        type: "error"
+                    })
                 }
             }
         })
@@ -62,34 +71,60 @@ class AddUser extends React.Component {
                             <form action="" onSubmit={this.createUser}>
                                 <div className="form-group">
                                     <label htmlFor="username">Username</label>
-                                    <input ref="username" type="text" className="form-control" id="username" placeholder="Enter username" />
+                                    <input
+                                        ref="username"
+                                        type="text"
+                                        className="form-control"
+                                        id="username"
+                                        placeholder="Enter username"
+                                    />
                                 </div> 
                                 <div className="form-group">
-                                    <label for="email">Email address</label>
-                                    <input ref="email" type="text" className="form-control" id="email" placeholder="Enter email" />
+                                    <label htmlFor="email">Email address</label>
+                                    <input
+                                        ref="email"
+                                        type="text"
+                                        className="form-control"
+                                        id="email"
+                                        placeholder="Enter email"
+                                    />
                                 </div> 
                                 <div className="form-group">
-                                    <label for="password">Password</label>
-                                    <input ref="password" type="password" className="form-control" id="password" placeholder="Enter password" />
+                                    <label htmlFor="password">Password</label>
+                                    <input
+                                        ref="password"
+                                        type="password"
+                                        className="form-control"
+                                        id="password"
+                                        placeholder="Enter password"
+                                    />
                                 </div> 
                                 <div className="form-group">
-                                    <label for="password">Password confirmation</label>
-                                    <input ref="passwordConfirm" type="password" className="form-control" id="password" placeholder="Enter password again" />
+                                    <label htmlFor="password">Password confirmation</label>
+                                    <input
+                                        ref="passwordConfirm"
+                                        type="password"
+                                        className="form-control"
+                                        id="password"
+                                        placeholder="Enter password again"
+                                    />
                                 </div> 
                             
-                                <button className="btn btn-block btn-success" type="submit"><i className="fa fa-plus fa-fw"></i>Add User</button>
+                                <button className="btn btn-block btn-success" type="submit">
+                                    <FontAwesomeIcon icon="plus" className="fa-fw"/>
+                                    Add User
+                                </button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            
         )
     }
 }
 
 AddUser.propTypes = {
-    listUsers: React.PropTypes.func.isRequired,
+    listUsers: PropTypes.func.isRequired,
 }
 
 export default AddUser

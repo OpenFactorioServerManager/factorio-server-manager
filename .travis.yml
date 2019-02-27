@@ -12,7 +12,6 @@ install:
   - go get github.com/hpcloud/tail
   - go get github.com/gorilla/websocket
   - go get github.com/majormjr/rcon
-  - go get github.com/Masterminds/semver
   - export GOPATH="$HOME/gopath/src/github.com/mroote/factorio-server-manager/:$GOPATH"
 
 script:

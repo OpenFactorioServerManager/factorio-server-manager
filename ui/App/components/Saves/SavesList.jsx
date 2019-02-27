@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Save from './Save.jsx';
-import swal from 'sweetalert';
+import {ReactSwalDanger, ReactSwalNormal} from 'Utilities/customSwal';
 
 class SavesList extends React.Component {
    constructor(props) {
@@ -14,32 +15,52 @@ class SavesList extends React.Component {
     }
 
     removeSave(saveName, e) {
-        var self = this;
-        swal({   
-            title: "Are you sure?",  
-            text: "Save: " + saveName + " will be deleted",   
-            type: "warning",   
-            showCancelButton: true,   
-            confirmButtonColor: "#DD6B55",   
-            confirmButtonText: "Yes, delete it!",   
-            closeOnConfirm: false 
-        }, 
-        () => {
-            $.ajax({
-                url: "/api/saves/rm/" + saveName,
-                dataType: "json",
-                success: (resp) => {
-                    if (resp.success === true) {
-                        swal("Deleted!", resp.data, "success"); 
-                        self.updateSavesList();
-                    }
-                }
-            })
+        let self = this;
+        ReactSwalDanger.fire({
+            title: "Are you sure?",
+            html: <p>Save: {saveName} will be deleted</p>,
+            type: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            showLoaderOnConfirm: true,
+            preConfirm: () => {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: "/api/saves/rm/" + saveName,
+                        dataType: "json",
+                        success: (resp) => {
+                            if (resp.success === true) {
+                                resolve(resp.data);
+                            } else {
+                                reject("Unknown occurred!");
+                            }
+                        },
+                        error: () => {
+                            reject("Unknown occurred!");
+                        }
+                    });
+                });
+            },
+        }).then((result) => {
+            if(result.value) {
+                ReactSwalNormal.fire({
+                    title: "Deleted!",
+                    text: result.value,
+                    type: "success"
+                });
+            }
+            self.updateSavesList();
+        }).catch((result) => {
+            ReactSwalNormal.fire({
+                title: "An error occurred!",
+                text: result,
+                type: "error"
+            });
         });
     }
 
     render() {
-        var savesList;
+        let savesList;
         if (this.props.saves.length === 0) {
             savesList = <tr></tr>
         } else {
@@ -87,9 +108,9 @@ class SavesList extends React.Component {
 }
 
 SavesList.propTypes = {
-    saves: React.PropTypes.array.isRequired,
-    dlSave: React.PropTypes.func.isRequired,
-    getSaves: React.PropTypes.func.isRequired
-}
+    saves: PropTypes.array.isRequired,
+    dlSave: PropTypes.func.isRequired,
+    getSaves: PropTypes.func.isRequired
+};
 
 export default SavesList

@@ -20,9 +20,9 @@ build/factorio-server-manager-%.zip: app/bundle.js factorio-server-manager-%
 	@zip -r $@ factorio-server-manager > /dev/null
 	@rm -r factorio-server-manager
 
-app/bundle.js:
+app/bundle:
 	@echo "Building Frontend"
-	@cd ui && npm install && npm run build
+	@npm install && npm run build
 
 factorio-server-manager-linux: godeps
 	@echo "Building Backend - Linux"
@@ -47,3 +47,6 @@ clean:
 	@echo "Cleaning"
 	@rm -r build/
 	@rm app/bundle.js
+	@rm app/bundle.css
+	@rm app/fonts/vendor
+	@rm app/images/vendor

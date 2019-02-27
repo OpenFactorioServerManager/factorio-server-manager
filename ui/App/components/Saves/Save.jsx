@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import FontAwesomeIcon from "../FontAwesomeIcon";
 
 class Save extends React.Component {
     render() {
@@ -21,10 +23,11 @@ class Save extends React.Component {
                         className="btn btn-danger btn-small" 
                         ref="saveInput"
                         type="button" 
-                        onClick={this.props.removeSave.bind(this, this.props.saves[this.props.index].name)}>
-                    <i className="fa fa-trash"></i>
-                    &nbsp;
-                    Delete
+                        onClick={this.props.removeSave.bind(this, this.props.saves[this.props.index].name)}
+                    >
+                        <FontAwesomeIcon icon="trash"/>
+                        &nbsp;
+                        Delete
                     </button>
                 </td>
 </tr>
@@ -33,10 +36,10 @@ class Save extends React.Component {
 }
 
 Save.propTypes = {
-    save: React.PropTypes.object.isRequired,
-    saves: React.PropTypes.array.isRequired,
-    index: React.PropTypes.number.isRequired,
-    removeSave: React.PropTypes.func.isRequired
+    save: PropTypes.object.isRequired,
+    saves: PropTypes.array.isRequired,
+    index: PropTypes.number.isRequired,
+    removeSave: PropTypes.func.isRequired
 }
 
 export default Save

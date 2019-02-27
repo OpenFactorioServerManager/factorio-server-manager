@@ -16,9 +16,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/majormjr/rcon"
 	"regexp"
-	"github.com/Masterminds/semver"
+
+	"github.com/majormjr/rcon"
 )
 
 type FactorioServer struct {
@@ -28,9 +28,8 @@ type FactorioServer struct {
 	BindIP         string                 `json:"bindip"`
 	Port           int                    `json:"port"`
 	Running        bool                   `json:"running"`
-	Version        string                 `json:"fac_version"`
+	Version        Version                `json:"fac_version"`
 	BaseModVersion string                 `json:"base_mod_version"`
-	SemVerVersion  *semver.Version        `json:"-"`
 	StdOut         io.ReadCloser          `json:"-"`
 	StdErr         io.ReadCloser          `json:"-"`
 	StdIn          io.WriteCloser         `json:"-"`
@@ -97,7 +96,6 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	log.Printf("Loaded Factorio settings from %s\n", settingsPath)
 
-
 	//Load factorio version
 	out, err := exec.Command(config.FactorioBinary, "--version").Output()
 	if err != nil {
@@ -107,7 +105,11 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	reg := regexp.MustCompile("Version.*?((\\d+\\.)?(\\d+\\.)?(\\*|\\d+)+)")
 	found := reg.FindStringSubmatch(string(out))
-	f.Version = found[1]
+	err = f.Version.UnmarshalText([]byte(found[1]))
+	if err != nil {
+		log.Printf("could not parse version: %v", err)
+		return
+	}
 
 	//Load baseMod version
 	baseModInfoFile := filepath.Join(config.FactorioDir, "data", "base", "info.json")
@@ -124,10 +126,6 @@ func initFactorio() (f *FactorioServer, err error) {
 	}
 
 	f.BaseModVersion = modInfo.Version
-	f.SemVerVersion, err = semver.NewVersion(modInfo.Version)
-	if err != nil {
-		log.Fatalf("error loading semver-factorio-version: %s", err)
-	}
 
 	return
 }
