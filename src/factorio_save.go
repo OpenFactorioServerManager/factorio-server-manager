@@ -90,6 +90,14 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 
 	atLeast016 := !h.FactorioVersion.Less(Version{0, 16, 0, 0})
 
+	if h.FactorioVersion.Greater(Version{0, 17, 0, 0}) {
+		//FIXME correct naming
+		_, err = r.Read(scratch[:1])
+		if err != nil {
+			return fmt.Errorf("read first random 0.17 byte: %v", err)
+		}
+	}
+
 	h.Campaign, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read Campaign: %v", err)

@@ -4,6 +4,50 @@ import (
 	"testing"
 )
 
+func Test0_17(t *testing.T) {
+	file, err := OpenArchiveFile("factorio_save_testfiles/test_0_17.zip", "level.dat")
+	if err != nil {
+		t.Fatalf("Error opening level.dat: %s", err)
+	}
+	defer file.Close()
+
+	var header SaveHeader
+	err = header.ReadFrom(file)
+	if err != nil {
+		t.Fatalf("Error reading header: %s", err)
+	}
+
+	testHeader := SaveHeader{
+		FactorioVersion: Version{0,17,1,1},
+		Campaign: "transport-belt-madness",
+		Name: "level-01",
+		BaseMod: "base",
+		Difficulty: 0,
+		Finished: false,
+		PlayerWon: false,
+		NextLevel: "",
+		CanContinue: false,
+		FinishedButContinuing: false,
+		SavingReplay: true,
+		AllowNonAdminDebugOptions: true,
+		LoadedFrom: Version{0,17,1},
+		LoadedFromBuild: 43001,
+		AllowedCommands: 1,
+		Mods: []Mod {
+			{
+				Version: Version{0,2,0},
+				Name: "Warehousing",
+			},
+			{
+				Version: Version{0,17,1},
+				Name: "base",
+			},
+		},
+	}
+
+	header.Equals(testHeader, t)
+}
+
 func Test0_16(t *testing.T) {
 	file, err := OpenArchiveFile("factorio_save_testfiles/test_0_16.zip", "level.dat")
 	if err != nil {
@@ -19,16 +63,16 @@ func Test0_16(t *testing.T) {
 
 	testHeader := SaveHeader{
 		FactorioVersion: Version{0,16,51,0},
-		Campaign: "",
-		Name: "freeplay",
+		Campaign: "transport-belt-madness",
+		Name: "level-01",
 		BaseMod: "base",
-		Difficulty: 1,
+		Difficulty: 0,
 		Finished: false,
 		PlayerWon: false,
 		NextLevel: "",
 		CanContinue: false,
 		FinishedButContinuing: false,
-		SavingReplay: false,
+		SavingReplay: true,
 		AllowNonAdminDebugOptions: true,
 		LoadedFrom: Version{0,16,51},
 		LoadedFromBuild: 36654,
@@ -63,16 +107,16 @@ func Test0_15(t *testing.T) {
 
 	testHeader := SaveHeader{
 		FactorioVersion: Version{0,15,40,0},
-		Campaign: "",
-		Name: "freeplay",
+		Campaign: "transport-belt-madness",
+		Name: "level-01",
 		BaseMod: "base",
-		Difficulty: 1,
+		Difficulty: 0,
 		Finished: false,
 		PlayerWon: false,
 		NextLevel: "",
 		CanContinue: false,
 		FinishedButContinuing: false,
-		SavingReplay: false,
+		SavingReplay: true,
 		LoadedFrom: Version{0,15,40},
 		LoadedFromBuild: 30950,
 		AllowedCommands: 1,
@@ -106,8 +150,8 @@ func Test0_14(t *testing.T) {
 
 	testHeader := SaveHeader{
 		FactorioVersion: Version{0,14,23,0},
-		Campaign: "",
-		Name: "freeplay",
+		Campaign: "transport-belt-madness",
+		Name: "level-01",
 		BaseMod: "base",
 		Difficulty: 1,
 		Finished: false,
@@ -115,7 +159,7 @@ func Test0_14(t *testing.T) {
 		NextLevel: "",
 		CanContinue: false,
 		FinishedButContinuing: false,
-		SavingReplay: false,
+		SavingReplay: true,
 		LoadedFrom: Version{0,14,23},
 		LoadedFromBuild: 25374,
 		AllowedCommands: 1,
@@ -149,8 +193,8 @@ func Test0_13(t *testing.T) {
 
 	testHeader := SaveHeader{
 		FactorioVersion: Version{0,13,20,0},
-		Campaign: "",
-		Name: "freeplay",
+		Campaign: "transport-belt-madness",
+		Name: "level-01",
 		BaseMod: "base",
 		Difficulty: 1,
 		Finished: false,
@@ -158,7 +202,7 @@ func Test0_13(t *testing.T) {
 		NextLevel: "",
 		CanContinue: false,
 		FinishedButContinuing: false,
-		SavingReplay: false,
+		SavingReplay: true,
 		LoadedFrom: Version{0,13,20},
 		LoadedFromBuild: 24011,
 		AllowedCommands: 1,
