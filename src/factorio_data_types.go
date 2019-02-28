@@ -372,6 +372,8 @@ func writeTree(data interface{}) (output []byte , err error) {
 	case reflect.String:
 		typeByte = STRING
 		marshalledBytes = writeString(data.(string))
+		log.Println(data)
+		log.Println(marshalledBytes)
 	case reflect.Array:
 		// List
 		list, err := writeList(data.([]interface{}))

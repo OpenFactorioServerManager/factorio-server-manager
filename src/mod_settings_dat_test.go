@@ -56,6 +56,10 @@ func TestModSettings0_16(t *testing.T) {
 		t.Fatalf("couldn't Encode modData: %s", err)
 	}
 
+	fmt.Println(newBytes)
+	data, _ := ioutil.ReadFile(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.16.dat"))
+	fmt.Println(data)
+
 	var newData FModData
 	err = newData.Decode(newBytesReader)
 	if err != nil {
