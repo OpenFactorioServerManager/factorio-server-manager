@@ -1,5 +1,5 @@
 import React from 'react';
-import {Switch, Route} from 'react-router-dom';
+import {Switch, Route, withRouter} from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Footer from './components/Footer.jsx';
@@ -37,14 +37,6 @@ class App extends React.Component {
 
     componentDidMount() {
         this.checkLogin();
-        // Wait 1 second before redirecting to login page
-        setTimeout(() => {
-            if (!this.state.loggedIn) {
-                browserHistory.push("/login");
-            }
-        }, 1000);
-        this.connectWebSocket();
-        this.getFactorioVersion(); //Init serverStatus, so i know, which factorio-version is installed
     }
 
     connectWebSocket() {
@@ -62,6 +54,7 @@ class App extends React.Component {
     checkLogin() {
         $.ajax({
             url: "/api/user/status",
+            type: "GET",
             dataType: "json",
             success: (data) => {
                 if (data.success === true) {
@@ -69,7 +62,15 @@ class App extends React.Component {
                         loggedIn: true,
                         username: data.data.Username
                     });
+
+                    this.connectWebSocket();
+                    this.getFactorioVersion(); //Init serverStatus, so i know, which factorio-version is installed
+                } else {
+                    this.props.history.push("/login");
                 }
+            },
+            error: () => {
+                this.props.history.push("/login");
             }
         })
     }
@@ -127,6 +128,7 @@ class App extends React.Component {
             url: "/api/server/facVersion",
             // dataType: "json",
             success: (data) => {
+                console.log(data);
                 this.setState({
                     factorioVersion: data.data.base_mod_version
                 });
@@ -192,4 +194,4 @@ class App extends React.Component {
     }
 }
 
-export default App
+export default withRouter(App);
