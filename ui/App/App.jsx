@@ -3,7 +3,6 @@ import {Switch, Route} from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Footer from './components/Footer.jsx';
-import HiddenSidebar from './components/HiddenSidebar.jsx';
 import Socket from '../socket.js';
 import Index from "./components/Index";
 import UsersContent from "./components/UsersContent";
@@ -184,13 +183,6 @@ class App extends React.Component {
                     </Switch>
 
                     <Footer />
-
-                    <HiddenSidebar
-                        serverStatus={this.state.serverStatus}
-                        username={this.state.username}
-                        loggedIn={this.state.loggedIn}
-                        checkLogin={this.checkLogin}
-                    />
                 </div>
         } else {
             resp = <div><p>Not Logged in</p></div>;
