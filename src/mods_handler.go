@@ -909,13 +909,14 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetModConfig(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-
-}
+//func GetModConfig(w http.ResponseWriter, r *http.Request) {
+//	var err error
+//	resp := JSONResponse{
+//		Success: false,
+//	}
+//
+//	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+//
+//	// load correct
+//	file, err := os.Open(filepath.Join(config.FactorioModsDir, "mod-settings.dat"))
+//}

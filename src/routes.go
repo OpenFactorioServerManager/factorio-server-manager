@@ -367,15 +367,15 @@ var apiRoutes = Routes{
 		"POST",
 		"/settings/update",
 		UpdateServerSettings,
-	}, {
+	}, /*{
 		"GetModConfigs",
 		"GET",
 		"/mods/settings",
 		GetModConfig,
-	}, {
+	},*/ /*{
 		"UpdateModsConfigs",
 		"POST",
 		"/mods/settings",
 		UpdateModConfig,
-	},
+	},*/
 }

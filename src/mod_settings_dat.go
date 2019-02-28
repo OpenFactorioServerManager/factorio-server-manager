@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 	"log"
 )
@@ -34,6 +35,16 @@ func (d *FModData) Decode(file io.Reader) error {
 		return err
 	}
 	d.Version = version
+
+
+	if Version(version).Greater(Version{0, 17, 0, 0}) {
+		//FIXME correct naming
+		var b [1]byte
+		_, err = file.Read(b[:])
+		if err != nil {
+			return fmt.Errorf("read first random 0.17 byte: %v", err)
+		}
+	}
 
 	d.Data, err = readTree(file)
 	if err != nil {
@@ -75,6 +86,10 @@ func (d *FModData) Encode() ([]byte, error) {
 	}
 
 	output = append(output, _bytes...)
+
+	if Version(d.Version).Greater(Version{0, 17, 0, 0}) {
+		output = append(output, byte(0))
+	}
 
 	tree, err := writeTree(d.Data)
 	if err != nil {
