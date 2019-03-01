@@ -181,7 +181,7 @@ class App extends React.Component {
                         <Route path="/saves" render={(props) => {return <SavesContent {...props} {...appProps}/>}}/>
                         <Route path="/config" render={(props) => {return <ConfigContent {...props} {...appProps}/>}}/>
                         <Route path="/console" render={(props) => {return <ConsoleContent {...props} {...appProps}/>}}/>
-                        <Route exakt path="/" render={(props) => {return <Index {...props} {...appProps} />}}/>
+                        <Route exact path="/" render={(props) => {return <Index {...props} {...appProps} />}}/>
                     </Switch>
 
                     <Footer />
