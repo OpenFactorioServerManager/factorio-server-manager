@@ -26,10 +26,9 @@ $('body').on("show.bs.collapse hide.bs.collapse", (e) => {
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Route} from 'react-router';
 import App from './App/App.jsx';
 import LoginContent from './App/components/LoginContent.jsx';
-import {BrowserRouter, Switch} from "react-router-dom";
+import {BrowserRouter, Switch, Route} from "react-router-dom";
 
 /**
  * Start React Render
