@@ -1,5 +1,6 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class LoginContent extends React.Component {
     constructor(props) {
@@ -30,54 +31,43 @@ class LoginContent extends React.Component {
 
     render() {
         return(
-            <div className="container ">
-                <div className="row">
-                    <div className="absolute-center is-responsive">
-                        <div className="col-centered col-md-4 col-mod-offset-2">
-                            <div className="center-block">
-                                <section className="content-header">
-                                <h1>
-                                    Factorio Server Manager
-                                    <small>Login to manage Factorio</small>
-                                </h1>
-                                </section>
+            <div className="container" id="login">
+                <div className="d-flex justify-content-center h-100">
+                    <div className="card">
+                        <div className="card-header">
+                            <h1>
+                                <img src="./images/factorio.jpg" className="img-circle" alt="User Image"/>
+                                Factorio Server Manager
+                            </h1>
+                        </div>
 
-                                <section className="content">
-                                <div className="row">
-                                    <div className="login-box-body">
-
-                                        <form onSubmit={this.loginUser}>
-                                            <div className="form-group has-feedback">
-                                                <input type="text" ref="username" className="form-control" placeholder="Username" />
-                                                <span className="fa fa-envelope form-control-feedback"></span>
-                                            </div>
-                                            <div className="form-group has-feedback">
-                                                <input type="password" ref="password" className="form-control" placeholder="Password" />
-                                                <span className="fa fa-lock form-control-feedback"></span>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-xs-8">
-                                                    <div className="checkbox">
-                                                        <label className="">
-                                                            <div className="" aria-checked="false" aria-disabled="false" style={{position: "relative"}}>
-                                                            <input type="checkbox"/>
-                                                            </div> Remember Me
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-xs-4">
-                                                    <button type="submit" className="btn btn-primary btn-block btn-flat">Sign In</button>
-                                                </div>
-                                            </div>
-                                        </form>
-
-                                        <a href="#">I forgot my password</a><br />
+                        <div className="car-body">
+                            <form onSubmit={this.loginUser}>
+                                <label className="input-group form-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <FontAwesomeIcon icon="user"/>
+                                        </span>
                                     </div>
-                                </div>
-                                </section>
-                            </div>
+                                    <input className="form-control" type="text" ref="username" placeholder="Username"/>
+                                </label>
+
+                                <label className="input-group form-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <FontAwesomeIcon icon="lock"/>
+                                        </span>
+                                    </div>
+                                    <input className="form-control" type="password" ref="password" placeholder="Password"/>
+                                </label>
+
+                                <label className="remember-me">
+                                    <input type="checkbox"/>&nbsp;
+                                    Remember me
+                                </label>
+
+                                <input type="submit" value="Sign In" className="btn btn-primary btn-block btn-flat"/>
+                            </form>
                         </div>
                     </div>
                 </div>
