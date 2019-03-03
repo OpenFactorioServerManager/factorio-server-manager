@@ -128,7 +128,6 @@ class App extends React.Component {
             url: "/api/server/facVersion",
             // dataType: "json",
             success: (data) => {
-                console.log(data);
                 this.setState({
                     factorioVersion: data.data.base_mod_version
                 });

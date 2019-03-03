@@ -49,8 +49,8 @@
     "resolve-url-loader": "^3.0.1",
     "sass-loader": "^7.1.0",
     "semver": "^5.6.0",
-    "sweetalert2": "^7.33.1",
-    "sweetalert2-react-content": "^1.0.1",
+    "sweetalert2": "^8.2.6",
+    "sweetalert2-react-content": "^1.0.3",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
     "webpack-fix-style-only-entries": "^0.2.0"
