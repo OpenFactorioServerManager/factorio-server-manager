@@ -336,7 +336,7 @@ class ModsContent extends React.Component {
         let $row = $button.parents("tr");
         let modName = $row.data("mod-name");
 
-        ReactSwalDanger({
+        ReactSwalDanger.fire({
             title: "Delete Mod?",
             text: "This will delete the mod and can break the save file",
             type: "question",
