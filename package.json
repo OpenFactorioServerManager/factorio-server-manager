@@ -1,0 +1,58 @@
+{
+  "name": "factorio-mod-manager",
+  "version": "0.2.0",
+  "description": "Factorio Server Manager UI",
+  "main": "ui/index.js",
+  "scripts": {
+    "dev": "npm run development",
+    "development": "webpack --config=webpack.config.js --mode=development --progress --hide-modules",
+    "watch": "npm run development -- --watch",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "build": "npm run production",
+    "prod": "npm run production",
+    "production": "webpack --config=webpack.config.js --mode=production --hide-modules --progress",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mroote/factorio-server-manager.git"
+  },
+  "author": "Mitch Roote <mitch@r00t.ca>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mroote/factorio-server-manager/issues"
+  },
+  "homepage": "https://github.com/mroote/factorio-server-manager#readme",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/preset-react": "^7.0.0",
+    "@fortawesome/fontawesome-free": "^5.6.3",
+    "admin-lte": "^3.0.0-alpha.2",
+    "babel-loader": "^8.0.5",
+    "bootstrap": "^4.2.1",
+    "bootstrap-fileinput": "^4.5.2",
+    "classnames": "^2.2.6",
+    "css-loader": "^2.1.0",
+    "file-loader": "^3.0.1",
+    "jquery": "^3.3.1",
+    "locks": "^0.2.2",
+    "mini-css-extract-plugin": "^0.5.0",
+    "node-sass": "^4.11.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "prop-types": "^15.6.2",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-native-listener": "^1.0.2",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "resolve-url-loader": "^3.0.0",
+    "sass-loader": "^7.1.0",
+    "semver": "^5.6.0",
+    "sweetalert2": "^7.33.1",
+    "sweetalert2-react-content": "^1.0.1",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1",
+    "webpack-fix-style-only-entries": "0.1.0"
+  }
+}

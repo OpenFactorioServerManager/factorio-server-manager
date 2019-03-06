@@ -108,7 +108,7 @@ make
 ```
 
 #### Building the React Frontend alone
-Frontend is built using React and the AdminLTE CSS framework. See app/dist/ for AdminLTE included files and license.
+Frontend is built using React and the AdminLTE CSS framework.
 
 The root of the UI application is served at app/index.html.  Run the npm build script and the Go application during development to get live rebuilding of the UI code.
 
@@ -116,8 +116,18 @@ All necessary CSS and Javascript files are included for running the UI.
 
 Transpiled bundle.js application is output to app/bundle.js, 'npm run build' script starts webpack to build the React application for development.
 ```
-make app/bundle.js
+make app/bundle
 ```
+
+##### For development
+The frontend is completly build by npm with laravel-mix. All plugins are buld into the compiled files. No plugins need to be load fro external sources.
+
+It has different variants to build the frontend, provided by laravel-mix:
+- `npm run dev` Build the code for development. This will also generate map-files, so the browser, can show, what line and file causes the output.
+- `npm run watch` Build the code for development like the dev-command. This will not stop and automatically rebuild, when files are changed and saved.
+- `npm run hot` Build the code for development. It has the same behaviour like the watch-command and also causes a hotReload of the files inside the browser (in theory)
+- `npm run build` Build the code for deployment. It will generate no map-files and also minifies the bundle-files.
+In every of those cases, also images and fonts will be copied to the app-folder.
 
 ### Building for Windows
 1. Download the latest release source zip file
@@ -145,7 +155,6 @@ go get github.com/gorilla/mux
 go get github.com/hpcloud/tail
 go get github.com/gorilla/websocket
 go get github.com/majormjr/rcon
-go get github.com/Masterminds/semver
 ```
 
 3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down left shift and right click an empty area of the folder. Then click "Open command windows here"

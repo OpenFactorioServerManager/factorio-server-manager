@@ -1,7 +1,8 @@
 import React from 'react';
-import {IndexLink} from 'react-router';
+import {Link} from 'react-router-dom';
 import UserTable from './Users/UserTable.jsx';
 import AddUser from './Users/AddUser.jsx';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class UsersContent extends React.Component {
     constructor(props) {
@@ -35,14 +36,22 @@ class UsersContent extends React.Component {
         return(
             <div className="content-wrapper">
                 <section className="content-header">
-                <h1>
-                    Settings
-                    <small>Manage Factorio Server Manager settings</small>
-                </h1>
-                <ol className="breadcrumb">
-                    <li><IndexLink to="/"><i className="fa fa-dashboard fa-fw"></i>Server Control</IndexLink></li>
-                    <li className="active">Here</li>
-                </ol>
+                    <h1>
+                        Settings
+                        <small>Manage Factorio Server Manager settings</small>
+
+                        <small className="float-sm-right">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item">
+                                    <Link to="/"><FontAwesomeIcon icon="tachometer-alt"/>Server Control</Link>
+                                </li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="cog"/>Settings
+                                </li>
+                            </ol>
+                        </small>
+                    </h1>
+
                 </section>
   
                 <section className="content">
@@ -53,7 +62,6 @@ class UsersContent extends React.Component {
                     <AddUser 
                         listUsers={this.listUsers}
                     />
-
                 </section>
             </div>
         )

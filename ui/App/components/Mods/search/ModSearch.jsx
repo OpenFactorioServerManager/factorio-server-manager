@@ -1,8 +1,11 @@
 import React from 'react';
-import ModFoundOverview from './ModFoundOverview.jsx';
+import PropTypes from 'prop-types';
 
 class ModSearch extends React.Component {
     render() {
+        let classes = "box-body" + " " + this.props.className;
+        let ids = this.props.id;
+
         if(this.props.loggedIn) {
             //TODO switch back to currently commented out code, when the mod-portal-api is back with all features!!
             /*return (
@@ -22,7 +25,7 @@ class ModSearch extends React.Component {
                 </div>
             )*/
             return (
-                <div className="box-body">
+                <div id={ids} className={classes}>
                     <form onSubmit={this.props.loadDownloadList}>
                         <div className="input-group col-lg-5">
                             <input type="text" className="form-control" placeholder="Download mod by ID" name="modId" />
@@ -35,7 +38,7 @@ class ModSearch extends React.Component {
             )
         } else {
             return (
-                <div className="box-body">
+                <div id={ids} className={classes}>
                     <form onSubmit={this.props.submitFactorioLogin}>
                         <h4>Login into Factorio</h4>
                         <div className="form-group">
@@ -55,10 +58,12 @@ class ModSearch extends React.Component {
 }
 
 ModSearch.propTypes = {
-    submitSearchMod: React.PropTypes.func.isRequired,
-    loggedIn: React.PropTypes.bool.isRequired,
-    submitFactorioLogin: React.PropTypes.func.isRequired,
-    loadDownloadList: React.PropTypes.func.isRequired
+    submitSearchMod: PropTypes.func.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
+    submitFactorioLogin: PropTypes.func.isRequired,
+    loadDownloadList: PropTypes.func.isRequired,
+    className: PropTypes.string,
+    id: PropTypes.string
 }
 
 export default ModSearch;

@@ -1,0 +1,43 @@
+.content-wrapper {
+    padding-bottom: 1px;
+
+    .content-header {
+        > h1 {
+            margin: 0;
+            font-size: 28px;
+
+            > small {
+                font-size: 15px;
+                display: inline-block;
+                padding-left: 4px;
+                font-weight: 300;
+
+                line-height: 1;
+                color: #777;
+            }
+        }
+    }
+}
+
+.loader {
+    display: inline-block;
+    border: 5px solid lightgrey;
+    border-radius: 50%;
+    border-top: 5px solid #3498db;
+    width: 20px;
+    height: 20px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    box-sizing: unset;
+    position: absolute;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

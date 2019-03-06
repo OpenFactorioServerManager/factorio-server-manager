@@ -1,0 +1,16 @@
+.user-panel {
+    display: flex;
+
+    .image {
+        display: block;
+        margin: auto;
+    }
+
+    .info {
+        display: block;
+    }
+
+    img {
+        width: 3rem;
+    }
+}

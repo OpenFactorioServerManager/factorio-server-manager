@@ -1,6 +1,7 @@
 import React from 'react';
-import {IndexLink} from 'react-router';
+import {Link} from 'react-router-dom';
 import LogLines from './Logs/LogLines.jsx';
+import FontAwesomeIcon from "./FontAwesomeIcon";
 
 class LogsContent extends React.Component {
     constructor(props) {
@@ -30,25 +31,31 @@ class LogsContent extends React.Component {
     }
 
     render() {
-        return(
+        return (
             <div className="content-wrapper">
                 <section className="content-header">
-                <h1>
-                    Logs
-                    <small>Analyze Factorio Logs</small>
-                </h1>
-                <ol className="breadcrumb">
-                    <li><IndexLink to="/"><i className="fa fa-dashboard"></i>Server Control</IndexLink></li>
-                    <li className="active">Here</li>
-                </ol>
+                    <h1>
+                        Logs
+                        <small>Analyze Factorio Logs</small>
+
+                        <small className="float-sm-right">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item">
+                                    <Link to="/"><FontAwesomeIcon icon="tachometer-alt"/>Server Control</Link>
+                                </li>
+                                <li className="breadcrumb-item active">
+                                    <FontAwesomeIcon icon="file-alt" prefix="far"/>Logs
+                                </li>
+                            </ol>
+                        </small>
+                    </h1>
                 </section>
 
                 <section className="content">
-
-                <LogLines 
-                    getLastLog={this.getLastLog}
-                    {...this.state} 
-                />
+                    <LogLines
+                        getLastLog={this.getLastLog}
+                        {...this.state}
+                    />
 
                 </section>
             </div>

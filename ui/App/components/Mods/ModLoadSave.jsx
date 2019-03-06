@@ -1,6 +1,7 @@
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
 import {instanceOfModsContent} from "./ModsPropTypes";
+import PropTypes from "prop-types";
+import {ReactSwalNormal} from 'Utilities/customSwal';
 
 class ModLoadSave extends React.Component {
     constructor(props) {
@@ -29,15 +30,14 @@ class ModLoadSave extends React.Component {
                 data.data.mods.forEach((mod) => {
                     if(mod.name == "base") return;
 
-                    let modVersion = mod.version.major + "." + mod.version.minor + "." + mod.version.build;
                     let singleCheckbox = <tr key={mod.name}>
                         <td>
                             {mod.name}
                             <input type="hidden" name="mod_name" value={mod.name}/>
                         </td>
                         <td>
-                            {modVersion}
-                            <input type="hidden" name="mod_version" value={modVersion}/>
+                            {mod.version}
+                            <input type="hidden" name="mod_version" value={mod.version}/>
                         </td>
                     </tr>
 
@@ -45,7 +45,7 @@ class ModLoadSave extends React.Component {
                 });
 
                 if(checkboxes.length == 0) {
-                    swal({
+                    ReactSwalNormal.fire({
                         title: "No mods in this save!",
                         type: "error"
                     });
@@ -60,10 +60,10 @@ class ModLoadSave extends React.Component {
                                 <thead>
                                     <tr>
                                         <th>
-                                            ModName
+                                            Name
                                         </th>
                                         <th>
-                                            ModVersion
+                                            Version
                                         </th>
                                     </tr>
                                 </thead>
@@ -75,20 +75,18 @@ class ModLoadSave extends React.Component {
                     </div>
                 </div>
 
-                swal({
+                ReactSwalNormal.fire({
                     title: "Mods to install",
-                    text: ReactDOMServer.renderToStaticMarkup(table),
-                    html: true,
-                    type: 'info',
+                    html: table,
+                    type: 'question',
                     showCancelButton: true,
-                    closeOnConfirm: false,
                     confirmButtonText: "Download Mods!",
-                    cancelButtonText: "Cancel",
-                    showLoaderOnConfirm: true
-                }, this.loadModsSwalHandler);
+                    showLoaderOnConfirm: true,
+                    preConfirm: this.loadModsSwalHandler
+                });
             },
             error: (jqXHR) => {
-                swal({
+                ReactSwalNormal.fire({
                     title: jqXHR.responseJSON.data,
                     html: true,
                     type: "error",
@@ -104,7 +102,7 @@ class ModLoadSave extends React.Component {
             dataType: "JSON",
             data: $("#swalForm").serialize(),
             success: (data) => {
-                swal({
+                ReactSwalNormal.fire({
                     title: "All Mods installed successfully!",
                     type: "success"
                 });
@@ -116,7 +114,7 @@ class ModLoadSave extends React.Component {
             error: (jqXHR) => {
                 let json_data = JSON.parse(jqXHR.responseJSON.data);
 
-                swal({
+                ReactSwalNormal.fire({
                     title: json_data.detail,
                     type: "error",
                 });
@@ -136,8 +134,11 @@ class ModLoadSave extends React.Component {
             }
         });
 
+        let classes = "box-body" + " " + this.props.className;
+        let ids = this.props.id;
+
         return (
-            <div className="box-body">
+            <div id={ids} className={classes}>
                 <form action="" onSubmit={this.loadMods}>
                     <div className="input-group">
                         <select className="custom-select form-control" name="saveFile">
@@ -155,6 +156,8 @@ class ModLoadSave extends React.Component {
 
 ModLoadSave.propTypes = {
     modContentClass: instanceOfModsContent.isRequired,
+    className: PropTypes.string,
+    id: PropTypes.string
 }
 
 export default ModLoadSave;

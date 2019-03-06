@@ -1,8 +1,8 @@
 language: go
 go:
- - 1.7.6
- - 1.8.5
- - 1.9.2
+ - "1.10"
+ - "1.11"
+ - "1.12"
  - tip
 
 install:
@@ -12,7 +12,6 @@ install:
   - go get github.com/hpcloud/tail
   - go get github.com/gorilla/websocket
   - go get github.com/majormjr/rcon
-  - go get github.com/Masterminds/semver
   - export GOPATH="$HOME/gopath/src/github.com/mroote/factorio-server-manager/:$GOPATH"
 
 script:

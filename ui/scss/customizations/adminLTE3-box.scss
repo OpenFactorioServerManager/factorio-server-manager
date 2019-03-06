@@ -1,0 +1,57 @@
+.box {
+    position: relative;
+    border-radius: 3px;
+    background: #ffffff;
+    border-top: 3px solid #d2d6de;
+    margin-bottom: 20px;
+    width: 100%;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+
+    .box-header {
+        color: #444;
+        display: block;
+        padding: 10px;
+        position: relative;
+
+        .box-title {
+            display: inline-block;
+            font-size: 20px;
+            margin: 0 0 0 10px;
+            line-height: 1;
+        }
+
+        .box-tools {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+
+            .btn-box-tool {
+                padding: 5px;
+                font-size: 12px;
+            }
+        }
+    }
+
+    .box-body {
+        border-radius: 0 0 3px 3px;
+        padding: 10px;
+        font-size: 14px;
+
+        h4 {
+            font-size: 18px;
+        }
+
+        h5 {
+            font-size: 16px;
+        }
+
+        samp {
+            font-size: 12px;
+
+            p {
+                margin-bottom: 5px;
+                color: #333;
+            }
+        }
+    }
+}

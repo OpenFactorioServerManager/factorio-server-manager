@@ -1,29 +1,43 @@
+global.$ = global.jQuery = require('jquery');
+require('bootstrap');
+require('admin-lte/build/js/AdminLTE.js');
+require('bootstrap-fileinput');
+require('bootstrap-fileinput/themes/fas/theme');
+
+
+/**
+ * Change the plus and minus when opening or closing bootstraps collapse object
+ */
+$('body').on("show.bs.collapse hide.bs.collapse", (e) => {
+    let $target = $(e.target);
+    let $box = $target.parent(".box");
+    let $fontAwesome = $box.children(".box-header").children("i");
+
+    if(e.type == "show") {
+        $fontAwesome.removeClass("fa-plus").addClass("fa-minus");
+    } else if(e.type == "hide") {
+        $fontAwesome.removeClass("fa-minus").addClass("fa-plus");
+    }
+});
+
+
+/**
+ * Import Stuff for React
+ */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Router, Route, browserHistory, IndexRoute} from 'react-router';
 import App from './App/App.jsx';
-import ModsContent from './App/components/ModsContent.jsx';
-import LogsContent from './App/components/LogsContent.jsx';
-import SavesContent from './App/components/SavesContent.jsx';
-import ConfigContent from './App/components/ConfigContent.jsx';
 import LoginContent from './App/components/LoginContent.jsx';
-import UsersContent from './App/components/UsersContent.jsx';
-import ConsoleContent from './App/components/ConsoleContent.jsx';
-import Index from './App/components/Index.jsx';
+import {BrowserRouter, Switch, Route} from "react-router-dom";
 
+/**
+ * Start React Render
+ */
 ReactDOM.render((
-    <Router history={browserHistory}>
-        <Route path="/login" component={LoginContent}/>
-        <Route path="/" component={App}>
-            <IndexRoute component={Index}/>
-            <Route path="/server" component={Index}/> 
-            <Route path="/settings" component={UsersContent}/>
-            <Route path="/mods" component={ModsContent}/> 
-            <Route path="/logs" component={LogsContent}/> 
-            <Route path="/saves" component={SavesContent}/> 
-            <Route path="/config" component={ConfigContent}/>
-            <Route path="/console" component={ConsoleContent}/>
-        </Route>
-    </Router>
-), document.getElementById('app'))
-
+    <BrowserRouter>
+        <Switch>
+            <Route path="/login" component={LoginContent} />
+            <Route component={App} />
+        </Switch>
+    </BrowserRouter>
+), document.getElementById('app'));

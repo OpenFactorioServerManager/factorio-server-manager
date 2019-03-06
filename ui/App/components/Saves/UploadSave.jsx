@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class UploadSave extends React.Component {
     constructor(props) {
@@ -30,6 +31,7 @@ class UploadSave extends React.Component {
     }
 
     render() {
+        //TODO use bootstrap-fileinput for pretty uploading saves
         return(
             <div className="box">
                 <div className="box-header">
@@ -52,7 +54,7 @@ class UploadSave extends React.Component {
 }
 
 UploadSave.propTypes = {
-    getSaves: React.PropTypes.func.isRequired,
+    getSaves: PropTypes.func.isRequired,
 }
 
 export default UploadSave

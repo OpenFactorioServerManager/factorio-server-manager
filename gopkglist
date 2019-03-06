@@ -4,4 +4,3 @@ github.com/gorilla/mux
 github.com/gorilla/websocket
 github.com/hpcloud/tail
 github.com/majormjr/rcon
-github.com/Masterminds/semver

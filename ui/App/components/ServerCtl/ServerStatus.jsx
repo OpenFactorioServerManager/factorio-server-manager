@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class ServerStatus extends React.Component {
     constructor(props) {
@@ -11,14 +12,14 @@ class ServerStatus extends React.Component {
     }
 
     formatServerStatus(serverStatus) {
-        var result = {}
+        var result = {};
 
         if (serverStatus === "running") {
-            result = <span className="label label-success">Running</span>
-            return result
+            result = <span className="badge badge-success">Running</span>;
+            return result;
         } else if (serverStatus == "stopped") {
-            result = <span className="label label-danger">Not Running</span>
-            return result
+            result = <span className="badge badge-danger">Not Running</span>;
+            return result;
         } 
 
         return serverStatus
@@ -59,8 +60,8 @@ class ServerStatus extends React.Component {
 }
 
 ServerStatus.propTypes = {
-    serverStatus: React.PropTypes.object.isRequired,
-}
+    serverStatus: PropTypes.object.isRequired,
+};
 
 
 export default ServerStatus

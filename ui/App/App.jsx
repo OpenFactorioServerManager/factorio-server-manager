@@ -1,10 +1,16 @@
 import React from 'react';
-import {browserHistory} from 'react-router';
+import {Switch, Route, withRouter} from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Footer from './components/Footer.jsx';
-import HiddenSidebar from './components/HiddenSidebar.jsx';
 import Socket from '../socket.js';
+import Index from "./components/Index";
+import UsersContent from "./components/UsersContent";
+import ModsContent from "./components/ModsContent";
+import LogsContent from "./components/LogsContent";
+import SavesContent from "./components/SavesContent";
+import ConfigContent from "./components/ConfigContent";
+import ConsoleContent from "./components/ConsoleContent";
 
 class App extends React.Component {
     constructor(props) {
@@ -31,20 +37,12 @@ class App extends React.Component {
 
     componentDidMount() {
         this.checkLogin();
-        // Wait 1 second before redirecting to login page
-        setTimeout(() => {
-            if (!this.state.loggedIn) {
-                browserHistory.push("/login");
-            }
-        }, 1000);
-        this.connectWebSocket();
-        this.getFactorioVersion(); //Init serverStatus, so i know, which factorio-version is installed
     }
 
     connectWebSocket() {
-        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        let ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
         let ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
-        let socket = this.socket = new Socket(ws);
+        this.socket = new Socket(ws);
     }
 
     flashMessage(message) {
@@ -56,6 +54,7 @@ class App extends React.Component {
     checkLogin() {
         $.ajax({
             url: "/api/user/status",
+            type: "GET",
             dataType: "json",
             success: (data) => {
                 if (data.success === true) {
@@ -63,7 +62,15 @@ class App extends React.Component {
                         loggedIn: true,
                         username: data.data.Username
                     });
+
+                    this.connectWebSocket();
+                    this.getFactorioVersion(); //Init serverStatus, so i know, which factorio-version is installed
+                } else {
+                    this.props.history.push("/login");
                 }
+            },
+            error: () => {
+                this.props.history.push("/login");
             }
         })
     }
@@ -94,10 +101,10 @@ class App extends React.Component {
             error: (xhr, status, err) => {
                 console.log('api/saves/list', status, err.toString());
             }
-        })
+        });
 
         if (!this.state.saves) {
-            this.setState({saves:[]})
+            this.setState({saves:[]});
         }
     }
 
@@ -121,6 +128,7 @@ class App extends React.Component {
             url: "/api/server/facVersion",
             // dataType: "json",
             success: (data) => {
+                console.log(data);
                 this.setState({
                     factorioVersion: data.data.base_mod_version
                 });
@@ -135,10 +143,24 @@ class App extends React.Component {
         // render main application,
         // if logged in show application
         // if not logged in show Not logged in message
-        var resp;
+        let appProps = {
+            message: "",
+            messages: this.state.messages,
+            flashMessage: this.flashMessage,
+            facServStatus: this.facServStatus,
+            serverStatus: this.state.serverStatus,
+            factorioVersion: this.state.factorioVersion,
+            getStatus: this.getStatus,
+            saves: this.state.saves,
+            getSaves: this.getSaves,
+            username: this.state.username,
+            socket: this.socket
+        };
+
+        let resp;
         if (this.state.loggedIn) {
-            var resp =
-                <div>
+            resp =
+                <div className="wrapper">
                     <Header
                         username={this.state.username}
                         loggedIn={this.state.loggedIn}
@@ -150,43 +172,26 @@ class App extends React.Component {
                         serverRunning={this.state.serverRunning}
                     />
 
-                    // Render react-router components and pass in props
-                    {React.cloneElement(
-                        this.props.children,
-                        {
-                            message: "",
-                            messages: this.state.messages,
-                            flashMessage: this.flashMessage,
-                            facServStatus: this.facServStatus,
-                            serverStatus: this.state.serverStatus,
-                            factorioVersion: this.state.factorioVersion,
-                            getStatus: this.getStatus,
-                            saves: this.state.saves,
-                            getSaves: this.getSaves,
-                            username: this.state.username,
-                            socket: this.socket
-                        }
-                    )}
+                    {/*Render react-router components and pass in props*/}
+                    <Switch>
+                        <Route path="/server" render={(props) => {return <Index {...props} {...appProps}/>}}/>
+                        <Route path="/settings" render={(props) => {return <UsersContent {...props} {...appProps}/>}}/>
+                        <Route path="/mods" render={(props) => {return <ModsContent {...props} {...appProps}/>}}/>
+                        <Route path="/logs" render={(props) => {return <LogsContent {...props} {...appProps}/>}}/>
+                        <Route path="/saves" render={(props) => {return <SavesContent {...props} {...appProps}/>}}/>
+                        <Route path="/config" render={(props) => {return <ConfigContent {...props} {...appProps}/>}}/>
+                        <Route path="/console" render={(props) => {return <ConsoleContent {...props} {...appProps}/>}}/>
+                        <Route exact path="/" render={(props) => {return <Index {...props} {...appProps} />}}/>
+                    </Switch>
 
                     <Footer />
-
-                    <HiddenSidebar
-                        serverStatus={this.state.serverStatus}
-                        username={this.state.username}
-                        loggedIn={this.state.loggedIn}
-                        checkLogin={this.checkLogin}
-                    />
                 </div>
         } else {
-            var resp = <div><p>Not Logged in</p></div>;
+            resp = <div><p>Not Logged in</p></div>;
         }
 
-        return(
-            <div className="wrapper">
-            {resp}
-            </div>
-        )
+        return resp;
     }
 }
 
-export default App
+export default withRouter(App);

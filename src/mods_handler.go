@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io"
 	"lockfile"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"factorioSave"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type ModPortalStruct struct {
@@ -28,7 +28,7 @@ type ModPortalStruct struct {
 		} `json:"info_json"`
 		ReleasedAt time.Time `json:"released_at"`
 		Sha1       string    `json:"sha1"`
-		Version    string    `json:"version"`
+		Version    Version   `json:"version"`
 	} `json:"releases"`
 	Summary string `json:"summary"`
 	Title   string `json:"title"`
@@ -256,8 +256,8 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	r.ParseForm()
 
-	modsList := make([]string, 0)
-	versionsList := make([]string, 0)
+	var modsList []string
+	var versionsList []Version
 
 	//Parse incoming data
 	for key, values := range r.PostForm {
@@ -266,7 +266,15 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 				modsList = append(modsList, v)
 			}
 		} else if key == "mod_version" {
-			for _, v := range values {
+			for _, value := range values {
+				var v Version
+				if err := v.UnmarshalText([]byte(value)); err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+					if err := json.NewEncoder(w).Encode(resp); err != nil {
+						log.Printf("Error in searchModPortal: %s", err)
+					}
+				}
 				versionsList = append(versionsList, v)
 			}
 		}
@@ -316,7 +324,7 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 
 		//find correct mod-version
 		for _, release := range modDetailsStruct.Releases {
-			if release.Version == versionsList[modIndex] {
+			if release.Version.Equals(versionsList[modIndex]) {
 				mods.downloadMod(release.DownloadURL, release.FileName, modDetailsStruct.Name)
 				break
 			}
@@ -571,26 +579,32 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	//Get Data out of the request
 	SaveFile := r.FormValue("saveFile")
 
-	SaveFileComplete := filepath.Join(config.FactorioSavesDir, SaveFile)
-	resp.Data, err = factorioSave.ReadHeader(SaveFileComplete)
-
-	if err == factorioSave.ErrorIncompatible {
-		w.WriteHeader(http.StatusInternalServerError)
-		resp.Data = fmt.Sprintf("%s<br>Only can read 0.16.x save files", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in loadModsFromSave: %s", err)
-		}
-		return
-	}
+	path := filepath.Join(config.FactorioSavesDir, SaveFile)
+	f, err := OpenArchiveFile(path, "level.dat")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		resp.Data = fmt.Sprintf("Error in searchModPortal: %s", err)
+		log.Printf("cannot open save level file: %v", err)
+		resp.Data = "Error opening save file"
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in loadModsFromSave: %s", err)
+		}
+		return
+	}
+	defer f.Close()
+
+	var header SaveHeader
+	err = header.ReadFrom(f)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("cannot read save header: %v", err)
+		resp.Data = "Error reading save file"
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in loadModsFromSave: %s", err)
 		}
 		return
 	}
 
+	resp.Data = header
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
