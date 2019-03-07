@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/go-test/deep"
 	"io/ioutil"
 	"os"
@@ -44,7 +43,6 @@ func TestModSettings0_16(t *testing.T) {
 		t.Fatalf("Data has %d differences: %s", len(diff), diff)
 	}
 
-
 	// Change some value
 	modData.Data.(map[string]interface{})["runtime-per-user"].(map[string]interface{})["folk-fill-fuel-stack-size"].(map[string]interface{})["value"] = 150
 	test.(map[string]interface{})["runtime-per-user"].(map[string]interface{})["folk-fill-fuel-stack-size"].(map[string]interface{})["value"] = float64(150)
@@ -55,10 +53,6 @@ func TestModSettings0_16(t *testing.T) {
 	if err != nil {
 		t.Fatalf("couldn't Encode modData: %s", err)
 	}
-
-	fmt.Println(newBytes)
-	data, _ := ioutil.ReadFile(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.16.dat"))
-	fmt.Println(data)
 
 	var newData FModData
 	err = newData.Decode(newBytesReader)
@@ -89,13 +83,6 @@ func TestModSettings0_17(t *testing.T) {
 		t.Fatalf("could not decode FModData: %s", err)
 	}
 
-	//fmt.Println(modData)
-	//ttt, err := json.MarshalIndent(modData.Data, "", "  ")
-	//if err != nil {
-	//	t.Fatalf("could not create json data: %s", err)
-	//}
-	//ioutil.WriteFile(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.17.json"), ttt, 0666)
-
 	modDataJson, err := ioutil.ReadFile(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.17.json"))
 	if err != nil {
 		t.Fatalf("could not read json-file: %s", err)
@@ -112,7 +99,6 @@ func TestModSettings0_17(t *testing.T) {
 		t.Fatalf("Data has %d differences: %s", len(diff), diff)
 	}
 
-
 	// Change some value
 	modData.Data.(map[string]interface{})["runtime-per-user"].(map[string]interface{})["max-inventory-cleanup-drop-range"].(map[string]interface{})["value"] = 150
 	test.(map[string]interface{})["runtime-per-user"].(map[string]interface{})["max-inventory-cleanup-drop-range"].(map[string]interface{})["value"] = float64(150)
@@ -123,10 +109,6 @@ func TestModSettings0_17(t *testing.T) {
 	if err != nil {
 		t.Fatalf("couldn't Encode modData: %s", err)
 	}
-
-	fmt.Println(newBytes)
-	data, _ := ioutil.ReadFile(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.17.dat"))
-	fmt.Println(data)
 
 	var newData FModData
 	err = newData.Decode(newBytesReader)
