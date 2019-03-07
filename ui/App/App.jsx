@@ -1,9 +1,8 @@
 import React from 'react';
-import {Switch, Route} from 'react-router-dom';
+import {Switch, Route, withRouter} from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Footer from './components/Footer.jsx';
-import HiddenSidebar from './components/HiddenSidebar.jsx';
 import Socket from '../socket.js';
 import Index from "./components/Index";
 import UsersContent from "./components/UsersContent";
@@ -39,14 +38,6 @@ class App extends React.Component {
 
     componentDidMount() {
         this.checkLogin();
-        // Wait 1 second before redirecting to login page
-        setTimeout(() => {
-            if (!this.state.loggedIn) {
-                browserHistory.push("/login");
-            }
-        }, 1000);
-        this.connectWebSocket();
-        this.getFactorioVersion(); //Init serverStatus, so i know, which factorio-version is installed
     }
 
     connectWebSocket() {
@@ -64,6 +55,7 @@ class App extends React.Component {
     checkLogin() {
         $.ajax({
             url: "/api/user/status",
+            type: "GET",
             dataType: "json",
             success: (data) => {
                 if (data.success === true) {
@@ -71,7 +63,15 @@ class App extends React.Component {
                         loggedIn: true,
                         username: data.data.Username
                     });
+
+                    this.connectWebSocket();
+                    this.getFactorioVersion(); //Init serverStatus, so i know, which factorio-version is installed
+                } else {
+                    this.props.history.push("/login");
                 }
+            },
+            error: () => {
+                this.props.history.push("/login");
             }
         })
     }
@@ -129,6 +129,7 @@ class App extends React.Component {
             url: "/api/server/facVersion",
             // dataType: "json",
             success: (data) => {
+                console.log(data);
                 this.setState({
                     factorioVersion: data.data.base_mod_version
                 });
@@ -182,17 +183,10 @@ class App extends React.Component {
                         <Route path="/config" render={(props) => {return <ConfigContent {...props} {...appProps}/>}}/>
                         <Route path="/console" render={(props) => {return <ConsoleContent {...props} {...appProps}/>}}/>
                         <Route path="/mod-config" render={(props) => {return <ModConfigContent {...props} {...appProps}/>}}/>
-                        <Route exakt path="/" render={(props) => {return <Index {...props} {...appProps} />}}/>
+                        <Route exact path="/" render={(props) => {return <Index {...props} {...appProps} />}}/>
                     </Switch>
 
                     <Footer />
-
-                    <HiddenSidebar
-                        serverStatus={this.state.serverStatus}
-                        username={this.state.username}
-                        loggedIn={this.state.loggedIn}
-                        checkLogin={this.checkLogin}
-                    />
                 </div>
         } else {
             resp = <div><p>Not Logged in</p></div>;
@@ -202,4 +196,4 @@ class App extends React.Component {
     }
 }
 
-export default App
+export default withRouter(App);

@@ -7,9 +7,7 @@ class LoginContent extends React.Component {
         this.loginUser = this.loginUser.bind(this);
     }
 
-    componentDidMount() {
-        console.log(this.props);
-    }
+    componentDidMount() {}
 
     loginUser(e) {
         e.preventDefault();
