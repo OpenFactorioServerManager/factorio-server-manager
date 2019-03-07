@@ -212,11 +212,17 @@ func writeString(data string) []byte {
 	var output []byte
 
 	length := uint32(len(data))
-	output = []byte{writeBool(length == 0)}
+	// True if the string is empty ... not used by factorio, so set to false
+	//output = []byte{writeBool(length == 0)}
+	output = []byte{writeBool(false)}
 
 	output = append(output, writeOptimUint(length)...)
-	stringBytes := []byte(data)
-	return append(output, stringBytes...)
+
+	if length != 0 {
+		stringBytes := []byte(data)
+		output = append(output, stringBytes...)
+	}
+	return output
 }
 
 func writeList(data []interface{}) ([]byte, error) {
@@ -263,8 +269,9 @@ func writeTree(data interface{}) (output []byte , err error) {
 	// get type
 	_type := reflect.TypeOf(data).Kind()
 
-	// write any-type flag
-	anyTypeFlag := writeBool(_type == reflect.String)
+	// write any-type flag -- Not used by factorio ... so set to false
+	//anyTypeFlag := writeBool(_type == reflect.String)
+	anyTypeFlag := writeBool(false)
 
 	var typeByte byte
 	var marshalledBytes []byte
@@ -372,8 +379,6 @@ func writeTree(data interface{}) (output []byte , err error) {
 	case reflect.String:
 		typeByte = STRING
 		marshalledBytes = writeString(data.(string))
-		log.Println(data)
-		log.Println(marshalledBytes)
 	case reflect.Array:
 		// List
 		list, err := writeList(data.([]interface{}))
