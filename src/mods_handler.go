@@ -909,14 +909,45 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//func GetModConfig(w http.ResponseWriter, r *http.Request) {
-//	var err error
-//	resp := JSONResponse{
-//		Success: false,
-//	}
-//
-//	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-//
-//	// load correct
-//	file, err := os.Open(filepath.Join(config.FactorioModsDir, "mod-settings.dat"))
-//}
+func GetModConfigHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	// load correct
+	file, err := os.Open(filepath.Join(config.FactorioModsDir, "mod-settings.dat"))
+	if err != nil {
+		log.Printf("Error opening mod-settings.dat")
+		sendErrorResponse(err, resp, w)
+		return
+	}
+
+	var modSetttings FModData
+	err = modSetttings.Decode(file)
+	if err != nil {
+		log.Printf("Error decoding modSettings: %s", err)
+		sendErrorResponse(err, resp, w)
+		return
+	}
+
+	resp.Data = modSetttings.Data
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in GetModConfigHandler: %s", err)
+	}
+}
+
+func sendErrorResponse(err error, resp JSONResponse, w http.ResponseWriter) {
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error in GetModConfigHandler: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in GetModConfigHandler: %s", err)
+		}
+		return
+	}
+}
