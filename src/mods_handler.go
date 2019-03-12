@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"lockfile"
 	"log"
 	"net/http"
@@ -917,7 +918,6 @@ func GetModConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	// load correct
 	file, err := os.Open(filepath.Join(config.FactorioModsDir, "mod-settings.dat"))
 	if err != nil {
 		log.Printf("Error opening mod-settings.dat")
@@ -925,19 +925,77 @@ func GetModConfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var modSetttings FModData
-	err = modSetttings.Decode(file)
+	var modSettings FModData
+	err = modSettings.Decode(file)
 	if err != nil {
 		log.Printf("Error decoding modSettings: %s", err)
 		sendErrorResponse(err, resp, w)
 		return
 	}
 
-	resp.Data = modSetttings.Data
+	log.Println(modSettings )
+
+	resp.Data = modSettings.Data
 	resp.Success = true
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("Error in GetModConfigHandler: %s", err)
+	}
+}
+
+func UpdateModConfigHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponse{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	data := r.FormValue("data")
+
+	var dataObj interface{}
+	err = json.Unmarshal([]byte(data), &dataObj)
+
+	file, err := os.Open(filepath.Join(config.FactorioModsDir, "mod-settings.dat"))
+	if err != nil {
+		log.Printf("Error opening mod-settings.dat")
+		sendErrorResponse(err, resp, w)
+		return
+	}
+
+	// save new data
+	var modSettings FModData
+	err = modSettings.Decode(file)
+	if err != nil {
+		log.Printf("Error decoding modSettings: %s", err)
+		sendErrorResponse(err, resp, w)
+		return
+	}
+
+	log.Println(modSettings)
+
+	modSettings.Data = dataObj
+
+	log.Println(modSettings)
+
+	encodedSettings, err := modSettings.Encode()
+	if err != nil {
+		log.Printf("Error encoding modSettings: %s", err)
+		sendErrorResponse(err, resp, w)
+		return
+	}
+
+	err = ioutil.WriteFile(filepath.Join(config.FactorioModsDir, "mod-settings.dat"), encodedSettings, 0644)
+	if err != nil {
+		log.Printf("Error writing new settings to file: %s", err)
+		sendErrorResponse(err, resp, w)
+		return
+	}
+
+	resp.Success = true
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in UpdateModConfigHandler: %s", err)
 	}
 }
 

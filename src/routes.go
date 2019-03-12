@@ -372,10 +372,10 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/settings",
 		GetModConfigHandler,
-	}, /*{
+	}, {
 		"UpdateModsConfigs",
 		"POST",
 		"/mods/settings",
-		UpdateModConfig,
-	},*/
+		UpdateModConfigHandler,
+	},
 }
