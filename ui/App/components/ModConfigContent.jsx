@@ -201,7 +201,9 @@ export default class ModConfigContent extends React.Component {
                 <section className="content">
                     <div className="alert alert-warning alert-dismissible" role="alert">
                         Mod settings only can have specific values (like enums). If invalid values are set, they will get reset,
-                        when the factorio-server will load those. Currently it's not implemented, to read the possible values!
+                        when the factorio-server is started.<br/>
+                        If no configs are shown, or configs are missing, start the factorio-server,
+                        so the mod-settings.dat file is updated.
                     </div>
 
                     {categories}
