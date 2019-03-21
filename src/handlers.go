@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -62,7 +63,7 @@ func DLSave(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	save := vars["save"]
-	saveName := config.FactorioSavesDir + "/" + save
+	saveName := path.Join(config.FactorioSavesDir, save)
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", save))
 	log.Printf("%s downloading: %s", r.Host, saveName)
@@ -96,7 +97,7 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 		}
 		defer file.Close()
 
-		out, err := os.Create(config.FactorioSavesDir + "/" + header.Filename)
+		out, err := os.Create(path.Join(config.FactorioSavesDir, header.Filename))
 		if err != nil {
 			resp.Success = false
 			resp.Data = err.Error()
