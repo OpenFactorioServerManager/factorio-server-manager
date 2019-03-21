@@ -9,7 +9,6 @@ import (
 	"lockfile"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 )
@@ -134,7 +133,7 @@ func (modInfoList *ModInfoList) deleteMod(modName string) error {
 	//search for mod, that should be deleted
 	for _, mod := range modInfoList.Mods {
 		if mod.Name == modName {
-			filePath := path.Join(modInfoList.Destination, mod.FileName)
+			filePath := filepath.Join(modInfoList.Destination, mod.FileName)
 
 			fileLock.LockW(filePath)
 			//delete mod
@@ -195,7 +194,7 @@ func (modInfoList *ModInfoList) createMod(modName string, fileName string, modFi
 	var err error
 
 	//save uploaded file
-	filePath := path.Join(modInfoList.Destination, fileName)
+	filePath := filepath.Join(modInfoList.Destination, fileName)
 	newFile, err := os.Create(filePath)
 	if err != nil {
 		log.Printf("error on creating new file - %s: %s", fileName, err)

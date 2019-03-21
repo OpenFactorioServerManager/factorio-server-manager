@@ -63,7 +63,7 @@ func DLSave(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	save := vars["save"]
-	saveName := path.Join(config.FactorioSavesDir, save)
+	saveName := filepath.Join(config.FactorioSavesDir, save)
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", save))
 	log.Printf("%s downloading: %s", r.Host, saveName)
