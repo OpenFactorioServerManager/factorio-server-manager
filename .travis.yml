@@ -5,6 +5,10 @@ go:
  - "1.12"
  - tip
 
+os:
+ - linux
+ - windows
+
 install:
   - go get github.com/apexskier/httpauth
   - go get github.com/go-ini/ini
