@@ -276,7 +276,7 @@ func modStartUp() {
 			}
 			newJson, _ := json.Marshal(modSimpleList)
 
-			err = ioutil.WriteFile(modSimpleList.Destination+"/mod-list.json", newJson, 0664)
+			err = ioutil.WriteFile(filepath.Join(modSimpleList.Destination,"mod-list.json"), newJson, 0664)
 			if err != nil {
 				log.Printf("error when writing new mod-list: %s", err)
 				return err

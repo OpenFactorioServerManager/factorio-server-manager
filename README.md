@@ -187,6 +187,7 @@ go build
 * **Mitch Roote** - [roote.ca](https://roote.ca)
 
 ## Special Thanks
+- **[All Contributions]**(https://github.com/mroote/factorio-server-manager/graphs/contributors)
 - **mickael9** for reverseengineering the factorio-save-file: https://forums.factorio.com/viewtopic.php?f=5&t=8568#
 
 ## License
