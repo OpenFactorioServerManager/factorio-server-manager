@@ -48,7 +48,10 @@ class ConfigContent extends React.Component {
         let fieldValue
         var change = this.state.serverSettings;
 
-        if(e.target.value === "true" || e.target.value === "false") {
+        // if true, false and something else can be used, dont switch to boolean type!
+        if(e.target.id == "allow_commands") {
+            fieldValue = e.target.value;
+        } else if(e.target.value === "true" || e.target.value === "false") {
             // Ensure Boolean type is used if required
             if(e.target.id === "lan" || e.target.id === "public") {
                 if(e.target.value == "true") {
@@ -67,7 +70,6 @@ class ConfigContent extends React.Component {
         } else {
             fieldValue = e.target.value
         }
-        console.log(name, fieldValue)
         change[name] = fieldValue;
 
         this.setState({serverSettings: change});
