@@ -143,7 +143,7 @@ func (f *FactorioServer) Run() error {
 	args := []string{
 		"--bind", (f.BindIP),
 		"--port", strconv.Itoa(f.Port),
-		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
+		"--server-settings", filepath.Join(config.FactorioConfigDir, config.SettingsFile),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass,
 	}
