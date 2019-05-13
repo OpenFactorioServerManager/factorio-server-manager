@@ -127,6 +127,29 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	f.BaseModVersion = modInfo.Version
 
+	// load admins from additional file
+	if(f.Version.Greater(Version{0,17,0})) {
+		if _, err := os.Stat(config.FactorioAdminFile); os.IsNotExist(err) {
+			//save empty admins-file
+			ioutil.WriteFile(config.FactorioAdminFile, []byte("[]"), 0664)
+		} else {
+			data, err := ioutil.ReadFile(config.FactorioAdminFile)
+			if err != nil {
+				log.Printf("Error loading FactorioAdminFile: %s", err)
+				return f, err
+			}
+
+			var jsonData interface{}
+			err = json.Unmarshal(data, &jsonData)
+			if err != nil {
+				log.Printf("Error unmarshalling FactorioAdminFile: %s", err)
+				return f, err
+			}
+
+			f.Settings["admins"] = jsonData
+		}
+	}
+
 	return
 }
 

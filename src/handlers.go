@@ -764,6 +764,20 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Saved Factorio server settings in server-settings.json")
 		}
 
+		if(FactorioServ.Version.Greater(Version{0,17,0})) {
+			// save admins to adminJson
+			admins, err := json.MarshalIndent(FactorioServ.Settings["admins"], "", "  ")
+			if err != nil {
+				log.Printf("Failed to marshal admins-Setting: %s", err)
+				return
+			}
+			err = ioutil.WriteFile(config.FactorioAdminFile, admins, 0664)
+			if err != nil {
+				log.Printf("Failed to save admins: %s", err)
+				return
+			}
+		}
+
 		resp.Success = true
 		resp.Data = fmt.Sprintf("Settings successfully saved")
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
