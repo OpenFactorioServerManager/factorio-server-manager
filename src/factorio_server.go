@@ -167,9 +167,12 @@ func (f *FactorioServer) Run() error {
 		"--bind", (f.BindIP),
 		"--port", strconv.Itoa(f.Port),
 		"--server-settings", filepath.Join(config.FactorioConfigDir, config.SettingsFile),
-		"--server-adminlist", filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass,
+	}
+
+	if(f.Version.Greater(Version{0,17,0})) {
+		args = append(args, "--server-adminlist", filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
 	}
 
 	if f.Savefile == "Load Latest" {
