@@ -88,7 +88,7 @@ func parseFlags() {
 	config.FactorioConfigFile = filepath.Join(config.FactorioDir, *factorioConfigFile)
 	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)
 	config.FactorioCredentialsFile = "./factorio.auth"
-	config.FactorioAdminFile = filepath.Join(config.FactorioDir, "server-adminlist.json")
+	config.FactorioAdminFile = "server-adminlist.json"
 	config.MaxUploadSize = *factorioMaxUpload
 
 	if runtime.GOOS == "windows" {

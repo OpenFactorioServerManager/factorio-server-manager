@@ -771,7 +771,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Failed to marshal admins-Setting: %s", err)
 				return
 			}
-			err = ioutil.WriteFile(config.FactorioAdminFile, admins, 0664)
+			err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), admins, 0664)
 			if err != nil {
 				log.Printf("Failed to save admins: %s", err)
 				return

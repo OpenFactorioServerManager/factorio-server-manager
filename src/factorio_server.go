@@ -129,11 +129,11 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	// load admins from additional file
 	if(f.Version.Greater(Version{0,17,0})) {
-		if _, err := os.Stat(config.FactorioAdminFile); os.IsNotExist(err) {
+		if _, err := os.Stat(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)); os.IsNotExist(err) {
 			//save empty admins-file
-			ioutil.WriteFile(config.FactorioAdminFile, []byte("[]"), 0664)
+			ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
 		} else {
-			data, err := ioutil.ReadFile(config.FactorioAdminFile)
+			data, err := ioutil.ReadFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
 			if err != nil {
 				log.Printf("Error loading FactorioAdminFile: %s", err)
 				return f, err
@@ -167,6 +167,7 @@ func (f *FactorioServer) Run() error {
 		"--bind", (f.BindIP),
 		"--port", strconv.Itoa(f.Port),
 		"--server-settings", filepath.Join(config.FactorioConfigDir, config.SettingsFile),
+		"--server-adminlist", filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass,
 	}
