@@ -264,7 +264,7 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 }
 
 func (f *FactorioServer) writeLog(logline string) error {
-	logfileName := config.FactorioDir + "factorio-server-console.log"
+	logfileName := filepath.Join(config.FactorioDir, "factorio-server-console.log")
 	file, err := os.OpenFile(logfileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		log.Printf("Cannot open logfile for appending Factorio Server output: %s", err)
