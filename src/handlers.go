@@ -99,7 +99,7 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 			}
 			defer file.Close()
 
-			out, err := os.Create(config.FactorioSavesDir + "/" + saveFile.Filename)
+			out, err := os.Create(filepath.Join(config.FactorioSavesDir, saveFile.Filename))
 			if err != nil {
 				resp.Success = false
 				resp.Data = err.Error()
