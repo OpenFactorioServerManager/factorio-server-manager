@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -86,39 +85,44 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 		}
 	case "POST":
 		log.Println("Uploading save file")
+
 		r.ParseMultipartForm(32 << 20)
-		file, header, err := r.FormFile("savefile")
-		if err != nil {
-			resp.Success = false
-			resp.Data = err.Error()
-			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in upload save formfile: %s", err.Error())
-			return
-		}
-		defer file.Close()
 
-		out, err := os.Create(path.Join(config.FactorioSavesDir, header.Filename))
-		if err != nil {
-			resp.Success = false
-			resp.Data = err.Error()
-			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in out: %s", err)
-			return
-		}
-		defer out.Close()
+		for _, saveFile := range r.MultipartForm.File["savefile"] {
+			file, err := saveFile.Open()
+			if err != nil {
+				resp.Success = false
+				resp.Data = err.Error()
+				json.NewEncoder(w).Encode(resp)
+				log.Printf("Error in upload save formfile: %s", err.Error())
+				return
+			}
+			defer file.Close()
 
-		_, err = io.Copy(out, file)
-		if err != nil {
-			resp.Success = false
-			resp.Data = err.Error()
+			out, err := os.Create(filepath.Join(config.FactorioSavesDir, saveFile.Filename))
+			if err != nil {
+				resp.Success = false
+				resp.Data = err.Error()
+				json.NewEncoder(w).Encode(resp)
+				log.Printf("Error in out: %s", err)
+				return
+			}
+			defer out.Close()
+
+			_, err = io.Copy(out, file)
+			if err != nil {
+				resp.Success = false
+				resp.Data = err.Error()
+				json.NewEncoder(w).Encode(resp)
+				log.Printf("Error in io copy: %s", err)
+				return
+			}
+
+			log.Printf("Uploaded save file: %s", saveFile.Filename)
+			resp.Data = "File '" + saveFile.Filename + "' uploaded successfully"
+			resp.Success = true
 			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in io copy: %s", err)
-			return
 		}
-		log.Printf("Uploaded save file: %s", header.Filename)
-		resp.Data = "File '" + header.Filename + "' uploaded successfully"
-		resp.Success = true
-		json.NewEncoder(w).Encode(resp)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
