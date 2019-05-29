@@ -1,13 +1,13 @@
 language: go
+os:
+ - linux
+ - windows
+
 go:
  - "1.10"
  - "1.11"
  - "1.12"
- - tip
-
-os:
- - linux
- - windows
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then tip; fi
 
 install:
   - go get github.com/apexskier/httpauth
@@ -16,7 +16,7 @@ install:
   - go get github.com/hpcloud/tail
   - go get github.com/gorilla/websocket
   - go get github.com/majormjr/rcon
-  - export GOPATH="$HOME/gopath/src/github.com/mroote/factorio-server-manager/:$GOPATH"
+#  - export GOPATH="$HOME/gopath/src/github.com/mroote/factorio-server-manager/:$GOPATH"
 
 script:
  - go test -v ./...
