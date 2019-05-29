@@ -14,6 +14,8 @@ class UploadSave extends React.Component {
             showCancel: false,
             allowedFileExtensions: ['zip'],
             theme: "fas",
+            removeClass: "btn btn-default",
+            uploadClass: "btn btn-default",
         }).on('filebatchuploadsuccess fileuploaded', this.updateSavesList);
     }
 
