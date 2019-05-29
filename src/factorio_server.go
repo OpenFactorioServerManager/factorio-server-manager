@@ -127,6 +127,29 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	f.BaseModVersion = modInfo.Version
 
+	// load admins from additional file
+	if(f.Version.Greater(Version{0,17,0})) {
+		if _, err := os.Stat(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)); os.IsNotExist(err) {
+			//save empty admins-file
+			ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
+		} else {
+			data, err := ioutil.ReadFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
+			if err != nil {
+				log.Printf("Error loading FactorioAdminFile: %s", err)
+				return f, err
+			}
+
+			var jsonData interface{}
+			err = json.Unmarshal(data, &jsonData)
+			if err != nil {
+				log.Printf("Error unmarshalling FactorioAdminFile: %s", err)
+				return f, err
+			}
+
+			f.Settings["admins"] = jsonData
+		}
+	}
+
 	return
 }
 
@@ -143,9 +166,13 @@ func (f *FactorioServer) Run() error {
 	args := []string{
 		"--bind", (f.BindIP),
 		"--port", strconv.Itoa(f.Port),
-		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
+		"--server-settings", filepath.Join(config.FactorioConfigDir, config.SettingsFile),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass,
+	}
+
+	if(f.Version.Greater(Version{0,17,0})) {
+		args = append(args, "--server-adminlist", filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
 	}
 
 	if f.Savefile == "Load Latest" {
@@ -237,7 +264,7 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 }
 
 func (f *FactorioServer) writeLog(logline string) error {
-	logfileName := config.FactorioDir + "factorio-server-console.log"
+	logfileName := filepath.Join(config.FactorioDir, "factorio-server-console.log")
 	file, err := os.OpenFile(logfileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		log.Printf("Cannot open logfile for appending Factorio Server output: %s", err)

@@ -62,7 +62,7 @@ func DLSave(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	save := vars["save"]
-	saveName := config.FactorioSavesDir + "/" + save
+	saveName := filepath.Join(config.FactorioSavesDir, save)
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", save))
 	log.Printf("%s downloading: %s", r.Host, saveName)
@@ -766,6 +766,20 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			log.Printf("Saved Factorio server settings in server-settings.json")
+		}
+
+		if(FactorioServ.Version.Greater(Version{0,17,0})) {
+			// save admins to adminJson
+			admins, err := json.MarshalIndent(FactorioServ.Settings["admins"], "", "  ")
+			if err != nil {
+				log.Printf("Failed to marshal admins-Setting: %s", err)
+				return
+			}
+			err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), admins, 0664)
+			if err != nil {
+				log.Printf("Failed to save admins: %s", err)
+				return
+			}
 		}
 
 		resp.Success = true

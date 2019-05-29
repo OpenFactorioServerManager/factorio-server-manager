@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -30,7 +30,7 @@ func NewLock() FileLock {
 }
 
 func makeAbsolutePath(target string) string {
-	if path.IsAbs(target) {
+	if filepath.IsAbs(target) {
 		return target
 	}
 
@@ -40,7 +40,7 @@ func makeAbsolutePath(target string) string {
 		return ""
 	}
 
-	return path.Join(wd, target)
+	return filepath.Join(wd, target)
 }
 
 func (fl *FileLock) Lock(filePath string) error {

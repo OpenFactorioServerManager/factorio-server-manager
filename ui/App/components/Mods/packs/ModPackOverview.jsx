@@ -224,7 +224,7 @@ class ModPackOverview extends React.Component {
 
 
         if(updatesInProgress) {
-            ReactSwalNormal.fir({
+            ReactSwalNormal.fire({
                 title: "Toggle mod failed",
                 text: "Can't toggle the mod, when an update is still in progress",
                 type: "error"
