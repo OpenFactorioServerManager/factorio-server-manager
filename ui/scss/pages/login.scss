@@ -1,0 +1,22 @@
+#login {
+    .card {
+        border: none;
+
+        .card-header h1 {
+            display: flex;
+            align-items: center;
+
+            img {
+                width: 4rem;
+            }
+        }
+
+        .remember-me {
+            @extend .row;
+            @extend .align-items-center;
+
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+}
