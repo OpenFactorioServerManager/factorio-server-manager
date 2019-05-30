@@ -24,6 +24,7 @@ type Config struct {
 	FactorioRconPass        string `json:"rcon_pass"`
 	FactorioCredentialsFile string `json:"factorio_credentials_file"`
 	FactorioIP              string `json:"factorio_ip"`
+	FactorioAdminFile       string `json:"-"`
 	ServerIP                string `json:"server_ip"`
 	ServerPort              string `json:"server_port"`
 	MaxUploadSize           int64  `json:"max_upload_size"`
@@ -87,6 +88,7 @@ func parseFlags() {
 	config.FactorioConfigFile = filepath.Join(config.FactorioDir, *factorioConfigFile)
 	config.FactorioBinary = filepath.Join(config.FactorioDir, *factorioBinary)
 	config.FactorioCredentialsFile = "./factorio.auth"
+	config.FactorioAdminFile = "server-adminlist.json"
 	config.MaxUploadSize = *factorioMaxUpload
 
 	if runtime.GOOS == "windows" {

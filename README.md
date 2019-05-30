@@ -29,8 +29,9 @@ This tool runs on a Factorio server and allows management of the Factorio server
 1. Download the latest release
   * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
 2. Download the Factorio Standalone server and install to a known directory.
-3. Run the server binary file, use the --dir flag to point the management server to your Factorio installation.
+3. Run the server binary file, use the --dir flag to point the management server to your Factorio installation. If you are using the steam installation, point FSM to the steam directory.
   * ```./factorio-server-manager --dir /home/user/.factorio ```
+  * ```./factorio-server-manager --dir /home/user/.steam/steam/steamapps/common/Factorio ```
 4. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Installation Windows
