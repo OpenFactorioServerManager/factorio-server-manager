@@ -96,8 +96,14 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	log.Printf("Loaded Factorio settings from %s\n", settingsPath)
 
+	out := []byte{}
 	//Load factorio version
-	out, err := exec.Command(config.glibcLocation, "--library-path", config.glibcLibLoc, config.FactorioBinary, "--version").Output()
+	if config.glibcCustom == "true" {
+		out, err = exec.Command(config.glibcLocation, "--library-path", config.glibcLibLoc, config.FactorioBinary, "--version").Output()
+	} else {
+		out, err = exec.Command(config.FactorioBinary, "--version").Output()
+	}
+
 	if err != nil {
 		log.Printf("error on loading factorio version: %s", err)
 		return
@@ -178,8 +184,6 @@ func (f *FactorioServer) Run() error {
 		log.Println("Starting server with command: ", config.FactorioBinary, args)
 		f.Cmd = exec.Command(config.FactorioBinary, args...)
 	}
-
-	//f.Cmd = exec.Command(config.glibcLocation, "--library-path", config.glibcLibLoc, config.FactorioBinary, args...)
 
 	f.StdOut, err = f.Cmd.StdoutPipe()
 	if err != nil {
