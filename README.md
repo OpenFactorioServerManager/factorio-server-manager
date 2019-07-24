@@ -59,10 +59,19 @@ Usage of ./factorio-server-manager:
     	Maximum filesize for uploaded files (default 20MB). (default 20971520)
   -port string
     	Specify a port for the server. (default "8080")
-
+  -glibc-custom string 
+        Specify if custom glibc is used (default false) [true/false]
+  -glibc-loc string
+        Path to the glibc ld.so file (default "/opt/glibc-2.18/lib/ld-2.18.so")
+  -glibc-lib-loc
+        Path to the glibc lib folder (default "/opt/glibc-2.18/lib")
 Example:
 
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1
+
+Custom glibc example:
+
+./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1 --glibc-custom true --glibc-loc /opt/glibc-2.18/lib/ld-2.18.so --glibc-lib-loc /opt/glibc-2.18/lib
 
 ```
 

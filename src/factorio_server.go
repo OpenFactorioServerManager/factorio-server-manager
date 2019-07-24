@@ -97,7 +97,7 @@ func initFactorio() (f *FactorioServer, err error) {
 	log.Printf("Loaded Factorio settings from %s\n", settingsPath)
 
 	//Load factorio version
-	out, err := exec.Command(config.FactorioBinary, "--version").Output()
+	out, err := exec.Command(config.glibcLocation, "--library-path", config.glibcLibLoc, config.FactorioBinary, "--version").Output()
 	if err != nil {
 		log.Printf("error on loading factorio version: %s", err)
 		return
@@ -140,12 +140,27 @@ func (f *FactorioServer) Run() error {
 		ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), data, 0644)
 	}
 
-	args := []string{
-		"--bind", (f.BindIP),
-		"--port", strconv.Itoa(f.Port),
-		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
-		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
-		"--rcon-password", config.FactorioRconPass,
+	args := []string{}
+	if config.glibcCustom == "true" {
+		log.Println("Custom glibc selected, glibc.so location:", config.glibcLocation, " lib location:", config.glibcLibLoc)
+		args = []string{
+			"--library-path", config.glibcLibLoc,
+			config.FactorioBinary,
+			"--bind", (f.BindIP),
+			"--port", strconv.Itoa(f.Port),
+			"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
+			"--rcon-port", strconv.Itoa(config.FactorioRconPort),
+			"--rcon-password", config.FactorioRconPass,
+			"--executable-path", config.FactorioBinary,
+		}
+	} else {
+		args = []string{
+			"--bind", (f.BindIP),
+			"--port", strconv.Itoa(f.Port),
+			"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
+			"--rcon-port", strconv.Itoa(config.FactorioRconPort),
+			"--rcon-password", config.FactorioRconPass,
+		}
 	}
 
 	if f.Savefile == "Load Latest" {
@@ -156,7 +171,15 @@ func (f *FactorioServer) Run() error {
 
 	log.Println("Starting server with command: ", config.FactorioBinary, args)
 
-	f.Cmd = exec.Command(config.FactorioBinary, args...)
+	if config.glibcCustom == "true" {
+		log.Println("Starting server with command: ", config.glibcLocation, args)
+		f.Cmd = exec.Command(config.glibcLocation, args...)
+	} else {
+		log.Println("Starting server with command: ", config.FactorioBinary, args)
+		f.Cmd = exec.Command(config.FactorioBinary, args...)
+	}
+
+	//f.Cmd = exec.Command(config.glibcLocation, "--library-path", config.glibcLibLoc, config.FactorioBinary, args...)
 
 	f.StdOut, err = f.Cmd.StdoutPipe()
 	if err != nil {
