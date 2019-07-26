@@ -42,6 +42,26 @@ func randomPort() int {
 	// Returns random port to use for rcon connection
 	return rand.Intn(45000-40000) + 40000
 }
+func autostart() {
+
+	var err error
+	if FactorioServ.BindIP == "" {
+		FactorioServ.BindIP = "0.0.0.0"
+
+	}
+	if FactorioServ.Port == 0 {
+		FactorioServ.Port = 34197
+	}
+	FactorioServ.Savefile = "Load Latest"
+
+	err = FactorioServ.Run()
+
+	if err != nil {
+		log.Printf("Error starting Factorio server: %+v", err)
+		return
+	}
+
+}
 
 func initFactorio() (f *FactorioServer, err error) {
 	f = new(FactorioServer)
@@ -133,6 +153,10 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	f.BaseModVersion = modInfo.Version
 
+	if config.autostart == "true" {
+		go autostart()
+	}
+
 	return
 }
 
@@ -147,27 +171,20 @@ func (f *FactorioServer) Run() error {
 	}
 
 	args := []string{}
+
+	//The factorio server refenences its executable-path, since we execute the ld.so file and pass the factorio binary as a parameter
+	//the game would use the path to the ld.so file as it's executable path and crash, to prevent this the parameter "--executable-path" is added
 	if config.glibcCustom == "true" {
 		log.Println("Custom glibc selected, glibc.so location:", config.glibcLocation, " lib location:", config.glibcLibLoc)
-		args = []string{
-			"--library-path", config.glibcLibLoc,
-			config.FactorioBinary,
-			"--bind", (f.BindIP),
-			"--port", strconv.Itoa(f.Port),
-			"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
-			"--rcon-port", strconv.Itoa(config.FactorioRconPort),
-			"--rcon-password", config.FactorioRconPass,
-			"--executable-path", config.FactorioBinary,
-		}
-	} else {
-		args = []string{
-			"--bind", (f.BindIP),
-			"--port", strconv.Itoa(f.Port),
-			"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
-			"--rcon-port", strconv.Itoa(config.FactorioRconPort),
-			"--rcon-password", config.FactorioRconPass,
-		}
+		args = append(args, "--library-path", config.glibcLibLoc, config.FactorioBinary, "--executable-path", config.FactorioBinary)
 	}
+
+	args = append(args,
+		"--bind", (f.BindIP),
+		"--port", strconv.Itoa(f.Port),
+		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
+		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
+		"--rcon-password", config.FactorioRconPass)
 
 	if f.Savefile == "Load Latest" {
 		args = append(args, "--start-server-load-latest")
