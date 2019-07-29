@@ -205,6 +205,11 @@ export default class ModConfigContent extends React.Component {
                         If no configs are shown, or configs are missing, start the factorio-server,
                         so the mod-settings.dat file is updated.
                     </div>
+                    <div className="alert alert-danger alert-dismissible" role="alert">
+                        Changing startup while server is running, has no effects.
+                        Also when changing startup, please backup the save, cause it could be corrupted after the changes!<br/>
+                        Except startup-settings, all settings can be changed ingame. Use of "/admin" command should be priorized.
+                    </div>
 
                     {categories}
 
