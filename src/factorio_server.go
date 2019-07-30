@@ -42,26 +42,6 @@ func randomPort() int {
 	// Returns random port to use for rcon connection
 	return rand.Intn(45000-40000) + 40000
 }
-func autostart() {
-
-	var err error
-	if FactorioServ.BindIP == "" {
-		FactorioServ.BindIP = "0.0.0.0"
-
-	}
-	if FactorioServ.Port == 0 {
-		FactorioServ.Port = 34197
-	}
-	FactorioServ.Savefile = "Load Latest"
-
-	err = FactorioServ.Run()
-
-	if err != nil {
-		log.Printf("Error starting Factorio server: %+v", err)
-		return
-	}
-
-}
 
 func initFactorio() (f *FactorioServer, err error) {
 	f = new(FactorioServer)
@@ -153,10 +133,6 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	f.BaseModVersion = modInfo.Version
 
-	if config.autostart == "true" {
-		go autostart()
-	}
-
 	return
 }
 
@@ -191,8 +167,6 @@ func (f *FactorioServer) Run() error {
 	} else {
 		args = append(args, "--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile))
 	}
-
-	log.Println("Starting server with command: ", config.FactorioBinary, args)
 
 	if config.glibcCustom == "true" {
 		log.Println("Starting server with command: ", config.glibcLocation, args)
