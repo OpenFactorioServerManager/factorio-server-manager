@@ -54,21 +54,24 @@ class ModOverview extends React.Component {
     render() {
         return(
             <div>
-                <div className="box collapsed-box" id="add-mod-box">
-                    <div className="box-header"
-                         data-toggle="collapse"
-                         data-target="#modSearch"
-                         aria-expanded="false"
-                         aria-controls="modSearch"
+                <div className="card collapsed-card" id="add-mod-box">
+                    <div className="card-header"
+                         // data-toggle="collapse"
+                         // data-target="#modSearch"
+                         // aria-expanded="false"
+                         // aria-controls="modSearch"
                          role="button"
-                         style={{cursor: "pointer"}}
+                         // style={{cursor: "pointer"}}
                     >
-                        <FontAwesomeIcon icon="plus"/>
-                        <h3 className="box-title">Add Mod</h3>
+                        <button type="button" className="btn btn-tool btn-collapse" data-widget="collapse">
+                            <FontAwesomeIcon icon="minus"/>
+                        </button>
+                        {/*<FontAwesomeIcon icon="plus"/>*/}
+                        <h3 className="card-title">Add Mod</h3>
                         {this.props.loggedIn ?
-                            <div className="box-tools pull-right">
+                            <div className="card-tools">
                                 <NativeListener onClick={this.props.factorioLogoutHandler}>
-                                    <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>
+                                    <button className="btn btn-tool btn-danger" style={{color: "#fff"}}>
                                         Logout
                                     </button>
                                 </NativeListener>
@@ -79,8 +82,8 @@ class ModOverview extends React.Component {
                     <ModSearch
                         {...this.state}
                         {...this.props}
-                        className="collapse"
-                        id="modSearch"
+                        // className="collapse"
+                        // id="modSearch"
                         submitSearchMod={this.handlerSearchMod}
                         submitFactorioLogin={this.props.submitFactorioLogin}
                     />

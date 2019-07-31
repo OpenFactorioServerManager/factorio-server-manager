@@ -1,0 +1,24 @@
+.card {
+    .btn-tool {
+        &.btn-danger {
+            @extend .btn-danger
+        }
+
+        &.btn-collapse {
+            display: inline-block;
+        }
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+
+        .card-title {
+            display: inline-block;
+        }
+
+        .card-tools {
+            top: unset;
+        }
+    }
+}

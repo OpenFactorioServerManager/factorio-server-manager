@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 class ModSearch extends React.Component {
     render() {
-        let classes = "box-body" + " " + this.props.className;
+        let classes = "card-body" + " " + this.props.className;
         let ids = this.props.id;
 
         if(this.props.loggedIn) {
