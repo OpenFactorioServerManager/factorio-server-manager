@@ -62,7 +62,7 @@ func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Returns JSON response with success or error-message
+// LoginFactorioModPortal returns JSON response with success or error-message
 func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -147,7 +147,7 @@ func LogoutFactorioModPortalHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//Returns JSON response with the found mods
+//ModPortalSearchHandler returns JSON response with the found mods
 func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -180,7 +180,7 @@ func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//Returns JSON response with the mod details
+//ModPortalDetailsHandler returns JSON response with the mod details
 func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -567,7 +567,7 @@ func DownloadModsHandler(w http.ResponseWriter, r *http.Request) {
 	writerHeader.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "all_installed_mods.zip"))
 }
 
-//Returns JSON response with the found mods
+//LoadModsFromSaveHandler returns JSON response with the found mods
 func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
