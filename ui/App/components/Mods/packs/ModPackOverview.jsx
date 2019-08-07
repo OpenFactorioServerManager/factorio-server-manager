@@ -431,7 +431,7 @@ class ModPackOverview extends React.Component {
     }
 
     render() {
-        let classes = "box-body" + " " + this.props.className;
+        let classes = "card-body" + " " + this.props.className;
         let ids = this.props.id;
 
         return(
@@ -441,34 +441,29 @@ class ModPackOverview extends React.Component {
                         this.state.listPacks.map(
                             (modpack, index) => {
                                 return(
-                                    <div key={modpack.name} className="box single-modpack collapsed-box">
-                                        <div className="box-header"
-                                             data-toggle="collapse"
-                                             data-target={"#" + modpack.name}
-                                             aria-expanded="false"
-                                             aria-controls={modpack.name}
-                                             style={{cursor: "pointer"}}
-                                        >
-                                            <FontAwesomeIcon icon="plus"/>
-                                            <h3 className="box-title">{modpack.name}</h3>
-                                            <div className="box-tools pull-right">
+                                    <div key={modpack.name} className="card single-modpack collapsed-card">
+                                        <div className="card-header">
+                                            <button type="button" className="btn btn-tool btn-collapse" data-widget="collapse">
+                                                <FontAwesomeIcon icon="plus"/>
+                                            </button>
+                                            <h3 className="card-title">{modpack.name}</h3>
+                                            <div className="card-tools pull-right">
                                                 <NativeListener onClick={this.downloadModPack}>
-                                                    <a className="btn btn-box-tool btn-default" style={{marginRight: 10}} href={"/api/mods/packs/download/" + modpack.name} download>Download</a>
+                                                    <a className="btn btn-tool btn-default" style={{marginRight: 10}} href={"/api/mods/packs/download/" + modpack.name} download>Download</a>
                                                 </NativeListener>
 
                                                 <NativeListener onClick={this.loadModPack}>
-                                                    <button className="btn btn-box-tool btn-default" style={{marginRight: 10}}>Load ModPack</button>
+                                                    <button className="btn btn-tool btn-default" style={{marginRight: 10}}>Load ModPack</button>
                                                 </NativeListener>
 
                                                 <NativeListener onClick={this.deleteModPack}>
-                                                    <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Delete</button>
+                                                    <button className="btn btn-tool btn-danger" style={{color: "#fff"}}>Delete</button>
                                                 </NativeListener>
                                             </div>
                                         </div>
 
                                         <ModManager
                                             {...this.props}
-                                            className="collapse"
                                             id={modpack.name}
                                             installedMods={modpack.mods.mods}
                                             deleteMod={this.modPackDeleteModHandler}
@@ -482,10 +477,12 @@ class ModPackOverview extends React.Component {
                     : null
                 }
 
-                <div className="box">
-                    <div className="box-header" style={{cursor: "pointer"}} onClick={this.createModPack}>
-                        <FontAwesomeIcon icon="plus"/>
-                        <h3 className="box-title">Add ModPack with current installed mods</h3>
+                <div className="card">
+                    <div className="card-header" style={{cursor: "pointer"}} onClick={this.createModPack}>
+                        <button type="button" className="btn btn-tool active">
+                            <FontAwesomeIcon icon="plus"/>
+                        </button>
+                        <h3 className="card-title">Add ModPack with current installed mods</h3>
                     </div>
                 </div>
             </div>

@@ -20,5 +20,9 @@
         .card-tools {
             top: unset;
         }
+
+        .btn-tool.active {
+            @extend .btn-tool:hover
+        }
     }
 }
