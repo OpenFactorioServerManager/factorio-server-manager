@@ -32,6 +32,32 @@ docker run --name factorio-manager -d \
     majormjr/factorio-server-manager
 ```
 
+
+You can also user a docker-compose file.
+
+* Create a file `docker-compose.yml`
+* Enter the following data
+
+```
+version: 3
+services:
+    factorio-server-manager:
+        container_name: factorio-manager
+        volumes:
+            - '[yourpath]/saves:/opt/factorio/saves'
+            - '[yourpath]/mods:/opt/factorio/mods'
+            - '[yourpath]/config:/opt/factorio/config'
+            - '[yourpath]/security:/security'
+        ports:
+            - '80:80'
+            - '443:443'
+            - '34197:34197/udp'
+        image: majormjr/factorio-server-manager
+```
+
+Run the file with `docker-compose up`
+
+
 ## Accessing the application
 
 Go to the port specified in your `docker run` command in your web browser. If running on localhost host access the application at https://localhost
