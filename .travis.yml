@@ -1,25 +1,18 @@
+language: go
+go:
+  - 1.11.x
+  - 1.x
+os:
+  - linux
+  - windows
+script: 
+  - make godeps
+  - go test -v ./...
+
 jobs:
   include:
-    - stage: test
-      language: go
-      os:
-        - linux
-        - windows
-      go:
-        - 1.10.x
-        - 1.11.x
-        - 1.12.x
-        - 1.x
-      install:
-        - go get github.com/apexskier/httpauth
-        - go get github.com/go-ini/ini
-        - go get github.com/gorilla/mux
-        - go get github.com/hpcloud/tail
-        - go get github.com/gorilla/websocket
-        - go get github.com/majormjr/rcon
-      script:
-        - go test -v ./...
     - stage: deploy
+      go: 1.x
       language: minimal
       before_install:
         - docker build -f "docker/Dockerfile-build" -t factorio-server-manager docker
@@ -35,7 +28,6 @@ jobs:
         skip_cleanup: true
         on:
           tags: true
-          branch: develop
         file:
           - /home/travis/factorio-server-manager-linux-${TRAVIS_TAG}.zip
           - /home/travis/factorio-server-manager-windows-${TRAVIS_TAG}.zip

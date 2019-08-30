@@ -2,7 +2,7 @@
 FROM frolvlad/alpine-glibc
 
 ENV FACTORIO_VERSION=latest \
-    MANAGER_VERSION=0.8.1 \
+    MANAGER_VERSION=0.8.2 \
     ADMIN_PASSWORD=factorio
 
 VOLUME /opt/factorio/saves /opt/factorio/mods /opt/factorio/config /security
