@@ -28,7 +28,7 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
     "@fortawesome/fontawesome-free": "^5.10.0",
-    "admin-lte": "^3.0.0-beta.2",
+    "admin-lte": "^3.0.0-rc.4",
     "babel-loader": "^8.0.6",
     "bootstrap": "^4.3.1",
     "bootstrap-fileinput": "^5.0.4",
@@ -47,12 +47,12 @@
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "resolve-url-loader": "^3.1.0",
-    "sass-loader": "^7.1.0",
+    "sass-loader": "^8.0.0",
     "semver": "^6.3.0",
     "sweetalert2": "^8.14.0",
     "sweetalert2-react-content": "^1.1.0",
     "webpack": "^4.38.0",
     "webpack-cli": "^3.3.6",
-    "webpack-fix-style-only-entries": "^0.3.0"
+    "webpack-fix-style-only-entries": "^0.4.0"
   }
 }

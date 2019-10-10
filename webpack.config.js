@@ -64,7 +64,13 @@ module.exports = (env, argv) => {
                             }
                         },
                         "resolve-url-loader",
-                        "sass-loader?sourceMap"
+                        {
+                            loader: "sass-loader",
+                            options: {
+                                // always make sourceMap. resolver-url-loader is needing it
+                                "sourceMap": true,
+                            }
+                        }
                     ]
                 },
                 {
