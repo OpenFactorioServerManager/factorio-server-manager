@@ -36,7 +36,7 @@ class Header extends React.Component {
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <a href="javascript:void(0)" onClick={this.onLogout} className="nav-link">
+                        <a href="#" onClick={this.onLogout} className="nav-link">
                             <FontAwesomeIcon icon="lock" className="fa-fw"/>Logout
                         </a>
                     </li>
