@@ -63,7 +63,7 @@ class ModOverview extends React.Component {
                         {this.props.loggedIn ?
                             <div className="card-tools">
                                 <NativeListener onClick={this.props.factorioLogoutHandler}>
-                                    <button className="btn btn-tool btn-danger" style={{color: "#fff"}}>
+                                    <button className="btn btn-tool btn-danger">
                                         Logout
                                     </button>
                                 </NativeListener>
@@ -115,7 +115,7 @@ class ModOverview extends React.Component {
                             {
                                 this.props.installedMods != null ?
                                     <NativeListener onClick={this.downloadAllHandler}>
-                                        <a className="btn btn-tool btn-default" style={{marginRight: 20}} href={"/api/mods/download"} download>
+                                        <a className="btn btn-tool btn-default" href={"/api/mods/download"} download>
                                             Download all Mods
                                         </a>
                                     </NativeListener>
@@ -124,7 +124,7 @@ class ModOverview extends React.Component {
                             {
                                 this.props.updatesAvailable > 0 ?
                                     <NativeListener onClick={this.props.updateAllMods}>
-                                        <button className="btn btn-tool btn-default" style={{marginRight: 20}}>
+                                        <button className="btn btn-tool btn-default">
                                             Update all Mods
                                         </button>
                                     </NativeListener>
@@ -133,7 +133,7 @@ class ModOverview extends React.Component {
                             {
                                 this.props.installedMods != null ?
                                     <NativeListener onClick={this.props.deleteAll}>
-                                        <button className="btn btn-tool btn-danger" style={{color: "#fff"}}>
+                                        <button className="btn btn-tool btn-danger">
                                             Delete ALL Mods
                                         </button>
                                     </NativeListener>

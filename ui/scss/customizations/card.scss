@@ -1,7 +1,13 @@
 .card {
     .btn-tool {
+        &:not(.btn-collapse) {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
         &.btn-danger {
-            @extend .btn-danger
+            @extend .btn-danger;
+            color: white;
         }
 
         &.btn-collapse {
