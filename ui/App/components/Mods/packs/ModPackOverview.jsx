@@ -443,7 +443,7 @@ class ModPackOverview extends React.Component {
                                 return(
                                     <div key={modpack.name} className="card single-modpack collapsed-card">
                                         <div className="card-header">
-                                            <button type="button" className="btn btn-tool btn-collapse" data-widget="collapse">
+                                            <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
                                                 <FontAwesomeIcon icon="plus"/>
                                             </button>
                                             <h3 className="card-title">{modpack.name}</h3>

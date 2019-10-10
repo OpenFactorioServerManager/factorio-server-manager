@@ -56,7 +56,7 @@ class ModOverview extends React.Component {
             <div>
                 <div className="card collapsed-card" id="add-mod-box">
                     <div className="card-header">
-                        <button type="button" className="btn btn-tool btn-collapse" data-widget="collapse">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
                             <FontAwesomeIcon icon="plus"/>
                         </button>
                         <h3 className="card-title">Add Mod</h3>
@@ -81,7 +81,7 @@ class ModOverview extends React.Component {
 
                 <div className="card collapsed-card">
                     <div className="card-header">
-                        <button type="button" className="btn btn-tool btn-collapse" data-widget="collapse">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
                             <FontAwesomeIcon icon="plus"/>
                         </button>
                         <h3 className="card-title">Upload Mod</h3>
@@ -94,7 +94,7 @@ class ModOverview extends React.Component {
 
                 <div className="card collapsed-card">
                     <div className="card-header">
-                        <button type="button" className="btn btn-tool btn-collapse" data-widget="collapse">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
                             <FontAwesomeIcon icon="plus"/>
                         </button>
                         <h3 className="card-title">Load Mods From Save</h3>
@@ -107,7 +107,7 @@ class ModOverview extends React.Component {
 
                 <div className="card" id="manage-mods">
                     <div className="card-header">
-                        <button type="button" className="btn btn-tool btn-collapse" data-widget="collapse">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
                             <FontAwesomeIcon icon="minus"/>
                         </button>
                         <h3 className="card-title">Manage Mods</h3>
@@ -150,7 +150,7 @@ class ModOverview extends React.Component {
 
                 <div className="card collapsed-card">
                     <div className="card-header">
-                        <button type="button" className="btn btn-tool btn-collapse" data-widget="collapse">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
                             <FontAwesomeIcon icon="plus"/>
                         </button>
                         <h3 className="card-title">Manage Modpacks</h3>
