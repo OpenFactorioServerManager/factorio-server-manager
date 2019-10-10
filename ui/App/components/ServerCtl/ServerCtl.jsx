@@ -6,6 +6,7 @@ import FontAwesomeIcon from "../FontAwesomeIcon";
 class ServerCtl extends React.Component {
     constructor(props) {
         super(props);
+
         this.startServer = this.startServer.bind(this);
         this.stopServer = this.stopServer.bind(this);
         this.killServer = this.killServer.bind(this);
@@ -13,20 +14,19 @@ class ServerCtl extends React.Component {
         this.incrementPort = this.incrementPort.bind(this);
         this.decrementPort = this.decrementPort.bind(this);
 
-        this.state = {
-            gameBindIP: "0.0.0.0",
-            savefile: "",
-            port: 34197,
-        }
+        this.gameBindIPRef = React.createRef();
+        this.saveFileRef = React.createRef();
+        this.portRef = React.createRef();
     }
 
     startServer(e) {
         e.preventDefault();
         let serverSettings = {
-            bindip: this.refs.gameBindIP.value,
-            savefile: this.refs.savefile.value,
-            port: Number(this.refs.port.value),
+            bindip: this.gameBindIPRef.current.value,
+            savefile: this.saveFileRef.current.value,
+            port: Number(this.portRef.current.value),
         }
+
         $.ajax({
             type: "POST",
             url: "/api/server/start",
@@ -49,11 +49,6 @@ class ServerCtl extends React.Component {
                     });
                 }
             }
-        });
-
-        this.setState({
-            savefile: this.refs.savefile.value,
-            port: Number(this.refs.port.value),
         });
     }
 
@@ -92,13 +87,11 @@ class ServerCtl extends React.Component {
     }
 
     incrementPort() {
-        let port = this.state.port + 1;
-        this.setState({port: port})
+        this.portRef.current.value = Number(this.portRef.current.value) + 1;
     }
 
     decrementPort() {
-        let port = this.state.port - 1;
-        this.setState({port: port})
+        this.portRef.current.value = Number(this.portRef.current.value - 1);
     }
 
     render() {
@@ -136,7 +129,7 @@ class ServerCtl extends React.Component {
                         <hr/>
                         <div className="form-group">
                             <label>Select Save File</label>
-                            <select ref="savefile" className="form-control">
+                            <select ref={this.saveFileRef} className="form-control">
                                 {this.props.saves.map((save, i) => {
                                     return (
                                         <option key={save.name} value={save.name}>{save.name}</option>
@@ -149,26 +142,26 @@ class ServerCtl extends React.Component {
                         <div className="form-group">
                             <label htmlFor="gameBindIP">Factorio Server IP</label>
                             <div className="input-group">
-                                <input ref="gameBindIP"
+                                <input ref={this.gameBindIPRef}
                                        name="gameBindIP"
                                        id="gameBindIP"
                                        type="text"
                                        className="form-control"
-                                       defaultValue={this.state.gameBindIP}
-                                       placeholder={this.state.gameBindIP}/>
+                                       defaultValue="0.0.0.0"
+                                       placeholder="0.0.0.0"/>
                             </div>
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="port">Factorio Server Port</label>
                             <div className="input-group">
-                                <input ref="port"
+                                <input ref={this.portRef}
                                        name="port"
                                        id="port"
                                        type="text"
                                        className="form-control"
-                                       defaultValue={this.state.port}
-                                       placeholder={this.state.port}
+                                       defaultValue="34197"
+                                       placeholder="34197"
                                 />
                                 <div className="input-group-btn">
                                     <button type="button" className="btn btn-primary" onClick={this.incrementPort}>
@@ -183,7 +176,6 @@ class ServerCtl extends React.Component {
                     </form>
                 </div>
             </div>
-
         )
     }
 }
