@@ -65,6 +65,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 				log.Fatalln(err)
 				return err
 			}
+			defer zipFile.Close()
 
 			var modInfo ModInfo
 			err = modInfo.getModInfo(&zipFile.Reader)
@@ -171,9 +172,13 @@ func (modInfo *ModInfo) getModInfo(reader *zip.Reader) error {
 			}
 
 			byteArray, err := ioutil.ReadAll(rc)
-			rc.Close()
 			if err != nil {
 				log.Fatal(err)
+				return err
+			}
+			err = rc.Close()
+			if err != nil {
+				log.Printf("Error closing singleFile: %s", err)
 				return err
 			}
 
