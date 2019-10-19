@@ -76,6 +76,11 @@ func initFactorio() (f *FactorioServer, err error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to copy example server settings: %v", err)
 		}
+
+		err = example.Close()
+		if err != nil {
+			return nil, fmt.Errorf("failed to close example server settings: %s", err)
+		}
 	} else {
 		// otherwise, open file normally
 		settings, err = os.Open(settingsPath)
