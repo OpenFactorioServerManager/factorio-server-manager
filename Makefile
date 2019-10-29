@@ -12,13 +12,12 @@ endif
 
 build: $(release)
 
-$(shell mkdir -p build)
-build/factorio-server-manager-%.zip: app/bundle factorio-server-manager-%
+build/factorio-server-manager-%.zip: clean app/bundle factorio-server-manager-%
+	@-mkdir build
 	@echo "Packaging Build - $@"
 	@cp -r app/ factorio-server-manager/
 	@cp conf.json.example factorio-server-manager/conf.json
 	@zip -r $@ factorio-server-manager > /dev/null
-	@rm -r factorio-server-manager
 
 app/bundle:
 	@echo "Building Frontend"
@@ -41,8 +40,13 @@ gen_release: build/factorio-server-manager-linux.zip build/factorio-server-manag
 
 clean:
 	@echo "Cleaning"
-	@rm -r build/
-	@rm app/bundle.js
-	@rm app/bundle.css
-	@rm app/fonts/vendor
-	@rm app/images/vendor
+	@-rm -r build/
+	@-rm app/bundle.js
+	@-rm app/bundle.js.map
+	@-rm app/style.css
+	@-rm app/style.css.map
+	@-rm -r app/fonts/vendor/
+	@-rm -r app/images/vendor/
+	@-rm -r node_modules/
+	@-rm -r pkg/
+	@-rm -r factorio-server-manager
