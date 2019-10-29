@@ -24,21 +24,17 @@ app/bundle:
 	@echo "Building Frontend"
 	@npm install && npm run build
 
-factorio-server-manager-linux: godeps
+factorio-server-manager-linux:
 	@echo "Building Backend - Linux"
-	@GOPATH="${GOPATH}:${PDW}"
 	@mkdir -p factorio-server-manager
-	@GOOS=linux GOARCH=amd64 go build -o factorio-server-manager/factorio-server-manager ./src
+	@cd src; \
+	GOOS=linux GOARCH=amd64 go build -o ../factorio-server-manager/factorio-server-manager .
 
-factorio-server-manager-windows: godeps
+factorio-server-manager-windows:
 	@echo "Building Backend - Windows"
-	@GOPATH="${GOPATH}:${PDW}"
 	@mkdir -p factorio-server-manager
-	@GOOS=windows GOARCH=386 go build -o factorio-server-manager/factorio-server-manager.exe ./src
-
-godeps:
-	@echo "Installing Packages"
-	@cat gopkglist | xargs go get
+	@cd src; \
+	GOOS=windows GOARCH=386 go build -o ../factorio-server-manager/factorio-server-manager.exe .
 
 gen_release: build/factorio-server-manager-linux.zip build/factorio-server-manager-windows.zip
 	@echo "Done"
