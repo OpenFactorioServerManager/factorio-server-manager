@@ -9,6 +9,9 @@ go:
  - 1.12.x
  - 1.x
 
+env:
+  - GO111MODULE=on
+
 #install:
 #  - go get github.com/apexskier/httpauth
 #  - go get github.com/go-ini/ini
