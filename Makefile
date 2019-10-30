@@ -13,7 +13,7 @@ endif
 build: $(release)
 
 build/factorio-server-manager-%.zip: clean app/bundle factorio-server-manager-%
-	@-mkdir build
+	@mkdir -p build/
 	@echo "Packaging Build - $@"
 	@cp -r app/ factorio-server-manager/
 	@cp conf.json.example factorio-server-manager/conf.json
