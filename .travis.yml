@@ -1,11 +1,3 @@
-language: go
-go:
-  - 1.11.x
-  - 1.x
-script: 
-  - make godeps
-  - go test -v ./...
-
 jobs:
   include:
     - stage: deploy
