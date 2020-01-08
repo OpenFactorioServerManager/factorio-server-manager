@@ -4,9 +4,9 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"errors"
+	"github.com/mroote/factorio-server-manager/lockfile"
 	"io"
 	"io/ioutil"
-	"lockfile"
 	"log"
 	"os"
 	"path/filepath"
@@ -65,6 +65,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 				log.Fatalln(err)
 				return err
 			}
+			defer zipFile.Close()
 
 			var modInfo ModInfo
 			err = modInfo.getModInfo(&zipFile.Reader)
@@ -133,7 +134,7 @@ func (modInfoList *ModInfoList) deleteMod(modName string) error {
 	//search for mod, that should be deleted
 	for _, mod := range modInfoList.Mods {
 		if mod.Name == modName {
-			filePath := modInfoList.Destination + "/" + mod.FileName
+			filePath := filepath.Join(modInfoList.Destination, mod.FileName)
 
 			fileLock.LockW(filePath)
 			//delete mod
@@ -171,9 +172,13 @@ func (modInfo *ModInfo) getModInfo(reader *zip.Reader) error {
 			}
 
 			byteArray, err := ioutil.ReadAll(rc)
-			rc.Close()
 			if err != nil {
 				log.Fatal(err)
+				return err
+			}
+			err = rc.Close()
+			if err != nil {
+				log.Printf("Error closing singleFile: %s", err)
 				return err
 			}
 
@@ -194,7 +199,7 @@ func (modInfoList *ModInfoList) createMod(modName string, fileName string, modFi
 	var err error
 
 	//save uploaded file
-	filePath := modInfoList.Destination + "/" + fileName
+	filePath := filepath.Join(modInfoList.Destination, fileName)
 	newFile, err := os.Create(filePath)
 	if err != nil {
 		log.Printf("error on creating new file - %s: %s", fileName, err)
