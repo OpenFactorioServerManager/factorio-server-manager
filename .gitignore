@@ -16,3 +16,4 @@ mix-manifest.json
 /app/**/vendor/
 /app/*.js*
 /app/*.css*
+.vscode

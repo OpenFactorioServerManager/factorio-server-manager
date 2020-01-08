@@ -62,7 +62,7 @@ func DLSave(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	save := vars["save"]
-	saveName := config.FactorioSavesDir + "/" + save
+	saveName := filepath.Join(config.FactorioSavesDir, save)
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", save))
 	log.Printf("%s downloading: %s", r.Host, saveName)
@@ -85,39 +85,44 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 		}
 	case "POST":
 		log.Println("Uploading save file")
+
 		r.ParseMultipartForm(32 << 20)
-		file, header, err := r.FormFile("savefile")
-		if err != nil {
-			resp.Success = false
-			resp.Data = err.Error()
-			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in upload save formfile: %s", err.Error())
-			return
-		}
-		defer file.Close()
 
-		out, err := os.Create(config.FactorioSavesDir + "/" + header.Filename)
-		if err != nil {
-			resp.Success = false
-			resp.Data = err.Error()
-			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in out: %s", err)
-			return
-		}
-		defer out.Close()
+		for _, saveFile := range r.MultipartForm.File["savefile"] {
+			file, err := saveFile.Open()
+			if err != nil {
+				resp.Success = false
+				resp.Data = err.Error()
+				json.NewEncoder(w).Encode(resp)
+				log.Printf("Error in upload save formfile: %s", err.Error())
+				return
+			}
+			defer file.Close()
 
-		_, err = io.Copy(out, file)
-		if err != nil {
-			resp.Success = false
-			resp.Data = err.Error()
+			out, err := os.Create(filepath.Join(config.FactorioSavesDir, saveFile.Filename))
+			if err != nil {
+				resp.Success = false
+				resp.Data = err.Error()
+				json.NewEncoder(w).Encode(resp)
+				log.Printf("Error in out: %s", err)
+				return
+			}
+			defer out.Close()
+
+			_, err = io.Copy(out, file)
+			if err != nil {
+				resp.Success = false
+				resp.Data = err.Error()
+				json.NewEncoder(w).Encode(resp)
+				log.Printf("Error in io copy: %s", err)
+				return
+			}
+
+			log.Printf("Uploaded save file: %s", saveFile.Filename)
+			resp.Data = "File '" + saveFile.Filename + "' uploaded successfully"
+			resp.Success = true
 			json.NewEncoder(w).Encode(resp)
-			log.Printf("Error in io copy: %s", err)
-			return
 		}
-		log.Printf("Uploaded save file: %s", header.Filename)
-		resp.Data = "File '" + header.Filename + "' uploaded successfully"
-		resp.Success = true
-		json.NewEncoder(w).Encode(resp)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -761,6 +766,20 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			log.Printf("Saved Factorio server settings in server-settings.json")
+		}
+
+		if(FactorioServ.Version.Greater(Version{0,17,0})) {
+			// save admins to adminJson
+			admins, err := json.MarshalIndent(FactorioServ.Settings["admins"], "", "  ")
+			if err != nil {
+				log.Printf("Failed to marshal admins-Setting: %s", err)
+				return
+			}
+			err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), admins, 0664)
+			if err != nil {
+				log.Printf("Failed to save admins: %s", err)
+				return
+			}
 		}
 
 		resp.Success = true

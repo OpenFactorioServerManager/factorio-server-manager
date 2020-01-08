@@ -76,6 +76,11 @@ func initFactorio() (f *FactorioServer, err error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to copy example server settings: %v", err)
 		}
+
+		err = example.Close()
+		if err != nil {
+			return nil, fmt.Errorf("failed to close example server settings: %s", err)
+		}
 	} else {
 		// otherwise, open file normally
 		settings, err = os.Open(settingsPath)
@@ -96,8 +101,14 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	log.Printf("Loaded Factorio settings from %s\n", settingsPath)
 
+	out := []byte{}
 	//Load factorio version
-	out, err := exec.Command(config.FactorioBinary, "--version").Output()
+	if config.glibcCustom == "true" {
+		out, err = exec.Command(config.glibcLocation, "--library-path", config.glibcLibLoc, config.FactorioBinary, "--version").Output()
+	} else {
+		out, err = exec.Command(config.FactorioBinary, "--version").Output()
+	}
+
 	if err != nil {
 		log.Printf("error on loading factorio version: %s", err)
 		return
@@ -127,6 +138,29 @@ func initFactorio() (f *FactorioServer, err error) {
 
 	f.BaseModVersion = modInfo.Version
 
+	// load admins from additional file
+	if(f.Version.Greater(Version{0,17,0})) {
+		if _, err := os.Stat(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)); os.IsNotExist(err) {
+			//save empty admins-file
+			ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
+		} else {
+			data, err := ioutil.ReadFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
+			if err != nil {
+				log.Printf("Error loading FactorioAdminFile: %s", err)
+				return f, err
+			}
+
+			var jsonData interface{}
+			err = json.Unmarshal(data, &jsonData)
+			if err != nil {
+				log.Printf("Error unmarshalling FactorioAdminFile: %s", err)
+				return f, err
+			}
+
+			f.Settings["admins"] = jsonData
+		}
+	}
+
 	return
 }
 
@@ -140,12 +174,24 @@ func (f *FactorioServer) Run() error {
 		ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), data, 0644)
 	}
 
-	args := []string{
+	args := []string{}
+
+	//The factorio server refenences its executable-path, since we execute the ld.so file and pass the factorio binary as a parameter
+	//the game would use the path to the ld.so file as it's executable path and crash, to prevent this the parameter "--executable-path" is added
+	if config.glibcCustom == "true" {
+		log.Println("Custom glibc selected, glibc.so location:", config.glibcLocation, " lib location:", config.glibcLibLoc)
+		args = append(args, "--library-path", config.glibcLibLoc, config.FactorioBinary, "--executable-path", config.FactorioBinary)
+	}
+
+	args = append(args,
 		"--bind", (f.BindIP),
 		"--port", strconv.Itoa(f.Port),
-		"--server-settings", filepath.Join(config.FactorioConfigDir, "server-settings.json"),
+		"--server-settings", filepath.Join(config.FactorioConfigDir, config.SettingsFile),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
-		"--rcon-password", config.FactorioRconPass,
+		"--rcon-password", config.FactorioRconPass)
+
+	if(f.Version.Greater(Version{0,17,0})) {
+		args = append(args, "--server-adminlist", filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
 	}
 
 	if f.Savefile == "Load Latest" {
@@ -154,9 +200,13 @@ func (f *FactorioServer) Run() error {
 		args = append(args, "--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile))
 	}
 
-	log.Println("Starting server with command: ", config.FactorioBinary, args)
-
-	f.Cmd = exec.Command(config.FactorioBinary, args...)
+	if config.glibcCustom == "true" {
+		log.Println("Starting server with command: ", config.glibcLocation, args)
+		f.Cmd = exec.Command(config.glibcLocation, args...)
+	} else {
+		log.Println("Starting server with command: ", config.FactorioBinary, args)
+		f.Cmd = exec.Command(config.FactorioBinary, args...)
+	}
 
 	f.StdOut, err = f.Cmd.StdoutPipe()
 	if err != nil {
@@ -237,7 +287,7 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 }
 
 func (f *FactorioServer) writeLog(logline string) error {
-	logfileName := config.FactorioDir + "factorio-server-console.log"
+	logfileName := filepath.Join(config.FactorioDir, "factorio-server-console.log")
 	file, err := os.OpenFile(logfileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		log.Printf("Cannot open logfile for appending Factorio Server output: %s", err)

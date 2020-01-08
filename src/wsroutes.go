@@ -2,13 +2,14 @@ package main
 
 import (
 	"log"
+	"path/filepath"
 
 	"github.com/hpcloud/tail"
 )
 
 func logSubscribe(client *Client, data interface{}) {
 	go func() {
-		logfile := config.FactorioDir + "factorio-server-console.log"
+		logfile := filepath.Join(config.FactorioDir, "factorio-server-console.log")
 		t, err := tail.TailFile(logfile, tail.Config{Follow: true})
 		if err != nil {
 			log.Printf("Error subscribing to tail log %s", err)
