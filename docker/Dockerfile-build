@@ -1,0 +1,20 @@
+FROM alpine:latest
+
+RUN apk add --no-cache git make musl-dev go nodejs npm zip
+
+ENV FAC_BRANCH=develop
+ENV GOROOT /usr/lib/go
+ENV GOPATH /go
+ENV PATH /go/bin:$PATH
+ENV FAC_ROOT /go/src/factorio-server-manager
+
+COPY build.sh /usr/local/bin/build.sh
+
+RUN mkdir -p ${GOPATH}/bin
+RUN chmod u+x /usr/local/bin/build.sh
+
+WORKDIR $FAC_ROOT
+
+VOLUME /build
+
+CMD ["/usr/local/bin/build.sh"]
