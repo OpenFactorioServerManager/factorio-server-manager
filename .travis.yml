@@ -7,6 +7,7 @@ jobs:
         - docker build -f "docker/Dockerfile-build" -t factorio-server-manager docker
       script:
         - pwd
+        - echo ~
         - mkdir /home/travis/build/mroote/build
         - docker run -t -e FAC_BRANCH=$TRAVIS_BRANCH -v /home/travis/build/mroote/build:/build factorio-server-manager
         - mv /home/travis/build/mroote/build/factorio-server-manager-linux.zip /home/travis/factorio-server-manager-linux-${TRAVIS_TAG}.zip
