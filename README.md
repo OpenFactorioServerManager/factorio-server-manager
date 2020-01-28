@@ -43,7 +43,7 @@ This tool runs on a Factorio server and allows management of the Factorio server
 4. Visit [localhost:8080](localhost:8080) in your web browser.
 
 ## Usage
-Run the UI server and  specify the directory of your Factorio server installation and the interface to run the HTTP server on.  Edit the conf.json file with your desired credentials for authentication.
+Run the UI server and specify the directory of your Factorio server installation and the interface to run the HTTP server on.  Edit the conf.json file with your desired credentials for authentication.
 ```
 Usage of ./factorio-server-manager:
   -bin string
@@ -60,10 +60,20 @@ Usage of ./factorio-server-manager:
     	Maximum filesize for uploaded files (default 20MB). (default 20971520)
   -port string
     	Specify a port for the server. (default "8080")
-
+  -glibc-custom string 
+        Specify if custom glibc is used (default false) [true/false]
+  -glibc-loc string
+        Path to the glibc ld.so file (default "/opt/glibc-2.18/lib/ld-2.18.so")
+  -glibc-lib-loc
+        Path to the glibc lib folder (default "/opt/glibc-2.18/lib")
+        
 Example:
 
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1
+
+Custom glibc example:
+
+./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1 --glibc-custom true --glibc-loc /opt/glibc-2.18/lib/ld-2.18.so --glibc-lib-loc /opt/glibc-2.18/lib
 
 ```
 
@@ -89,8 +99,8 @@ It also acts as the webserver to serve the front end react application
 All api actions are accessible with the /api route.  The frontend is accessible from /.
 
 #### Requirements
-+ Go 1.7
-+ NodeJS 4.2.6
++ Go 1.11
++ NodeJS
 
 #### Building Releases
 Creates a release zip for windows and linux: (this will install the dependencies listed in gopkgdeps)
@@ -121,7 +131,7 @@ make app/bundle
 ```
 
 ##### For development
-The frontend is completly build by npm with laravel-mix. All plugins are buld into the compiled files. No plugins need to be load fro external sources.
+The frontend is completely build by npm with laravel-mix. All plugins are build into the compiled files. No plugins need to be load fro external sources.
 
 It has different variants to build the frontend, provided by laravel-mix:
 - `npm run dev` Build the code for development. This will also generate map-files, so the browser, can show, what line and file causes the output.
@@ -134,31 +144,16 @@ In every of those cases, also images and fonts will be copied to the app-folder.
 1. Download the latest release source zip file
   * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
 2. Unzip the Factorio Standalone server and move it to a known directory.
-3. Download and install Go 1.7 or newer. https://golang.org/dl/
-4. Download and install NodeJS 4.2.6 64-bit or 32-bit depending on your operating system, if unsure download 32-bit
-  * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x64.msi 64-bit
-  * https://nodejs.org/download/release/v4.2.6/node-v4.2.6-x86.msi 32-bit
-5. Download and install NVM, when asked if you want it to use NodeJS 4.2.6 accept
-  * https://github.com/coreybutler/nvm-windows/releases/download/1.1.1/nvm-setup.zip
-6. You will need to setup GOPATH in environmental settings in windows. You will want to go into Control Panel\System and Security\System From there on the left hand side click "Advanced system settings". A window will open and you need to click Environment Variables.
-7. Under System Variables click New. For Variable name use GOPATH and Variable value C:\Go\
+3. Download and install Go 1.11 or newer. https://golang.org/dl/
+4. Download and install NodeJS 64-bit or 32-bit depending on your operating system, most users need 64-bit nowadays.
+  * https://nodejs.org/dist/v12.13.0/node-v12.13.0-x64.msi 64-bit
+  * https://nodejs.org/dist/v12.13.0/node-v12.13.0-x86.msi 32-bit
 
 Once everything is installed and ready to go you will need to compile the source for windows
 
 1. Open the folder where ever you unzipped from step #2 above.
 2. My folder structure is like this "C:\FS\factorio-server-manager\" C:\FS is where my factorio files are located C:\FS\factorio-server-manager\ is where the server manager files are.
-3. You will now need to install some dependencies for Go. You will need to open up a command prompt and one at a time type each of these and hit enter before typing the next one.
-
-```
-go get github.com/apexskier/httpauth
-go get github.com/go-ini/ini
-go get github.com/gorilla/mux
-go get github.com/hpcloud/tail
-go get github.com/gorilla/websocket
-go get github.com/majormjr/rcon
-```
-
-3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down left shift and right click an empty area of the folder. Then click "Open command windows here"
+3. Now you will want to go into the src folder for example "C:\FS\factorio-server-manager\src" once there hold down shift and right click an empty area of the folder. Then click "Open command windows here"
 4. Type this into the command prompt then hit enter:
 
 ```
@@ -166,14 +161,14 @@ go build
 ```
 
 5. Once finished you will now see src.exe or src file inside the folder. You need to move that file to the C:\FS\factorio-server-manager\ or the folder that is before your src folder.
-6. From here you need to build the web front-end by going into your ui folder for me its C:\FS\factorio-server-manager\ui\ and again hold shift and left click in an empty area then select open command prompt here. You then need to type this:
+6. From here you need to build the web front-end. Again hold shift and right click in an empty area then select open command prompt here. You then need to type this:
 
 ```
  npm install
  npm run build
 ```
 
-7. Now execute the src file created in step #4 above
+7. Now execute the src file created in step #4 above. You have to specify the directory, where the factorio-server is located, as parameter. More about the parameter under [Usage](#Usage) 
 8. You can now Visit [localhost:8080](localhost:8080) in your web browser to start using the Factorio server Manager
 
 ## Contributing
@@ -188,7 +183,7 @@ go build
 * **Mitch Roote** - [roote.ca](https://roote.ca)
 
 ## Special Thanks
-- **[All Contributions]**(https://github.com/mroote/factorio-server-manager/graphs/contributors)
+- **[All Contributions](https://github.com/mroote/factorio-server-manager/graphs/contributors)**
 - **mickael9** for reverseengineering the factorio-save-file: https://forums.factorio.com/viewtopic.php?f=5&t=8568#
 
 ## License
