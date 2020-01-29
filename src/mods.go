@@ -307,7 +307,12 @@ func modStartUp() {
 					log.Printf("error reading mod_file_rc: %s", err)
 					return err
 				}
-				modFileRc.Close()
+
+				err = modFileRc.Close()
+				if err != nil {
+					log.Printf("error closing mod_file_rc: %s", err)
+					return err
+				}
 
 				modFileByteReader := bytes.NewReader(modFileBuffer)
 				modFileZipReader, err := zip.NewReader(modFileByteReader, int64(len(modFileBuffer)))

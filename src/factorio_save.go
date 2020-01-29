@@ -46,6 +46,7 @@ func OpenArchiveFile(path string, name string) (r io.ReadCloser, err error) {
 		}
 	}
 
+	archive.Close()
 	return nil, errors.New("file not found")
 }
 

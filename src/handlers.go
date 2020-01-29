@@ -204,7 +204,7 @@ func CreateSaveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Returns last lines of the factorio-current.log file
+// LogTail returns last lines of the factorio-current.log file
 func LogTail(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -229,7 +229,7 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Return JSON response of config.ini file
+// LoadConfig returns JSON response of config.ini file
 func LoadConfig(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -699,7 +699,7 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Return JSON response of server-settings.json file
+// GetServerSettings returns JSON response of server-settings.json file
 func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	resp := JSONResponse{
 		Success: false,

@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/mroote/factorio-server-manager/lockfile"
 	"io"
 	"io/ioutil"
-	"lockfile"
 	"log"
 	"net/http"
 	"os"
@@ -63,7 +63,7 @@ func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Returns JSON response with success or error-message
+// LoginFactorioModPortal returns JSON response with success or error-message
 func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -148,7 +148,7 @@ func LogoutFactorioModPortalHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//Returns JSON response with the found mods
+//ModPortalSearchHandler returns JSON response with the found mods
 func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -181,7 +181,7 @@ func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//Returns JSON response with the mod details
+//ModPortalDetailsHandler returns JSON response with the mod details
 func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -549,6 +549,12 @@ func DownloadModsHandler(w http.ResponseWriter, r *http.Request) {
 				log.Printf("error on copying file into zip: %s", err)
 				return err
 			}
+
+			err = file.Close()
+			if err != nil {
+				log.Printf("error closing file: %s", err)
+				return err
+			}
 		}
 
 		return nil
@@ -568,7 +574,7 @@ func DownloadModsHandler(w http.ResponseWriter, r *http.Request) {
 	writerHeader.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "all_installed_mods.zip"))
 }
 
-//Returns JSON response with the found mods
+//LoadModsFromSaveHandler returns JSON response with the found mods
 func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponse{
@@ -704,7 +710,14 @@ func DownloadModPackHandler(w http.ResponseWriter, r *http.Request) {
 					log.Printf("error on opening modfile: %s", err)
 					return err
 				}
-				defer file.Close()
+				// Close file, when function returns
+				defer func() {
+					err2 := file.Close()
+					if err == nil && err2 != nil {
+						log.Printf("Error closing file: %s", err2)
+						err = err2
+					}
+				}()
 
 				_, err = io.Copy(writer, file)
 				if err != nil {

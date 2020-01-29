@@ -35,6 +35,9 @@ type Config struct {
 	SettingsFile            string `json:"settings_file"`
 	LogFile                 string `json:"log_file"`
 	ConfFile                string
+	glibcCustom             string
+	glibcLocation           string
+	glibcLibLoc             string
 }
 
 var (
@@ -73,9 +76,14 @@ func parseFlags() {
 	factorioConfigFile := flag.String("config", "config/config.ini", "Specify location of Factorio config.ini file")
 	factorioMaxUpload := flag.Int64("max-upload", 1024*1024*20, "Maximum filesize for uploaded files (default 20MB).")
 	factorioBinary := flag.String("bin", "bin/x64/factorio", "Location of Factorio Server binary file")
+	glibcCustom := flag.String("glibc-custom", "false", "By default false, if custom glibc is required set this to true and add glibc-loc and glibc-lib-loc parameters")
+	glibcLocation := flag.String("glibc-loc", "/opt/glibc-2.18/lib/ld-2.18.so", "Location glibc ld.so file if needed (ex. /opt/glibc-2.18/lib/ld-2.18.so)")
+	glibcLibLoc := flag.String("glibc-lib-loc", "/opt/glibc-2.18/lib", "Location of glibc lib folder (ex. /opt/glibc-2.18/lib)")
 
 	flag.Parse()
-
+	config.glibcCustom = *glibcCustom
+	config.glibcLocation = *glibcLocation
+	config.glibcLibLoc = *glibcLibLoc
 	config.ConfFile = *confFile
 	config.FactorioDir = *factorioDir
 	config.ServerIP = *serverIP
@@ -123,7 +131,7 @@ func main() {
 
 	// Initialize HTTP router
 	router := NewRouter()
-
 	log.Printf("Starting server on: %s:%s", config.ServerIP, config.ServerPort)
 	log.Fatal(http.ListenAndServe(config.ServerIP+":"+config.ServerPort, router))
+
 }
