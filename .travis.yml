@@ -1,13 +1,19 @@
+language: go
+go:
+  - 1.11.x
+  - 1.12.x
+  - 1.13.x
+  - 1.x
+#go: 1.x
+
+script:
+  - cd src/
+  - go test -v
+
 jobs:
   include:
-    - stage: test
-      language: go
-      go: 1.x
-      script:
-        - cd src/
-        - go test -v
     - stage: deploy
-      language: go
+#      language: go
       go: 1.x
       before_install:
         - curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
