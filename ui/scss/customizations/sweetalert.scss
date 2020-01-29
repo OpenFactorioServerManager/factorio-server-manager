@@ -5,10 +5,6 @@
     padding: .625em 2em;
 }
 
-.swal-design {
-    border-radius: 0;
-}
-
 .swal2-popup {
     .swal2-content {
         text-align: center;
@@ -29,39 +25,4 @@
             background: rgba(255, 0, 0, 0.31);
         }
     }
-
-    .swal2-actions.swal2-loading {
-        .swal2-confirm {
-            width: 2.5em;
-            height: 2.5em;
-            margin: .46875em;
-            padding: 0;
-            border-radius: 100%;
-            background-color: transparent !important;
-            color: transparent;
-            cursor: default;
-            -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-            -webkit-animation: swal2-rotate-loading 1.5s linear 0s infinite normal;
-            animation: swal2-rotate-loading 1.5s linear 0s infinite normal;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-
-            background-color: rgb(221, 107, 85);
-            border: .25em solid transparent;
-            border-right-color: rgb(221, 107, 85);
-            border-left-color: rgb(221, 107, 85);
-            display: flex;
-        }
-
-        :not(.swal2-styled).swal2-confirm::after {
-            display: none;
-        }
-    }
 }
-
-//.swal2-popup .swal2-actions.swal2-loading :not(.swal2-styled).swal2-confirm::after {
-//    display: none;
-//}

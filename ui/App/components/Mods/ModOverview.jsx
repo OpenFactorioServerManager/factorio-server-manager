@@ -41,7 +41,7 @@ class ModOverview extends React.Component {
 
                 ReactSwalNormal.fire({
                     title: json_data.detail,
-                    type: "error"
+                    icon: "error"
                 });
             }
         })

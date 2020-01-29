@@ -39,13 +39,13 @@ class ServerCtl extends React.Component {
                     ReactSwalNormal.fire({
                         title: "Factorio server started",
                         text: resp.data,
-                        type: "success"
+                        icon: "success"
                     });
                 } else {
                     ReactSwalNormal.fire({
                         title: "Error starting Factorio server",
                         text: resp.data,
-                        type: "error"
+                        icon: "error"
                     });
                 }
             }
