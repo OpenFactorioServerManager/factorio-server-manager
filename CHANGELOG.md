@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [0.8.2] - 2020-01-08
+Many bugfixes and a few small features in this release.
+- Adds a flag for a custom glibc version, required on some distros such as CentOS
+- bugfixes with file handling
+- UI fixes and improvements
+- CI bug fixes and build improvements
+- and more bugfixes
+
+Special thanks to @knoxfighter for all the contributions.
+
 ### Added
 - Support for 0.17 server-adminlist.json
 - Support for custom glibc location (RHEL/CENTOS)
@@ -19,12 +30,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed some filepaths on windows
 - Fixed hardcoded Settings Path
 - Fixed Upgrading, Removing Mods on Windows results in error
-
-### Updated
-- Updated all NPM dependencies
-
-
-## [0.8.2] - 2019-08-30 [YANKED]
 
 ## [0.8.1] - 2019-03-01
 ### Fixed
