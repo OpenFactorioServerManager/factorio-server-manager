@@ -10,8 +10,8 @@ jobs:
 #        - echo ~
 #        - mkdir -p /home/travis/build/mroote/build
 #        - docker run -t -e FAC_BRANCH=$TRAVIS_BRANCH -v /home/travis/build/mroote/build:/build factorio-server-manager
-        - sudo apt-get install nodejs
-        - sudo apt-get install npm
+        - curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+        - sudo apt-get install -y nodejs
         - make gen_release
         - mv /home/travis/build/mroote/build/factorio-server-manager-linux.zip /home/travis/factorio-server-manager-linux-${TRAVIS_TAG}.zip
         - mv /home/travis/build/mroote/build/factorio-server-manager-windows.zip /home/travis/factorio-server-manager-windows-${TRAVIS_TAG}.zip
