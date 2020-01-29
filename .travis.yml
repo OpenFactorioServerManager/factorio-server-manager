@@ -5,6 +5,10 @@ go:
   - 1.13.x
   - 1.x
 
+os:
+  - linux
+  - windows
+
 env:
   - GO111MODULE=on
 
@@ -16,6 +20,7 @@ jobs:
   include:
     - stage: deploy
       go: 1.x
+      os: linux
       before_install:
         - curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
         - sudo apt-get install -y nodejs
