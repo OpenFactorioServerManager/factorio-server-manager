@@ -1,5 +1,11 @@
 jobs:
   include:
+    - stage: test
+      language: go
+      go: 1.x
+      script:
+        - cd src/
+        - go test -v
     - stage: deploy
       language: go
       go: 1.x
@@ -12,9 +18,9 @@ jobs:
 #        - echo ~
 #        - mkdir -p /home/travis/build/mroote/build
 #        - docker run -t -e FAC_BRANCH=$TRAVIS_BRANCH -v /home/travis/build/mroote/build:/build factorio-server-manager
-        - cd src/
-        - go test -v
-        - cd ..
+#        - cd src/
+#        - go test -v
+#        - cd ..
         - make gen_release
         - mv factorio-server-manager-linux.zip ~/factorio-server-manager-linux-${TRAVIS_TAG}.zip
         - mv factorio-server-manager-windows.zip ~/factorio-server-manager-windows-${TRAVIS_TAG}.zip
