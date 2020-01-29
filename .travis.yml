@@ -4,7 +4,9 @@ go:
   - 1.12.x
   - 1.13.x
   - 1.x
-#go: 1.x
+
+env:
+  - GO111MODULE=on
 
 script:
   - cd src/
