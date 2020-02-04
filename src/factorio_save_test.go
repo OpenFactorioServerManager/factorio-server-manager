@@ -4,6 +4,55 @@ import (
 	"testing"
 )
 
+// 0.18 Binary seems equal to 0.17 binary, just the default values changed
+func Test0_18(t *testing.T) {
+	file, err := OpenArchiveFile("factorio_save_testfiles/test_0_18.zip", "level.dat")
+	if err != nil {
+		t.Fatalf("Error opening level.dat: %s", err)
+	}
+	defer file.Close()
+
+	var header SaveHeader
+	err = header.ReadFrom(file)
+	if err != nil {
+		t.Fatalf("Error reading header: %s", err)
+	}
+
+	testHeader := SaveHeader{
+		FactorioVersion:           Version{0, 18, 2, 2},
+		Campaign:                  "transport-belt-madness",
+		Name:                      "level-01",
+		BaseMod:                   "base",
+		Difficulty:                1,
+		Finished:                  false,
+		PlayerWon:                 false,
+		NextLevel:                 "",
+		CanContinue:               false,
+		FinishedButContinuing:     false,
+		SavingReplay:              false,
+		AllowNonAdminDebugOptions: true,
+		LoadedFrom:                Version{0, 18, 2},
+		LoadedFromBuild:           49204,
+		AllowedCommands:           1,
+		Mods: []Mod{
+			{
+				Version: Version{0, 18, 2},
+				Name:    "base",
+			},
+			{
+				Version: Version{2, 0, 0},
+				Name:    "belt-balancer",
+			},
+			{
+				Version: Version{2, 0, 1},
+				Name:    "train-station-overview",
+			},
+		},
+	}
+
+	header.Equals(testHeader, t)
+}
+
 func Test0_17(t *testing.T) {
 	file, err := OpenArchiveFile("factorio_save_testfiles/test_0_17.zip", "level.dat")
 	if err != nil {
@@ -18,29 +67,29 @@ func Test0_17(t *testing.T) {
 	}
 
 	testHeader := SaveHeader{
-		FactorioVersion: Version{0,17,1,1},
-		Campaign: "transport-belt-madness",
-		Name: "level-01",
-		BaseMod: "base",
-		Difficulty: 0,
-		Finished: false,
-		PlayerWon: false,
-		NextLevel: "",
-		CanContinue: false,
-		FinishedButContinuing: false,
-		SavingReplay: true,
+		FactorioVersion:           Version{0, 17, 1, 1},
+		Campaign:                  "transport-belt-madness",
+		Name:                      "level-01",
+		BaseMod:                   "base",
+		Difficulty:                0,
+		Finished:                  false,
+		PlayerWon:                 false,
+		NextLevel:                 "",
+		CanContinue:               false,
+		FinishedButContinuing:     false,
+		SavingReplay:              true,
 		AllowNonAdminDebugOptions: true,
-		LoadedFrom: Version{0,17,1},
-		LoadedFromBuild: 43001,
-		AllowedCommands: 1,
-		Mods: []Mod {
+		LoadedFrom:                Version{0, 17, 1},
+		LoadedFromBuild:           43001,
+		AllowedCommands:           1,
+		Mods: []Mod{
 			{
-				Version: Version{0,2,0},
-				Name: "Warehousing",
+				Version: Version{0, 2, 0},
+				Name:    "Warehousing",
 			},
 			{
-				Version: Version{0,17,1},
-				Name: "base",
+				Version: Version{0, 17, 1},
+				Name:    "base",
 			},
 		},
 	}
@@ -62,29 +111,29 @@ func Test0_16(t *testing.T) {
 	}
 
 	testHeader := SaveHeader{
-		FactorioVersion: Version{0,16,51,0},
-		Campaign: "transport-belt-madness",
-		Name: "level-01",
-		BaseMod: "base",
-		Difficulty: 0,
-		Finished: false,
-		PlayerWon: false,
-		NextLevel: "",
-		CanContinue: false,
-		FinishedButContinuing: false,
-		SavingReplay: true,
+		FactorioVersion:           Version{0, 16, 51, 0},
+		Campaign:                  "transport-belt-madness",
+		Name:                      "level-01",
+		BaseMod:                   "base",
+		Difficulty:                0,
+		Finished:                  false,
+		PlayerWon:                 false,
+		NextLevel:                 "",
+		CanContinue:               false,
+		FinishedButContinuing:     false,
+		SavingReplay:              true,
 		AllowNonAdminDebugOptions: true,
-		LoadedFrom: Version{0,16,51},
-		LoadedFromBuild: 36654,
-		AllowedCommands: 1,
-		Mods: []Mod {
+		LoadedFrom:                Version{0, 16, 51},
+		LoadedFromBuild:           36654,
+		AllowedCommands:           1,
+		Mods: []Mod{
 			{
-				Version: Version{0,1,3},
-				Name: "Warehousing",
+				Version: Version{0, 1, 3},
+				Name:    "Warehousing",
 			},
 			{
-				Version: Version{0,16,51},
-				Name: "base",
+				Version: Version{0, 16, 51},
+				Name:    "base",
 			},
 		},
 	}
@@ -106,28 +155,28 @@ func Test0_15(t *testing.T) {
 	}
 
 	testHeader := SaveHeader{
-		FactorioVersion: Version{0,15,40,0},
-		Campaign: "transport-belt-madness",
-		Name: "level-01",
-		BaseMod: "base",
-		Difficulty: 0,
-		Finished: false,
-		PlayerWon: false,
-		NextLevel: "",
-		CanContinue: false,
+		FactorioVersion:       Version{0, 15, 40, 0},
+		Campaign:              "transport-belt-madness",
+		Name:                  "level-01",
+		BaseMod:               "base",
+		Difficulty:            0,
+		Finished:              false,
+		PlayerWon:             false,
+		NextLevel:             "",
+		CanContinue:           false,
 		FinishedButContinuing: false,
-		SavingReplay: true,
-		LoadedFrom: Version{0,15,40},
-		LoadedFromBuild: 30950,
-		AllowedCommands: 1,
-		Mods: []Mod {
+		SavingReplay:          true,
+		LoadedFrom:            Version{0, 15, 40},
+		LoadedFromBuild:       30950,
+		AllowedCommands:       1,
+		Mods: []Mod{
 			{
-				Version: Version{0,0,13},
-				Name: "Warehousing",
+				Version: Version{0, 0, 13},
+				Name:    "Warehousing",
 			},
 			{
-				Version: Version{0,15,40},
-				Name: "base",
+				Version: Version{0, 15, 40},
+				Name:    "base",
 			},
 		},
 	}
@@ -149,28 +198,28 @@ func Test0_14(t *testing.T) {
 	}
 
 	testHeader := SaveHeader{
-		FactorioVersion: Version{0,14,23,0},
-		Campaign: "transport-belt-madness",
-		Name: "level-01",
-		BaseMod: "base",
-		Difficulty: 1,
-		Finished: false,
-		PlayerWon: false,
-		NextLevel: "",
-		CanContinue: false,
+		FactorioVersion:       Version{0, 14, 23, 0},
+		Campaign:              "transport-belt-madness",
+		Name:                  "level-01",
+		BaseMod:               "base",
+		Difficulty:            1,
+		Finished:              false,
+		PlayerWon:             false,
+		NextLevel:             "",
+		CanContinue:           false,
 		FinishedButContinuing: false,
-		SavingReplay: true,
-		LoadedFrom: Version{0,14,23},
-		LoadedFromBuild: 25374,
-		AllowedCommands: 1,
-		Mods: []Mod {
+		SavingReplay:          true,
+		LoadedFrom:            Version{0, 14, 23},
+		LoadedFromBuild:       25374,
+		AllowedCommands:       1,
+		Mods: []Mod{
 			{
-				Version: Version{0,0,11},
-				Name: "Warehousing",
+				Version: Version{0, 0, 11},
+				Name:    "Warehousing",
 			},
 			{
-				Version: Version{0,14,23},
-				Name: "base",
+				Version: Version{0, 14, 23},
+				Name:    "base",
 			},
 		},
 	}
@@ -192,28 +241,28 @@ func Test0_13(t *testing.T) {
 	}
 
 	testHeader := SaveHeader{
-		FactorioVersion: Version{0,13,20,0},
-		Campaign: "transport-belt-madness",
-		Name: "level-01",
-		BaseMod: "base",
-		Difficulty: 1,
-		Finished: false,
-		PlayerWon: false,
-		NextLevel: "",
-		CanContinue: false,
+		FactorioVersion:       Version{0, 13, 20, 0},
+		Campaign:              "transport-belt-madness",
+		Name:                  "level-01",
+		BaseMod:               "base",
+		Difficulty:            1,
+		Finished:              false,
+		PlayerWon:             false,
+		NextLevel:             "",
+		CanContinue:           false,
 		FinishedButContinuing: false,
-		SavingReplay: true,
-		LoadedFrom: Version{0,13,20},
-		LoadedFromBuild: 24011,
-		AllowedCommands: 1,
-		Mods: []Mod {
+		SavingReplay:          true,
+		LoadedFrom:            Version{0, 13, 20},
+		LoadedFromBuild:       24011,
+		AllowedCommands:       1,
+		Mods: []Mod{
 			{
-				Version: Version{1,1,0},
-				Name: "Extra-Virtual-Signals",
+				Version: Version{1, 1, 0},
+				Name:    "Extra-Virtual-Signals",
 			},
 			{
-				Version: Version{0,13,20},
-				Name: "base",
+				Version: Version{0, 13, 20},
+				Name:    "base",
 			},
 		},
 	}
@@ -234,7 +283,7 @@ func (h *SaveHeader) Equals(other SaveHeader, t *testing.T) {
 	if h.BaseMod != other.BaseMod {
 		t.Errorf("BaseMod not equal: %s --- %s", h.BaseMod, other.BaseMod)
 	}
-	if h.Difficulty != other.Difficulty  {
+	if h.Difficulty != other.Difficulty {
 		t.Errorf("Difficulty not equal: %d --- %d", h.Difficulty, other.Difficulty)
 	}
 	if h.Finished != other.Finished {
