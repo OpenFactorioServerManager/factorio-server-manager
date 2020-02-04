@@ -67,15 +67,15 @@ class ModPackOverview extends React.Component {
             },
             showLoaderOnConfirm: true,
             preConfirm: (inputValue) => {
-                // console.log(this);
-
-                $.ajax({
+                // TODO remove jquery Ajax, use react one, return Promise from fetch
+                return new Promise((resolve, reject) => $.ajax({
                     url: "/api/mods/packs/create",
                     method: "POST",
                     data: {name: inputValue},
                     dataType: "JSON",
                     success: (data) => {
                         this.mutex.lock(() => {
+                            resolve();
                             let packList = this.state.listPacks;
 
                             data.data.mod_packs.forEach((v, k) => {
@@ -91,13 +91,14 @@ class ModPackOverview extends React.Component {
 
                             ReactSwalNormal.fire({
                                 title: "modpack created successfully",
-                                type: "success"
+                                icon: "success"
                             });
 
                             this.mutex.unlock();
                         });
                     },
                     error: (jqXHR, status, err) => {
+                        reject();
                         console.log('api/mods/packs/create', status, err.toString());
 
                         let jsonResponse = jqXHR.responseJSON;
@@ -105,10 +106,10 @@ class ModPackOverview extends React.Component {
                         ReactSwalNormal.fire({
                             title: "Error on creating modpack",
                             text: jsonResponse.data,
-                            type: "error"
+                            icon: "error"
                         });
                     }
-                });
+                }));
             }
         });
     }
@@ -121,11 +122,12 @@ class ModPackOverview extends React.Component {
         ReactSwalDanger.fire({
             title: "Are you sure?",
             html: <p>You really want to delete this modpack?<br/>There is no turning back, the modpack will be deleted forever (a very long time)!</p>,
-            type: "question",
+            icon: "question",
             showCancelButton: true,
             showLoaderOnConfirm: true,
             preConfirm: () => {
-                $.ajax({
+                // TODO remove jquery Ajax, use react one, return Promise from fetch
+                return new Promise((resolve, reject) => $.ajax({
                     url: "/api/mods/packs/delete",
                     method: "POST",
                     data: {name: name},
@@ -133,6 +135,7 @@ class ModPackOverview extends React.Component {
                     success: (data) => {
                         if(data.success) {
                             this.mutex.lock(() => {
+                                resolve();
                                 let modPacks = this.state.listPacks;
 
                                 modPacks.forEach((v, k) => {
@@ -147,7 +150,7 @@ class ModPackOverview extends React.Component {
 
                                 ReactSwalNormal.fire({
                                     title: "Modpack deleted successfully",
-                                    type: "success"
+                                    icon: "success"
                                 });
 
                                 this.mutex.unlock();
@@ -155,6 +158,7 @@ class ModPackOverview extends React.Component {
                         }
                     },
                     error: (jqXHR, status, err) => {
+                        reject();
                         console.log('api/mods/packs/delete', status, err.toString());
 
                         let jsonResponse = jqXHR.responseJSON || err.toString();
@@ -163,10 +167,10 @@ class ModPackOverview extends React.Component {
                         ReactSwalNormal.fire({
                             title: "Error on creating modpack",
                             text: jsonResponse,
-                            type: "error"
+                            icon: "error"
                         });
                     }
-                })
+                }));
             }
         });
     }
@@ -179,19 +183,21 @@ class ModPackOverview extends React.Component {
         ReactSwalDanger.fire({
             title: "Are you sure?",
             text: "This operation will replace the current installed mods with the mods out of the selected ModPack!",
-            type: "question",
+            icon: "question",
             showCancelButton: true,
             showLoaderOnConfirm: true,
             preConfirm: () => {
-                $.ajax({
+                // TODO remove jquery Ajax, use react one, return Promise from fetch
+                return new Promise((resolve, reject) => $.ajax({
                     url: "/api/mods/packs/load",
                     method: "POST",
                     data: {name: name},
                     dataType: "JSON",
                     success: (data) => {
+                        resolve();
                         ReactSwalNormal.fire({
                             title: "ModPack loaded!",
-                            type: "success"
+                            icon: "success"
                         });
 
                         this.props.modContentClass.setState({
@@ -199,6 +205,7 @@ class ModPackOverview extends React.Component {
                         });
                     },
                     error: (jqXHR, status, err) => {
+                        reject();
                         console.log('api/mods/packs/load', status, err.toString());
 
                         let jsonResponse = jqXHR.responseJSON || err.toString();
@@ -207,10 +214,10 @@ class ModPackOverview extends React.Component {
                         ReactSwalNormal.fire({
                             title: "Error on loading ModPack",
                             text: jsonResponse,
-                            type: "error"
+                            icon: "error"
                         });
                     }
-                })
+                }));
             }
         });
     }
@@ -227,7 +234,7 @@ class ModPackOverview extends React.Component {
             ReactSwalNormal.fire({
                 title: "Toggle mod failed",
                 text: "Can't toggle the mod, when an update is still in progress",
-                type: "error"
+                icon: "error"
             });
             return false;
         }
@@ -274,7 +281,7 @@ class ModPackOverview extends React.Component {
                 ReactSwalNormal.fire({
                     title: "Toggle Mod went wrong",
                     text: err.toString(),
-                    type: "error"
+                    icon: "error"
                 });
             }
         });
@@ -287,7 +294,7 @@ class ModPackOverview extends React.Component {
             ReactSwalNormal.fire({
                 title: "Delete failed",
                 text: "Can't delete the mod, when an update is still in progress",
-                type: "error"
+                icon: "error"
             });
             return false;
         }
@@ -300,13 +307,14 @@ class ModPackOverview extends React.Component {
         ReactSwalDanger.fire({
             title: "Delete Mod?",
             text: "This will delete the mod forever",
-            type: "question",
+            icon: "question",
             showCancelButton: true,
             confirmButtonText: "Delete it!",
             cancelButtonText: "Close",
             showLoaderOnConfirm: true,
             preConfirm: () => {
-                $.ajax({
+                // TODO remove jquery Ajax, use react one, return Promise from fetch
+                return new Promise((resolve, reject) => $.ajax({
                     url: "/api/mods/packs/mod/delete",
                     method: "POST",
                     data: {
@@ -317,9 +325,10 @@ class ModPackOverview extends React.Component {
                     success: (data) => {
                         if(data.success) {
                             this.mutex.lock(() => {
+                                resolve();
                                 ReactSwalNormal.fire({
                                     title: <p>Delete of mod {modName} inside modPack {modPackName} successful</p>,
-                                    type: "success"
+                                    icon: "success"
                                 })
 
                                 let packList = this.state.listPacks;
@@ -344,14 +353,15 @@ class ModPackOverview extends React.Component {
                         }
                     },
                     error: (jqXHR, status, err) => {
+                        reject();
                         console.log('api/mods/packs/mod/delete', status, err.toString());
                         ReactSwalNormal.fire({
                             title: "Delete Mod went wrong",
                             text: jqXHR.responseJSON.data,
-                            type: "error"
+                            icon: "error"
                         });
                     }
-                });
+                }));
             }
         });
     }
@@ -363,7 +373,7 @@ class ModPackOverview extends React.Component {
             ReactSwalNormal.fire({
                 title: "Update failed",
                 text: "please login into Factorio to update mod",
-                type: "error",
+                icon: "error",
             });
 
             let $addModBox = $('#add-mod-box');
@@ -423,7 +433,7 @@ class ModPackOverview extends React.Component {
                     ReactSwalNormal.fire({
                         title: "Update Mod went wrong",
                         text: jqXHR.responseJSON.data,
-                        type: "error"
+                        icon: "error"
                     });
                 }
             });
@@ -431,7 +441,7 @@ class ModPackOverview extends React.Component {
     }
 
     render() {
-        let classes = "box-body" + " " + this.props.className;
+        let classes = "card-body" + " " + this.props.className;
         let ids = this.props.id;
 
         return(
@@ -441,34 +451,29 @@ class ModPackOverview extends React.Component {
                         this.state.listPacks.map(
                             (modpack, index) => {
                                 return(
-                                    <div key={modpack.name} className="box single-modpack collapsed-box">
-                                        <div className="box-header"
-                                             data-toggle="collapse"
-                                             data-target={"#" + modpack.name}
-                                             aria-expanded="false"
-                                             aria-controls={modpack.name}
-                                             style={{cursor: "pointer"}}
-                                        >
-                                            <FontAwesomeIcon icon="plus"/>
-                                            <h3 className="box-title">{modpack.name}</h3>
-                                            <div className="box-tools pull-right">
+                                    <div key={modpack.name} className="card single-modpack collapsed-card">
+                                        <div className="card-header">
+                                            <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
+                                                <FontAwesomeIcon icon="plus"/>
+                                            </button>
+                                            <h3 className="card-title">{modpack.name}</h3>
+                                            <div className="card-tools pull-right">
                                                 <NativeListener onClick={this.downloadModPack}>
-                                                    <a className="btn btn-box-tool btn-default" style={{marginRight: 10}} href={"/api/mods/packs/download/" + modpack.name} download>Download</a>
+                                                    <a className="btn btn-tool btn-default" style={{marginRight: 10}} href={"/api/mods/packs/download/" + modpack.name} download>Download</a>
                                                 </NativeListener>
 
                                                 <NativeListener onClick={this.loadModPack}>
-                                                    <button className="btn btn-box-tool btn-default" style={{marginRight: 10}}>Load ModPack</button>
+                                                    <button className="btn btn-tool btn-default" style={{marginRight: 10}}>Load ModPack</button>
                                                 </NativeListener>
 
                                                 <NativeListener onClick={this.deleteModPack}>
-                                                    <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>Delete</button>
+                                                    <button className="btn btn-tool btn-danger" style={{color: "#fff"}}>Delete</button>
                                                 </NativeListener>
                                             </div>
                                         </div>
 
                                         <ModManager
                                             {...this.props}
-                                            className="collapse"
                                             id={modpack.name}
                                             installedMods={modpack.mods.mods}
                                             deleteMod={this.modPackDeleteModHandler}
@@ -482,10 +487,12 @@ class ModPackOverview extends React.Component {
                     : null
                 }
 
-                <div className="box">
-                    <div className="box-header" style={{cursor: "pointer"}} onClick={this.createModPack}>
-                        <FontAwesomeIcon icon="plus"/>
-                        <h3 className="box-title">Add ModPack with current installed mods</h3>
+                <div className="card">
+                    <div className="card-header" style={{cursor: "pointer"}} onClick={this.createModPack}>
+                        <button type="button" className="btn btn-tool active">
+                            <FontAwesomeIcon icon="plus"/>
+                        </button>
+                        <h3 className="card-title">Add ModPack with current installed mods</h3>
                     </div>
                 </div>
             </div>

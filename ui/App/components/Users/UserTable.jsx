@@ -12,7 +12,7 @@ class UserTable extends React.Component {
         ReactSwalDanger.fire({
             title: "Are you sure?",
             html: <p>User {user} will be deleted!</p>,
-            type: "question",
+            icon: "question",
             showCancelButton: true,
             confirmButtonText: "Yes, delete it!",
             showLoaderOnConfirm: true,
@@ -42,7 +42,7 @@ class UserTable extends React.Component {
                 ReactSwalNormal.fire({
                     title: "Deleted!",
                     text: result.value,
-                    type: "success"
+                    icon: "success"
                 });
                 this.props.listUsers();
             }
@@ -50,7 +50,7 @@ class UserTable extends React.Component {
             ReactSwalNormal.fire({
                 title: "An error occurred!",
                 text: result,
-                type: "error"
+                icon: "error"
             });
         });
 

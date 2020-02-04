@@ -20,7 +20,7 @@ class ModUpload extends React.Component {
     }
 
     render() {
-        let classes = "box-body" + " " + this.props.className;
+        let classes = "card-body" + " " + this.props.className;
         let ids = this.props.id;
 
         return(

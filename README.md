@@ -100,7 +100,7 @@ All api actions are accessible with the /api route.  The frontend is accessible 
 
 #### Requirements
 + Go 1.11
-+ NodeJS
++ NodeJS >10.13.0
 
 #### Building Releases
 Creates a release zip for windows and linux: (this will install the dependencies listed in gopkgdeps)

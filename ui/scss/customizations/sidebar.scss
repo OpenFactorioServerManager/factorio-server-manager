@@ -1,3 +1,22 @@
+.main-sidebar {
+    .brand-link {
+        .logo-xl {
+            display: inline-flex;
+
+            img {
+                width: 2rem;
+                height: 2rem;
+            }
+            .info {
+                display: inline-block;
+            }
+        }
+        .logo-xs {
+            font-size: 1.05rem;
+        }
+    }
+}
+
 .user-panel {
     display: flex;
 

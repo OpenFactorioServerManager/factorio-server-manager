@@ -41,7 +41,7 @@ class ModOverview extends React.Component {
 
                 ReactSwalNormal.fire({
                     title: json_data.detail,
-                    type: "error"
+                    icon: "error"
                 });
             }
         })
@@ -54,21 +54,16 @@ class ModOverview extends React.Component {
     render() {
         return(
             <div>
-                <div className="box collapsed-box" id="add-mod-box">
-                    <div className="box-header"
-                         data-toggle="collapse"
-                         data-target="#modSearch"
-                         aria-expanded="false"
-                         aria-controls="modSearch"
-                         role="button"
-                         style={{cursor: "pointer"}}
-                    >
-                        <FontAwesomeIcon icon="plus"/>
-                        <h3 className="box-title">Add Mod</h3>
+                <div className="card collapsed-card" id="add-mod-box">
+                    <div className="card-header">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
+                            <FontAwesomeIcon icon="plus"/>
+                        </button>
+                        <h3 className="card-title">Add Mod</h3>
                         {this.props.loggedIn ?
-                            <div className="box-tools pull-right">
+                            <div className="card-tools">
                                 <NativeListener onClick={this.props.factorioLogoutHandler}>
-                                    <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>
+                                    <button className="btn btn-tool btn-danger">
                                         Logout
                                     </button>
                                 </NativeListener>
@@ -79,69 +74,48 @@ class ModOverview extends React.Component {
                     <ModSearch
                         {...this.state}
                         {...this.props}
-                        className="collapse"
-                        id="modSearch"
                         submitSearchMod={this.handlerSearchMod}
                         submitFactorioLogin={this.props.submitFactorioLogin}
                     />
                 </div>
 
-                <div className="box collapsed-box">
-                    <div className="box-header"
-                         data-toggle="collapse"
-                         data-target="#modUpload"
-                         aria-expanded="false"
-                         aria-controls="modUpload"
-                         role="button"
-                         style={{cursor: "pointer"}}
-                    >
-                        <FontAwesomeIcon icon="plus"/>
-                        <h3 className="box-title">Upload Mod</h3>
+                <div className="card collapsed-card">
+                    <div className="card-header">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
+                            <FontAwesomeIcon icon="plus"/>
+                        </button>
+                        <h3 className="card-title">Upload Mod</h3>
                     </div>
 
                     <ModUpload
                         {...this.props}
-                        className="collapse"
-                        id="modUpload"
                     />
                 </div>
 
-                <div className="box collapsed-box">
-                    <div className="box-header"
-                         data-toggle="collapse"
-                         data-target="#modLoadSave"
-                         aria-expanded="false"
-                         aria-controls="modLoadSave"
-                         role="button"
-                         style={{cursor: "pointer"}}
-                    >
-                        <FontAwesomeIcon icon="plus"/>
-                        <h3 className="box-title">Load Mods From Save</h3>
+                <div className="card collapsed-card">
+                    <div className="card-header">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
+                            <FontAwesomeIcon icon="plus"/>
+                        </button>
+                        <h3 className="card-title">Load Mods From Save</h3>
                     </div>
 
                     <ModLoadSave
                         {...this.props}
-                        className="collapse"
-                        id="modLoadSave"
                     />
                </div>
 
-                <div className="box" id="manage-mods">
-                    <div className="box-header"
-                         data-toggle="collapse"
-                         data-target="#modManager"
-                         aria-expanded="true"
-                         aria-controls="modManager"
-                         role="button"
-                         style={{cursor: "pointer"}}
-                    >
-                        <FontAwesomeIcon icon="minus"/>
-                        <h3 className="box-title">Manage Mods</h3>
-                        <div className="box-tools float-sm-right">
+                <div className="card" id="manage-mods">
+                    <div className="card-header">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
+                            <FontAwesomeIcon icon="minus"/>
+                        </button>
+                        <h3 className="card-title">Manage Mods</h3>
+                        <div className="card-tools">
                             {
                                 this.props.installedMods != null ?
                                     <NativeListener onClick={this.downloadAllHandler}>
-                                        <a className="btn btn-box-tool btn-default" style={{marginRight: 20}} href={"/api/mods/download"} download>
+                                        <a className="btn btn-tool btn-default" href={"/api/mods/download"} download>
                                             Download all Mods
                                         </a>
                                     </NativeListener>
@@ -150,7 +124,7 @@ class ModOverview extends React.Component {
                             {
                                 this.props.updatesAvailable > 0 ?
                                     <NativeListener onClick={this.props.updateAllMods}>
-                                        <button className="btn btn-box-tool btn-default" style={{marginRight: 20}}>
+                                        <button className="btn btn-tool btn-default">
                                             Update all Mods
                                         </button>
                                     </NativeListener>
@@ -159,7 +133,7 @@ class ModOverview extends React.Component {
                             {
                                 this.props.installedMods != null ?
                                     <NativeListener onClick={this.props.deleteAll}>
-                                        <button className="btn btn-box-tool btn-danger" style={{color: "#fff"}}>
+                                        <button className="btn btn-tool btn-danger">
                                             Delete ALL Mods
                                         </button>
                                     </NativeListener>
@@ -171,26 +145,19 @@ class ModOverview extends React.Component {
                     <ModManager
                         {...this.props}
                         id="modManager"
-                        className="show"
                     />
                 </div>
 
-                <div className="box collapsed-box">
-                    <div className="box-header"
-                         data-toggle="collapse"
-                         data-target="#modPacks"
-                         aria-expanded="false"
-                         aria-controls="modPacks"
-                         role="button"
-                         style={{cursor: "pointer"}}
-                    >
-                        <FontAwesomeIcon icon="plus"/>
-                        <h3 className="box-title">Manage Modpacks</h3>
+                <div className="card collapsed-card">
+                    <div className="card-header">
+                        <button type="button" className="btn btn-tool btn-collapse" data-card-widget="collapse">
+                            <FontAwesomeIcon icon="plus"/>
+                        </button>
+                        <h3 className="card-title">Manage Modpacks</h3>
                     </div>
 
                     <ModPacks
                         {...this.props}
-                        className="collapse"
                         id="modPacks"
                     />
                 </div>

@@ -6,6 +6,7 @@ import FontAwesomeIcon from "../FontAwesomeIcon";
 class ServerCtl extends React.Component {
     constructor(props) {
         super(props);
+
         this.startServer = this.startServer.bind(this);
         this.stopServer = this.stopServer.bind(this);
         this.killServer = this.killServer.bind(this);
@@ -13,20 +14,19 @@ class ServerCtl extends React.Component {
         this.incrementPort = this.incrementPort.bind(this);
         this.decrementPort = this.decrementPort.bind(this);
 
-        this.state = {
-            gameBindIP: "0.0.0.0",
-            savefile: "",
-            port: 34197,
-        }
+        this.gameBindIPRef = React.createRef();
+        this.saveFileRef = React.createRef();
+        this.portRef = React.createRef();
     }
 
     startServer(e) {
         e.preventDefault();
         let serverSettings = {
-            bindip: this.refs.gameBindIP.value,
-            savefile: this.refs.savefile.value,
-            port: Number(this.refs.port.value),
+            bindip: this.gameBindIPRef.current.value,
+            savefile: this.saveFileRef.current.value,
+            port: Number(this.portRef.current.value),
         }
+
         $.ajax({
             type: "POST",
             url: "/api/server/start",
@@ -39,21 +39,16 @@ class ServerCtl extends React.Component {
                     ReactSwalNormal.fire({
                         title: "Factorio server started",
                         text: resp.data,
-                        type: "success"
+                        icon: "success"
                     });
                 } else {
                     ReactSwalNormal.fire({
                         title: "Error starting Factorio server",
                         text: resp.data,
-                        type: "error"
+                        icon: "error"
                     });
                 }
             }
-        });
-
-        this.setState({
-            savefile: this.refs.savefile.value,
-            port: Number(this.refs.port.value),
         });
     }
 
@@ -92,48 +87,49 @@ class ServerCtl extends React.Component {
     }
 
     incrementPort() {
-        let port = this.state.port + 1;
-        this.setState({port: port})
+        this.portRef.current.value = Number(this.portRef.current.value) + 1;
     }
 
     decrementPort() {
-        let port = this.state.port - 1;
-        this.setState({port: port})
+        this.portRef.current.value = Number(this.portRef.current.value - 1);
     }
 
     render() {
         return (
-            <div id="serverCtl" className="box">
-                <div className="box-header">
-                    <h3 className="box-title">Server Control</h3>
+            <div id="serverCtl" className="card">
+                <div className="card-header">
+                    <h3 className="card-title">Server Control</h3>
                 </div>
 
-                <div className="box-body">
+                <div className="card-body">
                     <form action="" onSubmit={this.startServer}>
-                        <div className="form-group">
-                            <div className="row">
-                                <div className="col-md-4">
-                                    <button className="btn btn-block btn-success" type="submit">
-                                        <FontAwesomeIcon icon="play" className="fa-fw"/>Start Factorio Server
-                                    </button>
-                                </div>
-
-                                <div className="col-md-4">
-                                    <button className="btn btn-block btn-warning" type="button" onClick={this.stopServer}>
-                                        <FontAwesomeIcon icon="stop" className="fa-fw"/>Stop &amp; Save Factorio Server
-                                    </button>
-                                </div>
-
-                                <div className="col-md-4">
-                                    <button className="btn btn-block btn-danger" type="button" onClick={this.killServer}>
-                                        <FontAwesomeIcon icon="close" className="fa-fw"/>Stop Factorio Server without Saving
-                                    </button>
-                                </div>
+                        <div className="row">
+                            <div className="col-md-4">
+                                <button className="btn btn-block btn-success" type="submit">
+                                    <FontAwesomeIcon icon="play" className="fa-fw"/>Start Factorio Server
+                                </button>
                             </div>
 
-                            <hr/>
+                            <div className="col-md-4">
+                                <button className="btn btn-block btn-warning" type="button"
+                                        onClick={this.stopServer}>
+                                    <FontAwesomeIcon icon="stop" className="fa-fw"/>Stop &amp; Save Factorio Server
+                                </button>
+                            </div>
+
+                            <div className="col-md-4">
+                                <button className="btn btn-block btn-danger" type="button"
+                                        onClick={this.killServer}>
+                                    <FontAwesomeIcon icon="close" className="fa-fw"/>Stop Factorio Server without
+                                    Saving
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr/>
+                        <div className="form-group">
                             <label>Select Save File</label>
-                            <select ref="savefile" className="form-control">
+                            <select ref={this.saveFileRef} className="form-control">
                                 {this.props.saves.map((save, i) => {
                                     return (
                                         <option key={save.name} value={save.name}>{save.name}</option>
@@ -143,55 +139,43 @@ class ServerCtl extends React.Component {
                             </select>
                         </div>
 
-                        <div className="box box-success advanced">
-                            <button type="button"
-                                    className="btn btn-box-tool"
-                                    data-toggle="collapse"
-                                    data-target="#serverCtlAdvanced"
-                                    aria-expanded="false"
-                                    aria-controls="serverCtlAdvanced"
-                            >
-                                <div className="box-header with-border">
-                                    <FontAwesomeIcon icon="plus" className="fa-fw"/>
-                                    <div className="box-title">Advanced</div>
-                                </div>
-                            </button>
-                            <div id="serverCtlAdvanced" className="box-body collapse">
-                                <label htmlFor="port">Factorio Server IP</label>
-                                <div id="port" className="input-group">
-                                    <input ref="gameBindIP"
-                                           name="gameBindIP"
-                                           id="gameBindIP"
-                                           type="text"
-                                           className="form-control"
-                                           defaultValue={this.state.gameBindIP}
-                                           placeholder={this.state.gameBindIP}/>
-                                </div>
-                                <label htmlFor="port">Factorio Server Port</label>
-                                <div id="port" className="input-group">
-                                    <input ref="port"
-                                           name="port"
-                                           id="port"
-                                           type="text"
-                                           className="form-control"
-                                           defaultValue={this.state.port}
-                                           placeholder={this.state.port}
-                                    />
-                                    <div className="input-group-btn">
-                                        <button type="button" className="btn btn-primary" onClick={this.incrementPort}>
-                                            <FontAwesomeIcon icon="arrow-up"/>
-                                        </button>
-                                        <button type="button" className="btn btn-primary" onClick={this.decrementPort}>
-                                            <FontAwesomeIcon icon="arrow-down"/>
-                                        </button>
-                                    </div>
+                        <div className="form-group">
+                            <label htmlFor="gameBindIP">Factorio Server IP</label>
+                            <div className="input-group">
+                                <input ref={this.gameBindIPRef}
+                                       name="gameBindIP"
+                                       id="gameBindIP"
+                                       type="text"
+                                       className="form-control"
+                                       defaultValue="0.0.0.0"
+                                       placeholder="0.0.0.0"/>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="port">Factorio Server Port</label>
+                            <div className="input-group">
+                                <input ref={this.portRef}
+                                       name="port"
+                                       id="port"
+                                       type="text"
+                                       className="form-control"
+                                       defaultValue="34197"
+                                       placeholder="34197"
+                                />
+                                <div className="input-group-btn">
+                                    <button type="button" className="btn btn-primary" onClick={this.incrementPort}>
+                                        <FontAwesomeIcon icon="arrow-up"/>
+                                    </button>
+                                    <button type="button" className="btn btn-primary" onClick={this.decrementPort}>
+                                        <FontAwesomeIcon icon="arrow-down"/>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-
         )
     }
 }
