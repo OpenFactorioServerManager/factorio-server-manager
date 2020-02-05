@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Added
+- Updated adminLTE to v3 with bootstrap 4.
 
 ## [0.8.2] - 2020-01-08
 Many bugfixes and a few small features in this release.
