@@ -1,25 +1,4 @@
-global.$ = global.jQuery = require('jquery');
-require('bootstrap');
-require('admin-lte/build/js/AdminLTE.js');
-require('bootstrap-fileinput');
-require('bootstrap-fileinput/themes/fas/theme');
-
-
-/**
- * Change the plus and minus when opening or closing bootstraps collapse object
- */
-$('body').on("show.bs.collapse hide.bs.collapse", (e) => {
-    let $target = $(e.target);
-    let $box = $target.parent(".box");
-    let $fontAwesome = $box.children(".box-header").children("i");
-
-    if(e.type == "show") {
-        $fontAwesome.removeClass("fa-plus").addClass("fa-minus");
-    } else if(e.type == "hide") {
-        $fontAwesome.removeClass("fa-minus").addClass("fa-plus");
-    }
-});
-
+import regeneratorRuntime from "regenerator-runtime"
 
 /**
  * Import Stuff for React
