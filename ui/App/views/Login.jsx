@@ -1,14 +1,18 @@
 import React from 'react';
 import {useForm} from "react-hook-form";
 import user from "../../api/resources/user";
+import Button from "../elements/Button";
+import {useHistory} from "react-router";
 
 const Login = () => {
     const {register, handleSubmit, errors} = useForm();
+    const history = useHistory();
 
-    // todo call api
     const onSubmit = async data => {
         const res = await user.login(data)
-        console.log(res)
+        if (res.success) {
+            history.push('/')
+        }
     };
 
     return (
@@ -41,10 +45,7 @@ const Login = () => {
                         {errors.password && <span className="block text-red">Password is required</span>}
                     </div>
                     <div className="text-center">
-                        <button className="bg-green hover:bg-green-light text-black font-bold py-2 px-4 w-full"
-                                type="submit">
-                            Sign In
-                        </button>
+                        <Button/>
                         <a className="bg-gray-light hover:bg-orange text-black py-2 px-4 mt-2 w-full block align-baseline font-bold text-sm text-blue hover:text-blue-darker"
                            href="#">
                             Forgot Password?

@@ -18,18 +18,19 @@ class UsersContent extends React.Component {
     }
 
     listUsers() {
-        $.ajax({
-            type: "GET",
-            url: "/api/user/list",
-            dataType: "json",
-            success: (resp) => {
-                if (resp.success === true) {
-                    this.setState({users: resp.data})
-                } else {
-                    console.log("error listing users.")
-                }
-            }
-        })
+        // $.ajax({
+        //     type: "GET",
+        //     url: "/api/user/list",
+        //     dataType: "json",
+        //     success: (resp) => {
+        //         if (resp.success === true) {
+        //             this.setState({users: resp.data})
+        //         } else {
+        //             console.log("error listing users.")
+        //         }
+        //     }
+        // })
+        this.setState({users: []});
     }
 
     render() {

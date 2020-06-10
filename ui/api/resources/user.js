@@ -6,7 +6,7 @@ export default {
         return response.data;
     },
     login: async data => {
-        const response = await client.post('/api/login');
+        const response = await client.post('/api/login', JSON.stringify(data));
         return response.data;
     }
 }
