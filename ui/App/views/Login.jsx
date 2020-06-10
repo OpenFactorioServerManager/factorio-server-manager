@@ -1,19 +1,30 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useForm} from "react-hook-form";
 import user from "../../api/resources/user";
 import Button from "../elements/Button";
 import {useHistory} from "react-router";
 
-const Login = () => {
+const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
     const history = useHistory();
 
     const onSubmit = async data => {
-        const res = await user.login(data)
-        if (res.success) {
+        const status = await user.login(data)
+        if (status.success) {
+            handleLogin()
             history.push('/')
         }
     };
+
+    // on mount check if user is authenticated
+    useEffect(() => {
+        user.status().then(status => {
+            if (status.success) {
+                handleLogin()
+                history.push('/')
+            }
+        })
+    }, [])
 
     return (
         <div className="h-screen overflow-hidden flex items-center justify-center bg-banner">

@@ -1,7 +1,15 @@
 import React from "react";
+import Layout from "../components/Layout";
 
 const Dashboard = () => {
-    return (<h1>Dashboard</h1>)
+
+
+
+    return (
+        <Layout>
+            <h1>Dashboard</h1>
+        </Layout>
+    )
 }
 
 export default Dashboard;

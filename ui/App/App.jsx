@@ -1,8 +1,8 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 
 import user from "../api/resources/user";
 import Login from "./views/Login";
-import {Redirect, Route, Switch} from "react-router";
+import {Redirect, Route} from "react-router";
 import Dashboard from "./views/Dashboard";
 import {BrowserRouter} from "react-router-dom";
 
@@ -10,21 +10,14 @@ const App = () => {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const handleLogin = async () => {
+    const handleAuthenticationStatus = async () => {
         const status = await user.status();
         setIsAuthenticated(status.success);
     };
 
-    // on mount check if user is authenticated
-    useEffect(() => {
-
-    }, [])
-
-
-
-    const ProtectedRoute = useCallback(({component: Component, loggedIn, ...rest}) => (
+    const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
         <Route {...rest} render={(props) => (
-            loggedIn
+            isAuthenticated
                 ? <Component {...props} />
                 : <Redirect to={{
                     pathname: '/login',
@@ -33,11 +26,10 @@ const App = () => {
         )}/>
     ), [isAuthenticated]);
 
-    // List of all Routes
     return (
         <BrowserRouter>
-            <ProtectedRoute exact path="/" loggedIn={isAuthenticated} component={Dashboard}/>
-            <Route path="/login" component={Login} handleLogin={handleLogin()}/>
+            <ProtectedRoute exact path="/" component={Dashboard}/>
+            <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus} />)} />
         </BrowserRouter>
     );
 }
