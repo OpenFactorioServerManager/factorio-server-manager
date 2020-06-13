@@ -57,10 +57,6 @@ const Login = ({handleLogin}) => {
                     </div>
                     <div className="text-center">
                         <Button/>
-                        <a className="bg-gray-light hover:bg-orange text-black py-2 px-4 mt-2 w-full block align-baseline font-bold text-sm text-blue hover:text-blue-darker"
-                           href="#">
-                            Forgot Password?
-                        </a>
                     </div>
                 </div>
             </form>

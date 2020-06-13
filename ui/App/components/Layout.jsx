@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import server from "../../api/resources/server";
+import {NavLink} from "react-router-dom";
 
 const Layout = (props) => {
 
@@ -35,32 +36,57 @@ const Layout = (props) => {
         )
     }
 
+    const Link = ({children, to, last}) => {
+        return (
+            <NavLink
+                exact={true}
+                to={to}
+                activeClassName="bg-orange"
+                className={`bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 w-full block${last ? '' : ' mb-1'}`}
+            >{children}</NavLink>)
+    }
+
     return (
         <div className="flex md:flex-row-reverse flex-wrap">
 
             {/*Main*/}
-            <div className="w-full md:w-4/5 bg-gray-100 bg-banner min-h-screen">
-                <div className="container bg-gray-100 pt-16 px-6">
+            <div className="w-full md:w-5/6 bg-gray-100 bg-banner bg-fixed min-h-screen">
+                <div className="container mx-auto bg-gray-100 pt-16 px-6">
                     {props.children}
                 </div>
             </div>
 
             {/*Sidebar*/}
             <div
-                className="w-full border-r border-black md:w-1/5 bg-gray-dark fixed bottom-0 md:top-0 md:left-0 h-16 md:h-screen">
+                className="w-full border-r border-black md:w-1/6 bg-gray-dark fixed bottom-0 md:top-0 md:left-0 h-16 md:h-screen">
                 <div className="py-4 px-2 border-b-2 border-black items-center text-center">
                     <img src="/images/factorio.jpg" className="inline h-8" alt="Factorio Logo"/>
                     <span className="text-dirty-white pl-2 text-xl">Factorio Server Manager</span>
                 </div>
                 <div className="py-4 px-2 border-b-2 border-black">
                     <h1 className="text-dirty-white text-lg mb-2 mx-4">Server Status</h1>
-                    <div className="text-white text-center rounded-sm bg-gray-medium shadow-inner mx-4 px-6 py-6 mb-4">
+                    <div className="mx-4 mb-4 text-center">
                         <Status info={serverStatus}/>
                     </div>
                 </div>
-                <nav className="py-4 px-2 border-b-2 border-black">
-                    <h1>Server Control</h1>
-                </nav>
+                <div className="py-4 px-2 border-b-2 border-black">
+                    <h1 className="text-dirty-white text-lg mb-2 mx-4">Server Management</h1>
+                    <div className="text-white text-center rounded-sm bg-black shadow-inner mx-4 p-1">
+                        <Link to="/">Controls</Link>
+                        <Link to="/saves">Saves</Link>
+                        <Link to="/mods">Mods</Link>
+                        <Link to="/server-settings">Server Settings</Link>
+                        <Link to="/game-settings">Game Settings</Link>
+                        <Link to="/console">Console</Link>
+                        <Link to="/logs" last={true}>Logs</Link>
+                    </div>
+                </div>
+                <div className="py-4 px-2 border-b-2 border-black">
+                    <h1 className="text-dirty-white text-lg mb-2 mx-4">Administration</h1>
+                    <div className="text-white text-center rounded-sm bg-black shadow-inner mx-4 p-1">
+                        <Link to="/user-management" last={true}>User Management</Link>
+                    </div>
+                </div>
             </div>
         </div>
     );

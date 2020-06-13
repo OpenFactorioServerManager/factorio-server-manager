@@ -3,8 +3,9 @@ import React, {useCallback, useState} from 'react';
 import user from "../api/resources/user";
 import Login from "./views/Login";
 import {Redirect, Route} from "react-router";
-import Dashboard from "./views/Dashboard";
+import Controls from "./views/Controls";
 import {BrowserRouter} from "react-router-dom";
+import Logs from "./views/Logs";
 
 const App = () => {
 
@@ -28,7 +29,14 @@ const App = () => {
 
     return (
         <BrowserRouter>
-            <ProtectedRoute exact path="/" component={Dashboard}/>
+            <ProtectedRoute exact path="/" component={Controls}/>
+            <ProtectedRoute path="/saves" component={Controls}/>
+            <ProtectedRoute path="/mods" component={Controls}/>
+            <ProtectedRoute path="/server-settings" component={Controls}/>
+            <ProtectedRoute path="/game-settings" component={Controls}/>
+            <ProtectedRoute path="/console" component={Controls}/>
+            <ProtectedRoute path="/logs" component={Logs}/>
+            <ProtectedRoute path="/user-management" component={Controls}/>
             <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus} />)} />
         </BrowserRouter>
     );
