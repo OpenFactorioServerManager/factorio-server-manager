@@ -2,11 +2,12 @@ import React, {useEffect} from 'react';
 import {useForm} from "react-hook-form";
 import user from "../../api/resources/user";
 import Button from "../elements/Button";
-import {useHistory} from "react-router";
+import {useHistory, useLocation} from "react-router";
 
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
     const history = useHistory();
+    const location = useLocation()
 
     const onSubmit = async data => {
         const status = await user.login(data)
@@ -21,7 +22,7 @@ const Login = ({handleLogin}) => {
         user.status().then(status => {
             if (status.success) {
                 handleLogin()
-                history.push('/')
+                history.push(location?.state?.from || '/');
             }
         })
     }, [])
