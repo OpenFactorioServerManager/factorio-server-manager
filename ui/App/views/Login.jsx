@@ -57,7 +57,7 @@ const Login = ({handleLogin}) => {
                         {errors.password && <span className="block text-red">Password is required</span>}
                     </div>
                     <div className="text-center">
-                        <Button/>
+                        <Button type="success" isSubmit={true}>Sign In</Button>
                     </div>
                 </div>
             </form>

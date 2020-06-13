@@ -2,7 +2,7 @@ import React, {useCallback, useState} from 'react';
 
 import user from "../api/resources/user";
 import Login from "./views/Login";
-import {Redirect, Route, Switch} from "react-router";
+import {Redirect, Route, Switch, useHistory} from "react-router";
 import Controls from "./views/Controls";
 import {BrowserRouter} from "react-router-dom";
 import Logs from "./views/Logs";
@@ -12,11 +12,20 @@ import Layout from "./components/Layout";
 const App = () => {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const history = useHistory();
 
     const handleAuthenticationStatus = async () => {
         const status = await user.status();
         setIsAuthenticated(status.success);
     };
+
+    const handleLogout = async () => {
+        const loggedOut = await user.logout();
+        if (loggedOut.success) {
+            setIsAuthenticated(false);
+            history.push('/login');
+        }
+    }
 
     const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
         <Route {...rest} render={(props) => (
@@ -34,7 +43,7 @@ const App = () => {
             <Switch>
                 <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
 
-                <Layout>
+                <Layout handleLogout={handleLogout}>
                     <ProtectedRoute exact path="/" component={Controls}/>
                     <ProtectedRoute path="/saves" component={Saves}/>
                     <ProtectedRoute path="/mods" component={Controls}/>

@@ -1,10 +1,12 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import server from "../../api/resources/server";
-import {NavLink} from "react-router-dom";
+import {NavLink, useHistory} from "react-router-dom";
+import Button from "../elements/Button";
 
-const Layout = (props) => {
+const Layout = ({children, handleLogout}) => {
 
     const [serverStatus, setServerStatus] = useState(null);
+    const history = useHistory();
 
     useEffect(() => {
         (async () => {
@@ -15,17 +17,16 @@ const Layout = (props) => {
         })();
     }, []);
 
-    const Status = (props) => {
+    const Status = ({info}) => {
 
         let text = 'Unknown';
         let color = 'gray-light';
 
-        if (props.info && props.info.success) {
-            console.log(props.info);
-            if (props.info.data.status === 'running') {
+        if (info && info.success) {
+            if (info.data.status === 'running') {
                 text = 'Running';
                 color = 'green';
-            } else if (props.info.data.status === 'stopped') {
+            } else if (info.data.status === 'stopped') {
                 text = 'Stopped';
                 color = 'red';
             }
@@ -52,7 +53,7 @@ const Layout = (props) => {
             {/*Main*/}
             <div className="w-full md:w-5/6 bg-gray-100 bg-banner bg-fixed min-h-screen">
                 <div className="container mx-auto bg-gray-100 pt-16 px-6">
-                    {props.children}
+                    {children}
                 </div>
             </div>
 
@@ -84,7 +85,13 @@ const Layout = (props) => {
                 <div className="py-4 px-2 border-b-2 border-black">
                     <h1 className="text-dirty-white text-lg mb-2 mx-4">Administration</h1>
                     <div className="text-white text-center rounded-sm bg-black shadow-inner mx-4 p-1">
-                        <Link to="/user-management" last={true}>User Management</Link>
+                        <Link to="/user-management">User Management</Link>
+                        <Link to="/help" last={true}>Help</Link>
+                    </div>
+                </div>
+                <div className="py-4 px-2 border-b-2 border-black">
+                    <div className="text-white text-center rounded-sm bg-black shadow-inner mx-4 p-1">
+                        <Button type="danger" onClick={handleLogout}>Logout</Button>
                     </div>
                 </div>
             </div>
