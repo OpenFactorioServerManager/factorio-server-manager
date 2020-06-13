@@ -14,7 +14,6 @@ const Logs = () => {
     }, [])
 
     return (
-        <Layout>
         <div className="rounded-sm bg-gray-dark shadow-xl pb-4">
             <div className="px-4 py-2 text-xl text-dirty-white font-bold">
                 Logs
@@ -25,7 +24,6 @@ const Logs = () => {
                 </ul>
             </div>
         </div>
-    </Layout>
     );
 }
 

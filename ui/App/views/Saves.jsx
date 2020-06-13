@@ -1,4 +1,4 @@
-import Layout from "../components/Layout";
+
 import React, {useEffect, useState} from "react";
 import save from "../../api/resources/saves";
 
@@ -17,7 +17,6 @@ const Saves = () => {
     }, [])
 
     return (
-        <Layout>
             <div className="rounded-sm bg-gray-dark shadow-xl pb-4">
                 <div className="px-4 py-2 text-xl text-dirty-white font-bold">
                     Saves
@@ -46,7 +45,6 @@ const Saves = () => {
 
                 </div>
             </div>
-        </Layout>
     )
 }
 
