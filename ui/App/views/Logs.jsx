@@ -4,7 +4,7 @@ import log from "../../api/resources/log";
 
 const Logs = () => {
 
-    const [logs, setLogs] = useState(['asd', 'hesr', 'gwace'])
+    const [logs, setLogs] = useState([])
 
     useEffect(() => {
         (async () => {
@@ -21,7 +21,7 @@ const Logs = () => {
             </div>
             <div className="text-white rounded-sm bg-gray-medium shadow-inner mx-4 px-6 pt-4 pb-6">
                 <ul>
-                    {logs.map(log => (<li>{log}</li>))}
+                    {logs.map(log => (<li key={log}>{log}</li>))}
                 </ul>
             </div>
         </div>
