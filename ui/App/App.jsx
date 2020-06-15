@@ -12,6 +12,7 @@ import Layout from "./components/Layout";
 const App = () => {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [serverStatus, setServerStatus] = useState(null);
     const history = useHistory();
 
     const handleAuthenticationStatus = async () => {
@@ -30,7 +31,7 @@ const App = () => {
     const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
         <Route {...rest} render={(props) => (
             isAuthenticated
-                ? <Component {...props} />
+                ? <Component serverStatus={serverStatus} {...props} />
                 : <Redirect to={{
                     pathname: '/login',
                     state: {from: props.location}
@@ -43,7 +44,7 @@ const App = () => {
             <Switch>
                 <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
 
-                <Layout handleLogout={handleLogout}>
+                <Layout handleLogout={handleLogout} serverStatus={serverStatus} setServerStatus={setServerStatus}>
                     <ProtectedRoute exact path="/" component={Controls}/>
                     <ProtectedRoute path="/saves" component={Saves}/>
                     <ProtectedRoute path="/mods" component={Controls}/>

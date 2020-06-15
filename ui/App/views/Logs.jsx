@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Layout from "../components/Layout";
 import log from "../../api/resources/log";
+import Panel from "../elements/Panel";
 
 const Logs = () => {
 
@@ -14,16 +15,14 @@ const Logs = () => {
     }, [])
 
     return (
-        <div className="rounded-sm bg-gray-dark shadow-xl pb-4">
-            <div className="px-4 py-2 text-xl text-dirty-white font-bold">
-                Logs
-            </div>
-            <div className="text-white rounded-sm bg-gray-medium shadow-inner mx-4 px-6 pt-4 pb-6">
+        <Panel
+            title="Logs"
+            content={
                 <ul>
-                    {logs.map(log => (<li key={log}>{log}</li>))}
+                    {logs.map((log,index) => (<li key={index}>{log}</li>))}
                 </ul>
-            </div>
-        </div>
+            }
+        />
     );
 }
 

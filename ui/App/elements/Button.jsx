@@ -1,6 +1,6 @@
 import React from "react";
 
-const Button = ({ children, type, onClick, isSubmit }) => {
+const Button = ({ children, type, onClick, isSubmit, className }) => {
 
     let color = '';
 
@@ -16,7 +16,7 @@ const Button = ({ children, type, onClick, isSubmit }) => {
     }
 
     return (
-        <button onClick={onClick} className={color + '  text-black font-bold py-2 px-4 w-full'}
+        <button onClick={onClick} className={`${className} ${color} text-black font-bold py-2 px-4`}
                 type={isSubmit ? 'submit' : 'button'}>
             {children}
         </button>

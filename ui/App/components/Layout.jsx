@@ -1,12 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import server from "../../api/resources/server";
-import {NavLink, useHistory} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import Button from "../elements/Button";
 
-const Layout = ({children, handleLogout}) => {
-
-    const [serverStatus, setServerStatus] = useState(null);
-    const history = useHistory();
+const Layout = ({children, handleLogout, serverStatus, setServerStatus}) => {
 
     useEffect(() => {
         (async () => {
@@ -91,7 +88,7 @@ const Layout = ({children, handleLogout}) => {
                 </div>
                 <div className="py-4 px-2 border-b-2 border-black">
                     <div className="text-white text-center rounded-sm bg-black shadow-inner mx-4 p-1">
-                        <Button type="danger" onClick={handleLogout}>Logout</Button>
+                        <Button type="danger" className="w-full" onClick={handleLogout}>Logout</Button>
                     </div>
                 </div>
             </div>
