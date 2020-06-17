@@ -2,7 +2,7 @@ import React from "react";
 
 const ButtonLink = () => {
     return (
-        <button className="bg-green hover:bg-green-light text-black font-bold py-2 px-4 w-full"
+        <button className="accentuated bg-green hover:glow-green hover:bg-green-light text-black font-bold py-2 px-4 w-full"
                 type="submit">
             Sign In
         </button>
