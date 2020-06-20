@@ -1,8 +1,8 @@
 import React from "react";
 
-const Panel = ({title, content, actions}) => {
+const Panel = ({title, content, actions, className}) => {
     return (
-        <div className="accentuated rounded-sm bg-gray-dark shadow-xl pb-4">
+        <div className={(className ? className : null) + ' accentuated rounded-sm bg-gray-dark shadow-xl pb-4'}>
             <div className="px-4 py-2 text-xl text-dirty-white font-bold">
                 {title}
             </div>

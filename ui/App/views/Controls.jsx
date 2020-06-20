@@ -1,21 +1,26 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import Panel from "../elements/Panel";
 import Button from "../elements/Button";
 import server from "../../api/resources/server";
 
-const Controls = ({serverStatus}) => {
+const Controls = ({serverStatus, updateServerStatus}) => {
 
     const [factorioVersion, setFactorioVersion] = useState('unknown');
-    const isRunning = () => {
-        return serverStatus.data.status === 'running';
+    const isRunning = serverStatus.data.status === 'running';
+
+    const startServer = async () => {
+        await server.start('0.0.0.0',34197,'DEATH.zip');
+        await updateServerStatus();
     }
 
-    const startServer = () => {
-
+    const stopServer = async () => {
+        await server.stop();
+        await updateServerStatus();
     }
 
-    const stopServer = () => {
-
+    const killServer = async () => {
+        await server.kill();
+        await updateServerStatus();
     }
 
     useEffect(() => {
@@ -31,7 +36,7 @@ const Controls = ({serverStatus}) => {
         <Panel
             title="Server Status"
             content={
-                <div className="flex" slot="content">
+                <div className="flex">
                     <table className="w-full">
                         <thead>
                         <tr className="text-left py-1">
@@ -54,10 +59,10 @@ const Controls = ({serverStatus}) => {
             }
             actions={
                 <div className="flex">
-                    { isRunning()
+                    { isRunning
                             ? <>
                             <Button onClick={stopServer} className="mr-2" type="default">Save & Stop Server</Button>
-                            <Button onClick={stopServer} type="danger">Stop Server</Button>
+                            <Button onClick={killServer} type="danger">Kill Server</Button>
                         </>
                         : <Button onClick={startServer} type="success">Start Server</Button>
                     }

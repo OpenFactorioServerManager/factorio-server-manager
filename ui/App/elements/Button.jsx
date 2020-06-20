@@ -1,8 +1,9 @@
 import React from "react";
 
-const Button = ({ children, type, onClick, isSubmit, className }) => {
+const Button = ({ children, type, onClick, isSubmit, className, size }) => {
 
     let color = '';
+    let padding = '';
 
     switch (type) {
         case 'success':
@@ -15,9 +16,17 @@ const Button = ({ children, type, onClick, isSubmit, className }) => {
             color = 'bg-gray-light hover:glow-orange hover:bg-orange'
     }
 
+    switch (size) {
+        case 'sm':
+            padding = 'py-1 px-2';
+            break;
+        default:
+            padding = 'py-2 px-4'
+    }
+
     return (
-        <button onClick={onClick} className={`${className} ${color} accentuated text-black font-bold py-2 px-4`}
-                type={isSubmit ? 'submit' : 'button'}>
+        <button onClick={onClick} className={`${className ? className: null} ${padding} ${color} inline-block accentuated text-black font-bold`}
+        type={isSubmit ? 'submit' : 'button'}>
             {children}
         </button>
     );

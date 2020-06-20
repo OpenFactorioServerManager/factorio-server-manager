@@ -3,14 +3,11 @@ import server from "../../api/resources/server";
 import {NavLink} from "react-router-dom";
 import Button from "../elements/Button";
 
-const Layout = ({children, handleLogout, serverStatus, setServerStatus}) => {
+const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
 
     useEffect(() => {
         (async () => {
-            const status = await server.status();
-            if (status.success) {
-                setServerStatus(status)
-            }
+            updateServerStatus()
         })();
     }, []);
 

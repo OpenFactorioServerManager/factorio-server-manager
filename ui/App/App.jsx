@@ -8,12 +8,22 @@ import {BrowserRouter} from "react-router-dom";
 import Logs from "./views/Logs";
 import Saves from "./views/Saves";
 import Layout from "./components/Layout";
+import server from "../api/resources/server";
+import Mods from "./views/Mods";
+import UserManagement from "./views/UserManagment";
 
 const App = () => {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [serverStatus, setServerStatus] = useState(null);
     const history = useHistory();
+
+    const updateServerStatus = async () => {
+        const status = await server.status();
+        if (status.success) {
+            setServerStatus(status)
+        }
+    }
 
     const handleAuthenticationStatus = async () => {
         const status = await user.status();
@@ -31,7 +41,7 @@ const App = () => {
     const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
         <Route {...rest} render={(props) => (
             isAuthenticated
-                ? <Component serverStatus={serverStatus} {...props} />
+                ? <Component serverStatus={serverStatus} updateServerStatus={updateServerStatus} {...props} />
                 : <Redirect to={{
                     pathname: '/login',
                     state: {from: props.location}
@@ -44,15 +54,15 @@ const App = () => {
             <Switch>
                 <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
 
-                <Layout handleLogout={handleLogout} serverStatus={serverStatus} setServerStatus={setServerStatus}>
+                <Layout handleLogout={handleLogout} serverStatus={serverStatus} updateServerStatus={updateServerStatus}>
                     <ProtectedRoute exact path="/" component={Controls}/>
                     <ProtectedRoute path="/saves" component={Saves}/>
-                    <ProtectedRoute path="/mods" component={Controls}/>
+                    <ProtectedRoute path="/mods" component={Mods}/>
                     <ProtectedRoute path="/server-settings" component={Controls}/>
                     <ProtectedRoute path="/game-settings" component={Controls}/>
                     <ProtectedRoute path="/console" component={Controls}/>
                     <ProtectedRoute path="/logs" component={Logs}/>
-                    <ProtectedRoute path="/user-management" component={Controls}/>
+                    <ProtectedRoute path="/user-management" component={UserManagement}/>
                     <ProtectedRoute path="/help" component={Controls}/>
                 </Layout>
             </Switch>
