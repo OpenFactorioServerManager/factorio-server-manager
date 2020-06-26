@@ -77,9 +77,9 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
                     </div>
                 </div>
                 <div className="py-4 px-2 accentuated">
-                    <h1 className="text-dirty-white text-lg mb-2 mx-4">Administration</h1>
+                    <h1 className="text-dirty-white text-lg mb-2 mx-4">FSM Administration</h1>
                     <div className="text-white text-center rounded-sm bg-black shadow-inner mx-4 p-1">
-                        <Link to="/user-management">User Management</Link>
+                        <Link to="/user-management">Users</Link>
                         <Link to="/help" last={true}>Help</Link>
                     </div>
                 </div>

@@ -11,21 +11,22 @@ const Login = ({handleLogin}) => {
     const location = useLocation()
 
     const onSubmit = async data => {
-        const status = await user.login(data)
-        if (status.success) {
-            handleLogin()
-            history.push('/')
+        const loginAttempt = await user.login(data)
+        if (loginAttempt.success) {
+            await handleLogin();
+            history.push('/');
         }
     };
 
     // on mount check if user is authenticated
     useEffect(() => {
-        user.status().then(status => {
+        (async () => {
+            const status = await user.status()
             if (status.success) {
-                handleLogin()
+                await handleLogin();
                 history.push(location?.state?.from || '/');
             }
-        })
+        })();
     }, [])
 
     return (

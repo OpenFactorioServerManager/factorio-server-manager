@@ -28,6 +28,7 @@ const App = () => {
     const handleAuthenticationStatus = async () => {
         const status = await user.status();
         setIsAuthenticated(status.success);
+        await updateServerStatus();
     };
 
     const handleLogout = async () => {
