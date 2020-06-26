@@ -48,7 +48,7 @@ const App = () => {
                     state: {from: props.location}
                 }}/>
         )}/>
-    ), [isAuthenticated]);
+    ), [isAuthenticated, serverStatus]);
 
     return (
         <BrowserRouter>

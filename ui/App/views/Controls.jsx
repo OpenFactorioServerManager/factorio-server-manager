@@ -3,13 +3,13 @@ import Panel from "../elements/Panel";
 import Button from "../elements/Button";
 import server from "../../api/resources/server";
 
-const Controls = ({serverStatus, updateServerStatus}) => {
+const Controls = ({serverStatus, updateServerStatus, s}) => {
 
     const [factorioVersion, setFactorioVersion] = useState('unknown');
     const isRunning = serverStatus.data.status === 'running';
 
     const startServer = async () => {
-        await server.start('0.0.0.0',34197,'DEATH.zip');
+        await server.start('0.0.0.0',34197,'20m.zip');
         await updateServerStatus();
     }
 
@@ -30,7 +30,7 @@ const Controls = ({serverStatus, updateServerStatus}) => {
                 setFactorioVersion(res.data.version)
             }
         })();
-    })
+    },[])
 
     return (
         <Panel
