@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import server from "../../api/resources/server";
 import {NavLink} from "react-router-dom";
-import Button from "../elements/Button";
+import Button from "./Button";
 
 const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
 

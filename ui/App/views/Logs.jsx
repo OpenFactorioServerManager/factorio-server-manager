@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Layout from "../components/Layout";
 import log from "../../api/resources/log";
-import Panel from "../elements/Panel";
+import Panel from "../components/Panel";
 
 const Logs = () => {
 

@@ -1,4 +1,4 @@
-import Panel from "../elements/Panel";
+import Panel from "../components/Panel";
 import React from "react";
 
 const Mods = () => {

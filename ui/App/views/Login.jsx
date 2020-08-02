@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import {useForm} from "react-hook-form";
 import user from "../../api/resources/user";
-import Button from "../elements/Button";
+import Button from "../components/Button";
 import {useHistory, useLocation} from "react-router";
-import Panel from "../elements/Panel";
+import Panel from "../components/Panel";
 
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
@@ -44,7 +44,7 @@ const Login = ({handleLogin}) => {
                                    id="username"
                                    name="username"
                                    type="text" placeholder="Username"/>
-                            {errors.password && <span className="block text-red">Username is required</span>}
+                            {errors.username && <span className="block text-red">Username is required</span>}
                         </div>
                         <div className="mb-6">
                             <label className="block text-white text-sm font-bold mb-2" htmlFor="password">

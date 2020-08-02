@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useMemo, useState} from "react";
-import Panel from "../elements/Panel";
-import Button from "../elements/Button";
+import React, {useEffect, useState} from "react";
+import Panel from "../components/Panel";
+import Button from "../components/Button";
 import server from "../../api/resources/server";
 
 const Controls = ({serverStatus, updateServerStatus, s}) => {

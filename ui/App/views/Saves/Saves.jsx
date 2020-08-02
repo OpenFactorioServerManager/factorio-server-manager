@@ -1,16 +1,14 @@
 import React, {useEffect, useState} from "react";
-import saveClient from "../../api/resources/saves";
-import Panel from "../elements/Panel";
-import ButtonLink from "../elements/ButtonLink";
-import Button from "../elements/Button";
-import {useForm} from "react-hook-form";
-import CreateSaveForm from "../forms/CreateSaveForm";
-import UploadSaveForm from "../forms/UploadSaveForm";
+import saveClient from "../../../api/resources/saves";
+import Panel from "../../components/Panel";
+import ButtonLink from "../../components/ButtonLink";
+import Button from "../../components/Button";
+import CreateSaveForm from "./components/CreateSaveForm";
+import UploadSaveForm from "./components/UploadSaveForm";
 
 const Saves = ({serverStatus}) => {
 
     const [saves, setSaves] = useState([]);
-    const {register, handleSubmit, errors} = useForm();
 
     const updateList = async () => {
         const res = await saveClient.list();
@@ -48,7 +46,7 @@ const Saves = ({serverStatus}) => {
                 <Panel
                     title="Upload Save"
                     className="w-1/2 ml-3"
-                    content={<UploadSaveForm/>}
+                    content={<UploadSaveForm onSuccess={updateList}/>}
                 />
             </div>
 

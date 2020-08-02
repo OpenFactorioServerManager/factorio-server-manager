@@ -1,15 +1,16 @@
 import {useForm} from "react-hook-form";
-import Button from "../elements/Button";
+import Button from "../../../components/Button";
 import React from "react";
-import saves from "../../api/resources/saves";
+import saves from "../../../../api/resources/saves";
 
 const CreateSaveForm = ({onSuccess}) => {
     const {register, handleSubmit, errors} = useForm();
 
 
-    const onSubmit = async data => {
+    const onSubmit = async (data, e) => {
         const res = await saves.create(data.savefile);
         if (res.success) {
+            e.target.reset();
             onSuccess();
         }
     };

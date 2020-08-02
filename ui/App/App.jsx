@@ -6,11 +6,15 @@ import {Redirect, Route, Switch, useHistory} from "react-router";
 import Controls from "./views/Controls";
 import {BrowserRouter} from "react-router-dom";
 import Logs from "./views/Logs";
-import Saves from "./views/Saves";
+import Saves from "./views/Saves/Saves";
 import Layout from "./components/Layout";
 import server from "../api/resources/server";
 import Mods from "./views/Mods";
-import UserManagement from "./views/UserManagment";
+import UserManagement from "./views/UserManagement/UserManagment";
+import ServerSettings from "./views/ServerSettings";
+import GameSettings from "./views/GameSettings";
+import Console from "./views/Console";
+import Help from "./views/Help";
 
 const App = () => {
 
@@ -51,7 +55,7 @@ const App = () => {
     ), [isAuthenticated, serverStatus]);
 
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/rework">
             <Switch>
                 <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
 
@@ -59,12 +63,12 @@ const App = () => {
                     <ProtectedRoute exact path="/" component={Controls}/>
                     <ProtectedRoute path="/saves" component={Saves}/>
                     <ProtectedRoute path="/mods" component={Mods}/>
-                    <ProtectedRoute path="/server-settings" component={Controls}/>
-                    <ProtectedRoute path="/game-settings" component={Controls}/>
-                    <ProtectedRoute path="/console" component={Controls}/>
+                    <ProtectedRoute path="/server-settings" component={ServerSettings}/>
+                    <ProtectedRoute path="/game-settings" component={GameSettings}/>
+                    <ProtectedRoute path="/console" component={Console}/>
                     <ProtectedRoute path="/logs" component={Logs}/>
                     <ProtectedRoute path="/user-management" component={UserManagement}/>
-                    <ProtectedRoute path="/help" component={Controls}/>
+                    <ProtectedRoute path="/help" component={Help}/>
                 </Layout>
             </Switch>
         </BrowserRouter>

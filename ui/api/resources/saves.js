@@ -12,5 +12,16 @@ export default {
     create: async (name) => {
         const response = await client.get(`/api/saves/create/${name}`);
         return response.data;
+    },
+    upload: async (data) => {
+        let formData = new FormData();
+        formData.append("savefile", data[0]);
+
+        const response = await client.post(`/api/saves/upload`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        return response.data;
     }
 }
