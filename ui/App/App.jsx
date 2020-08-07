@@ -22,12 +22,12 @@ const App = () => {
     const [serverStatus, setServerStatus] = useState(null);
     const history = useHistory();
 
-    const updateServerStatus = async () => {
+    const updateServerStatus = useCallback(async () => {
         const status = await server.status();
         if (status.success) {
             setServerStatus(status)
         }
-    }
+    });
 
     const handleAuthenticationStatus = async () => {
         const status = await user.status();
