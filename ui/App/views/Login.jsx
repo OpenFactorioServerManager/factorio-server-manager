@@ -4,6 +4,8 @@ import user from "../../api/resources/user";
 import Button from "../components/Button";
 import {useHistory, useLocation} from "react-router";
 import Panel from "../components/Panel";
+import Input from "../components/Input";
+import Label from "../components/Label";
 
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
@@ -36,25 +38,18 @@ const Login = ({handleLogin}) => {
                 content={
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="mb-4">
-                            <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
-                                Username
-                            </label>
-                            <input className="shadow appearance-none border w-full py-2 px-3 text-black"
-                                   ref={register({required: true})}
-                                   id="username"
-                                   name="username"
-                                   type="text" placeholder="Username"/>
+                            <Label text="Username" htmlFor="username"/>
+                            <Input inputRef={register({required: true})} name="username" placeholder="Username"/>
                             {errors.username && <span className="block text-red">Username is required</span>}
                         </div>
                         <div className="mb-6">
-                            <label className="block text-white text-sm font-bold mb-2" htmlFor="password">
-                                Password
-                            </label>
-                            <input
-                                className="shadow appearance-none w-full py-2 px-3 text-black"
-                                ref={register({required: true})}
+                            <Label text="Password" htmlFor="password"/>
+                            <Input
+                                inputRef={register({required: true})}
                                 name="password"
-                                id="password" type="password" placeholder="******************"/>
+                                type="password"
+                                placeholder="******************"
+                            />
                             {errors.password && <span className="block text-red">Password is required</span>}
                         </div>
                         <div className="text-center">

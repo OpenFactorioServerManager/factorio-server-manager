@@ -2,6 +2,8 @@ import {useForm} from "react-hook-form";
 import Button from "../../../components/Button";
 import React from "react";
 import saves from "../../../../api/resources/saves";
+import Label from "../../../components/Label";
+import Input from "../../../components/Input";
 
 const CreateSaveForm = ({onSuccess}) => {
     const {register, handleSubmit, errors} = useForm();
@@ -18,14 +20,8 @@ const CreateSaveForm = ({onSuccess}) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-6">
-            <label className="block text-white text-sm font-bold mb-2" htmlFor="password">
-                Savefile Name
-            </label>
-            <input
-                className="shadow appearance-none w-full py-2 px-3 text-black"
-                ref={register({required: true})}
-                name="savefile"
-                id="savefile" type="text"/>
+            <Label text="Savefile Name" htmlFor="savefile"/>
+            <Input inputRef={register({required: true})} name="savefile"/>
             {errors.savefile && <span className="block text-red">Savefile Name is required</span>}
         </div>
         <Button type="success" isSubmit={true}>Create Save</Button>

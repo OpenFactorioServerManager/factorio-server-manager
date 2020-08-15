@@ -51,6 +51,7 @@ const Saves = ({serverStatus}) => {
             </div>
 
             <Panel
+                className="mb-4"
                 title="Saves"
                 content={
                     <table className="w-full">
