@@ -7,7 +7,6 @@ import Checkbox from "../components/Checkbox";
 import InputPassword from "../components/InputPassword";
 import Button from "../components/Button";
 import {Controller, useForm} from "react-hook-form";
-import InputHidden from "../components/InputHidden";
 
 const ServerSettings = () => {
 
