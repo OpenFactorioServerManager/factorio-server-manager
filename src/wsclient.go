@@ -29,7 +29,6 @@ func (client *Client) Read() {
 			handler(client, message.Data)
 		}
 	}
-	client.socket.Close()
 }
 
 func (client *Client) Write() {
@@ -38,7 +37,6 @@ func (client *Client) Write() {
 			break
 		}
 	}
-	client.socket.Close()
 }
 
 func (client *Client) Close() {
