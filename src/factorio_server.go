@@ -139,7 +139,7 @@ func initFactorio() (f *FactorioServer, err error) {
 	f.BaseModVersion = modInfo.Version
 
 	// load admins from additional file
-	if(f.Version.Greater(Version{0,17,0})) {
+	if (f.Version.Greater(Version{0, 17, 0})) {
 		if _, err := os.Stat(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)); os.IsNotExist(err) {
 			//save empty admins-file
 			ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
@@ -190,7 +190,7 @@ func (f *FactorioServer) Run() error {
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass)
 
-	if(f.Version.Greater(Version{0,17,0})) {
+	if (f.Version.Greater(Version{0, 17, 0})) {
 		args = append(args, "--server-adminlist", filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
 	}
 
@@ -265,11 +265,11 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 				}
 			}
 			// If rcon port opens indicated in log connect to rcon
-			rconLog := "Starting RCON interface at port " + strconv.Itoa(config.FactorioRconPort)
+			rconLog := "Starting RCON interface at IP"
 			// check if slice index is greater than 2 to prevent panic
 			if len(line) > 2 {
 				// log line for opened rcon connection
-				if strings.Join(line[3:], " ") == rconLog {
+				if strings.Contains(strings.Join(line, " "), rconLog) {
 					log.Printf("Rcon running on Factorio Server")
 					err = connectRC()
 					if err != nil {
