@@ -46,28 +46,23 @@ const Console = ({serverStatus}) => {
         <Panel
             title="Console"
             content={
-                <>
-                    {isRunning
-                    ? <>
-                        <ul>
-                            {logs?.map((log, i) => (<li key={i}>{log}</li>))}
-                        </ul>
-                        <input type="text" ref={consoleInput}
-                               className="shadow appearance-none border w-full py-2 px-3 text-black" onKeyPress={e => {
+                isRunning
+                ? <>
+                    <ul>
+                        {logs?.map((log, i) => (<li key={i}>{log}</li>))}
+                    </ul>
+                    <input type="text" ref={consoleInput} className="shadow appearance-none border w-full py-2 px-3 text-black" onKeyPress={e => {
                             if (e.key === "Enter" && socket) {
                                 const message = {name: "command send", data: consoleInput.current.value};
                                 socket.send(JSON.stringify(message));
                                 consoleInput.current.value = ""
                             }
                         }
-                        }/>
-                    </>
-                        : <p className="text-red-light pt-4">
-                            The console is not available, because Factorio is not running.
-                        </p>
-                    }
-
+                    }/>
                 </>
+                : <p className="text-red-light pt-4">
+                    The console is not available, because Factorio is not running.
+                </p>
             }
         />
     )
