@@ -66,7 +66,10 @@ Usage of ./factorio-server-manager:
         Path to the glibc ld.so file (default "/opt/glibc-2.18/lib/ld-2.18.so")
   -glibc-lib-loc
         Path to the glibc lib folder (default "/opt/glibc-2.18/lib")
-        
+  -autostart
+          Autostarts Factorio Server when FSM is starting. Default false [true/false]
+          (If no IP and/or port provided at startup, it will bind the factorio server to all interfaces 
+          and set the server port to the default 34197, always loads latest save)       
 Example:
 
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1

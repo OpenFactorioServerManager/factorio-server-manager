@@ -38,6 +38,7 @@ type Config struct {
 	glibcCustom             string
 	glibcLocation           string
 	glibcLibLoc             string
+	autostart               string
 }
 
 var (
@@ -79,8 +80,10 @@ func parseFlags() {
 	glibcCustom := flag.String("glibc-custom", "false", "By default false, if custom glibc is required set this to true and add glibc-loc and glibc-lib-loc parameters")
 	glibcLocation := flag.String("glibc-loc", "/opt/glibc-2.18/lib/ld-2.18.so", "Location glibc ld.so file if needed (ex. /opt/glibc-2.18/lib/ld-2.18.so)")
 	glibcLibLoc := flag.String("glibc-lib-loc", "/opt/glibc-2.18/lib", "Location of glibc lib folder (ex. /opt/glibc-2.18/lib)")
+	autostart := flag.String("autostart", "false", "Autostart factorio server on bootup of FSM, default false [true/false]")
 
 	flag.Parse()
+	config.autostart = *autostart
 	config.glibcCustom = *glibcCustom
 	config.glibcLocation = *glibcLocation
 	config.glibcLibLoc = *glibcLibLoc
