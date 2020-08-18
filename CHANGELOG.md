@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Updated adminLTE to v3 with bootstrap 4.
+- Updated adminLTE to v3 with bootstrap 4. @knoxfighter
+
+### Fixed
+- Console page is know working correctly (directly reloading still bugged until new UI) @jannaahs
 
 ## [0.8.2] - 2020-01-08
 Many bugfixes and a few small features in this release.
