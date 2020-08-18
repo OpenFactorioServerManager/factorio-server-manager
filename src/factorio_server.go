@@ -43,6 +43,27 @@ func randomPort() int {
 	return rand.Intn(45000-40000) + 40000
 }
 
+func autostart() {
+
+	var err error
+	if FactorioServ.BindIP == "" {
+		FactorioServ.BindIP = "0.0.0.0"
+
+	}
+	if FactorioServ.Port == 0 {
+		FactorioServ.Port = 34197
+	}
+	FactorioServ.Savefile = "Load Latest"
+
+	err = FactorioServ.Run()
+
+	if err != nil {
+		log.Printf("Error starting Factorio server: %+v", err)
+		return
+	}
+
+}
+
 func initFactorio() (f *FactorioServer, err error) {
 	f = new(FactorioServer)
 	f.Settings = make(map[string]interface{})
@@ -160,6 +181,10 @@ func initFactorio() (f *FactorioServer, err error) {
 			f.Settings["admins"] = jsonData
 		}
 	}
+
+    if config.autostart == "true" {
+    		go autostart()
+    }
 
 	return
 }
