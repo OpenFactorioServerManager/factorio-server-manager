@@ -20,7 +20,7 @@ func IsClosed(ch <-chan Message) bool {
 func logSubscribe(client *Client, data interface{}) {
 	go func() {
 		logfile := filepath.Join(config.FactorioDir, "factorio-server-console.log")
-		t, err := tail.TailFile(logfile, tail.Config{Follow: true})
+		t, err := tail.TailFile(logfile, tail.Config{Follow: true, Poll: true})
 		if err != nil {
 			log.Printf("Error subscribing to tail log %s", err)
 			return
