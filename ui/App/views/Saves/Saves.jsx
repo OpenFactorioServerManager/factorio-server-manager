@@ -5,6 +5,8 @@ import ButtonLink from "../../components/ButtonLink";
 import Button from "../../components/Button";
 import CreateSaveForm from "./components/CreateSaveForm";
 import UploadSaveForm from "./components/UploadSaveForm";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faDownload, faTrashAlt} from "@fortawesome/free-solid-svg-icons";
 
 const Saves = ({serverStatus}) => {
 
@@ -70,9 +72,10 @@ const Saves = ({serverStatus}) => {
                                 <td className="pr-4">{(new Date(save.last_mod)).toISOString().replace('T', ' ').split('.')[0]}</td>
                                 <td>{parseFloat(save.size / 1024 / 1024).toFixed(3)} MB</td>
                                 <td>
-                                    <ButtonLink size="sm" href={`/api/saves/dl/${save.name}`}
-                                                className="mr-2">Download</ButtonLink>
-                                    <Button size="sm" onClick={() => deleteSave(save)} type="danger">Delete</Button>
+                                    <a href={`/api/saves/dl/${save.name}`} className="mr-2">
+                                        <FontAwesomeIcon className="text-gray-light cursor-pointer hover:text-orange" icon={faDownload}/>
+                                    </a>
+                                    <FontAwesomeIcon className="text-red cursor-pointer hover:text-red-light mr-2" onClick={() => deleteSave(save)} icon={faTrashAlt}/>
                                 </td>
                             </tr>
                         )}

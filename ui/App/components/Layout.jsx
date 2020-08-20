@@ -27,7 +27,7 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
         }
 
         return (
-            <div className={`bg-${color} rounded-sm px-2 py-1 text-black`}>{text}</div>
+            <div className={`bg-${color} accentuated rounded px-2 py-1 text-black`}>{text}</div>
         )
     }
 
