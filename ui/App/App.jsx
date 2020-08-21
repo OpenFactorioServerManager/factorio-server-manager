@@ -9,7 +9,7 @@ import Logs from "./views/Logs";
 import Saves from "./views/Saves/Saves";
 import Layout from "./components/Layout";
 import server from "../api/resources/server";
-import Mods from "./views/Mods";
+import Mods from "./views/Mods/Mods";
 import UserManagement from "./views/UserManagement/UserManagment";
 import ServerSettings from "./views/ServerSettings";
 import GameSettings from "./views/GameSettings";
@@ -27,25 +27,25 @@ const App = () => {
         if (status.success) {
             setServerStatus(status)
         }
-    });
+    }, []);
 
-    const handleAuthenticationStatus = async () => {
+    const handleAuthenticationStatus = useCallback(async () => {
         const status = await user.status();
         setIsAuthenticated(status.success);
         await updateServerStatus();
-    };
+    },[]);
 
-    const handleLogout = async () => {
+    const handleLogout = useCallback(async () => {
         const loggedOut = await user.logout();
         if (loggedOut.success) {
             setIsAuthenticated(false);
             history.push('/login');
         }
-    }
+    }, []);
 
     const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
         <Route {...rest} render={(props) => (
-            isAuthenticated
+            isAuthenticated && Component
                 ? <Component serverStatus={serverStatus} updateServerStatus={updateServerStatus} {...props} />
                 : <Redirect to={{
                     pathname: '/login',
