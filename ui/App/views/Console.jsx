@@ -13,14 +13,12 @@ const Console = ({serverStatus}) => {
         const socket = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
 
         socket.onopen = function (e) {
-            console.log("Socket Open")
             socket.send(JSON.stringify({name: "log subscribe"}));
             setSocket(socket)
         };
 
         socket.onmessage = e => {
             const {name, data} = JSON.parse(e.data)
-            console.log(name)
             switch (name) {
                 case 'log update':
                     setLogs(oldLogs => [...oldLogs, data])
@@ -31,7 +29,7 @@ const Console = ({serverStatus}) => {
         }
 
         socket.onerror = e => {
-            console.log(e)
+            console.error(e)
         }
 
         consoleInput.current?.focus();

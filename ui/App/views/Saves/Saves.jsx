@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
-import saveClient from "../../../api/resources/saves";
+import savesResource from "../../../api/resources/saves";
 import Panel from "../../components/Panel";
-import ButtonLink from "../../components/ButtonLink";
-import Button from "../../components/Button";
 import CreateSaveForm from "./components/CreateSaveForm";
 import UploadSaveForm from "./components/UploadSaveForm";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -12,11 +10,14 @@ const Saves = ({serverStatus}) => {
 
     const [saves, setSaves] = useState([]);
 
-    const updateList = async () => {
-        const res = await saveClient.list();
-        if (res.success) {
-            setSaves(res.data);
-        }
+    const updateList = () => {
+       savesResource.list()
+           .then(res => {
+               if (res.success) {
+                   setSaves(res.data);
+               }
+           })
+
     }
 
     useEffect(() => {
@@ -24,7 +25,7 @@ const Saves = ({serverStatus}) => {
     }, []);
 
     const deleteSave = async (save) => {
-        const res = await saveClient.delete(save);
+        const res = await savesResource.delete(save);
         if (res.success) {
             updateList()
         }
