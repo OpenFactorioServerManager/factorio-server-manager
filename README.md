@@ -66,7 +66,10 @@ Usage of ./factorio-server-manager:
         Path to the glibc ld.so file (default "/opt/glibc-2.18/lib/ld-2.18.so")
   -glibc-lib-loc
         Path to the glibc lib folder (default "/opt/glibc-2.18/lib")
-        
+  -autostart
+          Autostarts Factorio Server when FSM is starting. Default false [true/false]
+          (If no IP and/or port provided at startup, it will bind the factorio server to all interfaces 
+          and set the server port to the default 34197, always loads latest save)       
 Example:
 
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1
@@ -100,7 +103,7 @@ All api actions are accessible with the /api route.  The frontend is accessible 
 
 #### Requirements
 + Go 1.11
-+ NodeJS
++ NodeJS >10.13.0
 
 #### Building Releases
 Creates a release zip for windows and linux: (this will install the dependencies listed in gopkgdeps)
@@ -175,6 +178,7 @@ go build
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
 3. Commit your changes: `git commit -am 'Add some feature'`
+4. Add your changes a in human readable way into CHANGELOG.md
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
