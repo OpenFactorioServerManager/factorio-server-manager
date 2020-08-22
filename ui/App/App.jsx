@@ -16,6 +16,7 @@ import GameSettings from "./views/GameSettings";
 import Console from "./views/Console";
 import Help from "./views/Help";
 import socket from "../api/socket";
+import {Flash} from "./components/Flash";
 
 
 const App = () => {
@@ -76,6 +77,7 @@ const App = () => {
                     <ProtectedRoute path="/logs" component={Logs}/>
                     <ProtectedRoute path="/user-management" component={UserManagement}/>
                     <ProtectedRoute path="/help" component={Help}/>
+                    <Flash/>
                 </Layout>
             </Switch>
         </BrowserRouter>
