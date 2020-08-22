@@ -70,6 +70,16 @@ module.exports = (env, argv) => {
                                 // always make sourceMap. resolver-url-loader is needing it
                                 "sourceMap": true,
                             }
+                        },
+                        {
+                            loader: 'postcss-loader',
+                            options: {
+                                ident: 'postcss',
+                                plugins: [
+                                    require('tailwindcss'),
+                                    require('autoprefixer'),
+                                ],
+                            },
                         }
                     ]
                 },

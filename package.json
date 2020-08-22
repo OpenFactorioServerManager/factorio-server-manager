@@ -28,6 +28,7 @@
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.10.4",
+    "autoprefixer": "^9.8.6",
     "babel-loader": "^8.0.6",
     "classnames": "^2.2.6",
     "css-loader": "^2.1.0",
@@ -36,6 +37,7 @@
     "mini-css-extract-plugin": "^0.7.0",
     "node-sass": "^4.12.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "postcss-loader": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -44,7 +46,7 @@
     "react-router-dom": "^5.0.0",
     "resolve-url-loader": "^3.1.0",
     "sass-loader": "^7.1.0",
-    "semver": "^6.1.1",
+    "style-loader": "^1.2.1",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
     "webpack-fix-style-only-entries": "^0.2.0"
@@ -55,6 +57,8 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "axios": "^0.19.2",
     "react-hook-form": "^5.7.2",
+    "regenerator-runtime": "^0.13.7",
+    "semver": "^6.1.1",
     "tailwindcss": "^1.6.2"
   }
 }
