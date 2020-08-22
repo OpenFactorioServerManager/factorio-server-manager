@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"path/filepath"
+	time "time"
 
 	"github.com/hpcloud/tail"
 )
@@ -58,4 +59,29 @@ func commandSend(client *Client, data interface{}) {
 			}
 		}()
 	}
+}
+
+func serverStatusSubscribe(client *Client, data interface{}) {
+
+	log.Printf("Subcribed to Server Status")
+	go func() {
+		isRunning := FactorioServ.Running
+
+		// always check if status has changed
+		for {
+			if isRunning != FactorioServ.Running {
+				isRunning = FactorioServ.Running
+
+				log.Printf("Server Status has changed")
+
+				if IsClosed(client.send) {
+					log.Printf("Channel was closed")
+					return
+				}
+
+				client.send <- Message{"status update", "Server status has changed"}
+			}
+			time.Sleep(2 * time.Second)
+		}
+	}()
 }

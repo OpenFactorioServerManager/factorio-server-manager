@@ -15,6 +15,8 @@ import ServerSettings from "./views/ServerSettings";
 import GameSettings from "./views/GameSettings";
 import Console from "./views/Console";
 import Help from "./views/Help";
+import socket from "../api/socket";
+
 
 const App = () => {
 
@@ -22,17 +24,22 @@ const App = () => {
     const [serverStatus, setServerStatus] = useState(null);
     const history = useHistory();
 
-    const updateServerStatus = useCallback(async () => {
+    const updateServerStatus = async () => {
         const status = await server.status();
         if (status.success) {
             setServerStatus(status)
         }
-    }, []);
+    }
 
     const handleAuthenticationStatus = useCallback(async () => {
         const status = await user.status();
-        setIsAuthenticated(status.success);
-        await updateServerStatus();
+        if (status.success) {
+            setIsAuthenticated(status.success);
+            await updateServerStatus();
+
+            socket.emit('server status subscribe');
+            socket.on('status update', updateServerStatus)
+        }
     },[]);
 
     const handleLogout = useCallback(async () => {

@@ -60,6 +60,7 @@ func NewRouter() *mux.Router {
 		Handler(AuthorizeHandler(ws))
 	ws.Handle("command send", commandSend)
 	ws.Handle("log subscribe", logSubscribe)
+	ws.Handle("server status subscribe", serverStatusSubscribe)
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application

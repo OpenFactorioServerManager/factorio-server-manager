@@ -1,46 +1,25 @@
-import EventEmitter from 'events';
+import EventEmitter from "events";
 
-class Socket {
-    constructor(){
-        let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-        this.ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
+const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+const socket = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
 
-        this.ee = new EventEmitter();
-        this.ws.onmessage = this.message.bind(this);
-        this.ws.onopen = this.open.bind(this);
-        this.ws.onclose = this.close.bind(this);
+const bus = new EventEmitter();
 
-        this.opened = false;
-    }
-    on(name, fn){
-        this.ee.on(name, fn);
-    }
-    off(name, fn){
-        this.ee.removeListener(name, fn);
-    }
-    emit(name, data){
-        if(this.ws.readyState === WebSocket.OPEN) {
-            const message = JSON.stringify({name, data});
-            this.ws.send(message);
-        }
+bus.on('log subscribe', () => {
+    socket.send(JSON.stringify({name: 'log subscribe'}));
+});
 
-        return this.ws.readyState;
-    }
-    message(e){
-        try{
-            let message = JSON.parse(e.data);
-            this.ee.emit(message.name, message.data);
-        }
-        catch(err){
-            this.ee.emit('error', err);
-        }
-    }
-    open(){
-        this.ee.emit('connect');
-    }
-    close(){
-        this.ee.emit('disconnect');
-    }
+bus.on('server status subscribe', () => {
+    socket.send(JSON.stringify({name: 'server status subscribe'}));
+});
+
+bus.on('command send', command => {
+    socket.send(JSON.stringify({name: 'command send', data: command}));
+});
+
+socket.onmessage = e => {
+    const {name, data} = JSON.parse(e.data)
+    bus.emit(name, data);
 }
 
-export default Socket;
+export default bus;
