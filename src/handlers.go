@@ -646,91 +646,76 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 
 // GetServerSettings returns JSON response of server-settings.json file
 func GetServerSettings(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	resp.Data = FactorioServ.Settings
-	resp.Success = true
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding server settings JSON reponse: %s", err)
-	}
+	resp = FactorioServ.Settings
 
 	log.Printf("Sent server settings response")
 }
 
 func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	switch r.Method {
-	case "GET":
-		log.Printf("GET not supported for add user handler")
-		resp.Data = "Unsupported method"
-		resp.Success = false
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error adding user: %s", err)
-		}
-	case "POST":
-		body, err := ioutil.ReadAll(r.Body)
+	body, err := ReadRequestBody(w, r, &resp)
+	if err != nil {
+		return
+	}
+	log.Printf("Received settings JSON: %s", body)
+
+	err = json.Unmarshal(body, &FactorioServ.Settings)
+	if err != nil {
+		resp = fmt.Sprintf("Error unmarhaling server settings JSON: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	settings, err := json.MarshalIndent(&FactorioServ.Settings, "", "  ")
+	if err != nil {
+		resp = fmt.Sprintf("Failed to marshal server settings: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), settings, 0644)
+	if err != nil {
+		resp = fmt.Sprintf("Failed to save server settings: %v\n", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Saved Factorio server settings in server-settings.json")
+
+	if (FactorioServ.Version.Greater(Version{0, 17, 0})) {
+		// save admins to adminJson
+		admins, err := json.MarshalIndent(FactorioServ.Settings["admins"], "", "  ")
 		if err != nil {
-			log.Printf("Error in reading server settings POST: %s", err)
-			resp.Data = fmt.Sprintf("Error in updating settings: %s", err)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error updating settings: %s", err)
-			}
+			resp = fmt.Sprintf("Failed to marshal admins-Setting: %s", err)
+			log.Println(resp)
 			return
 		}
-		log.Printf("Received settings JSON: %s", body)
 
-		err = json.Unmarshal(body, &FactorioServ.Settings)
+		err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), admins, 0664)
 		if err != nil {
-			log.Printf("Error unmarshaling server settings JSON: %s", err)
-			resp.Data = fmt.Sprintf("Error in updating settings: %s", err)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding server settings response: %s", err)
-			}
+			resp = fmt.Sprintf("Failed to save admins: %s", err)
+			log.Println(resp)
 			return
-		}
-
-		settings, err := json.MarshalIndent(&FactorioServ.Settings, "", "  ")
-		if err != nil {
-			log.Printf("Failed to marshal server settings: %s", err)
-			return
-		} else {
-			if err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), settings, 0644); err != nil {
-				log.Printf("Failed to save server settings: %v\n", err)
-				return
-			}
-			log.Printf("Saved Factorio server settings in server-settings.json")
-		}
-
-		if (FactorioServ.Version.Greater(Version{0, 17, 0})) {
-			// save admins to adminJson
-			admins, err := json.MarshalIndent(FactorioServ.Settings["admins"], "", "  ")
-			if err != nil {
-				log.Printf("Failed to marshal admins-Setting: %s", err)
-				return
-			}
-			err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), admins, 0664)
-			if err != nil {
-				log.Printf("Failed to save admins: %s", err)
-				return
-			}
-		}
-
-		resp.Success = true
-		resp.Data = fmt.Sprintf("Settings successfully saved")
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in sending server settings response: %s", err)
 		}
 	}
+
+	resp = fmt.Sprintf("Settings successfully saved")
 }
