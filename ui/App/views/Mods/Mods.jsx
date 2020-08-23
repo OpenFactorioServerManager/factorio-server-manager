@@ -20,6 +20,15 @@ const Mods = () => {
             });
     };
 
+    const deleteAllMods = () => {
+        modsResource.deleteAll()
+            .then(res => {
+                if(res.success) {
+                    fetchInstalledMods();
+                }
+            })
+    }
+
     useEffect(() => {
         server.factorioVersion()
             .then(res => {
@@ -55,7 +64,9 @@ const Mods = () => {
                     </table>
 
                 }
-
+                actions={
+                    <Button size="sm" type="danger" onClick={deleteAllMods}>Delete all Mods</Button>
+                }
             />
         </>
     )

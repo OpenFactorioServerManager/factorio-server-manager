@@ -42,8 +42,11 @@ const mods = {
             }
         })
         return response.data;
+    },
+    deleteAll: async () => {
+        const response = await client.post('/api/mods/delete/all');
+        return response.data;
     }
-
 }
 
 export default mods;
