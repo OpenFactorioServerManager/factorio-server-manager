@@ -15,6 +15,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const readHttpBodyError = "Could not read the Request Body."
+
 type JSONResponse struct {
 	Success bool        `json:"success"`
 	Data    interface{} `json:"data,string"`
@@ -24,6 +26,23 @@ type JSONResponseFileInput struct {
 	Data      interface{} `json:"data,string"`
 	Error     string      `json:"error"`
 	ErrorKeys []int       `json:"errorkeys"`
+}
+
+func WriteResponse(w http.ResponseWriter, data interface{}) {
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		log.Printf("Error writing response: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func ReadRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}) (body []byte, err error) {
+	body, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		*resp = fmt.Sprintf("%s: %s", readHttpBodyError, err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	return
 }
 
 // Lists all save files in the factorio/saves directory
@@ -459,244 +478,170 @@ func FactorioVersion(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func LoginUser(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
+// Unmarshall the User object from the given bytearray
+// This function has side effects (it will write to resp and to w, in case of an error)
+func UnmarshallUserJson(body []byte, resp *interface{}, w http.ResponseWriter) (user User, err error) {
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		*resp = fmt.Sprintf("Unable to parse the request body: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
 	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	switch r.Method {
-	case "GET":
-		log.Printf("GET not supported for login handler")
-		resp.Data = "Unsupported method"
-		resp.Success = false
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing mods: %s", err)
-		}
-	case "POST":
-		var user User
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Printf("Error in starting factorio server handler body: %s", err)
-			return
-		}
-
-		err = json.Unmarshal(body, &user)
-		if err != nil {
-			log.Printf("Error unmarshaling server settings JSON: %s", err)
-			return
-		}
-
-		log.Printf("Logging in user: %s", user.Username)
-
-		err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
-		if err != nil {
-			log.Printf("Error logging in user: %s, error: %s", user.Username, err)
-			resp.Data = fmt.Sprintf("Error logging in user: %s", user.Username)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error listing mods: %s", err)
-			}
-			return
-		}
-
-		log.Printf("User: %s, logged in successfully", user.Username)
-		resp.Data = fmt.Sprintf("User: %s, logged in successfully", user.Username)
-		resp.Success = true
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing mods: %s", err)
-		}
-	}
+	return
 }
 
-func LogoutUser(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+func LoginUser(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var resp interface{}
+
+	// add resp to the response
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	if err := Auth.aaa.Logout(w, r); err != nil {
-		log.Printf("Error logging out current user")
+	body, err := ReadRequestBody(w, r, &resp)
+	if err != nil {
 		return
 	}
 
-	resp.Success = true
-	resp.Data = "User logged out successfully."
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error logging out: %s", err)
+	user, err := UnmarshallUserJson(body, &resp, w)
+	if err != nil {
+		return
 	}
+
+	log.Printf("Logging in user: %s", user.Username)
+
+	err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
+	if err != nil {
+		resp = fmt.Sprintf("Error loggin in user: %s, error: %s", user.Username, err)
+		log.Println(resp)
+		return
+	}
+
+	log.Printf("User: %s, logged in successfully", user.Username)
+}
+
+func LogoutUser(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	if err = Auth.aaa.Logout(w, r); err != nil {
+		log.Printf("Error logging out current user")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp = "User logged out successfully."
 }
 
 func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	var err error
+	var resp interface{}
+
+	// add resp to the response
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	user, err := Auth.aaa.CurrentUser(w, r)
 	if err != nil {
-		log.Printf("Error getting current user status: %s", err)
-		resp.Data = fmt.Sprintf("Error getting user status: %s", user.Username)
-		resp.Success = false
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing mods: %s", err)
-		}
+		resp = fmt.Sprintf("Error getting user status: %s, error: %s", user.Username, err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	resp.Success = true
-	resp.Data = user
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error getting user status: %s", err)
-	}
-
+	resp = user
 }
 
 func ListUsers(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	users, err := Auth.listUsers()
 	if err != nil {
-		log.Printf("Error in ListUsers handler: %s", err)
-		resp.Data = fmt.Sprint("Error listing users")
-		resp.Success = false
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing mods: %s", err)
-		}
+		resp = fmt.Sprintf("Error listing users: %s", err)
+		log.Println(resp)
 		return
 	}
 
-	resp.Success = true
-	resp.Data = users
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error getting user status: %s", err)
-	}
+	resp = users
 }
 
 func AddUser(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	switch r.Method {
-	case "GET":
-		log.Printf("GET not supported for add user handler")
-		resp.Data = "Unsupported method"
-		resp.Success = false
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error adding user: %s", err)
-		}
-	case "POST":
-		user := User{}
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Printf("Error in reading add user POST: %s", err)
-			resp.Data = fmt.Sprintf("Error in adding user: %s", err)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error adding user: %s", err)
-			}
-			return
-		}
-
-		log.Printf("Adding user: %v", string(body))
-
-		err = json.Unmarshal(body, &user)
-		if err != nil {
-			log.Printf("Error unmarshaling user add JSON: %s", err)
-			resp.Data = fmt.Sprintf("Error in adding user: %s", err)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error adding user: %s", err)
-			}
-			return
-		}
-
-		err = Auth.addUser(user.Username, user.Password, user.Email, user.Role)
-		if err != nil {
-			log.Printf("Error in adding user: %s", err)
-			resp.Data = fmt.Sprintf("Error in adding user: %s", err)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error adding user: %s", err)
-			}
-			return
-		}
-
-		resp.Success = true
-		resp.Data = fmt.Sprintf("User: %s successfully added.", user.Username)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in returning added user response: %s", err)
-		}
+	body, err := ReadRequestBody(w, r, &resp)
+	if err != nil {
+		return
 	}
+
+	log.Printf("Adding user: %v", string(body))
+
+	user, err := UnmarshallUserJson(body, &resp, w)
+	if err != nil {
+		return
+	}
+
+	err = Auth.addUser(user.Username, user.Password, user.Email, user.Role)
+	if err != nil {
+		resp = fmt.Sprintf("Error in adding user {%s}: %s", user.Username, err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp = fmt.Sprintf("User: %s successfully added.", user.Username)
 }
 
 func RemoveUser(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	switch r.Method {
-	case "GET":
-		log.Printf("GET not supported for add user handler")
-		resp.Data = "Unsupported method"
-		resp.Success = false
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error adding user: %s", err)
-		}
-	case "POST":
-		user := User{}
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Printf("Error in reading remove user POST: %s", err)
-			resp.Data = fmt.Sprintf("Error in removing user: %s", err)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error adding user: %s", err)
-			}
-			return
-		}
-		err = json.Unmarshal(body, &user)
-		if err != nil {
-			log.Printf("Error unmarshaling user remove JSON: %s", err)
-			resp.Data = fmt.Sprintf("Error in removing user: %s", err)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error removing user: %s", err)
-			}
-			return
-		}
-
-		err = Auth.removeUser(user.Username)
-		if err != nil {
-			log.Printf("Error in remove user handler: %s", err)
-			resp.Data = fmt.Sprintf("Error in removing user: %s", err)
-			resp.Success = false
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error adding user: %s", err)
-			}
-			return
-		}
-
-		resp.Success = true
-		resp.Data = fmt.Sprintf("User: %s successfully removed.", user.Username)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in returning remove user response: %s", err)
-		}
+	body, err := ReadRequestBody(w, r, &resp)
+	if err != nil {
+		return
 	}
+
+	user, err := UnmarshallUserJson(body, &resp, w)
+	if err != nil {
+		return
+	}
+
+	err = Auth.removeUser(user.Username)
+	if err != nil {
+		resp = fmt.Sprintf("Error in removing user {%s}, error: %s", user.Username, err)
+		log.Println(resp)
+		return
+	}
+
+	resp = fmt.Sprintf("User: %s successfully removed.", user.Username)
 }
 
 // GetServerSettings returns JSON response of server-settings.json file
@@ -768,7 +713,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Saved Factorio server settings in server-settings.json")
 		}
 
-		if(FactorioServ.Version.Greater(Version{0,17,0})) {
+		if (FactorioServ.Version.Greater(Version{0, 17, 0})) {
 			// save admins to adminJson
 			admins, err := json.MarshalIndent(FactorioServ.Settings["admins"], "", "  ")
 			if err != nil {

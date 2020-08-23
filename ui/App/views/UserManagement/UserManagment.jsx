@@ -10,8 +10,8 @@ const UserManagement = () => {
 
     const updateList = useCallback(async () => {
         const res = await user.list();
-        if (res.success) {
-            setUsers(res.data);
+        if (res) {
+            setUsers(res);
         }
     }, []);
 
