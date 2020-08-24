@@ -6,7 +6,7 @@ const Console = ({serverStatus}) => {
 
     const [logs, setLogs] = useState([]);
     const consoleInput = useRef(null);
-    const isRunning = serverStatus.data.status === 'running';
+    const isRunning = serverStatus.status === 'running';
 
     useEffect(() => {
 

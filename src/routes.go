@@ -267,11 +267,6 @@ var apiRoutes = Routes{
 		LoadConfig,
 	}, {
 		"StartServer",
-		"GET",
-		"/server/start",
-		StartServer,
-	}, {
-		"StartServer",
 		"POST",
 		"/server/start",
 		StartServer,

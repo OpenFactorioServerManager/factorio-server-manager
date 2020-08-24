@@ -274,204 +274,158 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 
 func StartServer(w http.ResponseWriter, r *http.Request) {
 	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	if FactorioServ.Running {
-		resp.Data = "Factorio server is already running"
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding JSON response: %s", err)
-		}
+		resp = "Factorio server is already running"
+		w.WriteHeader(http.StatusConflict)
 		return
 	}
 
-	switch r.Method {
-	case "GET":
-		log.Printf("GET not supported for startserver handler")
-		resp.Data = "Unsupported method"
-		resp.Success = false
-		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing mods: %s", err)
-		}
-	case "POST":
-		log.Printf("Starting Factorio server.")
+	log.Printf("Starting Factorio server.")
 
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Printf("Error in starting factorio server handler body: %s", err)
-			return
-		}
-
-		log.Printf("Starting Factorio server with settings: %v", string(body))
-
-		err = json.Unmarshal(body, &FactorioServ)
-		if err != nil {
-			log.Printf("Error unmarshaling server settings JSON: %s", err)
-			return
-		}
-
-		// Check if savefile was submitted with request to start server.
-		if FactorioServ.Savefile == "" {
-			log.Printf("Error starting Factorio server: no save file provided")
-			resp.Success = false
-			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", "No save file provided")
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: %s", err)
-			}
-			return
-		}
-
-		go func() {
-			err = FactorioServ.Run()
-			if err != nil {
-				log.Printf("Error starting Factorio server: %+v", err)
-				return
-			}
-		}()
-
-		timeout := 0
-		for timeout <= 3 {
-			time.Sleep(1 * time.Second)
-			if FactorioServ.Running {
-				resp.Data = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
-				resp.Success = true
-				log.Printf("Factorio server started on port: %v", FactorioServ.Port)
-				if err := json.NewEncoder(w).Encode(resp); err != nil {
-					log.Printf("Error encoding config file JSON reponse: %s", err)
-				}
-				break
-			} else {
-				log.Printf("Did not detect running Factorio server attempt: %+v", timeout)
-			}
-
-			timeout++
-		}
-		if FactorioServ.Running == false {
-			log.Printf("Error starting Factorio server: %s", err)
-			resp.Data = fmt.Sprintf("Error starting Factorio server: %s", err)
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding start server JSON response: %s", err)
-			}
-		}
+	body, err := ReadRequestBody(w, r, &resp)
+	if err != nil {
+		return
 	}
+
+	log.Printf("Starting Factorio server with settings: %v", string(body))
+
+	err = json.Unmarshal(body, &FactorioServ)
+	if err != nil {
+		resp = fmt.Sprintf("Error unmarshalling server settings JSON: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Check if savefile was submitted with request to start server.
+	if FactorioServ.Savefile == "" {
+		resp = "Error starting Factorio server: No save file provided"
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	go func() {
+		err = FactorioServ.Run()
+		if err != nil {
+			log.Printf("Error starting Factorio server: %+v", err)
+			return
+		}
+	}()
+
+	timeout := 0
+	for timeout <= 3 {
+		time.Sleep(1 * time.Second)
+		if FactorioServ.Running {
+			break
+		} else {
+			log.Printf("Did not detect running Factorio server attempt: %+v", timeout)
+		}
+
+		timeout++
+	}
+
+	if FactorioServ.Running == false {
+		resp = fmt.Sprintf("Error starting Factorio server: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
+	log.Println(resp)
 }
 
 func StopServer(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	if FactorioServ.Running {
 		err := FactorioServ.Stop()
 		if err != nil {
-			log.Printf("Error in stop server handler: %s", err)
-			resp.Data = fmt.Sprintf("Error in stop server handler: %s", err)
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: %s", err)
-			}
+			resp = fmt.Sprintf("Error stopping factorio server: %s", err)
+			log.Println(resp)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		log.Printf("Stopped Factorio server.")
-		resp.Success = true
-		resp.Data = fmt.Sprintf("Factorio server stopped")
+		resp = fmt.Sprintf("Factorio server stopped")
+		log.Println(resp)
 	} else {
-		resp.Data = "Factorio server is not running"
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: %s", err)
-		}
+		resp = "Factorio server is not running"
+		w.WriteHeader(http.StatusConflict)
 		return
-	}
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: %s", err)
 	}
 }
 
 func KillServer(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	if FactorioServ.Running {
 		err := FactorioServ.Kill()
 		if err != nil {
-			log.Printf("Error in kill server handler: %s", err)
-			resp.Data = fmt.Sprintf("Error in kill server handler: %s", err)
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				log.Printf("Error encoding config file JSON reponse: %s", err)
-			}
+			resp = fmt.Sprintf("Error killing factorio server: %s", err)
+			log.Println(resp)
 			return
 		}
 
 		log.Printf("Killed Factorio server.")
-		resp.Success = true
-		resp.Data = fmt.Sprintf("Factorio server killed")
+		resp = fmt.Sprintf("Factorio server killed")
 	} else {
-		resp.Data = "Factorio server is not running"
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: %s", err)
-		}
-		return
-	}
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: %s", err)
+		resp = "Factorio server is not running"
+		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 
 func CheckServer(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: false,
-	}
+	resp := map[string]string{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	if FactorioServ.Running {
-		resp.Success = true
-		status := map[string]string{}
-		status["status"] = "running"
-		status["port"] = strconv.Itoa(FactorioServ.Port)
-		status["savefile"] = FactorioServ.Savefile
-		status["address"] = FactorioServ.BindIP
-		resp.Data = status
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: %s", err)
-		}
+		resp["status"] = "running"
+		resp["port"] = strconv.Itoa(FactorioServ.Port)
+		resp["savefile"] = FactorioServ.Savefile
+		resp["address"] = FactorioServ.BindIP
 	} else {
-		resp.Success = true
-		status := map[string]string{}
-		status["status"] = "stopped"
-		resp.Data = status
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding config file JSON reponse: %s", err)
-		}
+		resp["status"] = "stopped"
 	}
 }
 
 func FactorioVersion(w http.ResponseWriter, r *http.Request) {
-	resp := JSONResponse{
-		Success: true,
-	}
+	resp := map[string]string{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	status := map[string]string{}
-	status["version"] = FactorioServ.Version.String()
-	status["base_mod_version"] = FactorioServ.BaseModVersion
-
-	resp.Data = status
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error loading Factorio Version: %s", err)
-	}
+	resp["version"] = FactorioServ.Version.String()
+	resp["base_mod_version"] = FactorioServ.BaseModVersion
 }
 
 // Unmarshall the User object from the given bytearray

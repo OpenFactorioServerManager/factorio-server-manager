@@ -23,8 +23,8 @@ const Mods = () => {
     useEffect(() => {
         server.factorioVersion()
             .then(res => {
-                if (res.success) {
-                    setFactorioVersion(res.data.base_mod_version)
+                if (res) {
+                    setFactorioVersion(res.base_mod_version)
                 }
                 fetchInstalledMods();
             })

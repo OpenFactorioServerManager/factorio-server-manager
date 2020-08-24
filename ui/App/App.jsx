@@ -26,7 +26,7 @@ const App = () => {
 
     const updateServerStatus = async () => {
         const status = await server.status();
-        if (status.success) {
+        if (status) {
             setServerStatus(status)
         }
     }
