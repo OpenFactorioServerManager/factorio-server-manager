@@ -11,7 +11,7 @@ const CreateSaveForm = ({onSuccess}) => {
 
     const onSubmit = async (data, e) => {
         const res = await saves.create(data.savefile);
-        if (res.success) {
+        if (res) {
             e.target.reset();
             onSuccess();
         }

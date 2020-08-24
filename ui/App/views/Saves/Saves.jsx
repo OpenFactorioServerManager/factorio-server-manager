@@ -13,8 +13,8 @@ const Saves = ({serverStatus}) => {
     const updateList = () => {
        savesResource.list()
            .then(res => {
-               if (res.success) {
-                   setSaves(res.data);
+               if (res) {
+                   setSaves(res);
                }
            })
 
@@ -26,7 +26,7 @@ const Saves = ({serverStatus}) => {
 
     const deleteSave = async (save) => {
         const res = await savesResource.delete(save);
-        if (res.success) {
+        if (res) {
             updateList()
         }
     }

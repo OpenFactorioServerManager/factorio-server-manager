@@ -39,8 +39,8 @@ const Controls = ({serverStatus, updateServerStatus}) => {
 
         savesResource.list()
             .then(res => {
-                if (res.success) {
-                    setSaves(res.data)
+                if (res) {
+                    setSaves(res)
                 }
             });
     }, [])

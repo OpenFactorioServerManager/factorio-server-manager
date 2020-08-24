@@ -47,33 +47,26 @@ func ReadRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}) 
 
 // Lists all save files in the factorio/saves directory
 func ListSaves(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	savesList, err := listSaves(config.FactorioSavesDir)
 	if err != nil {
-		resp.Success = false
-		resp.Data = fmt.Sprintf("Error listing save files: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing saves: %s", err)
-		}
+		resp = fmt.Sprintf("Error listing save files: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	loadLatest := Save{Name: "Load Latest"}
 	savesList = append(savesList, loadLatest)
 
-	resp.Data = savesList
-
-	resp.Success = true
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error listing saves: %s", err)
-	}
+	resp = savesList
 }
 
 func DLSave(w http.ResponseWriter, r *http.Request) {
@@ -90,69 +83,62 @@ func DLSave(w http.ResponseWriter, r *http.Request) {
 }
 
 func UploadSave(w http.ResponseWriter, r *http.Request) {
-	var err error
-	resp := JSONResponse{
-		Success: false,
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	log.Println("Uploading save file")
+
+	r.ParseMultipartForm(32 << 20)
+
+	for _, saveFile := range r.MultipartForm.File["savefile"] {
+		ext := filepath.Ext(saveFile.Filename)
+		if ext != "zip" {
+			// Only zip-files allowed
+			resp = fmt.Sprintf("Fileformat {%s} is not allowed", ext)
+			w.WriteHeader(http.StatusUnsupportedMediaType)
+		}
+
+		file, err := saveFile.Open()
+		if err != nil {
+			resp = fmt.Sprintf("Error opening uploaded saveFile: %s", err)
+			log.Println(resp)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+
+		out, err := os.Create(filepath.Join(config.FactorioSavesDir, saveFile.Filename))
+		if err != nil {
+			resp = fmt.Sprintf("Error creating new savefile to copy uploaded on to: %s", err)
+			log.Println(resp)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		defer out.Close()
+
+		_, err = io.Copy(out, file)
+		if err != nil {
+			resp = fmt.Sprintf("Error coping uploaded file to created file on disk: %s", err)
+			log.Println(resp)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 
-	switch r.Method {
-	case "GET":
-		resp.Data = "Unsupported method"
-		resp.Success = false
-		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error listing mods: %s", err)
-		}
-	case "POST":
-		log.Println("Uploading save file")
-
-		r.ParseMultipartForm(32 << 20)
-
-		for _, saveFile := range r.MultipartForm.File["savefile"] {
-			file, err := saveFile.Open()
-			if err != nil {
-				resp.Success = false
-				resp.Data = err.Error()
-				json.NewEncoder(w).Encode(resp)
-				log.Printf("Error in upload save formfile: %s", err.Error())
-				return
-			}
-			defer file.Close()
-
-			out, err := os.Create(filepath.Join(config.FactorioSavesDir, saveFile.Filename))
-			if err != nil {
-				resp.Success = false
-				resp.Data = err.Error()
-				json.NewEncoder(w).Encode(resp)
-				log.Printf("Error in out: %s", err)
-				return
-			}
-			defer out.Close()
-
-			_, err = io.Copy(out, file)
-			if err != nil {
-				resp.Success = false
-				resp.Data = err.Error()
-				json.NewEncoder(w).Encode(resp)
-				log.Printf("Error in io copy: %s", err)
-				return
-			}
-
-			log.Printf("Uploaded save file: %s", saveFile.Filename)
-			resp.Data = "File '" + saveFile.Filename + "' uploaded successfully"
-			resp.Success = true
-			json.NewEncoder(w).Encode(resp)
-		}
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
+	resp = "Uploading files successful"
 }
 
 // Deletes provided save
 func RemoveSave(w http.ResponseWriter, r *http.Request) {
 	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
@@ -161,66 +147,54 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 
 	save, err := findSave(name)
 	if err != nil {
-		resp.Data = fmt.Sprintf("Error removing save: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing save %s", err)
-		}
+		resp = fmt.Sprintf("Error finding save {%s}: %s", name, err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	err = save.remove()
-	if err == nil {
-		// save was removed
-		resp.Data = fmt.Sprintf("Removed save: %s", save.Name)
-		resp.Success = true
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing save %s", err)
-		}
-	} else {
-		log.Printf("Error in remove save handler: %s", err)
-		resp.Data = fmt.Sprintf("Error in remove save handler: %s", err)
-
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error removing save: %s", err)
-		}
+	if err != nil {
+		resp = fmt.Sprintf("Error removing save {%s}: %s", name, err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+
+	// save was removed
+	resp = fmt.Sprintf("Removed save: %s", save.Name)
 }
 
 // Launches Factorio server binary with --create flag to create save
 // Url must include save name for creation of savefile
 func CreateSaveHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	vars := mux.Vars(r)
 	saveName := vars["save"]
 
 	if saveName == "" {
-		log.Printf("Error creating save, no name provided: %s", err)
-		resp.Data = "No save name provided."
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding save handler response: %s", err)
-		}
+		resp = fmt.Sprintf("Error creating save, no save name provided: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	saveFile := filepath.Join(config.FactorioSavesDir, saveName)
 	cmdOut, err := createSave(saveFile)
 	if err != nil {
-		log.Printf("Error creating save: %s", err)
-		resp.Data = "Error creating savefile."
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error encoding save handler response: %s", err)
-		}
+		resp = fmt.Sprintf("Error creating save {%s}: %s", saveName, err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	resp.Success = true
-	resp.Data = fmt.Sprintf("Save %s created successfully. Command output: \n%s", saveName, cmdOut)
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding save response: %s", err)
-	}
+	resp = fmt.Sprintf("Save %s created successfully. Command output: \n%s", saveName, cmdOut)
 }
 
 // LogTail returns last lines of the factorio-current.log file
