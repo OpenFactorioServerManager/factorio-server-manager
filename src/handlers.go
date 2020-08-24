@@ -251,27 +251,23 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 // LoadConfig returns JSON response of config.ini file
 func LoadConfig(w http.ResponseWriter, r *http.Request) {
 	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	configContents, err := loadConfig(config.FactorioConfigFile)
 	if err != nil {
-		log.Printf("Could not retrieve config.ini: %s", err)
-		resp.Data = "Error getting config.ini"
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error tailing logfile: %s", err)
-		}
-	} else {
-		resp.Data = configContents
-		resp.Success = true
+		resp = fmt.Sprintf("Could not retrieve config.ini: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error encoding config file JSON reponse: %s", err)
-	}
+	resp = configContents
 
 	log.Printf("Sent config.ini response")
 }
