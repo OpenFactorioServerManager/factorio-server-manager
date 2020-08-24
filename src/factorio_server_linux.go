@@ -10,12 +10,6 @@ import (
 
 // Stubs for windows-only functions
 
-func sendCtrlCToPid(pid int) {
-}
-
-func setCtrlHandlingIsDisabledForThisProcess(disabled bool) {
-}
-
 func (f *FactorioServer) Kill() error {
 	err := f.Cmd.Process.Signal(os.Kill)
 	if err != nil {
