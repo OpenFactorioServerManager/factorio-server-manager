@@ -200,25 +200,18 @@ func CreateSaveHandler(w http.ResponseWriter, r *http.Request) {
 // LogTail returns last lines of the factorio-current.log file
 func LogTail(w http.ResponseWriter, r *http.Request) {
 	var err error
-	resp := JSONResponse{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	resp.Data, err = tailLog(config.FactorioLog)
+	resp, err = tailLog(config.FactorioLog)
 	if err != nil {
-		resp.Data = fmt.Sprintf("Could not tail %s: %s", config.FactorioLog, err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Could not tail %s: %s", config.FactorioLog, err)
-		}
+		resp = fmt.Sprintf("Could not tail %s: %s", config.FactorioLog, err)
 		return
-	}
-
-	resp.Success = true
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error tailing logfile: %s", err)
 	}
 }
 
