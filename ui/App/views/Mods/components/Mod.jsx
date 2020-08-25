@@ -19,7 +19,7 @@ const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
 
     const toggleMod = async modName => {
         const res = await modsResource.toggle(modName);
-        if (res.success) {
+        if (res) {
             refreshInstalledMods();
         }
     }
@@ -47,8 +47,8 @@ const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
 
     useEffect(() => {
         (async () => {
-            const {success, data} = await modsResource.details(mod.name)
-            if (success) {
+            const {data} = await modsResource.details(mod.name)
+            if (data) {
                 //get newest COMPATIBLE release
                 let newestRelease;
                 data.releases.forEach(release => {

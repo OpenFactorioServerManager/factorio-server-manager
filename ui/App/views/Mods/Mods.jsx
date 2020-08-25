@@ -14,8 +14,8 @@ const Mods = () => {
     const fetchInstalledMods = () => {
         modsResource.installed()
             .then(res => {
-                if (res.success) {
-                    setInstalledMods(res.data || []);
+                if (res) {
+                    setInstalledMods(res || []);
                 }
             });
     };
