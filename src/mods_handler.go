@@ -186,8 +186,6 @@ func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Starting Factorio server with settings: %v", string(body))
-
 	var mod struct {
 		Name string `json:"modName"`
 	}
@@ -340,8 +338,6 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Starting Factorio server with settings: %v", string(body))
-
 	var mod struct {
 		Name string `json:"modName"`
 	}
@@ -382,8 +378,6 @@ func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
-	log.Printf("Starting Factorio server with settings: %v", string(body))
 
 	var mod struct {
 		Name string `json:"modName"`
@@ -449,8 +443,6 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
-	log.Printf("Starting Factorio server with settings: %v", string(body))
 
 	var modData struct {
 		Name        string `json:"modName"`
@@ -601,8 +593,6 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Starting Factorio server with settings: %v", string(body))
-
 	var saveFileStruct struct {
 		Name string `json:"saveFile"`
 	}
@@ -667,8 +657,6 @@ func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
-	log.Printf("Starting Factorio server with settings: %v", string(body))
 
 	var modPackStruct struct {
 		Name string `json:"name"`
@@ -779,8 +767,6 @@ func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Starting Factorio server with settings: %v", string(body))
-
 	var modPackStruct struct {
 		Name string `json:"name"`
 	}
@@ -822,8 +808,6 @@ func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
-	log.Printf("Starting Factorio server with settings: %v", string(body))
 
 	var modPackStruct struct {
 		Name string `json:"name"`
@@ -907,8 +891,6 @@ func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
-	log.Printf("Starting Factorio server with settings: %v", string(body))
 
 	var modPackStruct struct {
 		modName string `json:"modName"`
