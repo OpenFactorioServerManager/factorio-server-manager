@@ -1,8 +1,9 @@
 import Panel from "../../components/Panel";
 import React, {useCallback, useEffect, useState} from "react";
-import Button from "../../components/Button";
 import user from "../../../api/resources/user";
 import CreateUserForm from "./components/CreateUserForm";
+import {faTrashAlt} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 const UserManagement = () => {
 
@@ -45,7 +46,7 @@ const UserManagement = () => {
                                 <td className="pr-4">{user.role}</td>
                                 <td className="pr-4">{user.email}</td>
                                 <td>
-                                    <Button size="sm" onClick={() => deleteUser(user.username)} type="danger">Delete</Button>
+                                    <FontAwesomeIcon className="text-red cursor-pointer hover:text-red-light mr-2" onClick={() => deleteUser(user.username)} icon={faTrashAlt}/>
                                 </td>
                             </tr>
                         )}

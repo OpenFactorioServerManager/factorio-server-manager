@@ -6,11 +6,12 @@ import Label from "../components/Label";
 import Checkbox from "../components/Checkbox";
 import InputPassword from "../components/InputPassword";
 import Button from "../components/Button";
-import {Controller, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 
 const ServerSettings = () => {
 
     const [settings, setSettings] = useState();
+    const [numberInputs, setNumberInputs] = useState([]);
 
     const {register, handleSubmit, errors, control} = useForm();
 
@@ -23,11 +24,15 @@ const ServerSettings = () => {
         data.tags = data.tags.split(',');
         data.admins = data.admins.split(',');
 
+        numberInputs.forEach(numberInput => {
+            data[numberInput] = parseInt(data[numberInput]);
+        });
+
         Object.keys(settings).map(key => {
             if (key.startsWith("_comment")) {
                 data[key] = settings[key];
             }
-        })
+        });
         const res = settingsResource.server.update(data);
         if (res) {
             fetchSettings();
@@ -53,15 +58,15 @@ const ServerSettings = () => {
             case "bigint":
                 break;
             case "number":
+
+                if(numberInputs.indexOf(name) === -1) {
+                    setNumberInputs(old => [...old, name])
+                }
+
                 return (
                     <>
                         <Label htmlFor={name} text={label}/>
-                        <Controller
-                            name={name}
-                            as={ <Input type="number" defaultValue={value} />}
-                            onChange={([e]) => parseInt(e.target.value, 10)}
-                            control={control}
-                        />
+                        <Input type="number" name={name} inputRef={register} valueAsNumber="double" defaultValue={value} />
                     </>
                 )
             case "string":

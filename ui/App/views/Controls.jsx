@@ -115,10 +115,10 @@ const Controls = ({serverStatus, updateServerStatus}) => {
                 <div className="flex">
                     {isRunning
                         ? <>
-                            <Button onClick={stopServer} className="mr-2" type="default">Save & Stop Server</Button>
-                            <Button onClick={killServer} type="danger">Kill Server</Button>
+                            <Button onClick={stopServer} size="sm" className="mr-2" type="default">Save & Stop Server</Button>
+                            <Button onClick={killServer} size="sm" type="danger">Kill Server</Button>
                         </>
-                        : <Button isSubmit={true} type="success">Start Server</Button>
+                        : <Button isSubmit={true} size="sm" type="success">Start Server</Button>
                     }
                 </div>
             }
