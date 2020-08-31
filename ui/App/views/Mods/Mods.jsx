@@ -4,6 +4,8 @@ import modsResource from "../../../api/resources/mods";
 import Button from "../../components/Button";
 import Mod from "./components/Mod";
 import server from "../../../api/resources/server";
+import TabControl from "../../components/Tabs/TabControl";
+import Tab from "../../components/Tabs/Tab";
 
 const Mods = () => {
 
@@ -23,7 +25,7 @@ const Mods = () => {
     const deleteAllMods = () => {
         modsResource.deleteAll()
             .then(res => {
-                if(res.success) {
+                if (res.success) {
                     fetchInstalledMods();
                 }
             })
@@ -40,7 +42,15 @@ const Mods = () => {
     }, []);
 
     return (
-        <>
+        <div>
+            <TabControl>
+                <Tab title="Install Mod">
+                    <div>Install Mod</div>
+                </Tab>
+                <Tab title="Upload Mod">a Mod</Tab>
+                <Tab title="Load Mod from Save">b Mod</Tab>
+            </TabControl>
+
             <Panel
                 title="Mods"
                 className="mb-6"
@@ -58,8 +68,8 @@ const Mods = () => {
                         </thead>
                         <tbody>
                         {factorioVersion !== null && installedMods.map(mod => <Mod mod={mod} key={mod.name}
-                                                                          refreshInstalledMods={fetchInstalledMods}
-                                                                          factorioVersion={factorioVersion}/>)}
+                                                                                   refreshInstalledMods={fetchInstalledMods}
+                                                                                   factorioVersion={factorioVersion}/>)}
                         </tbody>
                     </table>
 
@@ -68,7 +78,15 @@ const Mods = () => {
                     <Button size="sm" type="danger" onClick={deleteAllMods}>Delete all Mods</Button>
                 }
             />
-        </>
+
+            <Panel
+                title="Mod packs"
+                className="mb-6"
+                content={
+                   "Test"
+                }
+            />
+        </div>
     )
 }
 
