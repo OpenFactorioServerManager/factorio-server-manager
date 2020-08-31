@@ -142,33 +142,6 @@ func LogoutFactorioModPortalHandler(w http.ResponseWriter, r *http.Request) {
 	resp = false
 }
 
-//ModPortalSearchHandler returns JSON response with the found mods
-func ModPortalSearchHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var resp interface{}
-
-	defer func() {
-		WriteResponse(w, resp)
-	}()
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	// Get Data out of the request
-	searchKeyword := r.FormValue("search")
-
-	var statusCode int
-	resp, err, statusCode = searchModPortal(searchKeyword)
-
-	if err != nil {
-		resp = fmt.Sprintf("Error in searching in mod portal: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(statusCode)
-}
-
 //ModPortalDetailsHandler returns JSON response with the mod details
 func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error

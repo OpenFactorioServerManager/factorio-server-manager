@@ -161,41 +161,6 @@ var apiRoutes = Routes{
 		"/mods/list/installed",
 		listInstalledModsHandler,
 	}, {
-		"LoginFactorioModPortal",
-		"POST",
-		"/mods/factorio/login",
-		LoginFactorioModPortal,
-	}, {
-		"LoginstatusFactorioModPortal",
-		"POST",
-		"/mods/factorio/status",
-		LoginstatusFactorioModPortal,
-	}, {
-		"LogoutFactorioModPortal",
-		"POST",
-		"/mods/factorio/logout",
-		LogoutFactorioModPortalHandler,
-	}, {
-		"SearchModPortal",
-		"GET",
-		"/mods/search",
-		ModPortalSearchHandler,
-	}, {
-		"GetModDetails",
-		"POST",
-		"/mods/details",
-		ModPortalDetailsHandler,
-	}, {
-		"ModPortalInstall",
-		"POST",
-		"/mods/install",
-		ModPortalInstallHandler,
-	}, {
-		"ModPortalInstallMultiple",
-		"POST",
-		"/mods/install/multiple",
-		ModPortalInstallMultipleHandler,
-	}, {
 		"ToggleMod",
 		"POST",
 		"/mods/toggle",
@@ -365,5 +330,43 @@ var apiRoutes = Routes{
 		"POST",
 		"/settings/update",
 		UpdateServerSettings,
+	},
+	// Mod Portal Stuff
+	{
+		"GetAllMods",
+		"GET",
+		"/mods/portal/list",
+		FactorioModPortalListMods,
+	},
+	{
+		"LoginFactorioModPortal",
+		"POST",
+		"/mods/factorio/login",
+		LoginFactorioModPortal,
+	}, {
+		"LoginstatusFactorioModPortal",
+		"POST",
+		"/mods/factorio/status",
+		LoginstatusFactorioModPortal,
+	}, {
+		"LogoutFactorioModPortal",
+		"POST",
+		"/mods/factorio/logout",
+		LogoutFactorioModPortalHandler,
+	}, {
+		"GetModDetails",
+		"POST",
+		"/mods/details",
+		ModPortalDetailsHandler,
+	}, {
+		"ModPortalInstall",
+		"POST",
+		"/mods/install",
+		ModPortalInstallHandler,
+	}, {
+		"ModPortalInstallMultiple",
+		"POST",
+		"/mods/install/multiple",
+		ModPortalInstallMultipleHandler,
 	},
 }

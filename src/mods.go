@@ -134,15 +134,11 @@ func factorioLogin(username string, password string) (string, error, int) {
 }
 
 //Search inside the factorio mod portal
-func searchModPortal(keyword string) (string, error, int) {
-	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods", nil)
+func listModPortal() (interface{}, error, int) {
+	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods?page_size=max", nil)
 	if err != nil {
 		return "error", err, 500
 	}
-
-	query := req.URL.Query()
-	query.Add("q", keyword)
-	req.URL.RawQuery = query.Encode()
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -155,9 +151,10 @@ func searchModPortal(keyword string) (string, error, int) {
 		return "error", err, 500
 	}
 
-	textString := string(text)
+	var jsonVal interface{}
+	json.Unmarshal(text, &jsonVal)
 
-	return textString, nil, resp.StatusCode
+	return jsonVal, nil, resp.StatusCode
 }
 
 func getModDetails(modId string) (string, error, int) {
@@ -276,7 +273,7 @@ func modStartUp() {
 			}
 			newJson, _ := json.Marshal(modSimpleList)
 
-			err = ioutil.WriteFile(filepath.Join(modSimpleList.Destination,"mod-list.json"), newJson, 0664)
+			err = ioutil.WriteFile(filepath.Join(modSimpleList.Destination, "mod-list.json"), newJson, 0664)
 			if err != nil {
 				log.Printf("error when writing new mod-list: %s", err)
 				return err
