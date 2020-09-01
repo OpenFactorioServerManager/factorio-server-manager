@@ -337,6 +337,11 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/portal/list",
 		FactorioModPortalListMods,
+	}, {
+		"GetModInfo",
+		"GET",
+		"/mods/portal/info/{mod}",
+		FactorioModPortalModInfo,
 	},
 	{
 		"LoginFactorioModPortal",
@@ -353,11 +358,6 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/factorio/logout",
 		LogoutFactorioModPortalHandler,
-	}, {
-		"GetModDetails",
-		"POST",
-		"/mods/details",
-		ModPortalDetailsHandler,
 	}, {
 		"ModPortalInstall",
 		"POST",

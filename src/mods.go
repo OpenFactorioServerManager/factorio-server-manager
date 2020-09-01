@@ -133,53 +133,6 @@ func factorioLogin(username string, password string) (string, error, int) {
 	return "", nil, http.StatusOK
 }
 
-//Search inside the factorio mod portal
-func listModPortal() (interface{}, error, int) {
-	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods?page_size=max", nil)
-	if err != nil {
-		return "error", err, 500
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "error", err, 500
-	}
-
-	text, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		return "error", err, 500
-	}
-
-	var jsonVal interface{}
-	json.Unmarshal(text, &jsonVal)
-
-	return jsonVal, nil, resp.StatusCode
-}
-
-func getModDetails(modId string) (string, error, int) {
-	var err error
-	newLink := "https://mods.factorio.com/api/mods/" + modId
-	resp, err := http.Get(newLink)
-
-	if err != nil {
-		return "error", err, http.StatusInternalServerError
-	}
-
-	//get the response-text
-	text, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	textString := string(text)
-
-	if err != nil {
-		log.Fatal(err)
-		return "error", err, resp.StatusCode
-	}
-
-	return textString, nil, resp.StatusCode
-}
-
 func deleteAllMods() error {
 	var err error
 

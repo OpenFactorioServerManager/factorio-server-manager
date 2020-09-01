@@ -142,47 +142,6 @@ func LogoutFactorioModPortalHandler(w http.ResponseWriter, r *http.Request) {
 	resp = false
 }
 
-//ModPortalDetailsHandler returns JSON response with the mod details
-func ModPortalDetailsHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var resp interface{}
-
-	defer func() {
-		WriteResponse(w, resp)
-	}()
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	//Get Data out of the request
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
-	var mod struct {
-		Name string `json:"modName"`
-	}
-	err = json.Unmarshal(body, &mod)
-	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling modName JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	var statusCode int
-	resp, err, statusCode = getModDetails(mod.Name)
-
-	if err != nil {
-		resp = fmt.Sprintf("Error getting mod details: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(statusCode)
-}
-
 func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
@@ -257,19 +216,19 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		//get details of mod
-		modDetails, err, statusCode := getModDetails(mod)
+		//modDetails, err, statusCode := getModDetails(mod)
 		if err != nil {
 			resp = fmt.Sprintf("Error getting mod details of mod {%s}: %s", mod, err)
 			log.Println(resp)
-			w.WriteHeader(statusCode)
+			//w.WriteHeader(statusCode)
 			return
 		}
 
-		modDetailsArray := []byte(modDetails)
+		//modDetailsArray := []byte(modDetails)
 		var modDetailsStruct ModPortalStruct
 
 		//read mod-data into Struct
-		err = json.Unmarshal(modDetailsArray, &modDetailsStruct)
+		//err = json.Unmarshal(modDetailsArray, &modDetailsStruct)
 		if err != nil {
 			resp = fmt.Sprintf("error unmarshalling mod details: %s", err)
 			log.Println(resp)
