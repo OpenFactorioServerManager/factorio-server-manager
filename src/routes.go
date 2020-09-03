@@ -333,12 +333,12 @@ var apiRoutes = Routes{
 	},
 	// Mod Portal Stuff
 	{
-		"GetAllMods",
+		"ModPortalListAllMods",
 		"GET",
 		"/mods/portal/list",
 		FactorioModPortalListModsHandler,
 	}, {
-		"GetModInfo",
+		"ModPortalGetModInfo",
 		"GET",
 		"/mods/portal/info/{mod}",
 		FactorioModPortalModInfoHandler,
@@ -352,13 +352,13 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/portal/login",
 		FactorioModPortalLoginHandler,
+	}, {
+		"ModPortalLoginStatus",
+		"POST",
+		"/mods/portal/loginstatus",
+		FactorioModPortalLoginStatusHandler,
 	},
 	{
-		"LoginstatusFactorioModPortal",
-		"POST",
-		"/mods/factorio/status",
-		LoginstatusFactorioModPortal,
-	}, {
 		"LogoutFactorioModPortal",
 		"POST",
 		"/mods/factorio/logout",

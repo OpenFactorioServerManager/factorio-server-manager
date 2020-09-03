@@ -144,3 +144,22 @@ func FactorioModPortalLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(statusCode)
 }
+
+func FactorioModPortalLoginStatusHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	var credentials FactorioCredentials
+	resp, err = credentials.load()
+
+	if err != nil {
+		resp = fmt.Sprintf("Error getting the factorio credentials: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}

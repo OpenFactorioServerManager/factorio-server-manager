@@ -73,25 +73,6 @@ func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	resp = mods.listInstalledMods().ModsResult
 }
 
-func LoginstatusFactorioModPortal(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var resp interface{}
-
-	defer func() {
-		WriteResponse(w, resp)
-	}()
-
-	var credentials FactorioCredentials
-	resp, err = credentials.load()
-
-	if err != nil {
-		resp = fmt.Sprintf("Error getting the factorio credentials: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-}
-
 func LogoutFactorioModPortalHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
