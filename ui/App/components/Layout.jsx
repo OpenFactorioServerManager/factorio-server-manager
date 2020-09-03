@@ -16,11 +16,11 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
         let text = 'Unknown';
         let color = 'gray-light';
 
-        if (info && info.success) {
-            if (info.data.status === 'running') {
+        if (info) {
+            if (info.status === 'running') {
                 text = 'Running';
                 color = 'green';
-            } else if (info.data.status === 'stopped') {
+            } else if (info.status === 'stopped') {
                 text = 'Stopped';
                 color = 'red';
             }

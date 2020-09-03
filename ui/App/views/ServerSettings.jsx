@@ -17,7 +17,7 @@ const ServerSettings = () => {
 
     const fetchSettings = async () => {
         const res = await settingsResource.server.list();
-        setSettings(res.data);
+        setSettings(res);
     };
 
     const saveServerSettings = data => {
@@ -34,7 +34,7 @@ const ServerSettings = () => {
             }
         });
         const res = settingsResource.server.update(data);
-        if (res.success) {
+        if (res) {
             fetchSettings();
         }
     }
@@ -43,7 +43,7 @@ const ServerSettings = () => {
         fetchSettings();
     }, []);
 
-    const formTypeField = (name, value, label=null) => {
+    const formTypeField = (name, value, label = null) => {
         if (name.startsWith("_comment_")) {
             return null;
         }
@@ -74,14 +74,14 @@ const ServerSettings = () => {
                     return (
                         <>
                             <Label htmlFor={name} text={label}/>
-                            <InputPassword name={name} inputRef={register} defaultValue={value} />
+                            <InputPassword name={name} inputRef={register} defaultValue={value}/>
                         </>
                     )
                 } else {
                     return (
                         <>
                             <Label htmlFor={name} text={label}/>
-                            <Input name={name} inputRef={register} defaultValue={value} />
+                            <Input name={name} inputRef={register} defaultValue={value}/>
                         </>
                     )
                 }
@@ -100,7 +100,7 @@ const ServerSettings = () => {
                 } else if (name.includes("visibility")) {
                     return (
                         <>
-                            <Label text="Visibility" />
+                            <Label text="Visibility"/>
                             <div className="flex">
                                 {Object.keys(value).map(key => <div className="mr-4" key={`visibility-${key}`}>
                                     <Checkbox checked={value[key]} inputRef={register} text={key} name={`visibility[${key}]`}/>
@@ -114,8 +114,7 @@ const ServerSettings = () => {
                 return (
                     <>
                         <Label htmlFor={name} text={label}/>
-                        <Input name={name} inputRef={register} defaultValue={value}
-                        />
+                        <Input name={name} inputRef={register} defaultValue={value}/>
                     </>
                 )
         }

@@ -9,7 +9,7 @@ const Logs = () => {
     useEffect(() => {
         (async () => {
             const logs = await log.tail()
-            setLogs(logs.data);
+            setLogs(logs);
         })();
     }, [])
 

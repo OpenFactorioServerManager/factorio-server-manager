@@ -69,34 +69,40 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Login").
 		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
-	r.Path("/settings").
-		Methods("GET").
-		Name("Settings").
-		Handler(AuthorizeHandler(http.StripPrefix("/settings", http.FileServer(http.Dir("./app/")))))
-	r.Path("/mods").
-		Methods("GET").
-		Name("Mods").
-		Handler(AuthorizeHandler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
 	r.Path("/saves").
 		Methods("GET").
 		Name("Saves").
 		Handler(AuthorizeHandler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
+	r.Path("/mods").
+		Methods("GET").
+		Name("Mods").
+		Handler(AuthorizeHandler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
+	r.Path("/server-settings").
+		Methods("GET").
+		Name("Server settings").
+		Handler(AuthorizeHandler(http.StripPrefix("/server-settings", http.FileServer(http.Dir("./app/")))))
+	r.Path("/game-settings").
+		Methods("GET").
+		Name("Game settings").
+		Handler(AuthorizeHandler(http.StripPrefix("/game-settings", http.FileServer(http.Dir("./app/")))))
+	r.Path("/console").
+		Methods("GET").
+		Name("Console").
+		Handler(AuthorizeHandler(http.StripPrefix("/console", http.FileServer(http.Dir("./app/")))))
 	r.Path("/logs").
 		Methods("GET").
 		Name("Logs").
 		Handler(AuthorizeHandler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
-	r.Path("/config").
+	r.Path("/user-management").
 		Methods("GET").
-		Name("Config").
-		Handler(AuthorizeHandler(http.StripPrefix("/config", http.FileServer(http.Dir("./app/")))))
-	r.Path("/server").
+		Name("User management").
+		Handler(AuthorizeHandler(http.StripPrefix("/user-management", http.FileServer(http.Dir("./app/")))))
+	r.Path("/help").
 		Methods("GET").
-		Name("Server").
-		Handler(AuthorizeHandler(http.StripPrefix("/server", http.FileServer(http.Dir("./app/")))))
-	r.Path("/console").
-		Methods("GET").
-		Name("Server").
-		Handler(AuthorizeHandler(http.StripPrefix("/console", http.FileServer(http.Dir("./app/")))))
+		Name("Help").
+		Handler(AuthorizeHandler(http.StripPrefix("/help", http.FileServer(http.Dir("./app/")))))
+
+	// catch all route
 	r.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
@@ -259,11 +265,6 @@ var apiRoutes = Routes{
 		"GET",
 		"/config",
 		LoadConfig,
-	}, {
-		"StartServer",
-		"GET",
-		"/server/start",
-		StartServer,
 	}, {
 		"StartServer",
 		"POST",

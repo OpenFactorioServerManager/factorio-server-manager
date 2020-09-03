@@ -9,7 +9,7 @@ import Select from "../components/Select";
 const Controls = ({serverStatus, updateServerStatus}) => {
 
     const [factorioVersion, setFactorioVersion] = useState('unknown');
-    const isRunning = serverStatus.data.status === 'running';
+    const isRunning = serverStatus.status === 'running';
     const [saves, setSaves] = useState([]);
 
     const { handleSubmit, register, errors } = useForm();
@@ -32,15 +32,15 @@ const Controls = ({serverStatus, updateServerStatus}) => {
     useEffect(() => {
         server.factorioVersion()
             .then(res => {
-                if (res.success) {
-                    setFactorioVersion(res.data.version)
+                if (res) {
+                    setFactorioVersion(res.version)
                 }
             });
 
         savesResource.list()
             .then(res => {
-                if (res.success) {
-                    setSaves(res.data)
+                if (res) {
+                    setSaves(res)
                 }
             });
     }, [])
@@ -64,14 +64,14 @@ const Controls = ({serverStatus, updateServerStatus}) => {
                         <tbody>
                         {isRunning
                             ? <tr className="py-1">
-                                <td className="pr-4 py-2">{serverStatus.data.status}</td>
-                                <td className="pr-4 py-2">{serverStatus.data.address}</td>
-                                <td className="pr-4 py-2">{serverStatus.data.port}</td>
+                                <td className="pr-4 py-2">{serverStatus.status}</td>
+                                <td className="pr-4 py-2">{serverStatus.address}</td>
+                                <td className="pr-4 py-2">{serverStatus.port}</td>
                                 <td className="pr-4 py-2">{factorioVersion}</td>
-                                <td className="pr-4 py-2">{serverStatus.data.savefile}</td>
+                                <td className="pr-4 py-2">{serverStatus.savefile}</td>
                             </tr>
                             : <tr className="py-1">
-                                <td className="pr-4 py-2">{serverStatus.data.status}</td>
+                                <td className="pr-4 py-2">{serverStatus.status}</td>
                                 <td className="pr-4">
                                     <input
                                         name="ip"

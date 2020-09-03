@@ -27,15 +27,15 @@ const App = () => {
 
     const updateServerStatus = async () => {
         const status = await server.status();
-        if (status.success) {
+        if (status) {
             setServerStatus(status)
         }
     }
 
     const handleAuthenticationStatus = useCallback(async () => {
         const status = await user.status();
-        if (status.success) {
-            setIsAuthenticated(status.success);
+        if (status?.Username) {
+            setIsAuthenticated(true);
             await updateServerStatus();
 
             socket.emit('server status subscribe');
@@ -45,7 +45,7 @@ const App = () => {
 
     const handleLogout = useCallback(async () => {
         const loggedOut = await user.logout();
-        if (loggedOut.success) {
+        if (loggedOut) {
             setIsAuthenticated(false);
             history.push('/login');
         }
@@ -63,7 +63,7 @@ const App = () => {
     ), [isAuthenticated, serverStatus]);
 
     return (
-        <BrowserRouter basename="/rework">
+        <BrowserRouter basename="/">
             <Switch>
                 <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
 

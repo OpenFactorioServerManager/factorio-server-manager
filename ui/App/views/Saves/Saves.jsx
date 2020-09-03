@@ -13,8 +13,8 @@ const Saves = ({serverStatus}) => {
     const updateList = () => {
        savesResource.list()
            .then(res => {
-               if (res.success) {
-                   setSaves(res.data);
+               if (res) {
+                   setSaves(res);
                }
            })
 
@@ -26,7 +26,7 @@ const Saves = ({serverStatus}) => {
 
     const deleteSave = async (save) => {
         const res = await savesResource.delete(save);
-        if (res.success) {
+        if (res) {
             updateList()
         }
     }
@@ -38,7 +38,7 @@ const Saves = ({serverStatus}) => {
                     title="Create Save"
                     className="w-1/2 mr-3"
                     content={
-                        serverStatus.data.status === "running"
+                        serverStatus.status === "running"
                             ? <p className="text-red-light pt-4 pb-24">
                                 Create a new Save is only possible if the Factorio server is
                                 not running.

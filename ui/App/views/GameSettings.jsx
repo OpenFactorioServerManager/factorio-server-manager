@@ -8,7 +8,7 @@ const GameSettings = () => {
 
     const fetchSettings = async () => {
         const res = await settingsResource.game.list();
-        setSettingsCategories(res.data);
+        setSettingsCategories(res);
     }
 
     useEffect(() => {

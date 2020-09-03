@@ -62,7 +62,7 @@ func (s *Save) remove() error {
 
 // Create savefiles for Factorio
 func createSave(filePath string) (string, error) {
-	err := os.MkdirAll(filepath.Base(filePath), 0755)
+	err := os.MkdirAll(filepath.Dir(filePath), 0755)
 	if err != nil {
 		log.Printf("Error in creating Factorio save: %s", err)
 		return "", err

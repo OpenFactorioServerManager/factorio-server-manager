@@ -10,7 +10,7 @@ const CreateUserForm = ({updateUserList}) => {
 
     const onSubmit = async (data) => {
         const res = user.add(data);
-        if (res.success) {
+        if (res) {
             updateUserList()
         }
     }

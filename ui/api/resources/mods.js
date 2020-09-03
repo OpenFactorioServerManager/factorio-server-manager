@@ -6,41 +6,28 @@ const mods = {
         return response.data;
     },
     toggle: async modName => {
-        let data = new FormData();
-        data.set('modName', modName);
-
-        const response = await client.post('/api/mods/toggle', data);
+        const response = await client.post('/api/mods/toggle', JSON.stringify({modName}));
         return response.data;
     },
     delete: async modName => {
-        const data = new FormData();
-        data.set('modName', modName);
-
-        const response = await client.post('/api/mods/delete', data);
+        const response = await client.post('/api/mods/delete', JSON.stringify({modName}));
         return response.data;
     },
     details: async modName => {
-        const data = new FormData();
-        data.set('modId', modName);
-
-        const response = await client.post('/api/mods/details', data);
+        const response = await client.post('/api/mods/details', JSON.stringify({modName}));
 
         return {
-            success: response.data.success,
-            data: JSON.parse(response.data.data)
+            data: JSON.parse(response.data)
         };
     },
     update: async (modName, downloadUrl, fileName) => {
-        const data = new FormData();
-        data.set('modName', modName);
-        data.set('downloadUrl', downloadUrl);
-        data.set('filename', fileName);
+        const data = {
+            modName: modName,
+            downloadUrl: downloadUrl,
+            fileName: fileName,
+        }
 
-        const response = await client.post('/api/mods/update', data, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
+        const response = await client.post('/api/mods/update', data)
         return response.data;
     },
     deleteAll: async () => {
