@@ -45,7 +45,7 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
         <div className="flex md:flex-row-reverse flex-wrap">
 
             {/*Main*/}
-            <div className="w-full md:w-5/6 bg-gray-100 bg-banner bg-fixed min-h-screen">
+            <div className="w-full md:w-5/6 bg-gray-100 bg-black bg-fixed min-h-screen">
                 <div className="container mx-auto bg-gray-100 pt-16 px-6">
                     {children}
                 </div>
@@ -55,7 +55,6 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
             <div
                 className="w-full md:w-1/6 bg-gray-dark fixed bottom-0 md:top-0 md:left-0 h-16 md:h-screen">
                 <div className="py-4 px-2 accentuated items-center text-center">
-                    <img src="/images/factorio.jpg" className="inline h-8" alt="Factorio Logo"/>
                     <span className="text-dirty-white pl-2 text-xl">Factorio Server Manager</span>
                 </div>
                 <div className="py-4 px-2 accentuated">

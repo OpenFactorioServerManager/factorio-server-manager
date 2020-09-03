@@ -2,11 +2,6 @@
 @import "tailwindcss/utilities";
 @import "tailwindcss/components";
 
-.bg-banner {
-  background-image: url("/images/factorio-main-banner.jpg");
-  background-position: center center;
-}
-
 .accentuated-t {
   border-top: 2px solid rgba(255, 255, 255, 0.1);
 }
