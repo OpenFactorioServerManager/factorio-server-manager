@@ -432,7 +432,8 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
 	if err != nil {
-		resp = fmt.Sprintf("Error loggin in user: %s, error: %s", user.Username, err)
+		resp = "The credentials don't match our records."
+		w.WriteHeader(http.StatusBadRequest)
 		log.Println(resp)
 		return
 	}
@@ -472,9 +473,9 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 
 	user, err := Auth.aaa.CurrentUser(w, r)
 	if err != nil {
-		resp = fmt.Sprintf("Error getting user status: %s, error: %s", user.Username, err)
+		resp = "Error getting user status"
 		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 

@@ -6,6 +6,7 @@ import {useHistory, useLocation} from "react-router";
 import Panel from "../components/Panel";
 import Input from "../components/Input";
 import Label from "../components/Label";
+import {Flash} from "../components/Flash";
 
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
@@ -58,6 +59,7 @@ const Login = ({handleLogin}) => {
                     </form>
                 }
             />
+            <Flash/>
         </div>
     );
 };
