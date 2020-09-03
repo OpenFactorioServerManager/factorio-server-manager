@@ -17,10 +17,6 @@ import (
 
 const readHttpBodyError = "Could not read the Request Body."
 
-type JSONResponse struct {
-	Success bool        `json:"success"`
-	Data    interface{} `json:"data,string"`
-}
 type JSONResponseFileInput struct {
 	Success   bool        `json:"success"`
 	Data      interface{} `json:"data,string"`

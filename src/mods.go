@@ -7,8 +7,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -83,54 +81,6 @@ func (credentials *FactorioCredentials) del() error {
 	}
 
 	return nil
-}
-
-//Log the user into factorio, so mods can be downloaded
-func factorioLogin(username string, password string) (string, error, int) {
-	var err error
-
-	resp, err := http.PostForm("https://auth.factorio.com/api-login",
-		url.Values{"require_game_ownership": {"true"}, "username": {username}, "password": {password}})
-
-	if err != nil {
-		log.Printf("error on logging in: %s", err)
-		return "", err, resp.StatusCode
-	}
-
-	defer resp.Body.Close()
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("error on reading resp.Body: %s", err)
-		return "", err, http.StatusInternalServerError
-	}
-
-	bodyString := string(bodyBytes)
-
-	if resp.StatusCode != http.StatusOK {
-		log.Println("error Statuscode not 200")
-		return bodyString, errors.New(bodyString), resp.StatusCode
-	}
-
-	var successResponse []string
-	err = json.Unmarshal(bodyBytes, &successResponse)
-	if err != nil {
-		log.Printf("error on unmarshal body: %s", err)
-		return err.Error(), err, http.StatusInternalServerError
-	}
-
-	credentials := FactorioCredentials{
-		Username: username,
-		Userkey:  successResponse[0],
-	}
-
-	err = credentials.save()
-	if err != nil {
-		log.Printf("error saving the credentials. %s", err)
-		return err.Error(), err, http.StatusInternalServerError
-	}
-
-	return "", nil, http.StatusOK
 }
 
 func deleteAllMods() error {

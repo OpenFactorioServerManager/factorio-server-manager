@@ -73,35 +73,6 @@ func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	resp = mods.listInstalledMods().ModsResult
 }
 
-// LoginFactorioModPortal returns JSON response with success or error-message
-func LoginFactorioModPortal(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var resp interface{}
-
-	defer func() {
-		WriteResponse(w, resp)
-	}()
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	username := r.FormValue("username")
-	password := r.FormValue("password")
-
-	loginStatus, err, statusCode := factorioLogin(username, password)
-	if err != nil {
-		resp = fmt.Sprintf("Error trying to login into Factorio: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if loginStatus == "" {
-		resp = true
-	}
-
-	w.WriteHeader(statusCode)
-}
-
 func LoginstatusFactorioModPortal(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
@@ -140,37 +111,6 @@ func LogoutFactorioModPortalHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp = false
-}
-
-func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var resp interface{}
-
-	defer func() {
-		WriteResponse(w, resp)
-	}()
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	//Get Data out of the request
-	downloadUrl := r.FormValue("link")
-	filename := r.FormValue("filename")
-	modName := r.FormValue("modName")
-
-	mods, err := CreateNewMods(w, &resp)
-	if err != nil {
-		return
-	}
-
-	err = mods.downloadMod(downloadUrl, filename, modName)
-	if err != nil {
-		resp = fmt.Sprintf("Error downloading a mod: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	resp = mods.listInstalledMods()
 }
 
 func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
@@ -216,19 +156,19 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		//get details of mod
-		//modDetails, err, statusCode := getModDetails(mod)
+		modDetails, err, statusCode := getModDetails(mod)
 		if err != nil {
 			resp = fmt.Sprintf("Error getting mod details of mod {%s}: %s", mod, err)
 			log.Println(resp)
-			//w.WriteHeader(statusCode)
+			w.WriteHeader(statusCode)
 			return
 		}
 
-		//modDetailsArray := []byte(modDetails)
+		modDetailsArray := []byte(modDetails)
 		var modDetailsStruct ModPortalStruct
 
 		//read mod-data into Struct
-		//err = json.Unmarshal(modDetailsArray, &modDetailsStruct)
+		err = json.Unmarshal(modDetailsArray, &modDetailsStruct)
 		if err != nil {
 			resp = fmt.Sprintf("error unmarshalling mod details: %s", err)
 			log.Println(resp)

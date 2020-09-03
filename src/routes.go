@@ -336,19 +336,24 @@ var apiRoutes = Routes{
 		"GetAllMods",
 		"GET",
 		"/mods/portal/list",
-		FactorioModPortalListMods,
+		FactorioModPortalListModsHandler,
 	}, {
 		"GetModInfo",
 		"GET",
 		"/mods/portal/info/{mod}",
-		FactorioModPortalModInfo,
+		FactorioModPortalModInfoHandler,
+	}, {
+		"ModPortalInstallMod",
+		"POST",
+		"/mods/portal/install",
+		FactorioModPortalInstallHandler,
+	}, {
+		"ModPortalLogin",
+		"POST",
+		"/mods/portal/login",
+		FactorioModPortalLoginHandler,
 	},
 	{
-		"LoginFactorioModPortal",
-		"POST",
-		"/mods/factorio/login",
-		LoginFactorioModPortal,
-	}, {
 		"LoginstatusFactorioModPortal",
 		"POST",
 		"/mods/factorio/status",
@@ -358,11 +363,6 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/factorio/logout",
 		LogoutFactorioModPortalHandler,
-	}, {
-		"ModPortalInstall",
-		"POST",
-		"/mods/install",
-		ModPortalInstallHandler,
 	}, {
 		"ModPortalInstallMultiple",
 		"POST",
