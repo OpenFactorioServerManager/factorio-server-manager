@@ -155,47 +155,7 @@ func (ws *WSRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Defines all API REST endpoints
 // All routes are prefixed with /api
 var apiRoutes = Routes{
-	Route{
-		"ListInstalledMods",
-		"GET",
-		"/mods/list/installed",
-		listInstalledModsHandler,
-	}, {
-		"ToggleMod",
-		"POST",
-		"/mods/toggle",
-		ToggleModHandler,
-	}, {
-		"DeleteMod",
-		"POST",
-		"/mods/delete",
-		DeleteModHandler,
-	}, {
-		"DeleteAllMods",
-		"POST",
-		"/mods/delete/all",
-		DeleteAllModsHandler,
-	}, {
-		"UpdateMod",
-		"POST",
-		"/mods/update",
-		UpdateModHandler,
-	}, {
-		"UploadMod",
-		"POST",
-		"/mods/upload",
-		UploadModHandler,
-	}, {
-		"DownloadMods",
-		"GET",
-		"/mods/download",
-		DownloadModsHandler,
-	}, {
-		"LoadModsFromSave",
-		"POST",
-		"/mods/save/load",
-		LoadModsFromSaveHandler,
-	}, {
+	{
 		"ListSaves",
 		"GET",
 		"/saves/list",
@@ -367,5 +327,47 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/portal/install/multiple",
 		ModPortalInstallMultipleHandler,
+	},
+	// Mods Stuff
+	{
+		"ListInstalledMods",
+		"GET",
+		"/mods/list",
+		ListInstalledModsHandler,
+	}, {
+		"ToggleMod",
+		"POST",
+		"/mods/toggle",
+		ToggleModHandler,
+	}, {
+		"DeleteMod",
+		"POST",
+		"/mods/delete",
+		DeleteModHandler,
+	}, {
+		"DeleteAllMods",
+		"POST",
+		"/mods/delete/all",
+		DeleteAllModsHandler,
+	}, {
+		"UpdateMod",
+		"POST",
+		"/mods/update",
+		UpdateModHandler,
+	}, {
+		"UploadMod",
+		"POST",
+		"/mods/upload",
+		UploadModHandler,
+	}, {
+		"DownloadMods",
+		"GET",
+		"/mods/download",
+		DownloadModsHandler,
+	}, {
+		"LoadModsFromSave",
+		"POST",
+		"/mods/save/load",
+		LoadModsFromSaveHandler,
 	},
 }

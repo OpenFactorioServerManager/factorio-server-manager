@@ -55,7 +55,7 @@ func CreateNewModPackMap(w http.ResponseWriter, resp *interface{}) (modPackMap M
 }
 
 // Returns JSON response of all mods installed in factorio/mods
-func listInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
+func ListInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 

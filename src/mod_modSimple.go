@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -142,12 +143,18 @@ func (modSimpleList *ModSimpleList) toggleMod(modName string) (error, bool) {
 	var err error
 	var newEnabled bool
 
+	var found bool
 	for index, mod := range modSimpleList.Mods {
 		if mod.Name == modName {
 			newEnabled = !modSimpleList.Mods[index].Enabled
 			modSimpleList.Mods[index].Enabled = newEnabled
+			found = true
 			break
 		}
+	}
+
+	if !found {
+		return errors.New("mod is not installed"), newEnabled
 	}
 
 	err = modSimpleList.saveModInfoJson()

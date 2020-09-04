@@ -2,7 +2,7 @@ import client from "../client";
 
 const mods = {
     installed: async () => {
-        const response = await client.get('/api/mods/list/installed');
+        const response = await client.get('/api/mods/list');
         return response.data;
     },
     toggle: async modName => {
