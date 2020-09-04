@@ -357,16 +357,15 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/portal/loginstatus",
 		FactorioModPortalLoginStatusHandler,
-	},
-	{
-		"LogoutFactorioModPortal",
-		"POST",
-		"/mods/factorio/logout",
-		LogoutFactorioModPortalHandler,
+	}, {
+		"ModPortalLogout",
+		"GET",
+		"/mods/portal/logout",
+		FactorioModPortalLogoutHandler,
 	}, {
 		"ModPortalInstallMultiple",
 		"POST",
-		"/mods/install/multiple",
+		"/mods/portal/install/multiple",
 		ModPortalInstallMultipleHandler,
 	},
 }

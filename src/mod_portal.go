@@ -34,24 +34,25 @@ func modPortalList() (interface{}, error, int) {
 }
 
 // get the details (mod-info, releases, etc.) from a specific mod from the modPortal
-func modPortalModDetails(modId string) (interface{}, error, int) {
-	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods/"+modId+"/full", nil)
+func modPortalModDetails(modId string) (ModPortalStruct, error, int) {
+	var jsonVal ModPortalStruct
+
+	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods/"+modId, nil)
 	if err != nil {
-		return "error", err, 500
+		return jsonVal, err, 500
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "error", err, 500
+		return jsonVal, err, 500
 	}
 
 	text, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return "error", err, 500
+		return jsonVal, err, 500
 	}
 
-	var jsonVal interface{}
 	json.Unmarshal(text, &jsonVal)
 
 	return jsonVal, nil, resp.StatusCode
