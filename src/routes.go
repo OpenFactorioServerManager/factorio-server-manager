@@ -241,46 +241,6 @@ var apiRoutes = Routes{
 		"/user/remove",
 		RemoveUser,
 	}, {
-		"ListModPacks",
-		"GET",
-		"/mods/packs/list",
-		ListModPacksHandler,
-	}, {
-		"DownloadModPack",
-		"GET",
-		"/mods/packs/download/{modpack}",
-		DownloadModPackHandler,
-	}, {
-		"DeleteModPack",
-		"POST",
-		"/mods/packs/delete",
-		DeleteModPackHandler,
-	}, {
-		"CreateModPack",
-		"POST",
-		"/mods/packs/create",
-		CreateModPackHandler,
-	}, {
-		"LoadModPack",
-		"POST",
-		"/mods/packs/load",
-		LoadModPackHandler,
-	}, {
-		"ModPackToggleMod",
-		"POST",
-		"/mods/packs/mod/toggle",
-		ModPackToggleModHandler,
-	}, {
-		"ModPackDeleteMod",
-		"POST",
-		"/mods/packs/mod/delete",
-		ModPackDeleteModHandler,
-	}, {
-		"ModPackUpdateMod",
-		"POST",
-		"/mods/packs/mod/update",
-		ModPackUpdateModHandler,
-	}, {
 		"GetServerSettings",
 		"GET",
 		"/settings",
@@ -369,5 +329,48 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/save/load",
 		LoadModsFromSaveHandler,
+	},
+	// Mod Packs
+	{
+		"ListModPacks",
+		"GET",
+		"/mods/packs/list",
+		ListModPacksHandler,
+	}, {
+		"CreateModPack",
+		"POST",
+		"/mods/packs/create",
+		CreateModPackHandler,
+	}, {
+		"DeleteModPack",
+		"POST",
+		"/mods/packs/delete",
+		DeleteModPackHandler,
+	}, {
+		"DownloadModPack",
+		"GET",
+		"/mods/packs/download/{modpack}",
+		DownloadModPackHandler,
+	},
+	{
+		"LoadModPack",
+		"POST",
+		"/mods/packs/load",
+		LoadModPackHandler,
+	}, {
+		"ModPackToggleMod",
+		"POST",
+		"/mods/packs/mod/toggle",
+		ModPackToggleModHandler,
+	}, {
+		"ModPackDeleteMod",
+		"POST",
+		"/mods/packs/mod/delete",
+		ModPackDeleteModHandler,
+	}, {
+		"ModPackUpdateMod",
+		"POST",
+		"/mods/packs/mod/update",
+		ModPackUpdateModHandler,
 	},
 }
