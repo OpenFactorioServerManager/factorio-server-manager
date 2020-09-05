@@ -3,6 +3,7 @@ package main
 import (
 	"archive/zip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io"
@@ -28,6 +29,33 @@ func CreateNewModPackMap(w http.ResponseWriter, resp *interface{}) (modPackMap M
 		w.WriteHeader(http.StatusInternalServerError)
 		*resp = fmt.Sprintf("Error creating modpackmap aka. list of all modpacks files : %s", err)
 		log.Println(resp)
+	}
+	return
+}
+
+func ReadModPackRequest(w http.ResponseWriter, r *http.Request, resp *interface{}) (err error, packMap ModPackMap, modPackStruct struct {
+	Name string `json:"name"`
+}) {
+	body, err := ReadRequestBody(w, r, resp)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(body, &modPackStruct)
+	if err != nil {
+		*resp = fmt.Sprintf("Error unmarshalling saveFile JSON: %s", err)
+		log.Println(*resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	packMap, err = CreateNewModPackMap(w, resp)
+	if err != nil {
+		return
+	}
+
+	if !CheckModPackExists(packMap, modPackStruct.Name, w, resp) {
+		err = errors.New("modPack does not exist")
 	}
 	return
 }
@@ -62,6 +90,8 @@ func ModPackCreateHandler(w http.ResponseWriter, r *http.Request) {
 		WriteResponse(w, resp)
 	}()
 
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
 	body, err := ReadRequestBody(w, r, &resp)
 	if err != nil {
 		return
@@ -77,8 +107,6 @@ func ModPackCreateHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	modPackMap, err := CreateNewModPackMap(w, &resp)
 	if err != nil {
@@ -106,32 +134,12 @@ func ModPackDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
+	err, modPackMap, requestStruct := ReadModPackRequest(w, r, &resp)
 	if err != nil {
 		return
 	}
 
-	var modPackStruct struct {
-		Name string `json:"name"`
-	}
-	err = json.Unmarshal(body, &modPackStruct)
-	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling saveFile JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	modPackMap, err := CreateNewModPackMap(w, &resp)
-	if err != nil {
-		return
-	}
-
-	if !CheckModPackExists(modPackMap, modPackStruct.Name, w, &resp) {
-		return
-	}
-
-	err = modPackMap.deleteModPack(modPackStruct.Name)
+	err = modPackMap.deleteModPack(requestStruct.Name)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp = fmt.Sprintf("Error deleting modpack file: %s", err)
@@ -139,7 +147,7 @@ func ModPackDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp = modPackStruct.Name
+	resp = requestStruct.Name
 }
 
 func ModPackDownloadHandler(w http.ResponseWriter, r *http.Request) {
@@ -221,32 +229,12 @@ func ModPackLoadHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
+	err, modPackMap, requestStruct := ReadModPackRequest(w, r, &resp)
 	if err != nil {
 		return
 	}
 
-	var modPackStruct struct {
-		Name string `json:"name"`
-	}
-	err = json.Unmarshal(body, &modPackStruct)
-	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling saveFile JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	modPackMap, err := CreateNewModPackMap(w, &resp)
-	if err != nil {
-		return
-	}
-
-	if !CheckModPackExists(modPackMap, modPackStruct.Name, w, &resp) {
-		return
-	}
-
-	err = modPackMap[modPackStruct.Name].loadModPack()
+	err = modPackMap[requestStruct.Name].loadModPack()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp = fmt.Sprintf("Error loading modpack file: %s", err)
@@ -254,9 +242,23 @@ func ModPackLoadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp = modPackMap[modPackStruct.Name].Mods.listInstalledMods()
+	resp = modPackMap[requestStruct.Name].Mods.listInstalledMods()
 }
 
 //////////////////////////////////
 // Mods inside Mod Pack Handler //
 //////////////////////////////////
+func ModPackListModsHandler(w http.ResponseWriter, r *http.Request) {
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	err, packMap, requestStruct := ReadModPackRequest(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	resp = packMap[requestStruct.Name].Mods.listInstalledMods()
+}
