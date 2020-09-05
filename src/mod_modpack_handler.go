@@ -244,3 +244,43 @@ func ModPackModListHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp = modPackMap[modPackName].Mods.listInstalledMods()
 }
+
+func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	body, err := ReadRequestBody(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	var modPackStruct struct {
+		ModName string `json:"modName"`
+	}
+	err = json.Unmarshal(body, &modPackStruct)
+	if err != nil {
+		resp = fmt.Sprintf("Error unmarshalling modPack struct JSON: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err, resp = packMap[packName].Mods.ModSimpleList.toggleMod(modPackStruct.ModName)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp = fmt.Sprintf("Error toggling mod inside modPack: %s", err)
+		log.Println(resp)
+		return
+	}
+}
