@@ -43,7 +43,7 @@ func ReadModPackRequest(w http.ResponseWriter, r *http.Request, resp *interface{
 
 	err = json.Unmarshal(body, &modPackStruct)
 	if err != nil {
-		*resp = fmt.Sprintf("Error unmarshalling saveFile JSON: %s", err)
+		*resp = fmt.Sprintf("Error unmarshalling modPack request JSON: %s", err)
 		log.Println(*resp)
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -56,6 +56,10 @@ func ReadModPackRequest(w http.ResponseWriter, r *http.Request, resp *interface{
 
 	if !CheckModPackExists(packMap, modPackStruct.Name, w, resp) {
 		err = errors.New("modPack does not exist")
+		*resp = fmt.Sprintf("modPack {%s} does not exist", modPackStruct.Name)
+		log.Println(resp)
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 	return
 }
@@ -255,10 +259,19 @@ func ModPackListModsHandler(w http.ResponseWriter, r *http.Request) {
 		WriteResponse(w, resp)
 	}()
 
-	err, packMap, requestStruct := ReadModPackRequest(w, r, &resp)
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	vars := mux.Vars(r)
+	modpack := vars["modpack"]
+
+	modPackMap, err := CreateNewModPackMap(w, &resp)
 	if err != nil {
 		return
 	}
 
-	resp = packMap[requestStruct.Name].Mods.listInstalledMods()
+	if !CheckModPackExists(modPackMap, modpack, w, resp) {
+		err = errors.New("modPack does not exist")
+	}
+
+	resp = modPackMap[modpack].Mods.listInstalledMods()
 }
