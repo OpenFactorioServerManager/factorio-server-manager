@@ -32,7 +32,11 @@ func CreateNewModPackMap(w http.ResponseWriter, resp *interface{}) (modPackMap M
 	return
 }
 
-func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {
+//////////////////////
+// Mod Pack Handler //
+//////////////////////
+
+func ModPackListHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -50,7 +54,7 @@ func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {
 	resp = modPackMap.listInstalledModPacks()
 }
 
-func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
+func ModPackCreateHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -92,7 +96,7 @@ func CreateModPackHandler(w http.ResponseWriter, r *http.Request) {
 	resp = modPackMap.listInstalledModPacks()
 }
 
-func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
+func ModPackDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -138,7 +142,7 @@ func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
 	resp = modPackStruct.Name
 }
 
-func DownloadModPackHandler(w http.ResponseWriter, r *http.Request) {
+func ModPackDownloadHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -207,7 +211,7 @@ func DownloadModPackHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/zip;charset=UTF-8")
 }
 
-func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
+func ModPackLoadHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -252,3 +256,7 @@ func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp = modPackMap[modPackStruct.Name].Mods.listInstalledMods()
 }
+
+//////////////////////////////////
+// Mods inside Mod Pack Handler //
+//////////////////////////////////

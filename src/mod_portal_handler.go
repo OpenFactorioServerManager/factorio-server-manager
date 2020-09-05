@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func FactorioModPortalListModsHandler(w http.ResponseWriter, r *http.Request) {
+func ModPortalListModsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -31,8 +31,8 @@ func FactorioModPortalListModsHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(statusCode)
 }
 
-// FactorioModPortalModInfoHandler returns JSON response with the mod details
-func FactorioModPortalModInfoHandler(w http.ResponseWriter, r *http.Request) {
+// ModPortalModInfoHandler returns JSON response with the mod details
+func ModPortalModInfoHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -58,7 +58,7 @@ func FactorioModPortalModInfoHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(statusCode)
 }
 
-func FactorioModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
+func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -103,7 +103,7 @@ func FactorioModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 	resp = mods.listInstalledMods()
 }
 
-func FactorioModPortalLoginHandler(w http.ResponseWriter, r *http.Request) {
+func ModPortalLoginHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -145,7 +145,7 @@ func FactorioModPortalLoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(statusCode)
 }
 
-func FactorioModPortalLoginStatusHandler(w http.ResponseWriter, r *http.Request) {
+func ModPortalLoginStatusHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -164,7 +164,7 @@ func FactorioModPortalLoginStatusHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func FactorioModPortalLogoutHandler(w http.ResponseWriter, r *http.Request) {
+func ModPortalLogoutHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 

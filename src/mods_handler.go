@@ -61,7 +61,7 @@ func ListInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	resp = mods.listInstalledMods().ModsResult
 }
 
-func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
+func ModToggleHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -102,7 +102,7 @@ func ToggleModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
+func ModDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -145,7 +145,7 @@ func DeleteModHandler(w http.ResponseWriter, r *http.Request) {
 	resp = mod.Name
 }
 
-func DeleteAllModsHandler(w http.ResponseWriter, r *http.Request) {
+func ModDeleteAllHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -167,7 +167,7 @@ func DeleteAllModsHandler(w http.ResponseWriter, r *http.Request) {
 	resp = nil
 }
 
-func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
+func ModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -217,7 +217,7 @@ func UpdateModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UploadModHandler(w http.ResponseWriter, r *http.Request) {
+func ModUploadHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	resp := JSONResponseFileInput{
 		Success: false,
@@ -251,11 +251,11 @@ func UploadModHandler(w http.ResponseWriter, r *http.Request) {
 	resp.Success = true
 
 	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error in UploadModHandler: %s", err)
+		log.Printf("Error in ModUploadHandler: %s", err)
 	}
 }
 
-func DownloadModsHandler(w http.ResponseWriter, r *http.Request) {
+func ModDownloadHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	zipWriter := zip.NewWriter(w)
