@@ -12,6 +12,26 @@ import (
 	"path/filepath"
 )
 
+func CheckModPackExists(modPackMap ModPackMap, modPackName string, w http.ResponseWriter, resp interface{}) bool {
+	exists := modPackMap.checkModPackExists(modPackName)
+	if !exists {
+		resp = fmt.Sprintf("requested modPack {%s} doesnt exist", modPackName)
+		log.Println(resp)
+		w.WriteHeader(http.StatusNotFound)
+	}
+	return exists
+}
+
+func CreateNewModPackMap(w http.ResponseWriter, resp *interface{}) (modPackMap ModPackMap, err error) {
+	modPackMap, err = newModPackMap()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		*resp = fmt.Sprintf("Error creating modpackmap aka. list of all modpacks files : %s", err)
+		log.Println(resp)
+	}
+	return
+}
+
 func ListModPacksHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
@@ -103,10 +123,7 @@ func DeleteModPackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !modPackMap.checkModPackExists(modPackStruct.Name) {
-		resp = fmt.Sprintf(`modpack "%s" does not exist`, modPackStruct.Name)
-		log.Println(resp)
-		w.WriteHeader(http.StatusNotFound)
+	if !CheckModPackExists(modPackMap, modPackStruct.Name, w, &resp) {
 		return
 	}
 
@@ -137,7 +154,7 @@ func DownloadModPackHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.zip\"", modpack))
 
-	if packMap.checkModPackExists(modpack) {
+	if CheckModPackExists(packMap, modpack, w, &resp) {
 		zipWriter := zip.NewWriter(w)
 		defer zipWriter.Close()
 
@@ -182,13 +199,56 @@ func DownloadModPackHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		resp = fmt.Sprintf("requested modPack doesnt exist")
-		log.Println(resp)
-		w.WriteHeader(http.StatusNotFound)
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		WriteResponse(w, resp)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/zip;charset=UTF-8")
+}
+
+func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	body, err := ReadRequestBody(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	var modPackStruct struct {
+		Name string `json:"name"`
+	}
+	err = json.Unmarshal(body, &modPackStruct)
+	if err != nil {
+		resp = fmt.Sprintf("Error unmarshalling saveFile JSON: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	modPackMap, err := CreateNewModPackMap(w, &resp)
+	if err != nil {
+		return
+	}
+
+	if !CheckModPackExists(modPackMap, modPackStruct.Name, w, &resp) {
+		return
+	}
+
+	err = modPackMap[modPackStruct.Name].loadModPack()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp = fmt.Sprintf("Error loading modpack file: %s", err)
+		log.Println(resp)
+		return
+	}
+
+	resp = modPackMap[modPackStruct.Name].Mods.listInstalledMods()
 }

@@ -351,13 +351,14 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/packs/download/{modpack}",
 		DownloadModPackHandler,
-	},
-	{
+	}, {
 		"LoadModPack",
 		"POST",
 		"/mods/packs/load",
 		LoadModPackHandler,
-	}, {
+	},
+	// Mods inside Mod Packs
+	{
 		"ModPackToggleMod",
 		"POST",
 		"/mods/packs/mod/toggle",

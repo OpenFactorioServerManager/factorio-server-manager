@@ -42,16 +42,6 @@ func CreateNewMods(w http.ResponseWriter, resp *interface{}) (mods Mods, err err
 	return
 }
 
-func CreateNewModPackMap(w http.ResponseWriter, resp *interface{}) (modPackMap ModPackMap, err error) {
-	modPackMap, err = newModPackMap()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		*resp = fmt.Sprintf("Error creating modpackmap aka. list of all modpacks files : %s", err)
-		log.Println(resp)
-	}
-	return
-}
-
 // Returns JSON response of all mods installed in factorio/mods
 func ListInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -374,48 +364,6 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp = header
-}
-
-func LoadModPackHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var resp interface{}
-
-	defer func() {
-		WriteResponse(w, resp)
-	}()
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
-	var modPackStruct struct {
-		Name string `json:"name"`
-	}
-	err = json.Unmarshal(body, &modPackStruct)
-	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling saveFile JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	modPackMap, err := CreateNewModPackMap(w, &resp)
-	if err != nil {
-		return
-	}
-
-	modPackMap[modPackStruct.Name].loadModPack()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		resp = fmt.Sprintf("Error loading modpack file: %s", err)
-		log.Println(resp)
-		return
-	}
-
-	resp = modPackMap[modPackStruct.Name].Mods.listInstalledMods()
 }
 
 func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
