@@ -2,7 +2,6 @@ package main
 
 import (
 	"archive/zip"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -81,19 +80,11 @@ func ModPackCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
 	var modPackStruct struct {
 		Name string `json:"name"`
 	}
-	err = json.Unmarshal(body, &modPackStruct)
+	ReadFromRequestBody(w, r, &resp, &modPackStruct)
 	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling modPack request JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -260,19 +251,11 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
 	var modPackStruct struct {
-		ModName string `json:"modName"`
+		ModName string `json:"name"`
 	}
-	err = json.Unmarshal(body, &modPackStruct)
+	ReadFromRequestBody(w, r, &resp, &modPackStruct)
 	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling modPack struct JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -281,6 +264,93 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp = fmt.Sprintf("Error toggling mod inside modPack: %s", err)
 		log.Println(resp)
+		return
+	}
+}
+
+func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	var modPackStruct struct {
+		name string `json:"name"`
+	}
+	err = ReadFromRequestBody(w, r, &resp, &modPackStruct)
+	if err != nil {
+		return
+	}
+
+	err = packMap[packName].Mods.deleteMod(modPackStruct.name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp = fmt.Sprintf("Error deleting mod {%s} in modpack {%s}: %s", modPackStruct.name, packName, err)
+		log.Println(resp)
+		return
+	}
+
+	resp = true
+}
+
+func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	//Get Data out of the request
+	var modPackStruct struct {
+		modName     string `json:"modName"`
+		downloadUrl string `json:"downloadUrl"`
+		filename    string `json:"filename"`
+	}
+	err = ReadFromRequestBody(w, r, &resp, &modPackStruct)
+	if err != nil {
+		return
+	}
+
+	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	err = packMap[packName].Mods.updateMod(modPackStruct.modName, modPackStruct.downloadUrl, modPackStruct.filename)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp = fmt.Sprintf("Error updating mod {%s} in modpack {%s}: %s", modPackStruct.modName, packName, err)
+		log.Println(resp)
+		return
+	}
+
+	installedMods := packMap[packName].Mods.listInstalledMods().ModsResult
+	var found = false
+	for _, mod := range installedMods {
+		if mod.Name == modPackStruct.modName {
+			resp = mod
+			found = true
+			return
+		}
+	}
+
+	if !found {
+		resp = fmt.Sprintf(`Could not find mod %s`, modPackStruct.modName)
+		log.Println(resp)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 }

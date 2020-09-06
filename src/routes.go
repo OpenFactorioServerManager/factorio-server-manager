@@ -366,17 +366,18 @@ var apiRoutes = Routes{
 	}, {
 		"ModPackToggleMod",
 		"POST",
-		"/mods/packs/{modpack}/toggle",
+		"/mods/packs/{modpack}/mod/toggle",
 		ModPackToggleModHandler,
 	}, {
 		"ModPackDeleteMod",
 		"POST",
-		"/mods/packs/mod/delete",
+		"/mods/packs/{modpack}/mod/delete",
 		ModPackDeleteModHandler,
-	}, {
+	},
+	{
 		"ModPackUpdateMod",
 		"POST",
-		"/mods/packs/mod/update",
+		"/mods/packs/{modpack}/mod/update",
 		ModPackUpdateModHandler,
 	},
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"archive/zip"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/mroote/factorio-server-manager/lockfile"
 	"io"
@@ -42,6 +41,23 @@ func CreateNewMods(w http.ResponseWriter, resp *interface{}) (mods Mods, err err
 	return
 }
 
+func ReadFromRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}, data interface{}) (err error) {
+	//Get Data out of the request
+	body, err := ReadRequestBody(w, r, resp)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		*resp = fmt.Sprintf("Error unmarshalling requested struct JSON: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	return
+}
+
 // Returns JSON response of all mods installed in factorio/mods
 func ListInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -71,20 +87,12 @@ func ModToggleHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	//Get Data out of the request
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
+	var data struct {
+		Name string `json:"name"`
 	}
 
-	var mod struct {
-		Name string `json:"modName"`
-	}
-	err = json.Unmarshal(body, &mod)
+	err = ReadFromRequestBody(w, r, &resp, &data)
 	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling modName JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -93,7 +101,7 @@ func ModToggleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err, resp = mods.ModSimpleList.toggleMod(mod.Name)
+	err, resp = mods.ModSimpleList.toggleMod(data.Name)
 	if err != nil {
 		resp = fmt.Sprintf("Error in toggling mod in simple list: %s", err)
 		log.Println(resp)
@@ -112,20 +120,13 @@ func ModDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	// Get Data out of the request
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
+	var data struct {
+		Name string `json:"name"`
 	}
 
-	var mod struct {
-		Name string `json:"modName"`
-	}
-	err = json.Unmarshal(body, &mod)
+	// Get Data out of the request
+	err = ReadFromRequestBody(w, r, &resp, &data)
 	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling modName JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -134,15 +135,15 @@ func ModDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mods.deleteMod(mod.Name)
+	mods.deleteMod(data.Name)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		resp = fmt.Sprintf("Error in deleting mod {%s}: %s", mod.Name, err)
-		w.WriteHeader(http.StatusInternalServerError)
+		resp = fmt.Sprintf("Error in deleting mod {%s}: %s", data.Name, err)
+		log.Println(resp)
 		return
 	}
 
-	resp = mod.Name
+	resp = data.Name
 }
 
 func ModDeleteAllHandler(w http.ResponseWriter, r *http.Request) {
@@ -178,21 +179,14 @@ func ModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
 	var modData struct {
 		Name        string `json:"modName"`
 		DownloadUrl string `json:"downloadUrl"`
 		Filename    string `json:"fileName"`
 	}
-	err = json.Unmarshal(body, &modData)
+
+	err = ReadFromRequestBody(w, r, &resp, &modData)
 	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling modName JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -209,11 +203,20 @@ func ModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	installedMods := mods.listInstalledMods().ModsResult
+	var found = false
 	for _, mod := range installedMods {
 		if mod.Name == modData.Name {
 			resp = mod
+			found = true
 			return
 		}
+	}
+
+	if !found {
+		resp = fmt.Sprintf(`Could not find mod %s`, modData.Name)
+		log.Println(resp)
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 }
 
@@ -239,7 +242,7 @@ func ModUploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		resp.Data = fmt.Sprintf("Error in uploadMod, listing mods wasn't successful: %s", err)
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			log.Printf("Error in uploadMod, listing mods wasn't successful: %s", err)
@@ -327,19 +330,11 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
 	//Get Data out of the request
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
 	var saveFileStruct struct {
 		Name string `json:"saveFile"`
 	}
-	err = json.Unmarshal(body, &saveFileStruct)
+	err = ReadFromRequestBody(w, r, &resp, &saveFileStruct)
 	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling saveFile JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -364,117 +359,4 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp = header
-}
-
-func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var resp interface{}
-
-	defer func() {
-		WriteResponse(w, resp)
-	}()
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
-	var modPackStruct struct {
-		modName string `json:"modName"`
-		modPack string `json:"modPack"`
-	}
-	err = json.Unmarshal(body, &modPackStruct)
-	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling saveFile JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	modPackMap, err := CreateNewModPackMap(w, &resp)
-	if err != nil {
-		return
-	}
-
-	if modPackMap.checkModPackExists(modPackStruct.modPack) {
-		err = modPackMap[modPackStruct.modPack].Mods.deleteMod(modPackStruct.modName)
-	} else {
-		err = errors.New("ModPack " + modPackStruct.modPack + " does not exist")
-		resp = fmt.Sprintf("Error loading modpack file: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		resp = fmt.Sprintf("Error deleting mod {%s} in modpack {%s}: %s", modPackStruct.modName, modPackStruct.modPack, err)
-		log.Println(resp)
-		return
-	}
-
-	resp = true
-}
-
-func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var resp interface{}
-
-	defer func() {
-		WriteResponse(w, resp)
-	}()
-
-	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	//Get Data out of the request
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
-	var modPackStruct struct {
-		modName     string `json:"modName"`
-		downloadUrl string `json:"downloadUrl"`
-		filename    string `json:"filename"`
-		modPack     string `json:"modPack"`
-	}
-	err = json.Unmarshal(body, &modPackStruct)
-	if err != nil {
-		resp = fmt.Sprintf("Error unmarshalling modPack JSON: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	modPackMap, err := CreateNewModPackMap(w, &resp)
-	if err != nil {
-		return
-	}
-
-	if modPackMap.checkModPackExists(modPackStruct.modPack) {
-		err = modPackMap[modPackStruct.modPack].Mods.updateMod(modPackStruct.modName, modPackStruct.downloadUrl, modPackStruct.filename)
-	} else {
-		err = errors.New("ModPack " + modPackStruct.modPack + " does not exist")
-		resp = fmt.Sprintf("Error loading modpack file: %s", err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		resp = fmt.Sprintf("Error updating mod {%s} in modpack {%s}: %s", modPackStruct.modName, modPackStruct.modPack, err)
-		log.Println(resp)
-		return
-	}
-
-	installedMods := modPackMap[modPackStruct.modPack].Mods.listInstalledMods().ModsResult
-	for _, mod := range installedMods {
-		if mod.Name == modPackStruct.modName {
-			resp = mod
-			break
-		}
-	}
 }
