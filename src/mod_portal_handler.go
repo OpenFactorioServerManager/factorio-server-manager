@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"log"
@@ -68,22 +67,14 @@ func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
 	// Get Data out of the request
 	var data struct {
 		DownloadURL string `json:"link"`
 		Filename    string `json:"filename"`
 		ModName     string `json:"modName"`
 	}
-	err = json.Unmarshal(body, &data)
+	err = ReadFromRequestBody(w, r, &resp, &data)
 	if err != nil {
-		resp = fmt.Sprintf("Error reading data from request {%s}: %s", r.RequestURI, err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -113,20 +104,12 @@ func ModPortalLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
 	var data struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
-	err = json.Unmarshal(body, &data)
+	err = ReadFromRequestBody(w, r, &resp, &data)
 	if err != nil {
-		resp = fmt.Sprintf("Error reading data from request {%s}: %s", r.RequestURI, err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -195,20 +178,12 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
-	if err != nil {
-		return
-	}
-
 	var data []struct {
 		Name    string  `json:"name"`
 		Version Version `json:"version"`
 	}
-	err = json.Unmarshal(body, &data)
+	err = ReadFromRequestBody(w, r, &resp, &data)
 	if err != nil {
-		resp = fmt.Sprintf("Error reading data from request {%s}: %s", r.RequestURI, err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
