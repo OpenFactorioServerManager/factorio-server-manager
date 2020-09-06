@@ -33,7 +33,7 @@ const Login = ({handleLogin}) => {
     }, [])
 
     return (
-        <div className="h-screen overflow-hidden flex items-center justify-center bg-banner">
+        <div className="h-screen overflow-hidden flex items-center justify-center bg-black">
             <Panel
                 title="Login"
                 content={
