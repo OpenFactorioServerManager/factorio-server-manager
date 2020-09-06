@@ -181,6 +181,11 @@ var apiRoutes = Routes{
 		"/saves/create/{save}",
 		CreateSaveHandler,
 	}, {
+		"LoadModsFromSave",
+		"POST",
+		"/saves/mods",
+		LoadModsFromSaveHandler,
+	}, {
 		"LogTail",
 		"GET",
 		"/log/tail",
@@ -324,11 +329,6 @@ var apiRoutes = Routes{
 		"GET",
 		"/mods/download",
 		ModDownloadHandler,
-	}, {
-		"LoadModsFromSave",
-		"POST",
-		"/mods/save/load",
-		LoadModsFromSaveHandler,
 	},
 	// Mod Packs
 	{
@@ -393,5 +393,10 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/packs/{modpack}/portal/install",
 		ModPackModPortalInstallHandler,
+	}, {
+		"ModPackModPortalInstallMultiple",
+		"POST",
+		"/mods/packs/{modpack}/portal/install/multiple",
+		ModPackModPortalInstallMultipleHandler,
 	},
 }
