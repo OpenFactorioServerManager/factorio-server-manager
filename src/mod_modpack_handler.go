@@ -434,3 +434,42 @@ func ModPackModUploadHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error in ModUploadHandler: %s", err)
 	}
 }
+
+func ModPackModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	// Get Data out of the request
+	var data struct {
+		DownloadURL string `json:"link"`
+		Filename    string `json:"filename"`
+		ModName     string `json:"modName"`
+	}
+	err = ReadFromRequestBody(w, r, &resp, &data)
+	if err != nil {
+		return
+	}
+
+	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	mods := packMap[packName].Mods
+
+	err = mods.downloadMod(data.DownloadURL, data.Filename, data.ModName)
+	if err != nil {
+		resp = fmt.Sprintf("Error downloading a mod: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp = mods.listInstalledMods()
+}
