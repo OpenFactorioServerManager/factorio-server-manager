@@ -236,7 +236,7 @@ func ModPackModListHandler(w http.ResponseWriter, r *http.Request) {
 	resp = modPackMap[modPackName].Mods.listInstalledMods()
 }
 
-func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
+func ModPackModToggleHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -268,7 +268,7 @@ func ModPackToggleModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
+func ModPackModDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -284,17 +284,17 @@ func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var modPackStruct struct {
-		name string `json:"name"`
+		Name string `json:"name"`
 	}
 	err = ReadFromRequestBody(w, r, &resp, &modPackStruct)
 	if err != nil {
 		return
 	}
 
-	err = packMap[packName].Mods.deleteMod(modPackStruct.name)
+	err = packMap[packName].Mods.deleteMod(modPackStruct.Name)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		resp = fmt.Sprintf("Error deleting mod {%s} in modpack {%s}: %s", modPackStruct.name, packName, err)
+		resp = fmt.Sprintf("Error deleting mod {%s} in modpack {%s}: %s", modPackStruct.Name, packName, err)
 		log.Println(resp)
 		return
 	}
@@ -302,7 +302,7 @@ func ModPackDeleteModHandler(w http.ResponseWriter, r *http.Request) {
 	resp = true
 }
 
-func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
+func ModPackModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
@@ -353,4 +353,35 @@ func ModPackUpdateModHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
+}
+
+func ModPackModDeleteAllHandler(w http.ResponseWriter, r *http.Request) {
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	// Delete Modpack
+	err = packMap.deleteModPack(packName)
+	if err != nil {
+		resp = fmt.Sprintf("Error deleting modPackDir: %s", err)
+		log.Println(resp)
+		return
+	}
+
+	// recreate modPack without mods
+	err = packMap.createEmptyModPack(packName)
+	if err != nil {
+		resp = fmt.Sprintf("Error recreating modPackDir: %s", err)
+		log.Println(resp)
+		return
+	}
+
+	resp = true
 }

@@ -116,7 +116,7 @@ func (modPackMap *ModPackMap) createModPack(modPackName string) error {
 
 	files, err := ioutil.ReadDir(config.FactorioModsDir)
 	if err != nil {
-		log.Printf("error on reading the dactorio mods dir: %s", err)
+		log.Printf("error on reading the factorio mods dir: %s", err)
 		return err
 	}
 
@@ -153,10 +153,35 @@ func (modPackMap *ModPackMap) createModPack(modPackName string) error {
 	//reload the ModPackList
 	err = modPackMap.reload()
 	if err != nil {
-		log.Printf("error on reloading ModPack: %s", err)
+		log.Printf("error reloading ModPacks: %s", err)
 		return err
 	}
 
+	return nil
+}
+
+func (modPackMap *ModPackMap) createEmptyModPack(packName string) error {
+	var err error
+
+	modPackFolder := filepath.Join(config.FactorioModPackDir, packName)
+
+	if modPackMap.checkModPackExists(packName) == true {
+		log.Printf("ModPack %s already existis", packName)
+		return errors.New("ModPack " + packName + " already exists, please choose a different name")
+	}
+
+	// Create the modPack-folder
+	err = os.MkdirAll(modPackFolder, 0777)
+	if err != nil {
+		log.Printf("error creating the new ModPack directory: %s", err)
+		return err
+	}
+
+	err = modPackMap.reload()
+	if err != nil {
+		log.Printf("error reloading ModPacks: %s", err)
+		return err
+	}
 	return nil
 }
 
