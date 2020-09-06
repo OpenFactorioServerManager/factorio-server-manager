@@ -383,5 +383,10 @@ var apiRoutes = Routes{
 		"POST",
 		"/mods/packs/{modpack}/mod/update",
 		ModPackModUpdateHandler,
+	}, {
+		"ModPackUploadMod",
+		"POST",
+		"/mods/packs/{modpack}/mod/upload",
+		ModPackModUploadHandler,
 	},
 }

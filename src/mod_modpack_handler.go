@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -384,4 +385,52 @@ func ModPackModDeleteAllHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp = true
+}
+
+func ModPackModUploadHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	resp := JSONResponseFileInput{
+		Success: false,
+	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	r.ParseMultipartForm(32 << 20)
+
+	err, packMap, packName := ReadModPackRequest(w, r, &resp.Data)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error in uploadMod, listing mods wasn't successful: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in uploadMod, listing mods wasn't successful: %s", err)
+		}
+		return
+	}
+
+	mods := packMap[packName].Mods
+	if err == nil {
+		for fileKey, modFile := range r.MultipartForm.File["mod_file"] {
+			err = mods.uploadMod(modFile)
+			if err != nil {
+				resp.ErrorKeys = append(resp.ErrorKeys, fileKey)
+				resp.Error = "An error occurred during upload or saving, pls check manually, if all went well and delete invalid files. (This program also could be crashed)"
+			}
+		}
+	}
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp.Data = fmt.Sprintf("Error in uploadMod, listing mods wasn't successful: %s", err)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			log.Printf("Error in uploadMod, listing mods wasn't successful: %s", err)
+		}
+		return
+	}
+
+	resp.Data = mods.listInstalledMods()
+	resp.Success = true
+
+	if err = json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("Error in ModUploadHandler: %s", err)
+	}
 }
