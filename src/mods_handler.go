@@ -35,7 +35,7 @@ func CreateNewMods(w http.ResponseWriter, resp *interface{}) (mods Mods, err err
 	mods, err = newMods(config.FactorioModsDir)
 	if err != nil {
 		*resp = fmt.Sprintf("Error creating mods object: %s", err)
-		log.Println(resp)
+		log.Println(*resp)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	return
@@ -51,7 +51,7 @@ func ReadFromRequestBody(w http.ResponseWriter, r *http.Request, resp *interface
 	err = json.Unmarshal(body, data)
 	if err != nil {
 		*resp = fmt.Sprintf("Error unmarshalling requested struct JSON: %s", err)
-		log.Println(resp)
+		log.Println(*resp)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -135,7 +135,7 @@ func ModDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mods.deleteMod(data.Name)
+	err = mods.deleteMod(data.Name)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp = fmt.Sprintf("Error in deleting mod {%s}: %s", data.Name, err)
@@ -203,59 +203,52 @@ func ModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	installedMods := mods.listInstalledMods().ModsResult
-	var found = false
 	for _, mod := range installedMods {
 		if mod.Name == modData.Name {
 			resp = mod
-			found = true
 			return
 		}
 	}
 
-	if !found {
-		resp = fmt.Sprintf(`Could not find mod %s`, modData.Name)
-		log.Println(resp)
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
+	resp = fmt.Sprintf(`Could not find mod %s`, modData.Name)
+	log.Println(resp)
+	w.WriteHeader(http.StatusNotFound)
+	return
 }
 
 func ModUploadHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
-	resp := JSONResponseFileInput{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	r.ParseMultipartForm(32 << 20)
-
-	mods, err := newMods(config.FactorioModsDir)
-	if err == nil {
-		for fileKey, modFile := range r.MultipartForm.File["mod_file"] {
-			err = mods.uploadMod(modFile)
-			if err != nil {
-				resp.ErrorKeys = append(resp.ErrorKeys, fileKey)
-				resp.Error = "An error occurred during upload or saving, pls check manually, if all went well and delete invalid files. (This program also could be crashed)"
-			}
-		}
-	}
-
+	formFile, fileHeader, err := r.FormFile("mod_file")
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		resp.Data = fmt.Sprintf("Error in uploadMod, listing mods wasn't successful: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in uploadMod, listing mods wasn't successful: %s", err)
-		}
+		resp = fmt.Sprintf("error getting uploaded file: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	defer formFile.Close()
+
+	mods, err := CreateNewMods(w, &resp)
+	if err != nil {
 		return
 	}
 
-	resp.Data = mods.listInstalledMods()
-	resp.Success = true
-
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error in ModUploadHandler: %s", err)
+	err = mods.uploadMod(formFile, fileHeader)
+	if err != nil {
+		resp = fmt.Sprintf("error saving file to mods: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+
+	resp = mods.listInstalledMods()
 }
 
 func ModDownloadHandler(w http.ResponseWriter, r *http.Request) {

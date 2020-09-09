@@ -69,8 +69,8 @@ func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get Data out of the request
 	var data struct {
-		DownloadURL string `json:"link"`
-		Filename    string `json:"filename"`
+		DownloadURL string `json:"downloadUrl"`
+		Filename    string `json:"fileName"`
 		ModName     string `json:"modName"`
 	}
 	err = ReadFromRequestBody(w, r, &resp, &data)
@@ -202,8 +202,11 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//find correct mod-version
+		var found = false
 		for _, release := range details.Releases {
 			if release.Version.Equals(datum.Version) {
+				found = true
+
 				err := mods.downloadMod(release.DownloadURL, release.FileName, details.Name)
 				if err != nil {
 					resp = fmt.Sprintf("Error downloading mod {%s}, error: %s", details.Name, err)
@@ -213,6 +216,10 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				break
 			}
+		}
+		if !found {
+			log.Printf("Error downloading mod {%s}, error: %s", details.Name, "version not found")
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 	}
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"archive/zip"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -29,7 +28,7 @@ func CreateNewModPackMap(w http.ResponseWriter, resp *interface{}) (modPackMap M
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		*resp = fmt.Sprintf("Error creating modpackmap aka. list of all modpacks files : %s", err)
-		log.Println(resp)
+		log.Println(*resp)
 	}
 	return
 }
@@ -315,9 +314,9 @@ func ModPackModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Get Data out of the request
 	var modPackStruct struct {
-		modName     string `json:"modName"`
-		downloadUrl string `json:"downloadUrl"`
-		filename    string `json:"filename"`
+		ModName     string `json:"modName"`
+		DownloadUrl string `json:"downloadUrl"`
+		Filename    string `json:"filename"`
 	}
 	err = ReadFromRequestBody(w, r, &resp, &modPackStruct)
 	if err != nil {
@@ -329,11 +328,11 @@ func ModPackModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = packMap[packName].Mods.updateMod(modPackStruct.modName, modPackStruct.downloadUrl, modPackStruct.filename)
+	err = packMap[packName].Mods.updateMod(modPackStruct.ModName, modPackStruct.DownloadUrl, modPackStruct.Filename)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		resp = fmt.Sprintf("Error updating mod {%s} in modpack {%s}: %s", modPackStruct.modName, packName, err)
+		resp = fmt.Sprintf("Error updating mod {%s} in modpack {%s}: %s", modPackStruct.ModName, packName, err)
 		log.Println(resp)
 		return
 	}
@@ -341,7 +340,7 @@ func ModPackModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	installedMods := packMap[packName].Mods.listInstalledMods().ModsResult
 	var found = false
 	for _, mod := range installedMods {
-		if mod.Name == modPackStruct.modName {
+		if mod.Name == modPackStruct.ModName {
 			resp = mod
 			found = true
 			return
@@ -349,7 +348,7 @@ func ModPackModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !found {
-		resp = fmt.Sprintf(`Could not find mod %s`, modPackStruct.modName)
+		resp = fmt.Sprintf(`Could not find mod %s`, modPackStruct.ModName)
 		log.Println(resp)
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -389,50 +388,34 @@ func ModPackModDeleteAllHandler(w http.ResponseWriter, r *http.Request) {
 
 func ModPackModUploadHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
-	resp := JSONResponseFileInput{
-		Success: false,
-	}
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	r.ParseMultipartForm(32 << 20)
-
-	err, packMap, packName := ReadModPackRequest(w, r, &resp.Data)
+	formFile, fileHeader, err := r.FormFile("mod_file")
 	if err != nil {
+		resp = fmt.Sprintf("error getting uploaded file: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	defer formFile.Close()
+
+	err, modPackMap, modPackName := ReadModPackRequest(w, r, &resp)
+
+	err = modPackMap[modPackName].Mods.uploadMod(formFile, fileHeader)
+	if err != nil {
+		resp = fmt.Sprintf("error saving file to modPack: %s", err)
+		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
-		resp.Data = fmt.Sprintf("Error in uploadMod, listing mods wasn't successful: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in uploadMod, listing mods wasn't successful: %s", err)
-		}
 		return
 	}
 
-	mods := packMap[packName].Mods
-	if err == nil {
-		for fileKey, modFile := range r.MultipartForm.File["mod_file"] {
-			err = mods.uploadMod(modFile)
-			if err != nil {
-				resp.ErrorKeys = append(resp.ErrorKeys, fileKey)
-				resp.Error = "An error occurred during upload or saving, pls check manually, if all went well and delete invalid files. (This program also could be crashed)"
-			}
-		}
-	}
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		resp.Data = fmt.Sprintf("Error in uploadMod, listing mods wasn't successful: %s", err)
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			log.Printf("Error in uploadMod, listing mods wasn't successful: %s", err)
-		}
-		return
-	}
-
-	resp.Data = mods.listInstalledMods()
-	resp.Success = true
-
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		log.Printf("Error in ModUploadHandler: %s", err)
-	}
+	resp = modPackMap[modPackName].Mods.listInstalledMods()
 }
 
 func ModPackModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
@@ -447,8 +430,8 @@ func ModPackModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get Data out of the request
 	var data struct {
-		DownloadURL string `json:"link"`
-		Filename    string `json:"filename"`
+		DownloadURL string `json:"downloadUrl"`
+		Filename    string `json:"fileName"`
 		ModName     string `json:"modName"`
 	}
 	err = ReadFromRequestBody(w, r, &resp, &data)
@@ -509,8 +492,11 @@ func ModPackModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		//find correct mod-version
+		var found = false
 		for _, release := range details.Releases {
 			if release.Version.Equals(datum.Version) {
+				found = true
+
 				err := mods.downloadMod(release.DownloadURL, release.FileName, details.Name)
 				if err != nil {
 					resp = fmt.Sprintf("Error downloading mod {%s}, error: %s", details.Name, err)
@@ -520,6 +506,11 @@ func ModPackModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Reque
 				}
 				break
 			}
+		}
+
+		if !found {
+			log.Printf("Error downloading mod {%s}, error: %s", details.Name, "version not found")
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 	}
 

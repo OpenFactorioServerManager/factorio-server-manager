@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -32,10 +33,17 @@ func WriteResponse(w http.ResponseWriter, data interface{}) {
 }
 
 func ReadRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}) (body []byte, err error) {
+	if r.Body == nil {
+		*resp = fmt.Sprintf("%s: no request body", readHttpBodyError)
+		log.Println(*resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return nil, errors.New("no request body")
+	}
+
 	body, err = ioutil.ReadAll(r.Body)
 	if err != nil {
 		*resp = fmt.Sprintf("%s: %s", readHttpBodyError, err)
-		log.Println(resp)
+		log.Println(*resp)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	return
@@ -397,7 +405,7 @@ func UnmarshallUserJson(body []byte, resp *interface{}, w http.ResponseWriter) (
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		*resp = fmt.Sprintf("Unable to parse the request body: %s", err)
-		log.Println(resp)
+		log.Println(*resp)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	return
