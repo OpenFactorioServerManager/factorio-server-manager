@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
 	"syscall"
+	"time"
 )
 
 func sendCtrlCToPid(pid int) {
