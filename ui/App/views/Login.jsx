@@ -6,6 +6,7 @@ import {useHistory, useLocation} from "react-router";
 import Panel from "../components/Panel";
 import Input from "../components/Input";
 import Label from "../components/Label";
+import {Flash} from "../components/Flash";
 
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
@@ -32,7 +33,7 @@ const Login = ({handleLogin}) => {
     }, [])
 
     return (
-        <div className="h-screen overflow-hidden flex items-center justify-center bg-banner">
+        <div className="h-screen overflow-hidden flex items-center justify-center bg-black">
             <Panel
                 title="Login"
                 content={
@@ -58,6 +59,7 @@ const Login = ({handleLogin}) => {
                     </form>
                 }
             />
+            <Flash/>
         </div>
     );
 };

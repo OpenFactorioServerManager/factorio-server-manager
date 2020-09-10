@@ -50,75 +50,86 @@ const Controls = ({serverStatus, updateServerStatus}) => {
         <Panel
             title="Server Status"
             content={
-                <div className="flex">
-                    <table className="w-full">
-                        <thead>
-                        <tr className="text-left py-1">
-                            <th>Status</th>
-                            <th>IP</th>
-                            <th>Port</th>
-                            <th>Factorio Version</th>
-                            <th>Save File</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {isRunning
-                            ? <tr className="py-1">
-                                <td className="pr-4 py-2">{serverStatus.status}</td>
-                                <td className="pr-4 py-2">{serverStatus.address}</td>
-                                <td className="pr-4 py-2">{serverStatus.port}</td>
-                                <td className="pr-4 py-2">{factorioVersion}</td>
-                                <td className="pr-4 py-2">{serverStatus.savefile}</td>
-                            </tr>
-                            : <tr className="py-1">
-                                <td className="pr-4 py-2">{serverStatus.status}</td>
-                                <td className="pr-4">
-                                    <input
-                                        name="ip"
-                                        className="shadow appearance-none w-full py-2 px-3 text-black"
-                                        type="text"
-                                        defaultValue={"0.0.0.0"}
-                                        ref={register({required: true, pattern: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'})}
-                                    />
-                                    {errors.ip && <span className="block text-red">IP is required and must be valid.</span>}
-                                </td>
-                                <td className="pr-4">
-                                    <input
-                                        name="port"
-                                        className="shadow appearance-none w-full py-2 px-3 text-black"
-                                        type="number"
-                                        min={1}
-                                        defaultValue={"34197"}
-                                        ref={register({required: true})}
-                                    />
-                                    {errors.port && <span className="block text-red">Port is required</span>}
-                                </td>
-                                <td className="pr-4 py-2">{factorioVersion}</td>
-                                <td className="pr-4 py-2">
-                                    <div className="relative">
-                                        <Select
-                                            name="save"
-                                            inputRef={register({required: true})}
-                                        >
-                                            {saves.map(save => (
-                                                <option value={save.name} key={save.name}>{save.name}</option>))}
-                                        </Select>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
+                <div className="lg:flex">
+                    { isRunning
+                        ? <>
+                            <div className="lg:w-1/5 mb-2">
+                                <div className="font-bold">Status</div>
+                                <div>{serverStatus.status}</div>
+                            </div>
+                            <div className="lg:w-1/5 mb-2">
+                                <div className="font-bold">IP</div>
+                                <div>{serverStatus.address}</div>
+                            </div>
+                            <div className="lg:w-1/5 mb-2">
+                                <div className="font-bold">Port</div>
+                                <div>{serverStatus.port}</div>
+                            </div>
+                            <div className="lg:w-1/5 mb-2">
+                                <div className="font-bold">Factorio Version</div>
+                                <div>{factorioVersion}</div>
+                            </div>
+                            <div className="lg:w-1/5 mb-2">
+                                <div className="font-bold">Save</div>
+                                <div>{serverStatus.savefile}</div>
+                            </div>
+                        </>
+                        : <>
+                            <div className="lg:w-1/5 mb-2">
+                                <div className="font-bold">Status</div>
+                                <div>{serverStatus.status}</div>
+                            </div>
+                            <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
+                                <div className="font-bold">IP</div>
+                                <input
+                                    name="ip"
+                                    className="shadow appearance-none w-full mr-2 py-2 px-3 text-black"
+                                    type="text"
+                                    defaultValue={"0.0.0.0"}
+                                    ref={register({required: true, pattern: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'})}
+                                />
+                                {errors.ip && <span className="block text-red">IP is required and must be valid.</span>}
+                            </div>
+                            <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
+                                <div className="font-bold">Port</div>
+                                <input
+                                    name="port"
+                                    className="shadow appearance-none w-full py-2 px-3 text-black"
+                                    type="number"
+                                    min={1}
+                                    defaultValue={"34197"}
+                                    ref={register({required: true})}
+                                />
+                                {errors.port && <span className="block text-red">Port is required</span>}
+                            </div>
+                            <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
+                                <div className="font-bold">Factorio Version</div>
+                                <div>{factorioVersion}</div>
+                            </div>
+                            <div className="lg:w-1/5 mb-2">
+                                <div className="font-bold">Save</div>
+                                <div className="relative">
+                                    <Select
+                                        name="save"
+                                        inputRef={register({required: true})}
+                                    >
+                                        {saves.map(save => (
+                                            <option value={save.name} key={save.name}>{save.name}</option>))}
+                                    </Select>
+                                </div>
+                            </div>
+                        </>
+                    }
                 </div>
             }
             actions={
-                <div className="flex">
+                <div className="md:flex">
                     {isRunning
                         ? <>
-                            <Button onClick={stopServer} size="sm" className="mr-2" type="default">Save & Stop Server</Button>
-                            <Button onClick={killServer} size="sm" type="danger">Kill Server</Button>
+                            <Button onClick={stopServer} size="sm" className="w-full md:w-auto mb-2 md:mb-0 md:mr-2" type="default">Save & Stop Server</Button>
+                            <Button onClick={killServer} size="sm" type="danger" className="w-full md:w-auto">Kill Server</Button>
                         </>
-                        : <Button isSubmit={true} size="sm" type="success">Start Server</Button>
+                        : <Button isSubmit={true} size="sm" type="success" className="w-full md:w-auto">Start Server</Button>
                     }
                 </div>
             }

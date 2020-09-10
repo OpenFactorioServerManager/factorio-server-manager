@@ -11,12 +11,12 @@ const Saves = ({serverStatus}) => {
     const [saves, setSaves] = useState([]);
 
     const updateList = () => {
-       savesResource.list()
-           .then(res => {
-               if (res) {
-                   setSaves(res);
-               }
-           })
+        savesResource.list()
+            .then(res => {
+                if (res) {
+                    setSaves(res);
+                }
+            })
 
     }
 
@@ -33,10 +33,10 @@ const Saves = ({serverStatus}) => {
 
     return (
         <>
-            <div className="flex mb-6">
+            <div className="lg:flex mb-6">
                 <Panel
                     title="Create Save"
-                    className="w-1/2 mr-3"
+                    className="lg:w-1/2 lg:mr-3 mb-6 lg:mb-0"
                     content={
                         serverStatus.status === "running"
                             ? <p className="text-red-light pt-4 pb-24">
@@ -48,7 +48,7 @@ const Saves = ({serverStatus}) => {
                 />
                 <Panel
                     title="Upload Save"
-                    className="w-1/2 ml-3"
+                    className="lg:w-1/2 lg:ml-3"
                     content={<UploadSaveForm onSuccess={updateList}/>}
                 />
             </div>
@@ -57,31 +57,36 @@ const Saves = ({serverStatus}) => {
                 className="mb-4"
                 title="Saves"
                 content={
-                    <table className="w-full">
-                        <thead>
-                        <tr className="text-left py-1">
-                            <th>Name</th>
-                            <th>Last Modified At</th>
-                            <th>Size</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {saves.map(save =>
-                            <tr className="py-1" key={save.name}>
-                                <td className="pr-4">{save.name}</td>
-                                <td className="pr-4">{(new Date(save.last_mod)).toISOString().replace('T', ' ').split('.')[0]}</td>
-                                <td>{parseFloat(save.size / 1024 / 1024).toFixed(3)} MB</td>
-                                <td>
-                                    <a href={`/api/saves/dl/${save.name}`} className="mr-2">
-                                        <FontAwesomeIcon className="text-gray-light cursor-pointer hover:text-orange" icon={faDownload}/>
-                                    </a>
-                                    <FontAwesomeIcon className="text-red cursor-pointer hover:text-red-light mr-2" onClick={() => deleteSave(save)} icon={faTrashAlt}/>
-                                </td>
+                    <div className="overflow-x-auto">
+                        <table style={{"width" : "max-content"}}>
+                            <thead>
+                            <tr className="text-left py-1">
+                                <th>Name</th>
+                                <th>Last Modified At</th>
+                                <th>Size</th>
+                                <th>Actions</th>
                             </tr>
-                        )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {saves.map(save =>
+                                <tr className="py-2 md:py-1" key={save.name}>
+                                    <td className="pr-4">{save.name}</td>
+                                    <td className="pr-4">{(new Date(save.last_mod)).toISOString().replace('T', ' ').split('.')[0]}</td>
+                                    <td className="pr-4">{parseFloat(save.size / 1024 / 1024).toFixed(3)} MB</td>
+                                    <td>
+                                        <a href={`/api/saves/dl/${save.name}`} className="mr-2">
+                                            <FontAwesomeIcon
+                                                className="text-gray-light cursor-pointer hover:text-orange"
+                                                icon={faDownload}/>
+                                        </a>
+                                        <FontAwesomeIcon className="text-red cursor-pointer hover:text-red-light mr-2"
+                                                         onClick={() => deleteSave(save)} icon={faTrashAlt}/>
+                                    </td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
+                    </div>
                 }
             />
         </>

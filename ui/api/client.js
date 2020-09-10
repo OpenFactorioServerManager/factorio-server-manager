@@ -7,4 +7,13 @@ const client = Axios.create({
     }
 });
 
+client.interceptors.response.use(res => res, err => {
+    if(err.response.status === 502) {
+        window.flash("Service not available", "red");
+    } else if (err.response.status !== 401) {
+        window.flash(err.response.data, "red");
+    }
+    return Promise.reject(err);
+});
+
 export default client;
