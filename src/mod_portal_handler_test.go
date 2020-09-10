@@ -7,6 +7,8 @@ import (
 )
 
 func TestModPortalInstallHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	route := "/api/mods/portal/install"
 	handlerFunc := ModPortalInstallHandler
@@ -37,6 +39,8 @@ func TestModPortalInstallHandler(t *testing.T) {
 }
 
 func TestModPortalInstallMultipleHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	route := "/api/mods/portal/install/multiple"
 	handlerFunc := ModPortalInstallMultipleHandler

@@ -96,6 +96,8 @@ func ModPackInvalidJsonBodyTest(t *testing.T, method string, baseRoute string, r
 }
 
 func TestModPackListHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "GET"
 	route := "/mods/packs/list"
 	handlerFunc := ModPackListHandler
@@ -120,6 +122,8 @@ func TestModPackListHandler(t *testing.T) {
 }
 
 func TestModPackCreateHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	route := "/mods/packs/create"
 	handlerFunc := ModPackCreateHandler
@@ -142,6 +146,8 @@ func TestModPackCreateHandler(t *testing.T) {
 }
 
 func TestModPackDeleteHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/delete"
 	route := "/mods/packs/test/delete"
@@ -158,6 +164,8 @@ func TestModPackDeleteHandler(t *testing.T) {
 }
 
 func TestModPackLoadHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/load"
 	route := "/mods/packs/test/load"
@@ -219,6 +227,8 @@ func TestModPackLoadHandler(t *testing.T) {
 }
 
 func TestModPackModListHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "GET"
 	baseRoute := "/mods/packs/{modpack}/list"
 	route := "/mods/packs/test/list"
@@ -237,6 +247,8 @@ func TestModPackModListHandler(t *testing.T) {
 }
 
 func TestModPackModToggleHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/mod/toggle"
 	route := "/mods/packs/test/mod/toggle"
@@ -310,6 +322,8 @@ func TestModPackModToggleHandler(t *testing.T) {
 }
 
 func TestModPackModDeleteHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/mod/delete"
 	route := "/mods/packs/test/mod/delete"
@@ -342,6 +356,8 @@ func TestModPackModDeleteHandler(t *testing.T) {
 }
 
 func TestModPackModDeleteAllHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/mod/delete/all"
 	route := "/mods/packs/test/mod/delete/all"
@@ -366,6 +382,8 @@ func TestModPackModDeleteAllHandler(t *testing.T) {
 }
 
 func TestModPackModUpdateHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/mod/update"
 	route := "/mods/packs/test/mod/update"
@@ -487,6 +505,8 @@ func ModPackModUploadRequest(t *testing.T, body bool, filePath string) *httptest
 }
 
 func TestModPackModUploadHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/mod/upload"
 	route := "/mods/packs/test/mod/upload"
@@ -557,6 +577,8 @@ func TestModPackModUploadHandler(t *testing.T) {
 }
 
 func TestModPackModPortalInstallHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/portal/install"
 	route := "/mods/packs/test/portal/install"
@@ -588,6 +610,8 @@ func TestModPackModPortalInstallHandler(t *testing.T) {
 }
 
 func TestModPackModPortalInstallMultipleHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	baseRoute := "/mods/packs/{modpack}/portal/install/multiple"
 	route := "/mods/packs/test/portal/install/multiple"

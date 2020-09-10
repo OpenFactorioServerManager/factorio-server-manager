@@ -38,12 +38,18 @@ func TestMain(m *testing.M) {
 		// no credentials found, login...
 		_, err, _ = factorioLogin(os.Getenv("factorio_username"), os.Getenv("factorio_password"))
 		if err != nil {
-			log.Fatalf("Error logging in into factorio: %s", err)
+			log.Printf("Error logging in into factorio: %s", err)
 			return
 		}
 	}
 
 	os.Exit(m.Run())
+}
+
+func CheckShort(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Do not run in Short-mode")
+	}
 }
 
 func SetupMods(t *testing.T, empty bool) {
@@ -142,6 +148,8 @@ func ModNotExistTest(t *testing.T, method, route string, handlerFunc http.Handle
 }
 
 func TestListInstalledModsHandler(t *testing.T) {
+	CheckShort(t)
+
 	SetupMods(t, false)
 	defer CleanupMods(t)
 
@@ -153,6 +161,8 @@ func TestListInstalledModsHandler(t *testing.T) {
 }
 
 func TestModToggleHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	route := "/api/mods/toggle"
 	handlerFunc := ModToggleHandler
@@ -225,6 +235,8 @@ func TestModToggleHandler(t *testing.T) {
 }
 
 func TestModDeleteHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	route := "/api/mods/delete"
 	handlerFunc := ModDeleteHandler
@@ -255,6 +267,8 @@ func TestModDeleteHandler(t *testing.T) {
 }
 
 func TestModDeleteAllHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	route := "/api/mods/delete/all"
 	handlerFunc := ModDeleteAllHandler
@@ -277,6 +291,8 @@ func TestModDeleteAllHandler(t *testing.T) {
 }
 
 func TestModUpdateHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	route := "/api/mods/update"
 	handlerFunc := ModUpdateHandler
@@ -335,6 +351,8 @@ func TestModUpdateHandler(t *testing.T) {
 }
 
 func ModUploadRequest(t *testing.T, body bool, filePath string) *httptest.ResponseRecorder {
+	CheckShort(t)
+
 	var err error
 	method := "POST"
 	route := "/api/mods/upload"
@@ -380,6 +398,8 @@ func ModUploadRequest(t *testing.T, body bool, filePath string) *httptest.Respon
 }
 
 func TestModUploadHandler(t *testing.T) {
+	CheckShort(t)
+
 	method := "POST"
 	route := "/api/mods/upload"
 	handlerFunc := ModUploadHandler
