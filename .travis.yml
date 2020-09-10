@@ -14,7 +14,8 @@ env:
 
 script:
   - cd src/
-  - go test -v
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then go test -v -test.short; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then go test -v; fi'
 
 jobs:
   include:

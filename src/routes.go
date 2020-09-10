@@ -155,82 +155,7 @@ func (ws *WSRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Defines all API REST endpoints
 // All routes are prefixed with /api
 var apiRoutes = Routes{
-	Route{
-		"ListInstalledMods",
-		"GET",
-		"/mods/list/installed",
-		listInstalledModsHandler,
-	}, {
-		"LoginFactorioModPortal",
-		"POST",
-		"/mods/factorio/login",
-		LoginFactorioModPortal,
-	}, {
-		"LoginstatusFactorioModPortal",
-		"POST",
-		"/mods/factorio/status",
-		LoginstatusFactorioModPortal,
-	}, {
-		"LogoutFactorioModPortal",
-		"POST",
-		"/mods/factorio/logout",
-		LogoutFactorioModPortalHandler,
-	}, {
-		"SearchModPortal",
-		"GET",
-		"/mods/search",
-		ModPortalSearchHandler,
-	}, {
-		"GetModDetails",
-		"POST",
-		"/mods/details",
-		ModPortalDetailsHandler,
-	}, {
-		"ModPortalInstall",
-		"POST",
-		"/mods/install",
-		ModPortalInstallHandler,
-	}, {
-		"ModPortalInstallMultiple",
-		"POST",
-		"/mods/install/multiple",
-		ModPortalInstallMultipleHandler,
-	}, {
-		"ToggleMod",
-		"POST",
-		"/mods/toggle",
-		ToggleModHandler,
-	}, {
-		"DeleteMod",
-		"POST",
-		"/mods/delete",
-		DeleteModHandler,
-	}, {
-		"DeleteAllMods",
-		"POST",
-		"/mods/delete/all",
-		DeleteAllModsHandler,
-	}, {
-		"UpdateMod",
-		"POST",
-		"/mods/update",
-		UpdateModHandler,
-	}, {
-		"UploadMod",
-		"POST",
-		"/mods/upload",
-		UploadModHandler,
-	}, {
-		"DownloadMods",
-		"GET",
-		"/mods/download",
-		DownloadModsHandler,
-	}, {
-		"LoadModsFromSave",
-		"POST",
-		"/mods/save/load",
-		LoadModsFromSaveHandler,
-	}, {
+	{
 		"ListSaves",
 		"GET",
 		"/saves/list",
@@ -255,6 +180,11 @@ var apiRoutes = Routes{
 		"GET",
 		"/saves/create/{save}",
 		CreateSaveHandler,
+	}, {
+		"LoadModsFromSave",
+		"POST",
+		"/saves/mods",
+		LoadModsFromSaveHandler,
 	}, {
 		"LogTail",
 		"GET",
@@ -316,46 +246,6 @@ var apiRoutes = Routes{
 		"/user/remove",
 		RemoveUser,
 	}, {
-		"ListModPacks",
-		"GET",
-		"/mods/packs/list",
-		ListModPacksHandler,
-	}, {
-		"DownloadModPack",
-		"GET",
-		"/mods/packs/download/{modpack}",
-		DownloadModPackHandler,
-	}, {
-		"DeleteModPack",
-		"POST",
-		"/mods/packs/delete",
-		DeleteModPackHandler,
-	}, {
-		"CreateModPack",
-		"POST",
-		"/mods/packs/create",
-		CreateModPackHandler,
-	}, {
-		"LoadModPack",
-		"POST",
-		"/mods/packs/load",
-		LoadModPackHandler,
-	}, {
-		"ModPackToggleMod",
-		"POST",
-		"/mods/packs/mod/toggle",
-		ModPackToggleModHandler,
-	}, {
-		"ModPackDeleteMod",
-		"POST",
-		"/mods/packs/mod/delete",
-		ModPackDeleteModHandler,
-	}, {
-		"ModPackUpdateMod",
-		"POST",
-		"/mods/packs/mod/update",
-		ModPackUpdateModHandler,
-	}, {
 		"GetServerSettings",
 		"GET",
 		"/settings",
@@ -365,5 +255,148 @@ var apiRoutes = Routes{
 		"POST",
 		"/settings/update",
 		UpdateServerSettings,
+	},
+	// Mod Portal Stuff
+	{
+		"ModPortalListAllMods",
+		"GET",
+		"/mods/portal/list",
+		ModPortalListModsHandler,
+	}, {
+		"ModPortalGetModInfo",
+		"GET",
+		"/mods/portal/info/{mod}",
+		ModPortalModInfoHandler,
+	}, {
+		"ModPortalInstallMod",
+		"POST",
+		"/mods/portal/install",
+		ModPortalInstallHandler,
+	}, {
+		"ModPortalLogin",
+		"POST",
+		"/mods/portal/login",
+		ModPortalLoginHandler,
+	}, {
+		"ModPortalLoginStatus",
+		"POST",
+		"/mods/portal/loginstatus",
+		ModPortalLoginStatusHandler,
+	}, {
+		"ModPortalLogout",
+		"GET",
+		"/mods/portal/logout",
+		ModPortalLogoutHandler,
+	}, {
+		"ModPortalInstallMultiple",
+		"POST",
+		"/mods/portal/install/multiple",
+		ModPortalInstallMultipleHandler,
+	},
+	// Mods Stuff
+	{
+		"ListInstalledMods",
+		"GET",
+		"/mods/list",
+		ListInstalledModsHandler,
+	}, {
+		"ToggleMod",
+		"POST",
+		"/mods/toggle",
+		ModToggleHandler,
+	}, {
+		"DeleteMod",
+		"POST",
+		"/mods/delete",
+		ModDeleteHandler,
+	}, {
+		"DeleteAllMods",
+		"POST",
+		"/mods/delete/all",
+		ModDeleteAllHandler,
+	}, {
+		"UpdateMod",
+		"POST",
+		"/mods/update",
+		ModUpdateHandler,
+	}, {
+		"UploadMod",
+		"POST",
+		"/mods/upload",
+		ModUploadHandler,
+	}, {
+		"DownloadMods",
+		"GET",
+		"/mods/download",
+		ModDownloadHandler,
+	},
+	// Mod Packs
+	{
+		"ModPacksList",
+		"GET",
+		"/mods/packs/list",
+		ModPackListHandler,
+	}, {
+		"ModPackCreate",
+		"POST",
+		"/mods/packs/create",
+		ModPackCreateHandler,
+	}, {
+		"ModPackDelete",
+		"POST",
+		"/mods/packs/{modpack}/delete",
+		ModPackDeleteHandler,
+	}, {
+		"ModPackDownload",
+		"GET",
+		"/mods/packs/{modpack}/download",
+		ModPackDownloadHandler,
+	}, {
+		"LoadModPack",
+		"POST",
+		"/mods/packs/{modpack}/load",
+		ModPackLoadHandler,
+	},
+	// Mods inside Mod Packs
+	{
+		"ModPackListMods",
+		"GET",
+		"/mods/packs/{modpack}/list",
+		ModPackModListHandler,
+	}, {
+		"ModPackToggleMod",
+		"POST",
+		"/mods/packs/{modpack}/mod/toggle",
+		ModPackModToggleHandler,
+	}, {
+		"ModPackDeleteMod",
+		"POST",
+		"/mods/packs/{modpack}/mod/delete",
+		ModPackModDeleteHandler,
+	}, {
+		"ModPackDeleteAllMod",
+		"POST",
+		"/mods/packs/{modpack}/mod/delete/all",
+		ModPackModDeleteAllHandler,
+	}, {
+		"ModPackUpdateMod",
+		"POST",
+		"/mods/packs/{modpack}/mod/update",
+		ModPackModUpdateHandler,
+	}, {
+		"ModPackUploadMod",
+		"POST",
+		"/mods/packs/{modpack}/mod/upload",
+		ModPackModUploadHandler,
+	}, {
+		"ModPackModPortalInstallMod",
+		"POST",
+		"/mods/packs/{modpack}/portal/install",
+		ModPackModPortalInstallHandler,
+	}, {
+		"ModPackModPortalInstallMultiple",
+		"POST",
+		"/mods/packs/{modpack}/portal/install/multiple",
+		ModPackModPortalInstallMultipleHandler,
 	},
 }

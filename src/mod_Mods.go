@@ -96,12 +96,6 @@ func (mods *Mods) createMod(modName string, fileName string, fileRc io.Reader) e
 
 	//check if mod already exists and delete it
 	if mods.ModSimpleList.checkModExists(modName) {
-		err = mods.ModSimpleList.deleteMod(modName)
-		if err != nil {
-			log.Printf("error when deleting mod: %s", err)
-			return err
-		}
-
 		err = mods.ModInfoList.deleteMod(modName)
 		if err != nil {
 			log.Printf("error when deleting mod: %s", err)
@@ -113,12 +107,23 @@ func (mods *Mods) createMod(modName string, fileName string, fileRc io.Reader) e
 	err = mods.ModInfoList.createMod(modName, fileName, fileRc)
 	if err != nil {
 		log.Printf("error on creating mod-file: %s", err)
+
+		// removing mod completely
+		err2 := mods.ModSimpleList.deleteMod(modName)
+		if err2 != nil {
+			log.Printf("error deleting mod from modSimpleList: %s", err2)
+		}
+
 		return err
 	}
-	err = mods.ModSimpleList.createMod(modName)
-	if err != nil {
-		log.Printf("error on adding mod to the mod-list.json: %s", err)
-		return err
+
+	// also add to ModSimpleList if not there yet
+	if !mods.ModSimpleList.checkModExists(modName) {
+		err = mods.ModSimpleList.createMod(modName)
+		if err != nil {
+			log.Printf("error creating mod in modSimpleList: %s", err)
+			return err
+		}
 	}
 
 	return nil
@@ -170,20 +175,13 @@ func (mods *Mods) downloadMod(url string, filename string, modId string) error {
 	return nil
 }
 
-func (mods *Mods) uploadMod(header *multipart.FileHeader) error {
+func (mods *Mods) uploadMod(file multipart.File, header *multipart.FileHeader) error {
 	var err error
 
 	if filepath.Ext(header.Filename) != ".zip" {
-		log.Print("The uploaded file wasn't a zip-file -> ignore it")
-		return nil //simply do nothing xD
+		log.Print("The uploaded file wasn't a zip-file")
+		return errors.New("the uploaded file wasn't a zip-file")
 	}
-
-	file, err := header.Open()
-	if err != nil {
-		log.Printf("error on open file via fileHeader. %s", err)
-		return err
-	}
-	defer file.Close()
 
 	fileByteArray, err := ioutil.ReadAll(file)
 	if err != nil {

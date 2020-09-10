@@ -7,8 +7,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,167 +18,6 @@ type LoginErrorResponse struct {
 }
 type LoginSuccessResponse struct {
 	UserKey []string `json:""`
-}
-type FactorioCredentials struct {
-	Username string `json:"username"`
-	Userkey  string `json:"userkey"`
-}
-
-func (credentials *FactorioCredentials) save() error {
-	var err error
-
-	credentialsJson, err := json.Marshal(credentials)
-	if err != nil {
-		log.Printf("error mashalling the credentials: %s", err)
-		return err
-	}
-
-	err = ioutil.WriteFile(config.FactorioCredentialsFile, credentialsJson, 0664)
-	if err != nil {
-		log.Printf("error on saving the credentials. %s", err)
-		return err
-	}
-
-	return nil
-}
-
-func (credentials *FactorioCredentials) load() (bool, error) {
-	var err error
-
-	if _, err := os.Stat(config.FactorioCredentialsFile); os.IsNotExist(err) {
-		return false, nil
-	}
-
-	fileBytes, err := ioutil.ReadFile(config.FactorioCredentialsFile)
-	if err != nil {
-		credentials.del()
-		log.Printf("error reading CredentialsFile: %s", err)
-		return false, err
-	}
-
-	err = json.Unmarshal(fileBytes, credentials)
-	if err != nil {
-		credentials.del()
-		log.Printf("error on unmarshal credentials_file: %s", err)
-		return false, err
-	}
-
-	if credentials.Userkey != "" && credentials.Username != "" {
-		return true, nil
-	} else {
-		credentials.del()
-		return false, errors.New("incredients incomplete")
-	}
-}
-
-func (credentials *FactorioCredentials) del() error {
-	var err error
-
-	err = os.Remove(config.FactorioCredentialsFile)
-	if err != nil {
-		log.Printf("error delete the credentialfile: %s", err)
-		return err
-	}
-
-	return nil
-}
-
-//Log the user into factorio, so mods can be downloaded
-func factorioLogin(username string, password string) (string, error, int) {
-	var err error
-
-	resp, err := http.PostForm("https://auth.factorio.com/api-login",
-		url.Values{"require_game_ownership": {"true"}, "username": {username}, "password": {password}})
-
-	if err != nil {
-		log.Printf("error on logging in: %s", err)
-		return "", err, resp.StatusCode
-	}
-
-	defer resp.Body.Close()
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("error on reading resp.Body: %s", err)
-		return "", err, http.StatusInternalServerError
-	}
-
-	bodyString := string(bodyBytes)
-
-	if resp.StatusCode != http.StatusOK {
-		log.Println("error Statuscode not 200")
-		return bodyString, errors.New(bodyString), resp.StatusCode
-	}
-
-	var successResponse []string
-	err = json.Unmarshal(bodyBytes, &successResponse)
-	if err != nil {
-		log.Printf("error on unmarshal body: %s", err)
-		return err.Error(), err, http.StatusInternalServerError
-	}
-
-	credentials := FactorioCredentials{
-		Username: username,
-		Userkey:  successResponse[0],
-	}
-
-	err = credentials.save()
-	if err != nil {
-		log.Printf("error saving the credentials. %s", err)
-		return err.Error(), err, http.StatusInternalServerError
-	}
-
-	return "", nil, http.StatusOK
-}
-
-//Search inside the factorio mod portal
-func searchModPortal(keyword string) (string, error, int) {
-	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods", nil)
-	if err != nil {
-		return "error", err, 500
-	}
-
-	query := req.URL.Query()
-	query.Add("q", keyword)
-	req.URL.RawQuery = query.Encode()
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "error", err, 500
-	}
-
-	text, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		return "error", err, 500
-	}
-
-	textString := string(text)
-
-	return textString, nil, resp.StatusCode
-}
-
-func getModDetails(modId string) (string, error, int) {
-	var err error
-	newLink := "https://mods.factorio.com/api/mods/" + modId
-	resp, err := http.Get(newLink)
-
-	if err != nil {
-		return "error", err, http.StatusInternalServerError
-	}
-
-	//get the response-text
-	text, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-
-	textString := string(text)
-
-	if err != nil {
-		log.Fatal(err)
-		return "error", err, resp.StatusCode
-	}
-
-	return textString, nil, resp.StatusCode
 }
 
 func deleteAllMods() error {
@@ -276,7 +113,7 @@ func modStartUp() {
 			}
 			newJson, _ := json.Marshal(modSimpleList)
 
-			err = ioutil.WriteFile(filepath.Join(modSimpleList.Destination,"mod-list.json"), newJson, 0664)
+			err = ioutil.WriteFile(filepath.Join(modSimpleList.Destination, "mod-list.json"), newJson, 0664)
 			if err != nil {
 				log.Printf("error when writing new mod-list: %s", err)
 				return err

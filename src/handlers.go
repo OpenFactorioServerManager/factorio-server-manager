@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -17,10 +18,6 @@ import (
 
 const readHttpBodyError = "Could not read the Request Body."
 
-type JSONResponse struct {
-	Success bool        `json:"success"`
-	Data    interface{} `json:"data,string"`
-}
 type JSONResponseFileInput struct {
 	Success   bool        `json:"success"`
 	Data      interface{} `json:"data,string"`
@@ -36,10 +33,17 @@ func WriteResponse(w http.ResponseWriter, data interface{}) {
 }
 
 func ReadRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}) (body []byte, err error) {
+	if r.Body == nil {
+		*resp = fmt.Sprintf("%s: no request body", readHttpBodyError)
+		log.Println(*resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return nil, errors.New("no request body")
+	}
+
 	body, err = ioutil.ReadAll(r.Body)
 	if err != nil {
 		*resp = fmt.Sprintf("%s: %s", readHttpBodyError, err)
-		log.Println(resp)
+		log.Println(*resp)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	return
@@ -401,7 +405,7 @@ func UnmarshallUserJson(body []byte, resp *interface{}, w http.ResponseWriter) (
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		*resp = fmt.Sprintf("Unable to parse the request body: %s", err)
-		log.Println(resp)
+		log.Println(*resp)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	return
@@ -432,8 +436,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
 	if err != nil {
-		resp = "The credentials don't match our records."
-		w.WriteHeader(http.StatusBadRequest)
+		resp = fmt.Sprintf("Error loggin in user: %s, error: %s", user.Username, err)
 		log.Println(resp)
 		return
 	}
@@ -473,9 +476,9 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 
 	user, err := Auth.aaa.CurrentUser(w, r)
 	if err != nil {
-		resp = "Error getting user status"
+		resp = fmt.Sprintf("Error getting user status: %s, error: %s", user.Username, err)
 		log.Println(resp)
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
