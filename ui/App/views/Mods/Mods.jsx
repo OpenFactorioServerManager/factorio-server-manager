@@ -6,6 +6,9 @@ import Mod from "./components/Mod";
 import server from "../../../api/resources/server";
 import TabControl from "../../components/Tabs/TabControl";
 import Tab from "../../components/Tabs/Tab";
+import AddMod from "./components/AddMod/AddMod";
+import UploadMod from "./components/UploadMod";
+import LoadMods from "./components/LoadMods";
 
 const Mods = () => {
 
@@ -45,10 +48,14 @@ const Mods = () => {
         <div>
             <TabControl>
                 <Tab title="Install Mod">
-                    <div>Install Mod</div>
+                    <AddMod refetchInstalledMods={fetchInstalledMods}/>
                 </Tab>
-                <Tab title="Upload Mod">a Mod</Tab>
-                <Tab title="Load Mod from Save">b Mod</Tab>
+                <Tab title="Upload Mod">
+                    <UploadMod/>
+                </Tab>
+                <Tab title="Load Mod from Save">
+                    <LoadMods/>
+                </Tab>
             </TabControl>
 
             <Panel

@@ -33,6 +33,27 @@ const mods = {
     deleteAll: async () => {
         const response = await client.post('/api/mods/delete/all');
         return response.data;
+    },
+    portal: {
+        login: async (username, password) => {
+            // const data = new FormData();
+            // data.set('username', username);
+            // data.set('password', password);
+
+            const response = await client.post('/api/mods/portal/login', {
+                username,
+                password
+            });
+            return response.data;
+        },
+        status: async () => {
+            const response = await client.get('/api/mods/portal/loginstatus');
+            return response.data;
+        },
+        logout: async () => {
+            const response = await client.get('/api/mods/portal/logout');
+            return response.data
+        }
     }
 }
 

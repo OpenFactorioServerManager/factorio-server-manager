@@ -279,7 +279,7 @@ var apiRoutes = Routes{
 		ModPortalLoginHandler,
 	}, {
 		"ModPortalLoginStatus",
-		"POST",
+		"GET",
 		"/mods/portal/loginstatus",
 		ModPortalLoginStatusHandler,
 	}, {
