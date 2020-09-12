@@ -15,10 +15,10 @@ const InputPassword = ({name, inputRef, defaultValue}) => {
     }
 
     return (
-        <div className="relative">
+        <div className="flex">
             <Input type={type} name={name} defaultValue={defaultValue} inputRef={inputRef} placeholder="*************"/>
             <div
-                className="accentuated cursor-pointer bg-gray-light absolute inset-y-0 right-0 flex items-center px-2 text-black"
+                className="accentuated cursor-pointer bg-gray-light flex items-center px-2 text-black"
                 onClick={() => setType(type === "password" ? "text" : "password")}
             >
                 <FontAwesomeIcon fixedWidth={true} icon={icon} />
