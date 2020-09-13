@@ -18,20 +18,12 @@ const Mods = () => {
 
     const fetchInstalledMods = () => {
         modsResource.installed()
-            .then(res => {
-                if (res) {
-                    setInstalledMods(res || []);
-                }
-            });
+            .then(setInstalledMods);
     };
 
     const deleteAllMods = () => {
         modsResource.deleteAll()
-            .then(res => {
-                if (res.success) {
-                    fetchInstalledMods();
-                }
-            })
+            .then(fetchInstalledMods)
     }
 
     useEffect(() => {

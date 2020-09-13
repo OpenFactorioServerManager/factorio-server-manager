@@ -48,7 +48,7 @@ func newMods(destination string) (Mods, error) {
 }
 
 func (mods *Mods) listInstalledMods() ModsResultList {
-	var result ModsResultList
+	result := ModsResultList{make([]ModsResult, 0)}
 
 	for _, modInfo := range mods.ModInfoList.Mods {
 		var modsResult ModsResult
