@@ -74,13 +74,15 @@ const Saves = ({serverStatus}) => {
                                     <td className="pr-4">{(new Date(save.last_mod)).toISOString().replace('T', ' ').split('.')[0]}</td>
                                     <td className="pr-4">{parseFloat(save.size / 1024 / 1024).toFixed(3)} MB</td>
                                     <td>
-                                        <a href={`/api/saves/dl/${save.name}`} className="mr-2">
-                                            <FontAwesomeIcon
-                                                className="text-gray-light cursor-pointer hover:text-orange"
-                                                icon={faDownload}/>
-                                        </a>
-                                        <FontAwesomeIcon className="text-red cursor-pointer hover:text-red-light mr-2"
-                                                         onClick={() => deleteSave(save)} icon={faTrashAlt}/>
+                                        { save.name !== 'Load Latest' && <>
+                                            <a href={`/api/saves/dl/${save.name}`} className="mr-2">
+                                                <FontAwesomeIcon
+                                                    className="text-gray-light cursor-pointer hover:text-orange"
+                                                    icon={faDownload}/>
+                                            </a>
+                                            <FontAwesomeIcon className="text-red cursor-pointer hover:text-red-light mr-2"
+                                                             onClick={() => deleteSave(save)} icon={faTrashAlt}/>
+                                        </>}
                                     </td>
                                 </tr>
                             )}
