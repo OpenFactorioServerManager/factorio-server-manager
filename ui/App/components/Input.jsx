@@ -1,6 +1,6 @@
 import React from "react";
 
-const Input = ({name, inputRef, placeholder = null, type="text", defaultValue=null}) => {
+const Input = ({name, inputRef, placeholder = null, type="text", defaultValue=null, hasAutoComplete=true}) => {
     return (
         <input
             className="shadow appearance-none border w-full py-2 px-3 text-black"
@@ -9,6 +9,7 @@ const Input = ({name, inputRef, placeholder = null, type="text", defaultValue=nu
             name={name}
             id={name}
             type={type}
+            autoComplete={hasAutoComplete ? "on" : "off"}
             defaultValue={defaultValue}
         />
     )

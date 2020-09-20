@@ -36,10 +36,6 @@ const mods = {
     },
     portal: {
         login: async (username, password) => {
-            // const data = new FormData();
-            // data.set('username', username);
-            // data.set('password', password);
-
             const response = await client.post('/api/mods/portal/login', {
                 username,
                 password
@@ -52,6 +48,14 @@ const mods = {
         },
         logout: async () => {
             const response = await client.get('/api/mods/portal/logout');
+            return response.data
+        },
+        installMultiple: async mods => {
+            const response = await client.post('/api/mods/portal/install/multiple', mods);
+            return response.data
+        },
+        list: async () => {
+            const response = await client.get('/api/mods/portal/list');
             return response.data
         }
     }

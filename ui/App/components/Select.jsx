@@ -1,8 +1,8 @@
 import React from "react";
 
-const Select = ({name, inputRef, children}) => {
+const Select = ({name, inputRef, children, className}) => {
     return (
-        <div className="relative">
+        <div className={`${className} relative`}>
         <select
             className="shadow appearance-none border w-full py-2 px-3 text-black"
             name={name}

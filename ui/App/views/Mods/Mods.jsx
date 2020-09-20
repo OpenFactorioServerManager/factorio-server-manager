@@ -9,12 +9,13 @@ import Tab from "../../components/Tabs/Tab";
 import AddMod from "./components/AddMod/AddMod";
 import UploadMod from "./components/UploadMod";
 import LoadMods from "./components/LoadMods";
+import Fuse from "fuse.js";
 
 const Mods = () => {
 
     const [installedMods, setInstalledMods] = useState([]);
     const [factorioVersion, setFactorioVersion] = useState(null);
-
+    const [fuse, setFuse] = useState(undefined);
 
     const fetchInstalledMods = () => {
         modsResource.installed()
@@ -28,25 +29,42 @@ const Mods = () => {
 
     useEffect(() => {
         server.factorioVersion()
-            .then(res => {
-                if (res) {
-                    setFactorioVersion(res.base_mod_version)
-                }
+            .then(data => {
+                setFactorioVersion(data.base_mod_version)
                 fetchInstalledMods();
             })
+
+        // fetch list of mods
+        modsResource.portal.list()
+            .then(res => {
+                setFuse(new Fuse(res.results, {
+                    keys: [
+                        {
+                            "name": "name",
+                            weight: 2
+                        },
+                        {
+                            "name": "title",
+                            weight: 1
+                        }
+                    ],
+                    minMatchCharLength: 3
+                }));
+            });
+
     }, []);
 
     return (
         <div>
             <TabControl>
                 <Tab title="Install Mod">
-                    <AddMod refetchInstalledMods={fetchInstalledMods}/>
+                    <AddMod refetchInstalledMods={fetchInstalledMods} fuse={fuse}/>
                 </Tab>
                 <Tab title="Upload Mod">
                     <UploadMod/>
                 </Tab>
                 <Tab title="Load Mod from Save">
-                    <LoadMods/>
+                    <LoadMods refreshMods={fetchInstalledMods}/>
                 </Tab>
             </TabControl>
 
@@ -82,7 +100,7 @@ const Mods = () => {
                 title="Mod packs"
                 className="mb-6"
                 content={
-                   "Test"
+                    "Test"
                 }
             />
         </div>

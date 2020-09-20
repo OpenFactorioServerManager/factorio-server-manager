@@ -5,7 +5,7 @@ import modResource from "../../../../../api/resources/mods";
 
 
 
-const AddMod = ({refetchInstalledMods}) => {
+const AddMod = ({refetchInstalledMods, fuse}) => {
 
     const [isFactorioAuthenticated, setIsFactorioAuthenticated] = useState(false);
 
@@ -16,7 +16,7 @@ const AddMod = ({refetchInstalledMods}) => {
     }, []);
 
     return isFactorioAuthenticated
-        ? <AddModForm setIsFactorioAuthenticated={setIsFactorioAuthenticated} refetchInstalledMods={refetchInstalledMods}/>
+        ? <AddModForm fuse={fuse} setIsFactorioAuthenticated={setIsFactorioAuthenticated} refetchInstalledMods={refetchInstalledMods}/>
         : <FactorioLogin setIsFactorioAuthenticated={setIsFactorioAuthenticated}/>
 }
 

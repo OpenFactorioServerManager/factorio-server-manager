@@ -23,5 +23,11 @@ export default {
             }
         });
         return response.data;
+    },
+    mods: async save => {
+        const response = await client.post("/api/saves/mods", {
+            saveFile: save
+        });
+        return response.data;
     }
 }
