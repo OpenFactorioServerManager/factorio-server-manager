@@ -9,7 +9,6 @@ and [Docker Compose](https://docs.docker.com/compose/install/) installed.
 Copy `docker-compose.yaml` and `.env` files from this repository to somewhere on your server.
 
 Edit values in the `.env` file:
-* `FACTORIO_VERSION` (default `latest`): Factorio version that will be downloaded and used in FSM.
 * `ADMIN_USER` (default `admin`): Name of the default user created for FSM UI.
 * `ADMIN_PASS` (default `factorio`): Default user password. \
   __Important:__ _For security reasons, please change the default user name and password. Never use the defaults._
@@ -29,6 +28,7 @@ docker-compose up -d
 ```
 
 ### Simple configuration without HTTPS
+
 If you don't care about HTTPS and want to run just the Factorio Server Manager, or want to run it on local machine you can use `docker-compose.simple.yaml`.
 
 Ignore `DOMAIN_NAME` and `EMAIL_ADDREESS` variables in `.env` file and run
@@ -36,11 +36,17 @@ Ignore `DOMAIN_NAME` and `EMAIL_ADDREESS` variables in `.env` file and run
 docker-compose -f docker-compose.simple.yaml up -d
 ```
 
+### Factorio version
+
+By default container will download the latest version of factorio. If you want to use specific version, you can change
+the value of `FACTORIO_VERSION=latest` variable in the `docker-compose.yaml` file.
+
 ## Accessing the application
 
 Go to the domain specified in your `.env` file in your web browser. If running on localhost host access the application at http://localhost
 
 ### First start
+
 When container starts it begins to dowload Factorio headless server archive, and only after that Factorio Server Manager server starts.
 So when Docker Compose writes
 ```
