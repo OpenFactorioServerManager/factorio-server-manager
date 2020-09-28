@@ -1,24 +1,24 @@
-package main
+package factorio
 
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"io"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/majormjr/rcon"
 )
 
-type FactorioServer struct {
+type Server struct {
 	Cmd            *exec.Cmd              `json:"-"`
 	Savefile       string                 `json:"savefile"`
 	Latency        int                    `json:"latency"`
@@ -35,24 +35,22 @@ type FactorioServer struct {
 	LogChan        chan []string          `json:"-"`
 }
 
-func randomPort() int {
-	// Returns random port to use for rcon connection
-	return rand.Intn(45000-40000) + 40000
-}
+var instantiated Server
+var once sync.Once
 
-func autostart() {
+func (f *Server) autostart() {
 
 	var err error
-	if FactorioServ.BindIP == "" {
-		FactorioServ.BindIP = "0.0.0.0"
+	if f.BindIP == "" {
+		f.BindIP = "0.0.0.0"
 
 	}
-	if FactorioServ.Port == 0 {
-		FactorioServ.Port = 34197
+	if f.Port == 0 {
+		f.Port = 34197
 	}
-	FactorioServ.Savefile = "Load Latest"
+	f.Savefile = "Load Latest"
 
-	err = FactorioServ.Run()
+	err = f.Run()
 
 	if err != nil {
 		log.Printf("Error starting Factorio server: %+v", err)
@@ -61,134 +59,146 @@ func autostart() {
 
 }
 
-func initFactorio() (f *FactorioServer, err error) {
-	f = new(FactorioServer)
-	f.Settings = make(map[string]interface{})
-
-	if err = os.MkdirAll(config.FactorioConfigDir, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create config directory: %v", err)
-	}
-
-	settingsPath := filepath.Join(config.FactorioConfigDir, config.SettingsFile)
-	var settings *os.File
-
-	if _, err := os.Stat(settingsPath); os.IsNotExist(err) {
-		// copy example settings to supplied settings file, if not exists
-		log.Printf("Server settings at %s not found, copying example server settings.\n", settingsPath)
-
-		examplePath := filepath.Join(config.FactorioDir, "data", "server-settings.example.json")
-
-		example, err := os.Open(examplePath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open example server settings: %v", err)
-		}
-		defer example.Close()
-
-		settings, err = os.Create(settingsPath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create server settings file: %v", err)
-		}
-		defer settings.Close()
-
-		_, err = io.Copy(settings, example)
-		if err != nil {
-			return nil, fmt.Errorf("failed to copy example server settings: %v", err)
+func GetFactorioServer() (f Server, err error) {
+	once.Do(func() {
+		f = Server{}
+		f.Settings = make(map[string]interface{})
+		config := bootstrap.GetConfig()
+		if err = os.MkdirAll(config.FactorioConfigDir, 0755); err != nil {
+			log.Printf("failed to create bootstrap directory: %v", err)
+			return
 		}
 
-		err = example.Close()
-		if err != nil {
-			return nil, fmt.Errorf("failed to close example server settings: %s", err)
-		}
-	} else {
-		// otherwise, open file normally
-		settings, err = os.Open(settingsPath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open server settings file: %v", err)
-		}
-		defer settings.Close()
-	}
+		settingsPath := filepath.Join(config.FactorioConfigDir, config.SettingsFile)
+		var settings *os.File
 
-	// before reading reset offset
-	if _, err = settings.Seek(0, 0); err != nil {
-		return nil, fmt.Errorf("error while seeking in settings file: %v", err)
-	}
+		if _, err := os.Stat(settingsPath); os.IsNotExist(err) {
+			// copy example settings to supplied settings file, if not exists
+			log.Printf("Server settings at %s not found, copying example server settings.\n", settingsPath)
 
-	if err = json.NewDecoder(settings).Decode(&f.Settings); err != nil {
-		return nil, fmt.Errorf("error reading %s: %v", settingsPath, err)
-	}
+			examplePath := filepath.Join(config.FactorioDir, "data", "server-settings.example.json")
 
-	log.Printf("Loaded Factorio settings from %s\n", settingsPath)
+			example, err := os.Open(examplePath)
+			if err != nil {
+				log.Printf("failed to open example server settings: %v", err)
+				return
+			}
+			defer example.Close()
 
-	out := []byte{}
-	//Load factorio version
-	if config.glibcCustom == "true" {
-		out, err = exec.Command(config.glibcLocation, "--library-path", config.glibcLibLoc, config.FactorioBinary, "--version").Output()
-	} else {
-		out, err = exec.Command(config.FactorioBinary, "--version").Output()
-	}
+			settings, err = os.Create(settingsPath)
+			if err != nil {
+				log.Printf("failed to create server settings file: %v", err)
+				return
+			}
+			defer settings.Close()
 
-	if err != nil {
-		log.Printf("error on loading factorio version: %s", err)
-		return
-	}
+			_, err = io.Copy(settings, example)
+			if err != nil {
+				log.Printf("failed to copy example server settings: %v", err)
+				return
+			}
 
-	reg := regexp.MustCompile("Version.*?((\\d+\\.)?(\\d+\\.)?(\\*|\\d+)+)")
-	found := reg.FindStringSubmatch(string(out))
-	err = f.Version.UnmarshalText([]byte(found[1]))
-	if err != nil {
-		log.Printf("could not parse version: %v", err)
-		return
-	}
-
-	//Load baseMod version
-	baseModInfoFile := filepath.Join(config.FactorioDir, "data", "base", "info.json")
-	bmifBa, err := ioutil.ReadFile(baseModInfoFile)
-	if err != nil {
-		log.Printf("couldn't open baseMods info.json: %s", err)
-		return
-	}
-	var modInfo ModInfo
-	err = json.Unmarshal(bmifBa, &modInfo)
-	if err != nil {
-		log.Printf("error unmarshalling baseMods info.json to a modInfo: %s", err)
-		return
-	}
-
-	f.BaseModVersion = modInfo.Version
-
-	// load admins from additional file
-	if (f.Version.Greater(Version{0, 17, 0})) {
-		if _, err := os.Stat(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)); os.IsNotExist(err) {
-			//save empty admins-file
-			ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
+			err = example.Close()
+			if err != nil {
+				log.Printf("failed to close example server settings: %s", err)
+				return
+			}
 		} else {
-			data, err := ioutil.ReadFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
+			// otherwise, open file normally
+			settings, err = os.Open(settingsPath)
 			if err != nil {
-				log.Printf("Error loading FactorioAdminFile: %s", err)
-				return f, err
+				log.Printf("failed to open server settings file: %v", err)
+				return
 			}
-
-			var jsonData interface{}
-			err = json.Unmarshal(data, &jsonData)
-			if err != nil {
-				log.Printf("Error unmarshalling FactorioAdminFile: %s", err)
-				return f, err
-			}
-
-			f.Settings["admins"] = jsonData
+			defer settings.Close()
 		}
-	}
 
-	if config.autostart == "true" {
-		go autostart()
-	}
+		// before reading reset offset
+		if _, err = settings.Seek(0, 0); err != nil {
+			log.Printf("error while seeking in settings file: %v", err)
+			return
+		}
 
-	return
+		if err = json.NewDecoder(settings).Decode(&f.Settings); err != nil {
+			log.Printf("error reading %s: %v", settingsPath, err)
+			return
+		}
+
+		log.Printf("Loaded Factorio settings from %s\n", settingsPath)
+
+		out := []byte{}
+		//Load factorio version
+		if config.GlibcCustom == "true" {
+			out, err = exec.Command(config.GlibcLocation, "--library-path", config.GlibcLibLoc, config.FactorioBinary, "--version").Output()
+		} else {
+			out, err = exec.Command(config.FactorioBinary, "--version").Output()
+		}
+
+		if err != nil {
+			log.Printf("error on loading factorio version: %s", err)
+			return
+		}
+
+		reg := regexp.MustCompile("Version.*?((\\d+\\.)?(\\d+\\.)?(\\*|\\d+)+)")
+		found := reg.FindStringSubmatch(string(out))
+		err = f.Version.UnmarshalText([]byte(found[1]))
+		if err != nil {
+			log.Printf("could not parse version: %v", err)
+			return
+		}
+
+		//Load baseMod version
+		baseModInfoFile := filepath.Join(config.FactorioDir, "data", "base", "info.json")
+		bmifBa, err := ioutil.ReadFile(baseModInfoFile)
+		if err != nil {
+			log.Printf("couldn't open baseMods info.json: %s", err)
+			return
+		}
+		var modInfo ModInfo
+		err = json.Unmarshal(bmifBa, &modInfo)
+		if err != nil {
+			log.Printf("error unmarshalling baseMods info.json to a modInfo: %s", err)
+			return
+		}
+
+		f.BaseModVersion = modInfo.Version
+
+		// load admins from additional file
+		if (f.Version.Greater(Version{0, 17, 0})) {
+			if _, err := os.Stat(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)); os.IsNotExist(err) {
+				//save empty admins-file
+				_ = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
+			} else {
+				data, err := ioutil.ReadFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
+				if err != nil {
+					log.Printf("Error loading FactorioAdminFile: %s", err)
+					return
+				}
+
+				var jsonData interface{}
+				err = json.Unmarshal(data, &jsonData)
+				if err != nil {
+					log.Printf("Error unmarshalling FactorioAdminFile: %s", err)
+					return
+				}
+
+				f.Settings["admins"] = jsonData
+			}
+		}
+
+		instantiated = f
+
+		if config.Autostart == "true" {
+			go instantiated.autostart()
+		}
+	})
+
+	return instantiated, nil
 }
 
-func (f *FactorioServer) Run() error {
+func (f *Server) Run() error {
 	var err error
-
+	config := bootstrap.GetConfig()
 	data, err := json.MarshalIndent(f.Settings, "", "  ")
 	if err != nil {
 		log.Println("Failed to marshal FactorioServerSettings: ", err)
@@ -200,9 +210,9 @@ func (f *FactorioServer) Run() error {
 
 	//The factorio server refenences its executable-path, since we execute the ld.so file and pass the factorio binary as a parameter
 	//the game would use the path to the ld.so file as it's executable path and crash, to prevent this the parameter "--executable-path" is added
-	if config.glibcCustom == "true" {
-		log.Println("Custom glibc selected, glibc.so location:", config.glibcLocation, " lib location:", config.glibcLibLoc)
-		args = append(args, "--library-path", config.glibcLibLoc, config.FactorioBinary, "--executable-path", config.FactorioBinary)
+	if config.GlibcCustom == "true" {
+		log.Println("Custom glibc selected, glibc.so location:", config.GlibcLocation, " lib location:", config.GlibcLibLoc)
+		args = append(args, "--library-path", config.GlibcLibLoc, config.FactorioBinary, "--executable-path", config.FactorioBinary)
 	}
 
 	args = append(args,
@@ -222,9 +232,9 @@ func (f *FactorioServer) Run() error {
 		args = append(args, "--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile))
 	}
 
-	if config.glibcCustom == "true" {
-		log.Println("Starting server with command: ", config.glibcLocation, args)
-		f.Cmd = exec.Command(config.glibcLocation, args...)
+	if config.GlibcCustom == "true" {
+		log.Println("Starting server with command: ", config.GlibcLocation, args)
+		f.Cmd = exec.Command(config.GlibcLocation, args...)
 	} else {
 		log.Println("Starting server with command: ", config.FactorioBinary, args)
 		f.Cmd = exec.Command(config.FactorioBinary, args...)
@@ -268,7 +278,7 @@ func (f *FactorioServer) Run() error {
 	return nil
 }
 
-func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
+func (f *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 	stdScanner := bufio.NewScanner(std)
 	for stdScanner.Scan() {
 		log.Printf("Factorio Server: %s", stdScanner.Text())
@@ -308,7 +318,8 @@ func (f *FactorioServer) parseRunningCommand(std io.ReadCloser) (err error) {
 	return nil
 }
 
-func (f *FactorioServer) writeLog(logline string) error {
+func (f *Server) writeLog(logline string) error {
+	config := bootstrap.GetConfig()
 	logfileName := filepath.Join(config.FactorioDir, "factorio-server-console.log")
 	file, err := os.OpenFile(logfileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
@@ -327,7 +338,7 @@ func (f *FactorioServer) writeLog(logline string) error {
 	return nil
 }
 
-func (f *FactorioServer) checkLogError(logline []string) error {
+func (f *Server) checkLogError(logline []string) error {
 	// TODO Handle errors generated by running Factorio Server
 	log.Println(logline)
 

@@ -1,6 +1,7 @@
-package main
+package factorio
 
 import (
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"log"
 	"strconv"
 
@@ -9,8 +10,10 @@ import (
 
 func connectRC() error {
 	var err error
+	config := bootstrap.GetConfig()
 	rconAddr := config.ServerIP + ":" + strconv.Itoa(config.FactorioRconPort)
-	FactorioServ.Rcon, err = rcon.Dial(rconAddr, config.FactorioRconPass)
+	server, err := GetFactorioServer()
+	server.Rcon, err = rcon.Dial(rconAddr, config.FactorioRconPass)
 	if err != nil {
 		log.Printf("Cannot create rcon session: %s", err)
 		return err

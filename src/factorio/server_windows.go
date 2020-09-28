@@ -1,4 +1,4 @@
-package main
+package factorio
 
 import (
 	"log"
@@ -42,7 +42,7 @@ func setCtrlHandlingIsDisabledForThisProcess(disabled bool) {
 	}
 }
 
-func (f *FactorioServer) Kill() error {
+func (f *Server) Kill() error {
 	err := f.Cmd.Process.Signal(os.Kill)
 	if err != nil {
 		if err.Error() == "os: process already finished" {
@@ -58,7 +58,7 @@ func (f *FactorioServer) Kill() error {
 	return nil
 }
 
-func (f *FactorioServer) Stop() error {
+func (f *Server) Stop() error {
 	// Disable our own handling of CTRL+C, so we don't close when we send it to the console.
 	setCtrlHandlingIsDisabledForThisProcess(true)
 

@@ -1,8 +1,10 @@
-package main
+package api
 
 import (
 	"bytes"
 	"github.com/gorilla/mux"
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/mroote/factorio-server-manager/factorio"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -20,23 +22,27 @@ func TestMain(m *testing.M) {
 	var err error
 
 	// basic setup stuff
-	parseFlags()
+	bootstrap.SetFlags(bootstrap.Flags{
+
+	})
+
+	config := bootstrap.GetConfig()
 	config.FactorioModsDir = "dev"
 	config.FactorioModPackDir = "dev_packs"
-	FactorioServ = new(FactorioServer)
-	FactorioServ.Version = Version{1, 0, 0, 0}
+	FactorioServ := new(factorio.Server)
+	FactorioServ.Version = factorio.Version{1, 0, 0, 0}
 	FactorioServ.BaseModVersion = "1.0.0"
 
 	// check login status
-	var cred FactorioCredentials
-	load, err := cred.load()
+	var cred factorio.Credentials
+	load, err := cred.Load()
 	if err != nil {
 		log.Fatalf("Error loading factorio credentials: %s", err)
 		return
 	}
 	if !load {
 		// no credentials found, login...
-		_, err, _ = factorioLogin(os.Getenv("factorio_username"), os.Getenv("factorio_password"))
+		_, err, _ = factorio.FactorioLogin(os.Getenv("factorio_username"), os.Getenv("factorio_password"))
 		if err != nil {
 			log.Printf("Error logging in into factorio: %s", err)
 			return
@@ -64,18 +70,18 @@ func SetupMods(t *testing.T, empty bool) {
 		return
 	}
 
-	mods, err := newMods(config.FactorioModsDir)
+	mod, err := factorio.NewMods(config.FactorioModsDir)
 	if err != nil {
 		t.Fatalf("couldn't create Mods object: %s", err)
 	}
 
 	if !empty {
-		err := mods.downloadMod("/download/belt-balancer/5e9f9db4bf9d30000c5303f2", "belt-balancer_2.1.3.zip", "belt-balancer")
+		err := mod.DownloadMod("/download/belt-balancer/5e9f9db4bf9d30000c5303f2", "belt-balancer_2.1.3.zip", "belt-balancer")
 		if err != nil {
 			t.Fatalf(`Error downloading Mod "belt-balancer": %s`, err)
 		}
 
-		err = mods.downloadMod("/download/train-station-overview/5e8a0a8ee8864f000d0cb022", "train-station-overview_2.0.3.zip", "train-station-overview")
+		err = mod.DownloadMod("/download/train-station-overview/5e8a0a8ee8864f000d0cb022", "train-station-overview_2.0.3.zip", "train-station-overview")
 		if err != nil {
 			t.Fatalf(`Error downloading Mod "train-station-overview": %s`, err)
 		}
@@ -179,12 +185,12 @@ func TestModToggleHandler(t *testing.T) {
 		CallRoute(t, method, route, route, requestBody, handlerFunc, http.StatusOK, expected)
 
 		// check if changes happenes
-		mods, err := newMods("dev")
+		modList, err := factorio.NewMods("dev")
 		if err != nil {
 			t.Fatalf("Error creating Mods object: %s", err)
 		}
 		found := false
-		for _, mod := range mods.ModSimpleList.Mods {
+		for _, mod := range modList.ModSimpleList.Mods {
 			if mod.Name == "belt-balancer" {
 				// this mod has to be deactivated now
 				if mod.Enabled {
@@ -207,12 +213,12 @@ func TestModToggleHandler(t *testing.T) {
 
 		CallRoute(t, method, route, route, requestBody, handlerFunc, http.StatusOK, expected)
 
-		mods, err = newMods("dev")
+		modList, err = factorio.NewMods("dev")
 		if err != nil {
 			t.Fatalf("Error creating Mods object: %s", err)
 		}
 		found = false
-		for _, mod := range mods.ModSimpleList.Mods {
+		for _, mod := range modList.ModSimpleList.Mods {
 			if mod.Name == "belt-balancer" {
 				// this mod has to be deactivated now
 				if !mod.Enabled {
@@ -250,11 +256,11 @@ func TestModDeleteHandler(t *testing.T) {
 		CallRoute(t, method, route, route, requestBody, handlerFunc, http.StatusOK, `"belt-balancer"`)
 
 		// check if mod is really not installed anymore
-		mods, err := newMods("dev")
+		_, err := factorio.NewMods("dev")
 		if err != nil {
 			t.Fatalf("Error creating Mods object: %s", err)
 		}
-		if mods.ModSimpleList.checkModExists("belt-balancer") {
+		if factorio.ModSimpleList.CheckModExists("belt-balancer")) {
 			t.Fatalf("Mod is still installed, it should be gone by now")
 		}
 	})
@@ -280,11 +286,11 @@ func TestModDeleteAllHandler(t *testing.T) {
 		CallRoute(t, method, route, route, nil, handlerFunc, http.StatusOK, "null")
 
 		// check if no mods are there
-		mods, err := newMods("dev")
+		modList, err := factorio.NewMods("dev")
 		if err != nil {
 			t.Fatalf("Error creating mods object: %s", err)
 		}
-		if len(mods.listInstalledMods().ModsResult) != 0 {
+		if len(modList.ListInstalledMods().ModsResult) != 0 {
 			t.Fatalf("Mods are still there!")
 		}
 	})
@@ -313,11 +319,11 @@ func TestModUpdateHandler(t *testing.T) {
 		defer CleanupMods(t)
 
 		// disable "belt-balancer" mod, so we can test, if it is still deactivated after
-		mods, err := newMods("dev")
+		modList, err := factorio.NewMods("dev")
 		if err != nil {
 			t.Fatalf("Error creating mods object: %s", err)
 		}
-		err, _ = mods.ModSimpleList.toggleMod("belt-balancer")
+		err, _ = modList.ModSimpleList.ToggleMod("belt-balancer")
 		if err != nil {
 			t.Fatalf("Error toggling mod: %s", err)
 		}
@@ -416,19 +422,19 @@ func TestModUploadHandler(t *testing.T) {
 		}
 
 		// check if mod is uploaded correctly
-		mods, err := newMods("dev")
+		modList, err := factorio.NewMods("dev")
 		assert.NoError(t, err, "error creating mods object")
 
-		expected := ModsResultList{
-			ModsResult: []ModsResult{
+		expected := factorio.ModsResultList{
+			ModsResult: []factorio.ModsResult{
 				{
-					ModInfo: ModInfo{
+					ModInfo: factorio.ModInfo{
 						Name:            "belt-balancer",
 						Version:         "2.1.3",
 						Title:           "Belt Balancer",
 						Author:          "knoxfighter",
 						FileName:        "belt-balancer_2.1.3.zip",
-						FactorioVersion: Version{0, 18, 0, 0},
+						FactorioVersion: factorio.Version{0, 18, 0, 0},
 						Dependencies:    nil,
 						Compatibility:   true,
 					},
@@ -437,7 +443,7 @@ func TestModUploadHandler(t *testing.T) {
 			},
 		}
 
-		actual := mods.listInstalledMods()
+		actual := modList.ListInstalledMods()
 		assert.Equal(t, expected, actual, `New mod is not correctly installed. expected "%v" - actual "%v"`, expected, actual)
 	})
 

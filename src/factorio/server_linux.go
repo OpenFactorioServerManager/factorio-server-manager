@@ -1,7 +1,7 @@
 // use this file only when compiling not windows (all unix systems)
 // +build !windows
 
-package main
+package factorio
 
 import (
 	"log"
@@ -10,7 +10,7 @@ import (
 
 // Stubs for windows-only functions
 
-func (f *FactorioServer) Kill() error {
+func (f *Server) Kill() error {
 	err := f.Cmd.Process.Signal(os.Kill)
 	if err != nil {
 		if err.Error() == "os: process already finished" {
@@ -31,7 +31,7 @@ func (f *FactorioServer) Kill() error {
 	return nil
 }
 
-func (f *FactorioServer) Stop() error {
+func (f *Server) Stop() error {
 	err := f.Cmd.Process.Signal(os.Interrupt)
 	if err != nil {
 		if err.Error() == "os: process already finished" {

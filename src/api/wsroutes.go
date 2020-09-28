@@ -1,9 +1,11 @@
-package main
+package api
 
 import (
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/mroote/factorio-server-manager/factorio"
 	"log"
 	"path/filepath"
-	time "time"
+	"time"
 
 	"github.com/hpcloud/tail"
 )
@@ -18,8 +20,9 @@ func IsClosed(ch <-chan Message) bool {
 	return false
 }
 
-func logSubscribe(client *Client, data interface{}) {
+func LogSubscribe(client *Client, data interface{}) {
 	go func() {
+		config := bootstrap.GetConfig()
 		logfile := filepath.Join(config.FactorioDir, "factorio-server-console.log")
 		t, err := tail.TailFile(logfile, tail.Config{Follow: true, Poll: true})
 		if err != nil {
@@ -38,12 +41,13 @@ func logSubscribe(client *Client, data interface{}) {
 	}()
 }
 
-func commandSend(client *Client, data interface{}) {
-	if FactorioServ.Running {
+func CommandSend(client *Client, data interface{}) {
+	var server, _ = factorio.GetFactorioServer()
+	if server.Running {
 		go func() {
 			log.Printf("Received command: %v", data)
 
-			reqId, err := FactorioServ.Rcon.Write(data.(string))
+			reqId, err := server.Rcon.Write(data.(string))
 			if err != nil {
 				log.Printf("Error sending rcon command: %s", err)
 				return
@@ -61,16 +65,16 @@ func commandSend(client *Client, data interface{}) {
 	}
 }
 
-func serverStatusSubscribe(client *Client, data interface{}) {
-
+func ServerStatusSubscribe(client *Client, data interface{}) {
+	var server, _ = factorio.GetFactorioServer()
 	log.Printf("Subcribed to Server Status")
 	go func() {
-		isRunning := FactorioServ.Running
+		isRunning := server.Running
 
 		// always check if status has changed
 		for {
-			if isRunning != FactorioServ.Running {
-				isRunning = FactorioServ.Running
+			if isRunning != server.Running {
+				isRunning = server.Running
 
 				log.Printf("Server Status has changed")
 

@@ -1,4 +1,4 @@
-package main
+package factorio
 
 import (
 	"encoding/json"
@@ -108,7 +108,7 @@ func (modSimpleList *ModSimpleList) deleteMod(modName string) error {
 	return nil
 }
 
-func (modSimpleList *ModSimpleList) checkModExists(modName string) bool {
+func (modSimpleList *ModSimpleList) CheckModExists(modName string) bool {
 	for _, singleMod := range modSimpleList.Mods {
 		if singleMod.Name == modName {
 			return true
@@ -139,7 +139,7 @@ func (modSimpleList *ModSimpleList) createMod(modName string) error {
 	return nil
 }
 
-func (modSimpleList *ModSimpleList) toggleMod(modName string) (error, bool) {
+func (modSimpleList *ModSimpleList) ToggleMod(modName string) (error, bool) {
 	var err error
 	var newEnabled bool
 

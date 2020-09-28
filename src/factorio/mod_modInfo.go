@@ -1,4 +1,4 @@
-package main
+package factorio
 
 import (
 	"archive/zip"
@@ -50,7 +50,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 	err = filepath.Walk(modInfoList.Destination, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() && filepath.Ext(path) == ".zip" {
 
-			err = fileLock.RLock(path)
+			err = FileLock.RLock(path)
 			if err != nil && err == lockfile.ErrorAlreadyLocked {
 				log.Println(err)
 				return nil
@@ -58,7 +58,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 				log.Printf("error locking file: %s", err)
 				return err
 			}
-			defer fileLock.RUnlock(path)
+			defer FileLock.RUnlock(path)
 
 			zipFile, err := zip.OpenReader(path)
 			if err != nil {
@@ -107,11 +107,13 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 				break
 			}
 
+			server, _ := GetFactorioServer()
+
 			if !base.Equals(NilVersion) {
-				modInfo.Compatibility = FactorioServ.Version.Compare(base, op)
+				modInfo.Compatibility = server.Version.Compare(base, op)
 			} else {
 				log.Println("error finding basemodDependency. Using FactorioVersion...")
-				modInfo.Compatibility = !FactorioServ.Version.Less(modInfo.FactorioVersion)
+				modInfo.Compatibility = !server.Version.Less(modInfo.FactorioVersion)
 			}
 
 			modInfoList.Mods = append(modInfoList.Mods, modInfo)
@@ -136,10 +138,10 @@ func (modInfoList *ModInfoList) deleteMod(modName string) error {
 		if mod.Name == modName {
 			filePath := filepath.Join(modInfoList.Destination, mod.FileName)
 
-			fileLock.LockW(filePath)
+			FileLock.LockW(filePath)
 			//delete mod
 			err = os.Remove(filePath)
-			fileLock.Unlock(filePath)
+			FileLock.Unlock(filePath)
 			if err != nil {
 				log.Printf("ModInfoList ... error when deleting mod: %s", err)
 				return err
@@ -207,7 +209,7 @@ func (modInfoList *ModInfoList) createMod(modName string, fileName string, modFi
 	}
 	defer newFile.Close()
 
-	fileLock.LockW(filePath)
+	FileLock.LockW(filePath)
 
 	_, err = io.Copy(newFile, modFile)
 	if err != nil {
@@ -221,7 +223,7 @@ func (modInfoList *ModInfoList) createMod(modName string, fileName string, modFi
 		return err
 	}
 
-	fileLock.Unlock(filePath)
+	FileLock.Unlock(filePath)
 
 	//reload the list
 	err = modInfoList.listInstalledMods()

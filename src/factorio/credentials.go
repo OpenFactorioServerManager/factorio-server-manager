@@ -1,21 +1,22 @@
-package main
+package factorio
 
 import (
 	"encoding/json"
 	"errors"
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"io/ioutil"
 	"log"
 	"os"
 )
 
-type FactorioCredentials struct {
+type Credentials struct {
 	Username string `json:"username"`
 	Userkey  string `json:"userkey"`
 }
 
-func (credentials *FactorioCredentials) save() error {
+func (credentials *Credentials) Save() error {
 	var err error
-
+	config := bootstrap.GetConfig()
 	credentialsJson, err := json.Marshal(credentials)
 	if err != nil {
 		log.Printf("error mashalling the credentials: %s", err)
@@ -31,23 +32,23 @@ func (credentials *FactorioCredentials) save() error {
 	return nil
 }
 
-func (credentials *FactorioCredentials) load() (bool, error) {
+func (credentials *Credentials) Load() (bool, error) {
 	var err error
-
+	config := bootstrap.GetConfig()
 	if _, err := os.Stat(config.FactorioCredentialsFile); os.IsNotExist(err) {
 		return false, nil
 	}
 
 	fileBytes, err := ioutil.ReadFile(config.FactorioCredentialsFile)
 	if err != nil {
-		credentials.del()
+		credentials.Del()
 		log.Printf("error reading CredentialsFile: %s", err)
 		return false, err
 	}
 
 	err = json.Unmarshal(fileBytes, credentials)
 	if err != nil {
-		credentials.del()
+		credentials.Del()
 		log.Printf("error on unmarshal credentials_file: %s", err)
 		return false, err
 	}
@@ -55,14 +56,14 @@ func (credentials *FactorioCredentials) load() (bool, error) {
 	if credentials.Userkey != "" && credentials.Username != "" {
 		return true, nil
 	} else {
-		credentials.del()
+		credentials.Del()
 		return false, errors.New("incredients incomplete")
 	}
 }
 
-func (credentials *FactorioCredentials) del() error {
+func (credentials *Credentials) Del() error {
 	var err error
-
+	config := bootstrap.GetConfig()
 	err = os.Remove(config.FactorioCredentialsFile)
 	if err != nil {
 		log.Printf("error delete the credentialfile: %s", err)

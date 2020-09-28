@@ -1,8 +1,9 @@
-package main
+package factorio
 
 import (
 	"errors"
 	"fmt"
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"log"
 	"os"
 	"os/exec"
@@ -21,7 +22,7 @@ func (s Save) String() string {
 }
 
 // Lists save files in factorio/saves
-func listSaves(saveDir string) (saves []Save, err error) {
+func ListSaves(saveDir string) (saves []Save, err error) {
 	saves = []Save{}
 	err = filepath.Walk(saveDir, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() && info.Name() == "saves" {
@@ -37,8 +38,9 @@ func listSaves(saveDir string) (saves []Save, err error) {
 	return
 }
 
-func findSave(name string) (*Save, error) {
-	saves, err := listSaves(config.FactorioSavesDir)
+func FindSave(name string) (*Save, error) {
+	config := bootstrap.GetConfig()
+	saves, err := ListSaves(config.FactorioSavesDir)
 	if err != nil {
 		return nil, fmt.Errorf("error listing saves: %v", err)
 	}
@@ -52,16 +54,16 @@ func findSave(name string) (*Save, error) {
 	return nil, errors.New("save not found")
 }
 
-func (s *Save) remove() error {
+func (s *Save) Remove() error {
 	if s.Name == "" {
 		return errors.New("save name cannot be blank")
 	}
-
+	config := bootstrap.GetConfig()
 	return os.Remove(filepath.Join(config.FactorioSavesDir, s.Name))
 }
 
 // Create savefiles for Factorio
-func createSave(filePath string) (string, error) {
+func CreateSave(filePath string) (string, error) {
 	err := os.MkdirAll(filepath.Dir(filePath), 0755)
 	if err != nil {
 		log.Printf("Error in creating Factorio save: %s", err)
@@ -69,6 +71,7 @@ func createSave(filePath string) (string, error) {
 	}
 
 	args := []string{"--create", filePath}
+	config := bootstrap.GetConfig()
 	cmdOutput, err := exec.Command(config.FactorioBinary, args...).Output()
 	if err != nil {
 		log.Printf("Error in creating Factorio save: %s", err)
