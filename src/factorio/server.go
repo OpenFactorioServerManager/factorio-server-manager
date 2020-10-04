@@ -65,7 +65,7 @@ func GetFactorioServer() (f Server, err error) {
 		f.Settings = make(map[string]interface{})
 		config := bootstrap.GetConfig()
 		if err = os.MkdirAll(config.FactorioConfigDir, 0755); err != nil {
-			log.Printf("failed to create bootstrap directory: %v", err)
+			log.Printf("failed to create config directory: %v", err)
 			return
 		}
 

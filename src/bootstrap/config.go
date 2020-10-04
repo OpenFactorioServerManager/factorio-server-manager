@@ -73,15 +73,15 @@ func SetFlags(parsedFlags Flags) {
 }
 
 // Loads server configuration files
-// JSON bootstrap file contains default values,
-// bootstrap file will overwrite any provided flags
+// JSON config file contains default values,
+// config file will overwrite any provided flags
 func (config *Config) loadServerConfig() {
 	file, err := os.Open(config.ConfFile)
-	failOnError(err, "Error loading bootstrap file.")
+	failOnError(err, "Error loading config file.")
 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
-	failOnError(err, "Error decoding JSON bootstrap file.")
+	failOnError(err, "Error decoding JSON config file.")
 
 	config.FactorioRconPort = randomPort()
 }
@@ -105,7 +105,7 @@ func mapFlags() Config {
 		FactorioSavesDir:        filepath.Join(*flags.FactorioDir, "saves"),
 		FactorioModsDir:         filepath.Join(*flags.FactorioDir, "mods"),
 		FactorioModPackDir:      "./mod_packs",
-		FactorioConfigDir:       filepath.Join(*flags.FactorioDir, "bootstrap"),
+		FactorioConfigDir:       filepath.Join(*flags.FactorioDir, "config"),
 		FactorioConfigFile:      filepath.Join(*flags.FactorioDir, *flags.FactorioConfigFile),
 		FactorioBinary:          filepath.Join(*flags.FactorioDir, *flags.FactorioBinary),
 		FactorioCredentialsFile: "./factorio.auth",

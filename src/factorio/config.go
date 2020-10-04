@@ -6,12 +6,12 @@ import (
 	"github.com/go-ini/ini"
 )
 
-// Loads bootstrap.ini file from the factorio bootstrap directory
+// Loads config.ini file from the factorio bootstrap directory
 func LoadConfig(filename string) (map[string]map[string]string, error) {
-	log.Printf("Loading bootstrap file: %s", filename)
+	log.Printf("Loading config file: %s", filename)
 	cfg, err := ini.Load(filename)
 	if err != nil {
-		log.Printf("Error loading bootstrap.ini file: %s", err)
+		log.Printf("Error loading config.ini file: %s", err)
 		return nil, err
 	}
 
@@ -28,7 +28,7 @@ func LoadConfig(filename string) (map[string]map[string]string, error) {
 		result[sectionName] = map[string]string{}
 		result[sectionName] = s.KeysHash()
 	}
-	log.Printf("Encoding bootstrap.ini to JSON")
+	log.Printf("Encoding config.ini to JSON")
 
 	return result, nil
 }
