@@ -20,6 +20,8 @@ Edit values in the `.env` file:
   so [Let's Encrypt](https://letsencrypt.org/) service can issue a valid HTTPS certificate for this domain.
 * `EMAIL_ADDRESS` (must be set manually): Your email address. Used only by Let's Encrypt service.
 
+Alternatively you can ignore `.env` file and edit this values directly in `environment` section of `docker-compose.yaml`.
+But remember that if `.env` file is present, values set there take precedence over values set in `docker-compose.yaml`.
 
 Now you can start the container by running:
 
