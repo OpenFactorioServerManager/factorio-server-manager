@@ -22,13 +22,13 @@ func TestMain(m *testing.M) {
 	var err error
 
 	// basic setup stuff
-	bootstrap.SetFlags(bootstrap.Flags{
-
+	config := bootstrap.NewConfig([]string{
+		"--dir", os.Getenv("dir"),
+		"--conf", os.Getenv("conf"),
+		"--mod-pack-dir", "dev_packs",
 	})
-
-	config := bootstrap.GetConfig()
 	config.FactorioModsDir = "dev"
-	config.FactorioModPackDir = "dev_packs"
+	//config.FactorioModPackDir = "dev_packs"
 	FactorioServ := new(factorio.Server)
 	FactorioServ.Version = factorio.Version{1, 0, 0, 0}
 	FactorioServ.BaseModVersion = "1.0.0"
@@ -61,9 +61,11 @@ func CheckShort(t *testing.T) {
 func SetupMods(t *testing.T, empty bool) {
 	var err error
 
+	config := bootstrap.GetConfig()
+
 	// check if dev directory exists and create it
-	if _, err = os.Stat("dev"); os.IsNotExist(err) {
-		err = os.Mkdir("dev", 0775)
+	if _, err = os.Stat(config.FactorioModsDir); os.IsNotExist(err) {
+		err = os.Mkdir(config.FactorioModsDir, 0775)
 	}
 	if err != nil {
 		log.Fatalf(`Error creating "dev" directory: %s`, err)
@@ -89,7 +91,8 @@ func SetupMods(t *testing.T, empty bool) {
 }
 
 func CleanupMods(t *testing.T) {
-	err := os.RemoveAll("dev")
+	config := bootstrap.GetConfig()
+	err := os.RemoveAll(config.FactorioModsDir)
 	if err != nil {
 		t.Fatalf("Error removing dev directory: %s", err)
 	}
@@ -185,7 +188,8 @@ func TestModToggleHandler(t *testing.T) {
 		CallRoute(t, method, route, route, requestBody, handlerFunc, http.StatusOK, expected)
 
 		// check if changes happenes
-		modList, err := factorio.NewMods("dev")
+		config := bootstrap.GetConfig()
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		if err != nil {
 			t.Fatalf("Error creating Mods object: %s", err)
 		}
@@ -213,7 +217,7 @@ func TestModToggleHandler(t *testing.T) {
 
 		CallRoute(t, method, route, route, requestBody, handlerFunc, http.StatusOK, expected)
 
-		modList, err = factorio.NewMods("dev")
+		modList, err = factorio.NewMods(config.FactorioModsDir)
 		if err != nil {
 			t.Fatalf("Error creating Mods object: %s", err)
 		}
@@ -256,11 +260,12 @@ func TestModDeleteHandler(t *testing.T) {
 		CallRoute(t, method, route, route, requestBody, handlerFunc, http.StatusOK, `"belt-balancer"`)
 
 		// check if mod is really not installed anymore
-		_, err := factorio.NewMods("dev")
+		config := bootstrap.GetConfig()
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		if err != nil {
 			t.Fatalf("Error creating Mods object: %s", err)
 		}
-		if factorio.ModSimpleList.CheckModExists("belt-balancer")) {
+		if modList.ModSimpleList.CheckModExists("belt-balancer") {
 			t.Fatalf("Mod is still installed, it should be gone by now")
 		}
 	})
@@ -286,7 +291,8 @@ func TestModDeleteAllHandler(t *testing.T) {
 		CallRoute(t, method, route, route, nil, handlerFunc, http.StatusOK, "null")
 
 		// check if no mods are there
-		modList, err := factorio.NewMods("dev")
+		config := bootstrap.GetConfig()
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		if err != nil {
 			t.Fatalf("Error creating mods object: %s", err)
 		}
@@ -319,7 +325,8 @@ func TestModUpdateHandler(t *testing.T) {
 		defer CleanupMods(t)
 
 		// disable "belt-balancer" mod, so we can test, if it is still deactivated after
-		modList, err := factorio.NewMods("dev")
+		config := bootstrap.GetConfig()
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		if err != nil {
 			t.Fatalf("Error creating mods object: %s", err)
 		}
@@ -414,7 +421,7 @@ func TestModUploadHandler(t *testing.T) {
 		SetupMods(t, true)
 		defer CleanupMods(t)
 
-		recorder := ModUploadRequest(t, true, "factorio_testfiles/belt-balancer_2.1.3.zip")
+		recorder := ModUploadRequest(t, true, "../factorio_testfiles/belt-balancer_2.1.3.zip")
 
 		// status has to be 200
 		if recorder.Code != http.StatusOK {
@@ -422,7 +429,8 @@ func TestModUploadHandler(t *testing.T) {
 		}
 
 		// check if mod is uploaded correctly
-		modList, err := factorio.NewMods("dev")
+		config := bootstrap.GetConfig()
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		assert.NoError(t, err, "error creating mods object")
 
 		expected := factorio.ModsResultList{
@@ -461,7 +469,7 @@ func TestModUploadHandler(t *testing.T) {
 		SetupMods(t, true)
 		defer CleanupMods(t)
 
-		recorder := ModUploadRequest(t, false, "factorio_testfiles/file_usage.txt")
+		recorder := ModUploadRequest(t, false, "../factorio_testfiles/file_usage.txt")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code, "wrong response code.")
 	})
 
@@ -469,7 +477,7 @@ func TestModUploadHandler(t *testing.T) {
 		SetupMods(t, true)
 		defer CleanupMods(t)
 
-		recorder := ModUploadRequest(t, true, "factorio_testfiles/invalid_mod.zip")
+		recorder := ModUploadRequest(t, true, "../factorio_testfiles/invalid_mod.zip")
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code, "wrong response code.")
 	})
 }

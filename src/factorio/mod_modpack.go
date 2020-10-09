@@ -53,7 +53,8 @@ func (modPackMap *ModPackMap) reload() error {
 	var err error
 	newModPackMap := make(ModPackMap)
 	config := bootstrap.GetConfig()
-
+	abs, err := filepath.Abs(config.FactorioModPackDir)
+	println(abs)
 	err = filepath.Walk(config.FactorioModPackDir, func(path string, info os.FileInfo, err error) error {
 		if path == config.FactorioModPackDir || !info.IsDir() {
 			return nil

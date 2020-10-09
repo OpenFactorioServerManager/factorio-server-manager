@@ -18,11 +18,12 @@ type ModPortalStruct struct {
 		DownloadURL string `json:"download_url"`
 		FileName    string `json:"file_name"`
 		InfoJSON    struct {
-			FactorioVersion string `json:"factorio_version"`
+			FactorioVersion Version `json:"factorio_version"`
 		} `json:"info_json"`
-		ReleasedAt time.Time `json:"released_at"`
-		Sha1       string    `json:"sha1"`
-		Version    Version   `json:"version"`
+		ReleasedAt    time.Time `json:"released_at"`
+		Sha1          string    `json:"sha1"`
+		Version       Version   `json:"version"`
+		Compatibility bool
 	} `json:"releases"`
 	Summary string `json:"summary"`
 	Title   string `json:"title"`
@@ -54,27 +55,44 @@ func ModPortalList() (interface{}, error, int) {
 
 // get the details (mod-info, releases, etc.) from a specific mod from the modPortal
 func ModPortalModDetails(modId string) (ModPortalStruct, error, int) {
-	var jsonVal ModPortalStruct
+	var mod ModPortalStruct
 
 	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods/"+modId, nil)
 	if err != nil {
-		return jsonVal, err, 500
+		return mod, err, 500
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return jsonVal, err, 500
+		return mod, err, 500
 	}
 
 	text, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return jsonVal, err, 500
+		return mod, err, 500
 	}
 
-	json.Unmarshal(text, &jsonVal)
+	json.Unmarshal(text, &mod)
 
-	return jsonVal, nil, resp.StatusCode
+	server, err := GetFactorioServer()
+	if err != nil {
+		return mod, err, resp.StatusCode
+	}
+
+	installedBaseVersion := Version{}
+	_ = installedBaseVersion.UnmarshalText([]byte(server.BaseModVersion))
+	requiredVersion := NilVersion
+
+	for key, release := range mod.Releases {
+		requiredVersion = release.InfoJSON.FactorioVersion
+		areVersionIdentical := requiredVersion.Equals(installedBaseVersion)
+		isException := installedBaseVersion.Equals(Version{1, 0, 0, 0}) && requiredVersion.Equals(Version{0, 18, 0, 0})
+		release.Compatibility = areVersionIdentical || isException
+		mod.Releases[key] = release
+	}
+
+	return mod, nil, resp.StatusCode
 }
 
 //Log the user into factorio, so mods can be downloaded

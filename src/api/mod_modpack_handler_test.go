@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"github.com/mroote/factorio-server-manager/factorio"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -19,20 +20,22 @@ import (
 func SetupModPacks(t *testing.T, empty bool, emptyMods bool) {
 	var err error
 
+	config := bootstrap.GetConfig()
+
 	// check if dev directory exists and create it
-	if _, err = os.Stat("dev_packs"); os.IsNotExist(err) {
-		err = os.Mkdir("dev_packs", 0775)
+	if _, err = os.Stat(config.FactorioModPackDir); os.IsNotExist(err) {
+		err = os.Mkdir(config.FactorioModPackDir, 0775)
 	}
-	assert.NoError(t, err, `Error creating "dev_packs" directory`)
+	assert.NoError(t, err, `Error creating %s directory`, config.FactorioModPackDir)
 
 	if !empty {
 		// check if dev directory exists and create it
-		if _, err = os.Stat("dev_packs/test"); os.IsNotExist(err) {
-			err = os.Mkdir("dev_packs/test", 0775)
+		if _, err = os.Stat(config.FactorioModPackDir + "/test"); os.IsNotExist(err) {
+			err = os.Mkdir(config.FactorioModPackDir+"/test", 0775)
 		}
-		assert.NoError(t, err, `Error creating "dev_packs/test" directory`)
+		assert.NoError(t, err, `Error creating "%s/test" directory`, config.FactorioModPackDir)
 
-		modList, err := factorio.NewMods("dev_packs/test")
+		modList, err := factorio.NewMods(config.FactorioModPackDir + "/test")
 		assert.NoError(t, err, "error creating mods")
 
 		if !emptyMods {
@@ -46,8 +49,9 @@ func SetupModPacks(t *testing.T, empty bool, emptyMods bool) {
 }
 
 func CleanupModPacks(t *testing.T) {
-	err := os.RemoveAll("dev_packs")
-	assert.NoError(t, err, `Error removing directory "dev_packs"`)
+	config := bootstrap.GetConfig()
+	err := os.RemoveAll(config.FactorioModPackDir)
+	assert.NoError(t, err, `Error removing directory %s`, config.FactorioModPackDir)
 }
 
 func UnknownModpackTest(t *testing.T, method string, baseRoute string, route string, handlerFunc http.HandlerFunc) {
@@ -173,6 +177,7 @@ func TestModPackLoadHandler(t *testing.T) {
 	handlerFunc := ModPackLoadHandler
 
 	t.Run("load mods", func(t *testing.T) {
+		config := bootstrap.GetConfig()
 		SetupModPacks(t, false, false)
 		defer CleanupModPacks(t)
 		SetupMods(t, true)
@@ -186,7 +191,7 @@ func TestModPackLoadHandler(t *testing.T) {
 		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
-		modList, err := factorio.NewMods("dev")
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		assert.NoError(t, err, "Error creating mods object")
 
 		packModsJson, err := json.Marshal(packMap["test"].Mods)
@@ -204,7 +209,7 @@ func TestModPackLoadHandler(t *testing.T) {
 		SetupMods(t, false)
 		defer CleanupMods(t)
 
-		expected := `{"mods":null}`
+		expected := `{"mods":[]}`
 
 		CallRoute(t, method, baseRoute, route, nil, handlerFunc, http.StatusOK, expected)
 
@@ -212,7 +217,9 @@ func TestModPackLoadHandler(t *testing.T) {
 		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
-		modList, err := factorio.NewMods("dev")
+		config := bootstrap.GetConfig()
+
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		assert.NoError(t, err, "Error creating mods object")
 
 		packModsJson, err := json.Marshal(packMap["test"].Mods)
@@ -517,7 +524,7 @@ func TestModPackModUploadHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		recorder := ModPackModUploadRequest(t, true, "factorio_testfiles/belt-balancer_2.1.3.zip")
+		recorder := ModPackModUploadRequest(t, true, "../factorio_testfiles/belt-balancer_2.1.3.zip")
 
 		// status has to be 200
 		if recorder.Code != http.StatusOK {
@@ -564,7 +571,7 @@ func TestModPackModUploadHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		recorder := ModPackModUploadRequest(t, false, "factorio_testfiles/file_usage.txt")
+		recorder := ModPackModUploadRequest(t, false, "../factorio_testfiles/file_usage.txt")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code, "wrong response code.")
 	})
 
@@ -572,7 +579,7 @@ func TestModPackModUploadHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		recorder := ModPackModUploadRequest(t, true, "factorio_testfiles/invalid_mod.zip")
+		recorder := ModPackModUploadRequest(t, true, "../factorio_testfiles/invalid_mod.zip")
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code, "wrong response code.")
 	})
 }
