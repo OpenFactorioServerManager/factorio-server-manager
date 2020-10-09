@@ -11,11 +11,17 @@ os:
 
 env:
   - GO111MODULE=on
+  - mod_dir=dev
+  - mod_pack_dir=dev_pack
+  - dir=../
+  - conf=../conf.json
 
 script:
   - cd src/
-  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then go test -v -test.short; fi'
-  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then go test -v; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then go test ./api -v -test.short; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then go test ./factorio -v -test.short; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then go test ./api -v; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then go test ./factorio -v; fi'
 
 jobs:
   include:
