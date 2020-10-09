@@ -10,11 +10,7 @@ os:
   - windows
 
 env:
-  - GO111MODULE=on
-  - mod_dir=dev
-  - mod_pack_dir=dev_pack
-  - dir=../
-  - conf=../conf.json
+  - GO111MODULE=on mod_dir=dev mod_pack_dir=dev_pack dir=../ conf=../conf.json
 
 script:
   - cd src/
