@@ -12,7 +12,7 @@ func connectRC() error {
 	var err error
 	config := bootstrap.GetConfig()
 	rconAddr := config.ServerIP + ":" + strconv.Itoa(config.FactorioRconPort)
-	server, err := GetFactorioServer()
+	server := GetFactorioServer()
 	server.Rcon, err = rcon.Dial(rconAddr, config.FactorioRconPass)
 	if err != nil {
 		log.Printf("Cannot create rcon session: %s", err)

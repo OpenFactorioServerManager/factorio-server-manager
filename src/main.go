@@ -17,7 +17,7 @@ func main() {
 	factorio.ModStartUp()
 
 	// Initialize Factorio Server struct
-	_, err := factorio.GetFactorioServer()
+	err := factorio.NewFactorioServer()
 	if err != nil {
 		log.Printf("Error occurred during Server initializaion: %v\n", err)
 		return

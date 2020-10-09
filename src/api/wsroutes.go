@@ -42,7 +42,7 @@ func LogSubscribe(client *Client, data interface{}) {
 }
 
 func CommandSend(client *Client, data interface{}) {
-	var server, _ = factorio.GetFactorioServer()
+	server := factorio.GetFactorioServer()
 	if server.Running {
 		go func() {
 			log.Printf("Received command: %v", data)
@@ -66,7 +66,7 @@ func CommandSend(client *Client, data interface{}) {
 }
 
 func ServerStatusSubscribe(client *Client, data interface{}) {
-	var server, _ = factorio.GetFactorioServer()
+	var server = factorio.GetFactorioServer()
 	log.Printf("Subcribed to Server Status")
 	go func() {
 		isRunning := server.Running

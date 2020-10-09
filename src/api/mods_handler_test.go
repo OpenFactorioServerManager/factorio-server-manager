@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/mroote/factorio-server-manager/bootstrap"
 	"github.com/mroote/factorio-server-manager/factorio"
 	"github.com/stretchr/testify/assert"
@@ -21,6 +22,8 @@ import (
 func TestMain(m *testing.M) {
 	var err error
 
+	godotenv.Load("../.env")
+
 	// basic setup stuff
 	bootstrap.NewConfig([]string{
 		"--dir", os.Getenv("dir"),
@@ -28,9 +31,11 @@ func TestMain(m *testing.M) {
 		"--mod-pack-dir", os.Getenv("mod_pack_dir"),
 		"--mod-dir", os.Getenv("mod_dir"),
 	})
-	FactorioServ := new(factorio.Server)
-	FactorioServ.Version = factorio.Version{1, 0, 0, 0}
-	FactorioServ.BaseModVersion = "1.0.0"
+
+	factorio.SetFactorioServer(factorio.Server{
+		Version:        factorio.Version{0, 18, 30, 0},
+		BaseModVersion: "0.18.30",
+	})
 
 	// check login status
 	var cred factorio.Credentials

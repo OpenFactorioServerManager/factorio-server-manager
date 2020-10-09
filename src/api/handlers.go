@@ -249,7 +249,7 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 func StartServer(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
-	var server, _ = factorio.GetFactorioServer()
+	var server = factorio.GetFactorioServer()
 	defer func() {
 		WriteResponse(w, resp)
 	}()
@@ -326,7 +326,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	var server, _ = factorio.GetFactorioServer()
+	var server = factorio.GetFactorioServer()
 	if server.Running {
 		err := server.Stop()
 		if err != nil {
@@ -353,7 +353,7 @@ func KillServer(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	var server, _ = factorio.GetFactorioServer()
+	var server = factorio.GetFactorioServer()
 	if server.Running {
 		err := server.Kill()
 		if err != nil {
@@ -378,7 +378,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	var server, _ = factorio.GetFactorioServer()
+	var server = factorio.GetFactorioServer()
 	if server.Running {
 		resp["status"] = "running"
 		resp["port"] = strconv.Itoa(server.Port)
@@ -397,7 +397,7 @@ func FactorioVersion(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	var server, _ = factorio.GetFactorioServer()
+	var server = factorio.GetFactorioServer()
 	resp["version"] = server.Version.String()
 	resp["base_mod_version"] = server.BaseModVersion
 }
@@ -577,7 +577,7 @@ func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	var server, _ = factorio.GetFactorioServer()
+	var server = factorio.GetFactorioServer()
 	resp = server.Settings
 
 	log.Printf("Sent server settings response")
@@ -597,7 +597,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Received settings JSON: %s", body)
-	var server, _ = factorio.GetFactorioServer()
+	var server = factorio.GetFactorioServer()
 	err = json.Unmarshal(body, &server.Settings)
 	if err != nil {
 		resp = fmt.Sprintf("Error unmarhaling server settings JSON: %s", err)

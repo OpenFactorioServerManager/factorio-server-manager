@@ -33,22 +33,25 @@ type ModPortalStruct struct {
 func ModPortalList() (interface{}, error, int) {
 	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods?page_size=max", nil)
 	if err != nil {
-		return "error", err, 500
+		return "error", err, http.StatusInternalServerError
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "error", err, 500
+		return "error", err, http.StatusInternalServerError
 	}
 
 	text, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return "error", err, 500
+		return "error", err, http.StatusInternalServerError
 	}
 
 	var jsonVal interface{}
-	json.Unmarshal(text, &jsonVal)
+	err = json.Unmarshal(text, &jsonVal)
+	if err != nil {
+		return "error", err, http.StatusInternalServerError
+	}
 
 	return jsonVal, nil, resp.StatusCode
 }
@@ -59,26 +62,26 @@ func ModPortalModDetails(modId string) (ModPortalStruct, error, int) {
 
 	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods/"+modId, nil)
 	if err != nil {
-		return mod, err, 500
+		return mod, err, http.StatusInternalServerError
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return mod, err, 500
+		return mod, err, http.StatusInternalServerError
 	}
 
 	text, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return mod, err, 500
+		return mod, err, http.StatusInternalServerError
 	}
 
-	json.Unmarshal(text, &mod)
-
-	server, err := GetFactorioServer()
+	err = json.Unmarshal(text, &mod)
 	if err != nil {
-		return mod, err, resp.StatusCode
+		return mod, err, http.StatusInternalServerError
 	}
+
+	server := GetFactorioServer()
 
 	installedBaseVersion := Version{}
 	_ = installedBaseVersion.UnmarshalText([]byte(server.BaseModVersion))

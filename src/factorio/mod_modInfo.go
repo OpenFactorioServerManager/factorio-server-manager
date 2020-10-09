@@ -83,6 +83,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 					continue
 				}
 
+				// skip optional and incompatible dependencies
 				parts := strings.Split(dep, " ")
 				if len(parts) > 3 {
 					log.Printf("skipping dependency '%s' in '%s': invalid format\n", dep, modInfo.Name)
@@ -107,7 +108,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 				break
 			}
 
-			server, _ := GetFactorioServer()
+			server := GetFactorioServer()
 
 			if !base.Equals(NilVersion) {
 				modInfo.Compatibility = server.Version.Compare(base, op)
