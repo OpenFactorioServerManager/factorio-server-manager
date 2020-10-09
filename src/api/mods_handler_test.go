@@ -22,13 +22,12 @@ func TestMain(m *testing.M) {
 	var err error
 
 	// basic setup stuff
-	config := bootstrap.NewConfig([]string{
+	bootstrap.NewConfig([]string{
 		"--dir", os.Getenv("dir"),
 		"--conf", os.Getenv("conf"),
-		"--mod-pack-dir", "dev_packs",
+		"--mod-pack-dir", os.Getenv("mod_pack_dir"),
+		"--mod-dir", os.Getenv("mod_dir"),
 	})
-	config.FactorioModsDir = "dev"
-	//config.FactorioModPackDir = "dev_packs"
 	FactorioServ := new(factorio.Server)
 	FactorioServ.Version = factorio.Version{1, 0, 0, 0}
 	FactorioServ.BaseModVersion = "1.0.0"
