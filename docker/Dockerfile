@@ -1,5 +1,5 @@
 # Glibc is required for Factorio Server binaries to run
-FROM frolvlad/alpine-glibc:alpine-3.12
+FROM frolvlad/alpine-glibc
 
 ENV FACTORIO_VERSION=latest \
     MANAGER_VERSION=0.8.2 \
