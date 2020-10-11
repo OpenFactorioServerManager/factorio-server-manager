@@ -23,7 +23,7 @@ type ModPortalStruct struct {
 		ReleasedAt    time.Time `json:"released_at"`
 		Sha1          string    `json:"sha1"`
 		Version       Version   `json:"version"`
-		Compatibility bool
+		Compatibility bool      `json:"compatibility"`
 	} `json:"releases"`
 	Summary string `json:"summary"`
 	Title   string `json:"title"`
