@@ -47,7 +47,7 @@ const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
 
     useEffect(() => {
         (async () => {
-            const {data} = await modsResource.details(mod.name)
+            const {data} = await modsResource.portal.info(mod.name)
             if (data) {
                 //get newest COMPATIBLE release
                 let newestRelease;

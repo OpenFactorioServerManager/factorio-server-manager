@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import modsResource from "../../../../../../api/resources/mods";
 import Button from "../../../../../components/Button";
 import Label from "../../../../../components/Label";
@@ -7,7 +7,6 @@ import Input from "../../../../../components/Input";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faExternalLinkAlt} from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
 import {faSpinner} from "@fortawesome/free-solid-svg-icons";
-import Modal from "../../../../../components/Modal";
 import SelectVersionForm from "./SelectVersionForm";
 
 const LinkModPortal = () => {
@@ -15,7 +14,7 @@ const LinkModPortal = () => {
         Portal <FontAwesomeIcon icon={faExternalLinkAlt}/></a>
 }
 
-const AddModForm = ({setIsFactorioAuthenticated, fuse}) => {
+const AddModForm = ({setIsFactorioAuthenticated, fuse, refetchInstalledMods}) => {
 
     const {register, watch, setValue, handleSubmit} = useForm();
     const [suggestedMods, setSuggestedMods] = useState([]);
@@ -63,9 +62,14 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse}) => {
         setIsModalOpen(true)
     }
 
+    const install = async release => {
+        await modsResource.portal.install(release.download_url, release.file_name, selectedMod.item.title)
+        refetchInstalledMods()
+    }
+
     return (
         <form onSubmit={handleSubmit(openSelectVersionModal)}>
-            <SelectVersionForm isOpen={isModalOpen} releases={releases} close={() => setIsModalOpen(false)}/>
+            <SelectVersionForm isOpen={isModalOpen} releases={releases} install={install} close={() => setIsModalOpen(false)}/>
             <div className="mb-4 relative">
                 <Label text="Mod" htmlFor="mod"/>
                 { typeof fuse !== "undefined"

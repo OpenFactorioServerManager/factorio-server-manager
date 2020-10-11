@@ -6,7 +6,12 @@ import {faCloudDownloadAlt} from "@fortawesome/free-solid-svg-icons/faCloudDownl
 import {faCheck} from "@fortawesome/free-solid-svg-icons/faCheck";
 import {faTimes} from "@fortawesome/free-solid-svg-icons/faTimes";
 
-const SelectVersionForm = ({releases, isOpen, close}) => {
+const SelectVersionForm = ({releases, isOpen, close, install}) => {
+
+    const download = release => {
+        install(release)
+        close()
+    }
 
     return (
         <Modal
@@ -27,11 +32,11 @@ const SelectVersionForm = ({releases, isOpen, close}) => {
                             <tr className="py-2 md:py-1" key={i}>
                                 <td className="pr-4">{release.version}</td>
                                 <td className="pr-4">{release.compatibility
-                                    ? <FontAwesomeIcon  className={"text-green"} icon={faCheck}/>
-                                    : <FontAwesomeIcon  className={"text-red"} icon={faTimes}/>
+                                    ? <FontAwesomeIcon  className="text-green" icon={faCheck}/>
+                                    : <FontAwesomeIcon  className="text-red" icon={faTimes}/>
                                 }</td>
                                 <td>
-                                    { release.compatibility && <FontAwesomeIcon icon={faCloudDownloadAlt}/> }
+                                    { release.compatibility && <FontAwesomeIcon className="cursor-pointer" onClick={() => download(release)} icon={faCloudDownloadAlt}/> }
                                 </td>
                             </tr>
                         )}

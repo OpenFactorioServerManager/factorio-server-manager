@@ -54,6 +54,14 @@ const mods = {
             const response = await client.post('/api/mods/portal/install/multiple', mods);
             return response.data
         },
+        install: async (downloadUrl, fileName, modName) => {
+            const response = await client.post('/api/mods/portal/install', {
+                downloadUrl,
+                fileName,
+                modName
+            });
+            return response.data
+        },
         list: async () => {
             const response = await client.get('/api/mods/portal/list');
             return response.data
