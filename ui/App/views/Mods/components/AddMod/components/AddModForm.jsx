@@ -7,6 +7,8 @@ import Input from "../../../../../components/Input";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faExternalLinkAlt} from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
 import {faSpinner} from "@fortawesome/free-solid-svg-icons";
+import Modal from "../../../../../components/Modal";
+import SelectVersionForm from "./SelectVersionForm";
 
 const LinkModPortal = () => {
     return <a href="https://mods.factorio.com" target="_blank" className="px-2 text-blue hover:text-blue-light">Mod
@@ -15,9 +17,11 @@ const LinkModPortal = () => {
 
 const AddModForm = ({setIsFactorioAuthenticated, fuse}) => {
 
-    const {register, watch, setValue} = useForm();
+    const {register, watch, setValue, handleSubmit} = useForm();
     const [suggestedMods, setSuggestedMods] = useState([]);
-    const [selectedMod, setSelectedMod] = useState(null)
+    const [selectedMod, setSelectedMod] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [releases, setReleases] = useState([]);
 
     const [autocomplete, setAutocomplete] = useState(NaN);
     const mod = watch('mod');
@@ -47,18 +51,21 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse}) => {
             updateSuggestedMods();
         } else if (selectedMod.item.title !== mod) {
             setSelectedMod(null);
+            setReleases([]);
             updateSuggestedMods();
         }
     }, [mod]);
 
-    const addMod = data => {
-        // todo install selected mod
-        console.log(data);
-        // todo update list of installed mods
+    const openSelectVersionModal = async data => {
+        const mod = await modsResource.portal.info(selectedMod.item.name);
+        setReleases(mod.releases || [])
+        console.log(releases)
+        setIsModalOpen(true)
     }
 
     return (
-        <form onSubmit={addMod}>
+        <form onSubmit={handleSubmit(openSelectVersionModal)}>
+            <SelectVersionForm isOpen={isModalOpen} releases={releases} close={() => setIsModalOpen(false)}/>
             <div className="mb-4 relative">
                 <Label text="Mod" htmlFor="mod"/>
                 { typeof fuse !== "undefined"
@@ -73,7 +80,7 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse}) => {
                     </ul>
                 }
             </div>
-            <Button isDisabled={selectedMod === null} isSubmit={true} className="mr-2">Install</Button>
+            <Button isDisabled={selectedMod === null} isSubmit={true} onClick={() => setIsModalOpen(true)} className="mr-2">Install</Button>
             <Button onClick={logout} type="danger" className="mr-2">Logout</Button>
             <LinkModPortal/>
         </form>

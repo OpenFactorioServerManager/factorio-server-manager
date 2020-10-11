@@ -57,6 +57,10 @@ const mods = {
         list: async () => {
             const response = await client.get('/api/mods/portal/list');
             return response.data
+        },
+        info: async mod => {
+            const response = await client.get(`/api/mods/portal/info/${mod}`);
+            return response.data;
         }
     }
 }
