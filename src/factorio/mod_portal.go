@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -40,11 +39,15 @@ func ModPortalList() (interface{}, error, int) {
 	if err != nil {
 		return "error", err, http.StatusInternalServerError
 	}
+	defer resp.Body.Close()
 
 	text, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
 	if err != nil {
 		return "error", err, http.StatusInternalServerError
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(string(text)), resp.StatusCode
 	}
 
 	var jsonVal interface{}
@@ -69,9 +72,9 @@ func ModPortalModDetails(modId string) (ModPortalStruct, error, int) {
 	if err != nil {
 		return mod, err, http.StatusInternalServerError
 	}
+	defer resp.Body.Close()
 
 	text, err := ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
 	if err != nil {
 		return mod, err, http.StatusInternalServerError
 	}
@@ -79,6 +82,10 @@ func ModPortalModDetails(modId string) (ModPortalStruct, error, int) {
 	err = json.Unmarshal(text, &mod)
 	if err != nil {
 		return mod, err, http.StatusInternalServerError
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return ModPortalStruct{}, errors.New(string(text)), resp.StatusCode
 	}
 
 	server := GetFactorioServer()
@@ -99,37 +106,33 @@ func ModPortalModDetails(modId string) (ModPortalStruct, error, int) {
 }
 
 //Log the user into factorio, so mods can be downloaded
-func FactorioLogin(username string, password string) (string, error, int) {
+func FactorioLogin(username string, password string) (error, int) {
 	var err error
 
 	resp, err := http.PostForm("https://auth.factorio.com/api-login",
 		url.Values{"require_game_ownership": {"true"}, "username": {username}, "password": {password}})
 
 	if err != nil {
-		log.Printf("error on logging in: %s", err)
-		return "", err, resp.StatusCode
+		return err, http.StatusInternalServerError
 	}
 
 	defer resp.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("error on reading resp.Body: %s", err)
-		return "", err, http.StatusInternalServerError
+		return err, http.StatusInternalServerError
 	}
 
 	bodyString := string(bodyBytes)
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println("error Statuscode not 200")
-		return bodyString, errors.New(bodyString), resp.StatusCode
+		return errors.New(bodyString), resp.StatusCode
 	}
 
 	var successResponse []string
 	err = json.Unmarshal(bodyBytes, &successResponse)
 	if err != nil {
-		log.Printf("error on unmarshal body: %s", err)
-		return err.Error(), err, http.StatusInternalServerError
+		return err, http.StatusInternalServerError
 	}
 
 	credentials := Credentials{
@@ -139,9 +142,8 @@ func FactorioLogin(username string, password string) (string, error, int) {
 
 	err = credentials.Save()
 	if err != nil {
-		log.Printf("error saving the credentials. %s", err)
-		return err.Error(), err, http.StatusInternalServerError
+		return err, http.StatusInternalServerError
 	}
 
-	return "", nil, http.StatusOK
+	return nil, http.StatusOK
 }

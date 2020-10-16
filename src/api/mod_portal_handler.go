@@ -20,15 +20,12 @@ func ModPortalListModsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var statusCode int
 	resp, err, statusCode = factorio.ModPortalList()
-
+	w.WriteHeader(statusCode)
 	if err != nil {
-		resp = fmt.Sprintf("Error in listing mods from mod portal: %s", err)
+		resp = fmt.Sprintf("Error in listing mods from mod portal: %s\nresponse: %+v", err, resp)
 		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	w.WriteHeader(statusCode)
 }
 
 // ModPortalModInfoHandler returns JSON response with the mod details
@@ -114,19 +111,13 @@ func ModPortalLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginStatus, err, statusCode := factorio.FactorioLogin(data.Username, data.Password)
+	err, statusCode := factorio.FactorioLogin(data.Username, data.Password)
+	w.WriteHeader(statusCode)
 	if err != nil {
 		resp = fmt.Sprintf("Error trying to login into Factorio: %s", err)
 		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	if loginStatus == "" {
-		resp = true
-	}
-
-	w.WriteHeader(statusCode)
 }
 
 func ModPortalLoginStatusHandler(w http.ResponseWriter, r *http.Request) {
