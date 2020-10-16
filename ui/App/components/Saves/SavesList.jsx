@@ -19,7 +19,7 @@ class SavesList extends React.Component {
         ReactSwalDanger.fire({
             title: "Are you sure?",
             html: <p>Save: {saveName} will be deleted</p>,
-            type: "question",
+            icon: "question",
             showCancelButton: true,
             confirmButtonText: "Yes, delete it!",
             showLoaderOnConfirm: true,
@@ -46,7 +46,7 @@ class SavesList extends React.Component {
                 ReactSwalNormal.fire({
                     title: "Deleted!",
                     text: result.value,
-                    type: "success"
+                    icon: "success"
                 });
             }
             self.updateSavesList();
@@ -54,7 +54,7 @@ class SavesList extends React.Component {
             ReactSwalNormal.fire({
                 title: "An error occurred!",
                 text: result,
-                type: "error"
+                icon: "error"
             });
         });
     }

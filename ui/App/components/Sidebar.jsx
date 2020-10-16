@@ -10,39 +10,25 @@ class Sidebar extends React.Component {
 
     render() {
         if(this.props.serverRunning === "running") {
-            var serverStatus = <Link to="/" className="d-block text-success"><FontAwesomeIcon icon="circle"/>Server Online</Link>
+            var serverStatus = <span className="status text-success"><FontAwesomeIcon icon="circle"/></span>
         } else {
-            var serverStatus = <Link to="/" className="d-block text-danger"><FontAwesomeIcon icon="circle"/>Server Offline</Link>
+            var serverStatus = <span className="status text-danger"><FontAwesomeIcon icon="circle"/></span>
         }
 
         return (
             <aside className="main-sidebar sidebar-dark-primary elevation-4">
-                <Link className="brand-link" to="/">
-                    <span className="logo-lg"><b>Factorio</b>SM</span>
+                <Link className="brand-link logo-switch" to="/">
+                    <span className="logo-xl">
+                        <img src="./images/factorio.jpg" className="img-circle" alt="User Image"/>&nbsp;
+                        <div className="info">
+                            <b>Factorio</b>SM&nbsp;
+                            {serverStatus}
+                        </div>
+                    </span>
+                    <span className="logo-xs">FSM {serverStatus}</span>
                 </Link>
 
                 <div className="sidebar">
-                    <div className="user-panel">
-                        <div className="image">
-                            <img src="./images/factorio.jpg" className="img-circle" alt="User Image"/>
-                        </div>
-                        <div className="info">
-                            <div className="text-white">Factorio Server Manager</div>
-                            {serverStatus}
-                        </div>
-                    </div>
-
-                    {/*<form action="#" method="get" className="sidebar-form">
-                        <div className="input-group">
-                            <input type="text" name="q" className="form-control" placeholder="Search..."/>
-                            <span className="input-group-btn">
-                            <button type="submit" name="search" id="search-btn" className="btn btn-flat"><i
-                                className="fa fa-search"></i>
-                            </button>
-                        </span>
-                        </div>
-                    </form>*/}
-
                     <nav className="mt-2">
                         <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                             <li className="nav-header">MENU</li>

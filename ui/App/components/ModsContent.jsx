@@ -68,7 +68,7 @@ class ModsContent extends React.Component {
             success: (data) => {
                 ReactSwalNormal.fire({
                     title: "Logged in Successfully",
-                    type: "success"
+                    icon: "success"
                 });
 
                 this.setState({
@@ -78,7 +78,7 @@ class ModsContent extends React.Component {
             error: (jqXHR) => {
                 ReactSwalNormal.fire({
                     title: jqXHR.responseJSON.data,
-                    type: "error"
+                    icon: "error"
                 });
             }
         });
@@ -119,7 +119,7 @@ class ModsContent extends React.Component {
                 ReactSwalNormal.fire({
                     title: "error logging out of factorio",
                     text: jqXHR.responseJSON.data,
-                    type: "error"
+                    icon: "error"
                 });
             }
         })
@@ -131,7 +131,8 @@ class ModsContent extends React.Component {
         let filename = $checkedInput.data("filename");
         let modName = $checkedInput.data("modid");
 
-        $.ajax({
+        // TODO remove jquery Ajax, use react one, return Promise from fetch
+        return new Promise((resolve, reject) => $.ajax({
             method: "POST",
             url: "/api/mods/install",
             dataType: "JSON",
@@ -141,23 +142,28 @@ class ModsContent extends React.Component {
                 modName: modName
             },
             success: (data) => {
+                console.log("test success");
+                resolve();
+
                 this.setState({
                     installedMods: data.data.mods
                 });
 
                 ReactSwalNormal.fire({
                     title: "Mod installed",
-                    type: "success"
+                    icon: "success"
                 });
             },
             error: (jqXHR, status, err) => {
+                console.log("test error");
+                reject();
                 ReactSwalNormal.fire({
                     title: "An error occurred",
                     text: err.toString(),
-                    type: "error"
+                    icon: "error"
                 });
             }
-        });
+        }));
     }
 
     //TODO remove modIdInput, when the factorio-mod-portal-api is fixed
@@ -253,7 +259,7 @@ class ModsContent extends React.Component {
                 ReactSwalDanger.fire({
                     title: "Choose version",
                     html: table,
-                    type: "question",
+                    icon: "question",
                     showCancelButton: true,
                     confirmButtonText: "Download it!",
                     showLoaderOnConfirm: true,
@@ -274,7 +280,7 @@ class ModsContent extends React.Component {
             ReactSwalNormal.fire({
                 title: "Toggle mods failed",
                 text: "Can't toggle the mod, when an update is still in progress",
-                type: "error"
+                icon: "error"
             });
             return false;
         }
@@ -314,7 +320,7 @@ class ModsContent extends React.Component {
                 ReactSwalNormal.fire({
                     title: "Toggle Mod went wrong",
                     text: err.toString(),
-                    type: "error"
+                    icon: "error"
                 });
             }
         });
@@ -327,7 +333,7 @@ class ModsContent extends React.Component {
             ReactSwalNormal.fire({
                 title: "Delete failed!",
                 text: "Can't delete the mod, when an update is still in progress",
-                type: "error"
+                icon: "error"
             });
             return false;
         }
@@ -339,12 +345,13 @@ class ModsContent extends React.Component {
         ReactSwalDanger.fire({
             title: "Delete Mod?",
             text: "This will delete the mod and can break the save file",
-            type: "question",
+            icon: "question",
             showCancelButton: true,
             confirmButtonText: "Delete it!",
             showLoaderOnConfirm: true,
             preConfirm: () => {
-                $.ajax({
+                // TODO remove jquery Ajax, use react one, return Promise from fetch
+                return new Promise((resolve, reject) => $.ajax({
                     url: "/api/mods/delete",
                     method: "POST",
                     data: {
@@ -354,9 +361,10 @@ class ModsContent extends React.Component {
                     success: (data) => {
                         if (data.success) {
                             this.mutex.lock(() => {
+                                resolve();
                                 ReactSwalNormal.fire({
                                     title: <p>Delete of mod {modName} successful</p>,
-                                    type: "success"
+                                    icon: "success"
                                 });
                                 let installedMods = this.state.installedMods;
 
@@ -375,14 +383,15 @@ class ModsContent extends React.Component {
                         }
                     },
                     error: (jqXHR, status, err) => {
+                        reject();
                         console.log('api/mods/delete', status, err.toString());
                         ReactSwalNormal.fire({
                             title: "Delete Mod went wrong",
                             text: err.toString(),
-                            type: "error"
+                            icon: "error"
                         });
                     }
-                });
+                }));
             }
         });
     }
@@ -394,33 +403,36 @@ class ModsContent extends React.Component {
         ReactSwalDanger.fire({
             title: "Delete Mod?",
             html: <p>This will delete ALL mods and can't be redone!<br/> Are you sure?</p>,
-            type: "question",
+            icon: "question",
             showCancelButton: true,
             confirmButtonText: "Yes, Delete ALL!",
             showLoaderOnConfirm: true,
             preConfirm: () => {
-                $.ajax({
+                // TODO remove jquery Ajax, use react one, return Promise from fetch
+                return new Promise((resolve, reject) => $.ajax({
                     url: "/api/mods/delete/all",
                     method: "POST",
                     dataType: "JSON",
                     success: (data) => {
+                        resolve();
                         ReactSwalNormal.fire({
                             title: "ALL mods deleted successful",
-                            type: "success"
+                            icon: "success"
                         })
                         this.setState({
                             installedMods: data.data
                         });
                     },
                     error: (jqXHR, status, err) => {
+                        reject();
                         console.log('api/mods/delete/all', status, err.toString());
                         ReactSwalNormal.fire({
                             title: "Delete all mods went wrong",
                             html: <p>{err.toString()}<br/>{jqXHR.responseJSON.data}</p>,
-                            type: "error",
+                            icon: "error",
                         });
                     }
-                })
+                }));
             }
         });
     }
@@ -432,7 +444,7 @@ class ModsContent extends React.Component {
             ReactSwalNormal.fire({
                 title: "Update failed",
                 text: "Please login into Factorio to update mod",
-                type: "error",
+                icon: "error",
             });
 
             let $addModBox = $('#add-mod-box');
@@ -466,7 +478,7 @@ class ModsContent extends React.Component {
                         this.mutex.lock(() => {
                             ReactSwalNormal.fire({
                                 title: <p>Update of mod {modName} successful</p>,
-                                type: "success"
+                                icon: "success"
                             })
                             let installedMods = this.state.installedMods;
 
@@ -491,7 +503,7 @@ class ModsContent extends React.Component {
                     ReactSwalNormal.fire({
                         title: "Update Mod went wrong",
                         text: err.toString(),
-                        type: "error"
+                        icon: "error"
                     });
                 }
             });

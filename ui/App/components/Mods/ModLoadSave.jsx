@@ -47,7 +47,7 @@ class ModLoadSave extends React.Component {
                 if(checkboxes.length == 0) {
                     ReactSwalNormal.fire({
                         title: "No mods in this save!",
-                        type: "error"
+                        icon: "error"
                     });
                     return;
                 }
@@ -78,7 +78,7 @@ class ModLoadSave extends React.Component {
                 ReactSwalNormal.fire({
                     title: "Mods to install",
                     html: table,
-                    type: 'question',
+                    icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: "Download Mods!",
                     showLoaderOnConfirm: true,
@@ -89,22 +89,24 @@ class ModLoadSave extends React.Component {
                 ReactSwalNormal.fire({
                     title: jqXHR.responseJSON.data,
                     html: true,
-                    type: "error",
+                    icon: "error",
                 });
             }
         });
     }
 
     loadModsSwalHandler() {
-        $.ajax({
+        // TODO remove jquery Ajax, use react one, return Promise from fetch
+        return new Promise((resolve, reject) => $.ajax({
             url: "/api/mods/install/multiple",
             method: "POST",
             dataType: "JSON",
             data: $("#swalForm").serialize(),
             success: (data) => {
+                resolve();
                 ReactSwalNormal.fire({
                     title: "All Mods installed successfully!",
-                    type: "success"
+                    icon: "success"
                 });
 
                 this.props.modContentClass.setState({
@@ -112,14 +114,15 @@ class ModLoadSave extends React.Component {
                 });
             },
             error: (jqXHR) => {
+                reject();
                 let json_data = JSON.parse(jqXHR.responseJSON.data);
 
                 ReactSwalNormal.fire({
                     title: json_data.detail,
-                    type: "error",
+                    icon: "error",
                 });
             }
-        })
+        }));
     }
 
     render() {
@@ -134,7 +137,7 @@ class ModLoadSave extends React.Component {
             }
         });
 
-        let classes = "box-body" + " " + this.props.className;
+        let classes = "card-body" + " " + this.props.className;
         let ids = this.props.id;
 
         return (

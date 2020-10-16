@@ -44,13 +44,13 @@ class AddUser extends React.Component {
                 if (resp.success === true) {
                     ReactSwalNormal.fire({
                         title: <p>User: {user.username} added successfully</p>,
-                        type: "success"
+                        icon: "success"
                     });
                     this.props.listUsers();
                 } else {
                     ReactSwalNormal.fire({
                         title: <p>Error adding user: {resp.data}</p>,
-                        type: "error"
+                        icon: "error"
                     })
                 }
             }
