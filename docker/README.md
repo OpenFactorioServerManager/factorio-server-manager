@@ -82,6 +82,9 @@ After container starts, latest Factorio version will be downloaded and installed
 
 Authentication is supported in the application but it is recommended to ensure access to the Factorio manager UI is accessible via VPN or internal network.
 
+## Development
+For development purposes it also has the ability to create the docker image from local sourcecode. This is done by running `build.sh` in the `docker` directory. This will delete all old executables and the node_modules directory (runs `make build`). The created docker image will have the tag `factorio-server-manager:dev`.
+
 ## For everyone who actually read this thing to the end
 
 And now go and build some nice factories!

@@ -47,6 +47,6 @@ clean:
 	@-rm app/style.css.map
 	@-rm -r app/fonts/vendor/
 	@-rm -r app/images/vendor/
-	@-rm -r node_modules/
+	@-rm -rf node_modules/
 	@-rm -r pkg/
 	@-rm -r factorio-server-manager
