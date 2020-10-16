@@ -18,31 +18,24 @@ const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
     const [icon, setIcon] = useState(faArrowCircleUp)
 
     const toggleMod = async modName => {
-        const res = await modsResource.toggle(modName);
-        if (res) {
-            refreshInstalledMods();
-        }
+        modsResource
+            .toggle(modName)
+            .then(refreshInstalledMods)
     }
 
     const deleteMod = async modName => {
-        const res = await modsResource.delete(modName);
-        if (res.success) {
-            refreshInstalledMods();
-        }
+        modsResource
+            .delete(modName)
+            .then(refreshInstalledMods)
     }
 
     const updateMod = async (modName, download_url, file_name) => {
         setIcon(faSpinner);
-
-        console.log(modName, download_url, file_name)
-        const res = await modsResource.update(modName, download_url, file_name);
-
-
-        if (res.success) {
-            await refreshInstalledMods();
-        }
-
-        setIcon(faArrowCircleUp)
+        modsResource.update(modName, download_url, file_name)
+            .then(async () => {
+                await refreshInstalledMods();
+            })
+            .finally(() => setIcon(faArrowCircleUp))
     }
 
     useEffect(() => {
@@ -52,7 +45,10 @@ const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
                 //get newest COMPATIBLE release
                 let newestRelease;
                 data.releases.forEach(release => {
-                    if (SemVer.satisfies(factorioVersion, `${release.info_json.factorio_version}.x`)) {
+                    if (
+                        SemVer.satisfies(factorioVersion, `${release.info_json.factorio_version}.x`) ||
+                        (SemVer.satisfies(factorioVersion, "1.0.0.0") && SemVer.satisfies(`${release.info_json.factorio_version}.x`, "0.18.x"))
+                    ) {
                         if (!newestRelease) {
                             newestRelease = release;
                         } else if (SemVer.gt(release.version, newestRelease.version)) {

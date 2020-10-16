@@ -5,20 +5,13 @@ const mods = {
         const response = await client.get('/api/mods/list');
         return response.data;
     },
-    toggle: async modName => {
-        const response = await client.post('/api/mods/toggle', JSON.stringify({modName}));
+    toggle: async name => {
+        const response = await client.post('/api/mods/toggle', {name});
         return response.data;
     },
-    delete: async modName => {
-        const response = await client.post('/api/mods/delete', JSON.stringify({modName}));
+    delete: async name => {
+        const response = await client.post('/api/mods/delete', {name});
         return response.data;
-    },
-    details: async modName => {
-        const response = await client.post('/api/mods/details', JSON.stringify({modName}));
-
-        return {
-            data: JSON.parse(response.data)
-        };
     },
     update: async (modName, downloadUrl, fileName) => {
         const data = {

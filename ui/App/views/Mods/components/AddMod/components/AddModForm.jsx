@@ -19,6 +19,7 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse, refetchInstalledMods}) =>
     const {register, watch, setValue, handleSubmit} = useForm();
     const [suggestedMods, setSuggestedMods] = useState([]);
     const [selectedMod, setSelectedMod] = useState(null);
+    const [hoveredMod, setHoveredMod] = useState(0)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [releases, setReleases] = useState([]);
 
@@ -32,6 +33,7 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse, refetchInstalledMods}) =>
 
     const updateSuggestedMods = () => {
         if (typeof fuse != "undefined") {
+            setHoveredMod(0)
             clearTimeout(autocomplete)
             setAutocomplete(setTimeout(() => setSuggestedMods(fuse.search(mod || '')), 200));
         }
@@ -63,24 +65,52 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse, refetchInstalledMods}) =>
     }
 
     const install = async release => {
-        await modsResource.portal.install(release.download_url, release.file_name, selectedMod.item.title)
+        await modsResource.portal.install(release.download_url, release.file_name, selectedMod.item.name)
         refetchInstalledMods()
+    }
+
+    const incrementHoveredMod = () => {
+        if (hoveredMod < suggestedMods.length - 1) {
+            setHoveredMod(hoveredMod + 1)
+        }
+    }
+
+    const decrementHoveredMod = () => {
+        if (hoveredMod > 0) {
+            setHoveredMod(hoveredMod - 1)
+        }
+    }
+
+    const handleKeyDown = event => {
+        switch (event.keyCode) {
+            case 40: // down
+                incrementHoveredMod()
+                break;
+            case 38: // up
+                decrementHoveredMod()
+                break;
+            case 13: // enter
+                selectMod(suggestedMods[hoveredMod])
+                break;
+            default:
+                break;
+        }
     }
 
     return (
         <form onSubmit={handleSubmit(openSelectVersionModal)}>
             <SelectVersionForm isOpen={isModalOpen} releases={releases} install={install} close={() => setIsModalOpen(false)}/>
-            <div className="mb-4 relative">
+            <div className="mb-4 relative" >
                 <Label text="Mod" htmlFor="mod"/>
                 { typeof fuse !== "undefined"
-                    ? <Input inputRef={register({required: true})} hasAutoComplete={false} name="mod"/>
+                    ? <Input inputRef={register({required: true})} hasAutoComplete={false} name="mod" onKeyDown={handleKeyDown}/>
                     : <div className="border border-gray-medium w-full py-2 px-3 text-white">
                         <FontAwesomeIcon icon={faSpinner} spin={true}/> Loading List of Mods from <LinkModPortal/>
                     </div>
                 }
                 {suggestedMods.length > 0 &&
                     <ul className="bg-white text-black h-64 overflow-y-scroll absolute bottom-0 left-0 w-full -mb-64">
-                        {suggestedMods.map((mod, index) => <li className="px-2 py-1 cursor-pointer hover:bg-blue-light" onClick={() => selectMod(mod)} key={index}>{mod.item.title}</li>)}
+                        {suggestedMods.map((mod, index) => <li className={"px-2 py-1 cursor-pointer" + (hoveredMod === index ? " bg-blue-light" : "")} onMouseEnter={() => setHoveredMod(index)} onClick={() => selectMod(mod)} key={index}>{mod.item.title}</li>)}
                     </ul>
                 }
             </div>

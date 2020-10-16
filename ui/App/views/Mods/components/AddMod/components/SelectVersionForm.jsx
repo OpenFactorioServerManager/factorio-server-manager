@@ -13,6 +13,8 @@ const SelectVersionForm = ({releases, isOpen, close, install}) => {
         close()
     }
 
+    // const orderedReleases = releases.reverse()
+
     return (
         <Modal
             isOpen={isOpen}
@@ -28,7 +30,7 @@ const SelectVersionForm = ({releases, isOpen, close, install}) => {
                         </tr>
                         </thead>
                         <tbody>
-                        {releases.reverse().map((release, i) =>
+                        {[...releases].reverse().map((release, i) =>
                             <tr className="py-2 md:py-1" key={i}>
                                 <td className="pr-4">{release.version}</td>
                                 <td className="pr-4">{release.compatibility
