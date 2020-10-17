@@ -1,9 +1,11 @@
-package main
+package api
 
 import (
 	"bytes"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/mroote/factorio-server-manager/factorio"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"mime/multipart"
@@ -18,35 +20,38 @@ import (
 func SetupModPacks(t *testing.T, empty bool, emptyMods bool) {
 	var err error
 
+	config := bootstrap.GetConfig()
+
 	// check if dev directory exists and create it
-	if _, err = os.Stat("dev_packs"); os.IsNotExist(err) {
-		err = os.Mkdir("dev_packs", 0775)
+	if _, err = os.Stat(config.FactorioModPackDir); os.IsNotExist(err) {
+		err = os.Mkdir(config.FactorioModPackDir, 0775)
 	}
-	assert.NoError(t, err, `Error creating "dev_packs" directory`)
+	assert.NoError(t, err, `Error creating %s directory`, config.FactorioModPackDir)
 
 	if !empty {
 		// check if dev directory exists and create it
-		if _, err = os.Stat("dev_packs/test"); os.IsNotExist(err) {
-			err = os.Mkdir("dev_packs/test", 0775)
+		if _, err = os.Stat(config.FactorioModPackDir + "/test"); os.IsNotExist(err) {
+			err = os.Mkdir(config.FactorioModPackDir+"/test", 0775)
 		}
-		assert.NoError(t, err, `Error creating "dev_packs/test" directory`)
+		assert.NoError(t, err, `Error creating "%s/test" directory`, config.FactorioModPackDir)
 
-		mods, err := newMods("dev_packs/test")
+		modList, err := factorio.NewMods(config.FactorioModPackDir + "/test")
 		assert.NoError(t, err, "error creating mods")
 
 		if !emptyMods {
-			err = mods.downloadMod("/download/belt-balancer/5e9f9db4bf9d30000c5303f2", "belt-balancer_2.1.3.zip", "belt-balancer")
+			err = modList.DownloadMod("/download/belt-balancer/5e9f9db4bf9d30000c5303f2", "belt-balancer_2.1.3.zip", "belt-balancer")
 			assert.NoError(t, err, `Error downloading Mod "belt-balancer"`)
 
-			err = mods.downloadMod("/download/train-station-overview/5e8a0a8ee8864f000d0cb022", "train-station-overview_2.0.3.zip", "train-station-overview")
+			err = modList.DownloadMod("/download/train-station-overview/5e8a0a8ee8864f000d0cb022", "train-station-overview_2.0.3.zip", "train-station-overview")
 			assert.NoError(t, err, `Error downloading Mod "train-station-overview"`)
 		}
 	}
 }
 
 func CleanupModPacks(t *testing.T) {
-	err := os.RemoveAll("dev_packs")
-	assert.NoError(t, err, `Error removing directory "dev_packs"`)
+	config := bootstrap.GetConfig()
+	err := os.RemoveAll(config.FactorioModPackDir)
+	assert.NoError(t, err, `Error removing directory %s`, config.FactorioModPackDir)
 }
 
 func UnknownModpackTest(t *testing.T, method string, baseRoute string, route string, handlerFunc http.HandlerFunc) {
@@ -172,6 +177,7 @@ func TestModPackLoadHandler(t *testing.T) {
 	handlerFunc := ModPackLoadHandler
 
 	t.Run("load mods", func(t *testing.T) {
+		config := bootstrap.GetConfig()
 		SetupModPacks(t, false, false)
 		defer CleanupModPacks(t)
 		SetupMods(t, true)
@@ -182,16 +188,16 @@ func TestModPackLoadHandler(t *testing.T) {
 		CallRoute(t, method, baseRoute, route, nil, handlerFunc, http.StatusOK, expected)
 
 		// check if mods are really loaded
-		packMap, err := newModPackMap()
+		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
-		mods, err := newMods("dev")
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		assert.NoError(t, err, "Error creating mods object")
 
 		packModsJson, err := json.Marshal(packMap["test"].Mods)
 		assert.NoError(t, err, "Error marshalling mods from modPack")
 
-		modsJson, err := json.Marshal(mods)
+		modsJson, err := json.Marshal(modList)
 		assert.NoError(t, err, "Error marshalling mods object")
 
 		assert.JSONEq(t, string(packModsJson), string(modsJson), "loaded mods and modPack are not identical")
@@ -203,21 +209,23 @@ func TestModPackLoadHandler(t *testing.T) {
 		SetupMods(t, false)
 		defer CleanupMods(t)
 
-		expected := `{"mods":null}`
+		expected := `{"mods":[]}`
 
 		CallRoute(t, method, baseRoute, route, nil, handlerFunc, http.StatusOK, expected)
 
 		// check if mods are really loaded
-		packMap, err := newModPackMap()
+		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
-		mods, err := newMods("dev")
+		config := bootstrap.GetConfig()
+
+		modList, err := factorio.NewMods(config.FactorioModsDir)
 		assert.NoError(t, err, "Error creating mods object")
 
 		packModsJson, err := json.Marshal(packMap["test"].Mods)
 		assert.NoError(t, err, "Error marshalling mods from modPack")
 
-		modsJson, err := json.Marshal(mods)
+		modsJson, err := json.Marshal(modList)
 		assert.NoError(t, err, "Error marshalling mods object")
 
 		assert.JSONEq(t, string(packModsJson), string(modsJson), "loaded mods and modPack are not identical")
@@ -266,7 +274,7 @@ func TestModPackModToggleHandler(t *testing.T) {
 		CallRoute(t, method, baseRoute, route, requestBody, handlerFunc, http.StatusOK, expected)
 
 		// check if changes happened
-		packMap, err := newModPackMap()
+		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
 		found := false
@@ -293,7 +301,7 @@ func TestModPackModToggleHandler(t *testing.T) {
 
 		CallRoute(t, method, baseRoute, route, requestBody, handlerFunc, http.StatusOK, expected)
 
-		packMap, err = newModPackMap()
+		packMap, err = factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
 		found = false
@@ -338,10 +346,10 @@ func TestModPackModDeleteHandler(t *testing.T) {
 		CallRoute(t, method, baseRoute, route, requestBody, handlerFunc, http.StatusOK, `true`)
 
 		// check if mod is really not installed anymore
-		packMap, err := newModPackMap()
+		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
-		if packMap["test"].Mods.ModSimpleList.checkModExists("belt-balancer") {
+		if packMap["test"].Mods.ModSimpleList.CheckModExists("belt-balancer") {
 			t.Fatalf("Mod is still installed, it should be gone by now")
 		}
 	})
@@ -370,7 +378,7 @@ func TestModPackModDeleteAllHandler(t *testing.T) {
 		CallRoute(t, method, baseRoute, route, nil, handlerFunc, http.StatusOK, "true")
 
 		// check if really empty
-		packMap, err := newModPackMap()
+		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
 		if len(packMap["test"].Mods.ModInfoList.Mods) != 0 {
@@ -405,10 +413,10 @@ func TestModPackModUpdateHandler(t *testing.T) {
 		defer CleanupModPacks(t)
 
 		// disable "belt-balancer" mod, so we can test, if it is still deactivated after
-		packMap, err := newModPackMap()
+		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
-		err, _ = packMap["test"].Mods.ModSimpleList.toggleMod("belt-balancer")
+		err, _ = packMap["test"].Mods.ModSimpleList.ToggleMod("belt-balancer")
 		assert.NoError(t, err, "Error toggling mod")
 
 		expected := `{"name":"belt-balancer","version":"2.1.2","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.2.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":false}`
@@ -440,7 +448,7 @@ func TestModPackModUpdateHandler(t *testing.T) {
 		CallRoute(t, method, baseRoute, route, strings.NewReader(requestBody), handlerFunc, http.StatusInternalServerError, "")
 
 		// check if old mod is still there
-		packMap, err := newModPackMap()
+		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "Error creating modPackMap")
 
 		var found = false
@@ -516,7 +524,7 @@ func TestModPackModUploadHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		recorder := ModPackModUploadRequest(t, true, "factorio_testfiles/belt-balancer_2.1.3.zip")
+		recorder := ModPackModUploadRequest(t, true, "../factorio_testfiles/belt-balancer_2.1.3.zip")
 
 		// status has to be 200
 		if recorder.Code != http.StatusOK {
@@ -524,19 +532,19 @@ func TestModPackModUploadHandler(t *testing.T) {
 		}
 
 		// check if mod is uploaded correctly
-		packMap, err := newModPackMap()
+		packMap, err := factorio.NewModPackMap()
 		assert.NoError(t, err, "error creating modPackMap")
 
-		expected := ModsResultList{
-			ModsResult: []ModsResult{
+		expected := factorio.ModsResultList{
+			ModsResult: []factorio.ModsResult{
 				{
-					ModInfo: ModInfo{
+					ModInfo: factorio.ModInfo{
 						Name:            "belt-balancer",
 						Version:         "2.1.3",
 						Title:           "Belt Balancer",
 						Author:          "knoxfighter",
 						FileName:        "belt-balancer_2.1.3.zip",
-						FactorioVersion: Version{0, 18, 0, 0},
+						FactorioVersion: factorio.Version{0, 18, 0, 0},
 						Dependencies:    nil,
 						Compatibility:   true,
 					},
@@ -545,7 +553,7 @@ func TestModPackModUploadHandler(t *testing.T) {
 			},
 		}
 
-		actual := packMap["test"].Mods.listInstalledMods()
+		actual := packMap["test"].Mods.ListInstalledMods()
 		assert.Equal(t, expected, actual, `New mod is not correctly installed. expected "%v" - actual "%v"`, expected, actual)
 	})
 
@@ -563,7 +571,7 @@ func TestModPackModUploadHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		recorder := ModPackModUploadRequest(t, false, "factorio_testfiles/file_usage.txt")
+		recorder := ModPackModUploadRequest(t, false, "../factorio_testfiles/file_usage.txt")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code, "wrong response code.")
 	})
 
@@ -571,7 +579,7 @@ func TestModPackModUploadHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		recorder := ModPackModUploadRequest(t, true, "factorio_testfiles/invalid_mod.zip")
+		recorder := ModPackModUploadRequest(t, true, "../factorio_testfiles/invalid_mod.zip")
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code, "wrong response code.")
 	})
 }

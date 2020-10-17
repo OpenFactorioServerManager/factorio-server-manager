@@ -1,7 +1,8 @@
-package main
+package factorio
 
 import (
 	"errors"
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"io"
 	"io/ioutil"
 	"log"
@@ -22,7 +23,7 @@ type ModPackResultList struct {
 	ModPacks []ModPackResult `json:"mod_packs"`
 }
 
-func newModPackMap() (ModPackMap, error) {
+func NewModPackMap() (ModPackMap, error) {
 	var err error
 	modPackMap := make(ModPackMap)
 
@@ -39,7 +40,7 @@ func newModPack(modPackFolder string) (*ModPack, error) {
 	var err error
 	var modPack ModPack
 
-	modPack.Mods, err = newMods(modPackFolder)
+	modPack.Mods, err = NewMods(modPackFolder)
 	if err != nil {
 		log.Printf("error on loading mods in mod_pack_dir: %s", err)
 		return &modPack, err
@@ -51,6 +52,7 @@ func newModPack(modPackFolder string) (*ModPack, error) {
 func (modPackMap *ModPackMap) reload() error {
 	var err error
 	newModPackMap := make(ModPackMap)
+	config := bootstrap.GetConfig()
 
 	err = filepath.Walk(config.FactorioModPackDir, func(path string, info os.FileInfo, err error) error {
 		if path == config.FactorioModPackDir || !info.IsDir() {
@@ -77,13 +79,13 @@ func (modPackMap *ModPackMap) reload() error {
 	return nil
 }
 
-func (modPackMap *ModPackMap) listInstalledModPacks() ModPackResultList {
+func (modPackMap *ModPackMap) ListInstalledModPacks() ModPackResultList {
 	var modPackResultList ModPackResultList
 
 	for modPackName, modPack := range *modPackMap {
 		var modPackResult ModPackResult
 		modPackResult.Name = modPackName
-		modPackResult.Mods = modPack.Mods.listInstalledMods()
+		modPackResult.Mods = modPack.Mods.ListInstalledMods()
 
 		modPackResultList.ModPacks = append(modPackResultList.ModPacks, modPackResult)
 	}
@@ -91,12 +93,12 @@ func (modPackMap *ModPackMap) listInstalledModPacks() ModPackResultList {
 	return modPackResultList
 }
 
-func (modPackMap *ModPackMap) createModPack(modPackName string) error {
+func (modPackMap *ModPackMap) CreateModPack(modPackName string) error {
 	var err error
-
+	config := bootstrap.GetConfig()
 	modPackFolder := filepath.Join(config.FactorioModPackDir, modPackName)
 
-	if modPackMap.checkModPackExists(modPackName) == true {
+	if modPackMap.CheckModPackExists(modPackName) == true {
 		log.Printf("ModPack %s already existis", modPackName)
 		return errors.New("ModPack " + modPackName + " already exists, please choose a different name")
 	}
@@ -160,12 +162,12 @@ func (modPackMap *ModPackMap) createModPack(modPackName string) error {
 	return nil
 }
 
-func (modPackMap *ModPackMap) createEmptyModPack(packName string) error {
+func (modPackMap *ModPackMap) CreateEmptyModPack(packName string) error {
 	var err error
-
+	config := bootstrap.GetConfig()
 	modPackFolder := filepath.Join(config.FactorioModPackDir, packName)
 
-	if modPackMap.checkModPackExists(packName) == true {
+	if modPackMap.CheckModPackExists(packName) == true {
 		log.Printf("ModPack %s already existis", packName)
 		return errors.New("ModPack " + packName + " already exists, please choose a different name")
 	}
@@ -185,7 +187,7 @@ func (modPackMap *ModPackMap) createEmptyModPack(packName string) error {
 	return nil
 }
 
-func (modPackMap *ModPackMap) checkModPackExists(modPackName string) bool {
+func (modPackMap *ModPackMap) CheckModPackExists(modPackName string) bool {
 	for modPackId := range *modPackMap {
 		if modPackId == modPackName {
 			return true
@@ -195,9 +197,9 @@ func (modPackMap *ModPackMap) checkModPackExists(modPackName string) bool {
 	return false
 }
 
-func (modPackMap *ModPackMap) deleteModPack(modPackName string) error {
+func (modPackMap *ModPackMap) DeleteModPack(modPackName string) error {
 	var err error
-
+	config := bootstrap.GetConfig()
 	modPackDir := filepath.Join(config.FactorioModPackDir, modPackName)
 
 	err = os.RemoveAll(modPackDir)
@@ -215,9 +217,9 @@ func (modPackMap *ModPackMap) deleteModPack(modPackName string) error {
 	return nil
 }
 
-func (modPack *ModPack) loadModPack() error {
+func (modPack *ModPack) LoadModPack() error {
 	var err error
-
+	config := bootstrap.GetConfig()
 	//get filemode, so it can be restored
 	fileInfo, err := os.Stat(config.FactorioModsDir)
 	if err != nil {

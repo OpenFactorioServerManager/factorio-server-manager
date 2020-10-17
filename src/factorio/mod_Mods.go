@@ -1,4 +1,4 @@
-package main
+package factorio
 
 import (
 	"archive/zip"
@@ -26,9 +26,9 @@ type ModsResultList struct {
 	ModsResult []ModsResult `json:"mods"`
 }
 
-var fileLock lockfile.FileLock = lockfile.NewLock()
+var FileLock lockfile.FileLock = lockfile.NewLock()
 
-func newMods(destination string) (Mods, error) {
+func NewMods(destination string) (Mods, error) {
 	var err error
 	var mods Mods
 
@@ -47,7 +47,7 @@ func newMods(destination string) (Mods, error) {
 	return mods, nil
 }
 
-func (mods *Mods) listInstalledMods() ModsResultList {
+func (mods *Mods) ListInstalledMods() ModsResultList {
 	result := ModsResultList{make([]ModsResult, 0)}
 
 	for _, modInfo := range mods.ModInfoList.Mods {
@@ -73,7 +73,7 @@ func (mods *Mods) listInstalledMods() ModsResultList {
 	return result
 }
 
-func (mods *Mods) deleteMod(modName string) error {
+func (mods *Mods) DeleteMod(modName string) error {
 	var err error
 
 	err = mods.ModInfoList.deleteMod(modName)
@@ -95,7 +95,7 @@ func (mods *Mods) createMod(modName string, fileName string, fileRc io.Reader) e
 	var err error
 
 	//check if mod already exists and delete it
-	if mods.ModSimpleList.checkModExists(modName) {
+	if mods.ModSimpleList.CheckModExists(modName) {
 		err = mods.ModInfoList.deleteMod(modName)
 		if err != nil {
 			log.Printf("error when deleting mod: %s", err)
@@ -118,7 +118,7 @@ func (mods *Mods) createMod(modName string, fileName string, fileRc io.Reader) e
 	}
 
 	// also add to ModSimpleList if not there yet
-	if !mods.ModSimpleList.checkModExists(modName) {
+	if !mods.ModSimpleList.CheckModExists(modName) {
 		err = mods.ModSimpleList.createMod(modName)
 		if err != nil {
 			log.Printf("error creating mod in modSimpleList: %s", err)
@@ -129,11 +129,11 @@ func (mods *Mods) createMod(modName string, fileName string, fileRc io.Reader) e
 	return nil
 }
 
-func (mods *Mods) downloadMod(url string, filename string, modId string) error {
+func (mods *Mods) DownloadMod(url string, filename string, modId string) error {
 	var err error
 
-	var credentials FactorioCredentials
-	status, err := credentials.load()
+	var credentials Credentials
+	status, err := credentials.Load()
 	if err != nil {
 		log.Printf("error loading credentials: %s", err)
 		return err
@@ -175,7 +175,7 @@ func (mods *Mods) downloadMod(url string, filename string, modId string) error {
 	return nil
 }
 
-func (mods *Mods) uploadMod(file multipart.File, header *multipart.FileHeader) error {
+func (mods *Mods) UploadMod(file multipart.File, header *multipart.FileHeader) error {
 	var err error
 
 	if filepath.Ext(header.Filename) != ".zip" {
@@ -211,10 +211,10 @@ func (mods *Mods) uploadMod(file multipart.File, header *multipart.FileHeader) e
 	return nil
 }
 
-func (mods *Mods) updateMod(modName string, url string, filename string) error {
+func (mods *Mods) UpdateMod(modName string, url string, filename string) error {
 	var err error
 
-	err = mods.downloadMod(url, filename, modName)
+	err = mods.DownloadMod(url, filename, modName)
 	if err != nil {
 		log.Printf("updateMod ... error when downloading the new Mod: %s", err)
 		return err

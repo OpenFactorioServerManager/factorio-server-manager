@@ -1,10 +1,11 @@
-package main
+package factorio
 
 import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"io/ioutil"
 	"log"
 	"os"
@@ -20,9 +21,9 @@ type LoginSuccessResponse struct {
 	UserKey []string `json:""`
 }
 
-func deleteAllMods() error {
+func DeleteAllMods() error {
 	var err error
-
+	config := bootstrap.GetConfig()
 	modsDirInfo, err := os.Stat(config.FactorioModsDir)
 	if err != nil {
 		log.Printf("error getting stats of FactorioModsDir: %s", err)
@@ -46,13 +47,12 @@ func deleteAllMods() error {
 	return nil
 }
 
-func modStartUp() {
-	var err error
-
+func ModStartUp() {
+	config := bootstrap.GetConfig()
 	//get main-folder info
 	factorioDirInfo, err := os.Stat(config.FactorioDir)
 	if err != nil {
-		log.Printf("error getting stats from FactorioDir: %s", err)
+		log.Printf("error getting stats from FactorioDir %s with error %s", config.FactorioDir, err)
 		return
 	}
 	factorioDirPerm := factorioDirInfo.Mode().Perm()
@@ -66,7 +66,7 @@ func modStartUp() {
 	//crate mod_pack dir
 	if _, err = os.Stat(config.FactorioModPackDir); os.IsNotExist(err) {
 		log.Println("no ModPackDir found ... creating one ...")
-		os.Mkdir(config.FactorioModPackDir, factorioDirPerm)
+		_ = os.Mkdir(config.FactorioModPackDir, factorioDirPerm)
 	}
 
 	oldModpackDir := filepath.Join(config.FactorioDir, "modpacks")
@@ -125,7 +125,7 @@ func modStartUp() {
 			}
 			defer modPackFile.Close()
 
-			mods, err := newMods(modPackDir)
+			mods, err := NewMods(modPackDir)
 			if err != nil {
 				log.Printf("error reading mods: %s", err)
 				return err

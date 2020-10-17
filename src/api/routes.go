@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"log"
@@ -58,9 +58,9 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Websocket").
 		Handler(AuthorizeHandler(ws))
-	ws.Handle("command send", commandSend)
-	ws.Handle("log subscribe", logSubscribe)
-	ws.Handle("server status subscribe", serverStatusSubscribe)
+	ws.Handle("command send", CommandSend)
+	ws.Handle("log subscribe", LogSubscribe)
+	ws.Handle("server status subscribe", ServerStatusSubscribe)
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
@@ -115,6 +115,7 @@ func NewRouter() *mux.Router {
 // Redirects user to login page if no session is found
 func AuthorizeHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		Auth := GetAuth()
 		if err := Auth.aaa.Authorize(w, r, true); err != nil {
 			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
 			http.Redirect(w, r, "/login", http.StatusSeeOther)

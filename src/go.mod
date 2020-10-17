@@ -10,6 +10,8 @@ require (
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.1
 	github.com/hpcloud/tail v1.0.0
+	github.com/jessevdk/go-flags v1.4.0
+	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.2.0 // indirect
 	github.com/majormjr/rcon v0.0.0-20120923215419-8fbb8268b60a
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect

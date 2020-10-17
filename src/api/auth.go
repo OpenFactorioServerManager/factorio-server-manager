@@ -1,8 +1,10 @@
-package main
+package api
 
 import (
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/apexskier/httpauth"
 )
@@ -19,8 +21,18 @@ type User struct {
 	Email    string `json:"email"`
 }
 
-func initAuth() *AuthHTTP {
-	return &AuthHTTP{}
+var once sync.Once
+var instantiated *AuthHTTP
+
+func GetAuth() *AuthHTTP {
+	once.Do(func() {
+		Auth := &AuthHTTP{}
+		config := bootstrap.GetConfig()
+		_ = Auth.CreateAuth(config.DatabaseFile, config.CookieEncryptionKey)
+		_ = Auth.CreateOrUpdateUser(config.Username, config.Password, "admin", "")
+		instantiated = Auth
+	})
+	return instantiated
 }
 
 func (auth *AuthHTTP) CreateAuth(backendFile string, cookieKey string) error {

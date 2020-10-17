@@ -1,9 +1,11 @@
-package main
+package api
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/mroote/factorio-server-manager/factorio"
 	"io"
 	"io/ioutil"
 	"log"
@@ -52,14 +54,14 @@ func ReadRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}) 
 // Lists all save files in the factorio/saves directory
 func ListSaves(w http.ResponseWriter, r *http.Request) {
 	var resp interface{}
-
+	config := bootstrap.GetConfig()
 	defer func() {
 		WriteResponse(w, resp)
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	savesList, err := listSaves(config.FactorioSavesDir)
+	savesList, err := factorio.ListSaves(config.FactorioSavesDir)
 	if err != nil {
 		resp = fmt.Sprintf("Error listing save files: %s", err)
 		log.Println(resp)
@@ -67,7 +69,7 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loadLatest := Save{Name: "Load Latest"}
+	loadLatest := factorio.Save{Name: "Load Latest"}
 	savesList = append(savesList, loadLatest)
 
 	resp = savesList
@@ -75,7 +77,7 @@ func ListSaves(w http.ResponseWriter, r *http.Request) {
 
 func DLSave(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/octet-stream")
-
+	config := bootstrap.GetConfig()
 	vars := mux.Vars(r)
 	save := vars["save"]
 	saveName := filepath.Join(config.FactorioSavesDir, save)
@@ -96,6 +98,7 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 	log.Println("Uploading save file")
 
 	r.ParseMultipartForm(32 << 20)
+	config := bootstrap.GetConfig()
 
 	for _, saveFile := range r.MultipartForm.File["savefile"] {
 		ext := filepath.Ext(saveFile.Filename)
@@ -149,7 +152,7 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["save"]
 
-	save, err := findSave(name)
+	save, err := factorio.FindSave(name)
 	if err != nil {
 		resp = fmt.Sprintf("Error finding save {%s}: %s", name, err)
 		log.Println(resp)
@@ -157,7 +160,7 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = save.remove()
+	err = save.Remove()
 	if err != nil {
 		resp = fmt.Sprintf("Error removing save {%s}: %s", name, err)
 		log.Println(resp)
@@ -188,9 +191,9 @@ func CreateSaveHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
+	config := bootstrap.GetConfig()
 	saveFile := filepath.Join(config.FactorioSavesDir, saveName)
-	cmdOut, err := createSave(saveFile)
+	cmdOut, err := factorio.CreateSave(saveFile)
 	if err != nil {
 		resp = fmt.Sprintf("Error creating save {%s}: %s", saveName, err)
 		log.Println(resp)
@@ -211,8 +214,8 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	resp, err = tailLog(config.FactorioLog)
+	config := bootstrap.GetConfig()
+	resp, err = factorio.TailLog(config.FactorioLog)
 	if err != nil {
 		resp = fmt.Sprintf("Could not tail %s: %s", config.FactorioLog, err)
 		return
@@ -229,8 +232,8 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	configContents, err := loadConfig(config.FactorioConfigFile)
+	config := bootstrap.GetConfig()
+	configContents, err := factorio.LoadConfig(config.FactorioConfigFile)
 	if err != nil {
 		resp = fmt.Sprintf("Could not retrieve config.ini: %s", err)
 		log.Println(resp)
@@ -246,14 +249,14 @@ func LoadConfig(w http.ResponseWriter, r *http.Request) {
 func StartServer(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
-
+	var server = factorio.GetFactorioServer()
 	defer func() {
 		WriteResponse(w, resp)
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	if FactorioServ.Running {
+	if server.Running {
 		resp = "Factorio server is already running"
 		w.WriteHeader(http.StatusConflict)
 		return
@@ -268,7 +271,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Starting Factorio server with settings: %v", string(body))
 
-	err = json.Unmarshal(body, &FactorioServ)
+	err = json.Unmarshal(body, &server)
 	if err != nil {
 		resp = fmt.Sprintf("Error unmarshalling server settings JSON: %s", err)
 		log.Println(resp)
@@ -277,7 +280,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if savefile was submitted with request to start server.
-	if FactorioServ.Savefile == "" {
+	if server.Savefile == "" {
 		resp = "Error starting Factorio server: No save file provided"
 		log.Println(resp)
 		w.WriteHeader(http.StatusBadRequest)
@@ -285,7 +288,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	go func() {
-		err = FactorioServ.Run()
+		err = server.Run()
 		if err != nil {
 			log.Printf("Error starting Factorio server: %+v", err)
 			return
@@ -295,7 +298,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	timeout := 0
 	for timeout <= 3 {
 		time.Sleep(1 * time.Second)
-		if FactorioServ.Running {
+		if server.Running {
 			break
 		} else {
 			log.Printf("Did not detect running Factorio server attempt: %+v", timeout)
@@ -304,14 +307,14 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		timeout++
 	}
 
-	if FactorioServ.Running == false {
+	if server.Running == false {
 		resp = fmt.Sprintf("Error starting Factorio server: %s", err)
 		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	resp = fmt.Sprintf("Factorio server with save: %s started on port: %d", FactorioServ.Savefile, FactorioServ.Port)
+	resp = fmt.Sprintf("Factorio server with save: %s started on port: %d", server.Savefile, server.Port)
 	log.Println(resp)
 }
 
@@ -323,9 +326,9 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	if FactorioServ.Running {
-		err := FactorioServ.Stop()
+	var server = factorio.GetFactorioServer()
+	if server.Running {
+		err := server.Stop()
 		if err != nil {
 			resp = fmt.Sprintf("Error stopping factorio server: %s", err)
 			log.Println(resp)
@@ -350,9 +353,9 @@ func KillServer(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	if FactorioServ.Running {
-		err := FactorioServ.Kill()
+	var server = factorio.GetFactorioServer()
+	if server.Running {
+		err := server.Kill()
 		if err != nil {
 			resp = fmt.Sprintf("Error killing factorio server: %s", err)
 			log.Println(resp)
@@ -375,12 +378,12 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	if FactorioServ.Running {
+	var server = factorio.GetFactorioServer()
+	if server.Running {
 		resp["status"] = "running"
-		resp["port"] = strconv.Itoa(FactorioServ.Port)
-		resp["savefile"] = FactorioServ.Savefile
-		resp["address"] = FactorioServ.BindIP
+		resp["port"] = strconv.Itoa(server.Port)
+		resp["savefile"] = server.Savefile
+		resp["address"] = server.BindIP
 	} else {
 		resp["status"] = "stopped"
 	}
@@ -394,9 +397,9 @@ func FactorioVersion(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	resp["version"] = FactorioServ.Version.String()
-	resp["base_mod_version"] = FactorioServ.BaseModVersion
+	var server = factorio.GetFactorioServer()
+	resp["version"] = server.Version.String()
+	resp["base_mod_version"] = server.BaseModVersion
 }
 
 // Unmarshall the User object from the given bytearray
@@ -433,7 +436,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Logging in user: %s", user.Username)
-
+	Auth := GetAuth()
 	err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
 	if err != nil {
 		resp = fmt.Sprintf("Error loggin in user: %s, error: %s", user.Username, err)
@@ -453,7 +456,7 @@ func LogoutUser(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
+	Auth := GetAuth()
 	if err = Auth.aaa.Logout(w, r); err != nil {
 		log.Printf("Error logging out current user")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -473,7 +476,7 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
+	Auth := GetAuth()
 	user, err := Auth.aaa.CurrentUser(w, r)
 	if err != nil {
 		resp = fmt.Sprintf("Error getting user status: %s, error: %s", user.Username, err)
@@ -493,7 +496,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
+	Auth := GetAuth()
 	users, err := Auth.listUsers()
 	if err != nil {
 		resp = fmt.Sprintf("Error listing users: %s", err)
@@ -524,7 +527,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
+	Auth := GetAuth()
 	err = Auth.addUser(user.Username, user.Password, user.Email, user.Role)
 	if err != nil {
 		resp = fmt.Sprintf("Error in adding user {%s}: %s", user.Username, err)
@@ -554,7 +557,7 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
+	Auth := GetAuth()
 	err = Auth.removeUser(user.Username)
 	if err != nil {
 		resp = fmt.Sprintf("Error in removing user {%s}, error: %s", user.Username, err)
@@ -574,8 +577,8 @@ func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-
-	resp = FactorioServ.Settings
+	var server = factorio.GetFactorioServer()
+	resp = server.Settings
 
 	log.Printf("Sent server settings response")
 }
@@ -594,8 +597,8 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Received settings JSON: %s", body)
-
-	err = json.Unmarshal(body, &FactorioServ.Settings)
+	var server = factorio.GetFactorioServer()
+	err = json.Unmarshal(body, &server.Settings)
 	if err != nil {
 		resp = fmt.Sprintf("Error unmarhaling server settings JSON: %s", err)
 		log.Println(resp)
@@ -603,14 +606,14 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	settings, err := json.MarshalIndent(&FactorioServ.Settings, "", "  ")
+	settings, err := json.MarshalIndent(&server.Settings, "", "  ")
 	if err != nil {
 		resp = fmt.Sprintf("Failed to marshal server settings: %s", err)
 		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
+	config := bootstrap.GetConfig()
 	err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), settings, 0644)
 	if err != nil {
 		resp = fmt.Sprintf("Failed to save server settings: %v\n", err)
@@ -621,9 +624,9 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Saved Factorio server settings in server-settings.json")
 
-	if (FactorioServ.Version.Greater(Version{0, 17, 0})) {
+	if (server.Version.Greater(factorio.Version{0, 17, 0})) {
 		// save admins to adminJson
-		admins, err := json.MarshalIndent(FactorioServ.Settings["admins"], "", "  ")
+		admins, err := json.MarshalIndent(server.Settings["admins"], "", "  ")
 		if err != nil {
 			resp = fmt.Sprintf("Failed to marshal admins-Setting: %s", err)
 			log.Println(resp)

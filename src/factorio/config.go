@@ -1,4 +1,4 @@
-package main
+package factorio
 
 import (
 	"log"
@@ -6,8 +6,8 @@ import (
 	"github.com/go-ini/ini"
 )
 
-// Loads config.ini file from the factorio config directory
-func loadConfig(filename string) (map[string]map[string]string, error) {
+// Loads config.ini file from the factorio bootstrap directory
+func LoadConfig(filename string) (map[string]map[string]string, error) {
 	log.Printf("Loading config file: %s", filename)
 	cfg, err := ini.Load(filename)
 	if err != nil {

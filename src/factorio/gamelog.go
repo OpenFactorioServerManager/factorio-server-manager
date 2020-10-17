@@ -1,13 +1,16 @@
-package main
+package factorio
 
 import (
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"log"
 
 	"github.com/hpcloud/tail"
 )
 
-func tailLog(filename string) ([]string, error) {
+func TailLog(filename string) ([]string, error) {
 	result := []string{}
+
+	config := bootstrap.GetConfig()
 
 	t, err := tail.TailFile(config.FactorioLog, tail.Config{Follow: false})
 	if err != nil {
