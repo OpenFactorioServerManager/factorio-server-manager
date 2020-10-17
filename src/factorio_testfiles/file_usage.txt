@@ -1,1 +1,1 @@
-The usage of the belt-balancer mod is allowed without additional licensing by knoxfighter/asdff45 (the creator of the mod and also write of this factorio-server-manager)
+The usage of the belt-balancer mod is allowed without additional licensing by knoxfighter/asdff45 (the creator of the mod and also contributor to this factorio-server-manager project)
