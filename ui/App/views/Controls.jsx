@@ -31,18 +31,10 @@ const Controls = ({serverStatus, updateServerStatus}) => {
 
     useEffect(() => {
         server.factorioVersion()
-            .then(res => {
-                if (res) {
-                    setFactorioVersion(res.version)
-                }
-            });
+            .then(res => setFactorioVersion(res.version));
 
         savesResource.list()
-            .then(res => {
-                if (res) {
-                    setSaves(res)
-                }
-            });
+            .then(res => setSaves(res));
     }, [])
 
     return (
