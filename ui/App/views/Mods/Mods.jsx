@@ -61,7 +61,7 @@ const Mods = () => {
                     <AddMod refetchInstalledMods={fetchInstalledMods} fuse={fuse}/>
                 </Tab>
                 <Tab title="Upload Mod">
-                    <UploadMod/>
+                    <UploadMod refetchInstalledMods={fetchInstalledMods}/>
                 </Tab>
                 <Tab title="Load Mod from Save">
                     <LoadMods refreshMods={fetchInstalledMods}/>

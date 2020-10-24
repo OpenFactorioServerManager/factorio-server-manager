@@ -1,20 +1,35 @@
 import React, {useState} from "react";
 import Button from "../../../components/Button";
 import Label from "../../../components/Label";
+import {useForm} from "react-hook-form";
+import modsResource from "../../../../api/resources/mods";
 
-const UploadMod = () => {
+const UploadMod = ({refetchInstalledMods}) => {
 
-    const [fileName, setFileName] = useState('Select File ...');
+    const defaultFileName = 'Select File ...'
+    const [fileName, setFileName] = useState(defaultFileName);
+    const {register, handleSubmit } = useForm();
+
+    const onSubmit = (data, e) => {
+        modsResource.upload(data.mod_file[0])
+            .then(refetchInstalledMods)
+            .finally(() => {
+                e.target.reset()
+                setFileName(defaultFileName)
+            })
+    }
 
     return (
-        <form>
-            <Label text="Save" htmlFor="savefile"/>
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <Label text="Save" htmlFor="mod_file"/>
             <div className="relative bg-white shadow text-black h-full w-full mb-4">
                 <input
                     className="absolute left-0 top-0 opacity-0 cursor-pointer w-full h-full"
                     onChange={e => setFileName(e.currentTarget.files[0].name)}
-                    name="savefile"
-                    id="savefile" type="file"/>
+                    name="mod_file"
+                    ref={register}
+                    id="mod_file"
+                    type="file"/>
                 <div className="px-2 py-2">{fileName}</div>
             </div>
             <Button isSubmit={true}>Upload</Button>

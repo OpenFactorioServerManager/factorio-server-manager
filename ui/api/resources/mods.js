@@ -23,6 +23,17 @@ const mods = {
         const response = await client.post('/api/mods/update', data)
         return response.data;
     },
+    upload: async file => {
+        let formData = new FormData();
+        formData.append("mod_file", file);
+
+        const response = await client.post('/api/mods/upload', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        return response.data;
+    },
     deleteAll: async () => {
         const response = await client.post('/api/mods/delete/all');
         return response.data;
