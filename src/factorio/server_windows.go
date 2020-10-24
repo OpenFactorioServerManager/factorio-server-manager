@@ -42,23 +42,23 @@ func setCtrlHandlingIsDisabledForThisProcess(disabled bool) {
 	}
 }
 
-func (f *Server) Kill() error {
-	err := f.Cmd.Process.Signal(os.Kill)
+func (server *Server) Kill() error {
+	err := server.Cmd.Process.Signal(os.Kill)
 	if err != nil {
 		if err.Error() == "os: process already finished" {
-			f.Running = false
+			server.Running = false
 			return err
 		}
 		log.Printf("Error sending SIGKILL to Factorio process: %s", err)
 		return err
 	}
-	f.Running = false
+	server.Running = false
 	log.Println("Sent SIGKILL to Factorio process. Factorio forced to exit.")
 
 	return nil
 }
 
-func (f *Server) Stop() error {
+func (server *Server) Stop() error {
 	// Disable our own handling of CTRL+C, so we don't close when we send it to the console.
 	setCtrlHandlingIsDisabledForThisProcess(true)
 
@@ -72,11 +72,11 @@ func (f *Server) Stop() error {
 	// to inject filesystem logic into what should be a process-level Stop() routine), so our best option
 	// is to just wait an arbitrary amount of time and hope that the save is successful in that time.
 	time.Sleep(2 * time.Second)
-	f.Cmd.Process.Signal(os.Kill)
+	server.Cmd.Process.Signal(os.Kill)
 
 	// Re-enable handling of CTRL+C after we're sure that the factrio server is shut down.
 	setCtrlHandlingIsDisabledForThisProcess(false)
 
-	f.Running = false
+	server.Running = false
 	return nil
 }

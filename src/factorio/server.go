@@ -38,19 +38,19 @@ type Server struct {
 var instantiated Server
 var once sync.Once
 
-func (f *Server) autostart() {
+func (server *Server) autostart() {
 
 	var err error
-	if f.BindIP == "" {
-		f.BindIP = "0.0.0.0"
+	if server.BindIP == "" {
+		server.BindIP = "0.0.0.0"
 
 	}
-	if f.Port == 0 {
-		f.Port = 34197
+	if server.Port == 0 {
+		server.Port = 34197
 	}
-	f.Savefile = "Load Latest"
+	server.Savefile = "Load Latest"
 
-	err = f.Run()
+	err = server.Run()
 
 	if err != nil {
 		log.Printf("Error starting Factorio server: %+v", err)
@@ -64,8 +64,8 @@ func SetFactorioServer(server Server) {
 }
 
 func NewFactorioServer() (err error) {
-	f := Server{}
-	f.Settings = make(map[string]interface{})
+	server := Server{}
+	server.Settings = make(map[string]interface{})
 	config := bootstrap.GetConfig()
 	if err = os.MkdirAll(config.FactorioConfigDir, 0755); err != nil {
 		log.Printf("failed to create config directory: %v", err)
@@ -123,7 +123,7 @@ func NewFactorioServer() (err error) {
 		return
 	}
 
-	if err = json.NewDecoder(settings).Decode(&f.Settings); err != nil {
+	if err = json.NewDecoder(settings).Decode(&server.Settings); err != nil {
 		log.Printf("error reading %s: %v", settingsPath, err)
 		return
 	}
@@ -145,7 +145,7 @@ func NewFactorioServer() (err error) {
 
 	reg := regexp.MustCompile("Version.*?((\\d+\\.)?(\\d+\\.)?(\\*|\\d+)+)")
 	found := reg.FindStringSubmatch(string(out))
-	err = f.Version.UnmarshalText([]byte(found[1]))
+	err = server.Version.UnmarshalText([]byte(found[1]))
 	if err != nil {
 		log.Printf("could not parse version: %v", err)
 		return
@@ -165,10 +165,10 @@ func NewFactorioServer() (err error) {
 		return
 	}
 
-	f.BaseModVersion = modInfo.Version
+	server.BaseModVersion = modInfo.Version
 
 	// load admins from additional file
-	if (f.Version.Greater(Version{0, 17, 0})) {
+	if (server.Version.Greater(Version{0, 17, 0})) {
 		if _, err = os.Stat(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)); os.IsNotExist(err) {
 			//save empty admins-file
 			_ = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
@@ -187,11 +187,11 @@ func NewFactorioServer() (err error) {
 				return
 			}
 
-			f.Settings["admins"] = jsonData
+			server.Settings["admins"] = jsonData
 		}
 	}
 
-	SetFactorioServer(f)
+	SetFactorioServer(server)
 
 	if config.Autostart == "true" {
 		go instantiated.autostart()
@@ -200,15 +200,14 @@ func NewFactorioServer() (err error) {
 	return
 }
 
-// todo refactor remove return value err
-func GetFactorioServer() (f Server) {
-	return instantiated
+func GetFactorioServer() (f *Server) {
+	return &instantiated
 }
 
-func (f *Server) Run() error {
+func (server *Server) Run() error {
 	var err error
 	config := bootstrap.GetConfig()
-	data, err := json.MarshalIndent(f.Settings, "", "  ")
+	data, err := json.MarshalIndent(server.Settings, "", "  ")
 	if err != nil {
 		log.Println("Failed to marshal FactorioServerSettings: ", err)
 	} else {
@@ -225,73 +224,73 @@ func (f *Server) Run() error {
 	}
 
 	args = append(args,
-		"--bind", (f.BindIP),
-		"--port", strconv.Itoa(f.Port),
+		"--bind", server.BindIP,
+		"--port", strconv.Itoa(server.Port),
 		"--server-settings", filepath.Join(config.FactorioConfigDir, config.SettingsFile),
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass)
 
-	if (f.Version.Greater(Version{0, 17, 0})) {
+	if (server.Version.Greater(Version{0, 17, 0})) {
 		args = append(args, "--server-adminlist", filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
 	}
 
-	if f.Savefile == "Load Latest" {
+	if server.Savefile == "Load Latest" {
 		args = append(args, "--start-server-load-latest")
 	} else {
-		args = append(args, "--start-server", filepath.Join(config.FactorioSavesDir, f.Savefile))
+		args = append(args, "--start-server", filepath.Join(config.FactorioSavesDir, server.Savefile))
 	}
 
 	if config.GlibcCustom == "true" {
 		log.Println("Starting server with command: ", config.GlibcLocation, args)
-		f.Cmd = exec.Command(config.GlibcLocation, args...)
+		server.Cmd = exec.Command(config.GlibcLocation, args...)
 	} else {
 		log.Println("Starting server with command: ", config.FactorioBinary, args)
-		f.Cmd = exec.Command(config.FactorioBinary, args...)
+		server.Cmd = exec.Command(config.FactorioBinary, args...)
 	}
 
-	f.StdOut, err = f.Cmd.StdoutPipe()
+	server.StdOut, err = server.Cmd.StdoutPipe()
 	if err != nil {
 		log.Printf("Error opening stdout pipe: %s", err)
 		return err
 	}
 
-	f.StdIn, err = f.Cmd.StdinPipe()
+	server.StdIn, err = server.Cmd.StdinPipe()
 	if err != nil {
 		log.Printf("Error opening stdin pipe: %s", err)
 		return err
 	}
 
-	f.StdErr, err = f.Cmd.StderrPipe()
+	server.StdErr, err = server.Cmd.StderrPipe()
 	if err != nil {
 		log.Printf("Error opening stderr pipe: %s", err)
 		return err
 	}
 
-	go f.parseRunningCommand(f.StdOut)
-	go f.parseRunningCommand(f.StdErr)
+	go server.parseRunningCommand(server.StdOut)
+	go server.parseRunningCommand(server.StdErr)
 
-	err = f.Cmd.Start()
+	err = server.Cmd.Start()
 	if err != nil {
 		log.Printf("Factorio process failed to start: %s", err)
 		return err
 	}
-	f.Running = true
+	server.Running = true
 
-	err = f.Cmd.Wait()
+	err = server.Cmd.Wait()
 	if err != nil {
 		log.Printf("Factorio process exited with error: %s", err)
-		f.Running = false
+		server.Running = false
 		return err
 	}
 
 	return nil
 }
 
-func (f *Server) parseRunningCommand(std io.ReadCloser) (err error) {
+func (server *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 	stdScanner := bufio.NewScanner(std)
 	for stdScanner.Scan() {
 		log.Printf("Factorio Server: %s", stdScanner.Text())
-		if err := f.writeLog(stdScanner.Text()); err != nil {
+		if err := server.writeLog(stdScanner.Text()); err != nil {
 			log.Printf("Error: %s", err)
 		}
 
@@ -300,7 +299,7 @@ func (f *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 		if len(line) > 1 {
 			// Check if Factorio Server reports any errors if so handle it
 			if line[1] == "Error" {
-				err := f.checkLogError(line)
+				err := server.checkLogError(line)
 				if err != nil {
 					log.Printf("Error checking Factorio Server Error: %s", err)
 				}
@@ -327,7 +326,7 @@ func (f *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 	return nil
 }
 
-func (f *Server) writeLog(logline string) error {
+func (server *Server) writeLog(logline string) error {
 	config := bootstrap.GetConfig()
 	logfileName := filepath.Join(config.FactorioDir, "factorio-server-console.log")
 	file, err := os.OpenFile(logfileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
@@ -347,7 +346,7 @@ func (f *Server) writeLog(logline string) error {
 	return nil
 }
 
-func (f *Server) checkLogError(logline []string) error {
+func (server *Server) checkLogError(logline []string) error {
 	// TODO Handle errors generated by running Factorio Server
 	log.Println(logline)
 
