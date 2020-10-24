@@ -84,7 +84,7 @@ const Mods = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {factorioVersion !== null && installedMods.map(mod => <Mod mod={mod} key={mod.name}
+                        {factorioVersion !== null && installedMods.map((mod, i) => <Mod mod={mod} key={i}
                                                                                    refreshInstalledMods={fetchInstalledMods}
                                                                                    factorioVersion={factorioVersion}/>)}
                         </tbody>
