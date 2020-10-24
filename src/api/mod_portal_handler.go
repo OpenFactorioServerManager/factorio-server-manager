@@ -185,6 +185,10 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, datum := range data {
+		// skip base mod because it is already included in factorio
+		if datum.Name == "base" {
+			continue
+		}
 		details, err, statusCode := factorio.ModPortalModDetails(datum.Name)
 		if err != nil || statusCode != http.StatusOK {
 			resp = fmt.Sprintf("Error in getting mod details from mod portal: %s", err)
