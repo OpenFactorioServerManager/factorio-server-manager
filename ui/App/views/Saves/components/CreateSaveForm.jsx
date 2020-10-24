@@ -28,10 +28,7 @@ const CreateSaveForm = ({onSuccess}) => {
                 <Input inputRef={register({required: true})} name="savefile"/>
                 {errors.savefile && <span className="block text-red">Savefile Name is required</span>}
             </div>
-            { isLoading
-                ? <Button type="success" isSubmit={true}>Create Save <FontAwesomeIcon icon={faSpinner} spin={true}/></Button>
-                : <Button type="success" isSubmit={true}>Create Save</Button>
-            }
+            <Button type="success" isLoading={isLoading} isSubmit={true}>Create Save</Button>
         </form>
     )
 }

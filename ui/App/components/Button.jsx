@@ -1,6 +1,8 @@
 import React from "react";
+import {faSpinner} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-const Button = ({ children, type, onClick, isSubmit, className, size, isDisabled = false }) => {
+const Button = ({ children, type, onClick, isSubmit, className, size, isLoading, isDisabled = false }) => {
 
     let color = '';
     let padding = '';
@@ -27,7 +29,7 @@ const Button = ({ children, type, onClick, isSubmit, className, size, isDisabled
     return (
         <button onClick={onClick} disabled={isDisabled} className={`${className ? className: null} ${isDisabled ? "bg-opacity-50 cursor-not-allowed" : null} ${padding} ${color} inline-block accentuated text-black font-bold`}
         type={isSubmit ? 'submit' : 'button'}>
-            {children}
+            {children} { isLoading && <FontAwesomeIcon icon={faSpinner} spin={true}/>}
         </button>
     );
 }
