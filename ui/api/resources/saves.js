@@ -13,9 +13,9 @@ export default {
         const response = await client.get(`/api/saves/create/${name}`);
         return response.data;
     },
-    upload: async (data) => {
+    upload: async file => {
         let formData = new FormData();
-        formData.append("savefile", data[0]);
+        formData.append("savefile", file);
 
         const response = await client.post(`/api/saves/upload`, formData, {
             headers: {

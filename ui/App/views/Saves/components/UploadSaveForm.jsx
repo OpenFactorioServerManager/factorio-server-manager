@@ -8,12 +8,11 @@ const UploadSaveForm = ({onSuccess}) => {
     const {register, handleSubmit, errors} = useForm();
     const [fileName, setFileName] = useState('Select File ...');
 
-    const onSubmit = async (data, e) => {
-        const res = await saves.upload(data.savefile);
-        if (res.success) {
+    const onSubmit = (data, e) => {
+        saves.upload(data.savefile[0]).then(_ => {
             e.target.reset();
             onSuccess();
-        }
+        })
     };
 
     return (
