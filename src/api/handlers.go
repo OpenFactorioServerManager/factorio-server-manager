@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -299,6 +300,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	for timeout <= 3 {
 		time.Sleep(1 * time.Second)
 		if server.Running {
+			log.Printf("Running Factorio server detected")
 			break
 		} else {
 			log.Printf("Did not detect running Factorio server attempt: %+v", timeout)
@@ -598,7 +600,19 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Received settings JSON: %s", body)
 	var server = factorio.GetFactorioServer()
-	err = json.Unmarshal(body, &server.Settings)
+
+	// Race Condition while unmarshal possible
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go func() {
+		err = json.Unmarshal(body, &server.Settings)
+		wg.Done()
+	}()
+
+	// Wait for unmarshal to avoid race condition
+	wg.Wait()
+
 	if err != nil {
 		resp = fmt.Sprintf("Error unmarhaling server settings JSON: %s", err)
 		log.Println(resp)
