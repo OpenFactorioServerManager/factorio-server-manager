@@ -51,8 +51,6 @@ const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
                         (satisfies(factorioVersion, "1.0.0") && satisfies(coerce(release.info_json.factorio_version).version, "0.18.x"))
                     )
                 ) {
-                    console.log(release.version)
-                    console.log(newestRelease)
                     if (!newestRelease) {
                         newestRelease = release;
                     } else if (gt(coerce(release.version).version, coerce(newestRelease.version).version)) {
