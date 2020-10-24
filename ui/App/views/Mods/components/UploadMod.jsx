@@ -9,13 +9,16 @@ const UploadMod = ({refetchInstalledMods}) => {
     const defaultFileName = 'Select File ...'
     const [fileName, setFileName] = useState(defaultFileName);
     const {register, handleSubmit } = useForm();
+    const [isUploading, setIsUploading] = useState(false);
 
     const onSubmit = (data, e) => {
+        setIsUploading(true)
         modsResource.upload(data.mod_file[0])
             .then(refetchInstalledMods)
             .finally(() => {
                 e.target.reset()
                 setFileName(defaultFileName)
+                setIsUploading(false);
             })
     }
 
@@ -32,7 +35,7 @@ const UploadMod = ({refetchInstalledMods}) => {
                     type="file"/>
                 <div className="px-2 py-2">{fileName}</div>
             </div>
-            <Button isSubmit={true}>Upload</Button>
+            <Button isLoading={isUploading} isSubmit={true}>Upload</Button>
         </form>
     )
 }
