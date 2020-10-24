@@ -10,6 +10,7 @@ const LoadMods = ({refreshMods}) => {
 
     const [saves, setSaves] = useState([]);
     const {register, handleSubmit} = useForm();
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -18,10 +19,14 @@ const LoadMods = ({refreshMods}) => {
     }, []);
 
     const loadMods = data => {
+        setIsLoading(true)
         savesResource.mods(data.save)
             .then(({mods}) => {
-                modsResource.portal.installMultiple(mods).then(refreshMods)
+                modsResource.portal.installMultiple(mods)
+                    .then(refreshMods)
+                    .finally(() => setIsLoading(false))
             })
+            .catch(() => setIsLoading(false))
     }
 
     return (
@@ -30,7 +35,7 @@ const LoadMods = ({refreshMods}) => {
             <Select name="save" inputRef={register} className="mb-4">
                 {saves?.map(save => <option value={save.name} key={save.name}>{save.name}</option>)}
             </Select>
-            <Button isSubmit={true}>Load</Button>
+            <Button isSubmit={true} isLoading={isLoading}>Load</Button>
         </form>
     )
 }
