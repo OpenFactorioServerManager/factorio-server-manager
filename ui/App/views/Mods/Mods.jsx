@@ -116,7 +116,7 @@ const Mods = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {modPacks.map((pack, i) => <ModPack key={i} modPack={pack}/>)}
+                        {modPacks.map((pack, i) => <ModPack key={i} modPack={pack} reloadModPacks={fetchModPacks}/>)}
                         </tbody>
                     </table>
                 }
