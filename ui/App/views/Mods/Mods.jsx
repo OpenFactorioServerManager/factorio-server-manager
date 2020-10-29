@@ -10,10 +10,13 @@ import AddMod from "./components/AddMod/AddMod";
 import UploadMod from "./components/UploadMod";
 import LoadMods from "./components/LoadMods";
 import Fuse from "fuse.js";
+import CreateModPack from "./components/CreateModPack";
+import ModPack from "./components/ModPack";
 
 const Mods = () => {
 
     const [installedMods, setInstalledMods] = useState([]);
+    const [modPacks, setModPacks] = useState([])
     const [factorioVersion, setFactorioVersion] = useState(null);
     const [fuse, setFuse] = useState(undefined);
 
@@ -21,6 +24,11 @@ const Mods = () => {
         modsResource.installed()
             .then(setInstalledMods);
     };
+
+    const fetchModPacks = () => {
+        modsResource.packs.list()
+            .then(setModPacks)
+    }
 
     const deleteAllMods = () => {
         modsResource.deleteAll()
@@ -32,6 +40,7 @@ const Mods = () => {
             .then(data => {
                 setFactorioVersion(data.base_mod_version)
                 fetchInstalledMods();
+                fetchModPacks();
             })
 
         // fetch list of mods
@@ -85,11 +94,10 @@ const Mods = () => {
                         </thead>
                         <tbody>
                         {factorioVersion !== null && installedMods.map((mod, i) => <Mod mod={mod} key={i}
-                                                                                   refreshInstalledMods={fetchInstalledMods}
-                                                                                   factorioVersion={factorioVersion}/>)}
+                                                                                        refreshInstalledMods={fetchInstalledMods}
+                                                                                        factorioVersion={factorioVersion}/>)}
                         </tbody>
                     </table>
-
                 }
                 actions={
                     <Button size="sm" type="danger" onClick={deleteAllMods}>Delete all Mods</Button>
@@ -100,7 +108,20 @@ const Mods = () => {
                 title="Mod packs"
                 className="mb-6"
                 content={
-                    "Test"
+                    <table className="w-full">
+                        <thead>
+                        <tr className="text-left py-1">
+                            <th>Name</th>
+                            <th/>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {modPacks.map((pack, i) => <ModPack key={i} modPack={pack}/>)}
+                        </tbody>
+                    </table>
+                }
+                actions={
+                    <CreateModPack onSuccess={fetchModPacks}/>
                 }
             />
         </div>

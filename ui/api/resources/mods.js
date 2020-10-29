@@ -74,6 +74,32 @@ const mods = {
             const response = await client.get(`/api/mods/portal/info/${mod}`);
             return response.data;
         }
+    },
+    packs: {
+        list: async () => {
+            const response = await client.get('/api/mods/packs/list');
+            return response.data;
+        },
+        create: async name => {
+            const response = await client.post('/api/mods/packs/create', {name});
+            return response.data;
+        },
+        delete: async name => {
+            const response = await client.post(`/api/mods/packs/${name}/delete`);
+            return response.data;
+        },
+        download: async name => {
+            const response = await client.get(`/api/mods/packs/${name}/download`);
+            return response.data;
+        },
+        load: async name => {
+            const response = await client.post(`/api/mods/packs/${name}/load`);
+            return response.data;
+        },
+        mods: async name => {
+            const response = await client.get(`/api/mods/packs/${name}/list`);
+            return response.data;
+        },
     }
 }
 

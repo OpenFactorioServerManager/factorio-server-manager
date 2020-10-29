@@ -19,9 +19,6 @@ type ModPackResult struct {
 	Name string         `json:"name"`
 	Mods ModsResultList `json:"mods"`
 }
-type ModPackResultList struct {
-	ModPacks []ModPackResult `json:"mod_packs"`
-}
 
 func NewModPackMap() (ModPackMap, error) {
 	var err error
@@ -79,18 +76,18 @@ func (modPackMap *ModPackMap) reload() error {
 	return nil
 }
 
-func (modPackMap *ModPackMap) ListInstalledModPacks() ModPackResultList {
-	var modPackResultList ModPackResultList
+func (modPackMap *ModPackMap) ListInstalledModPacks() []ModPackResult {
+	list := make([]ModPackResult, 0)
 
 	for modPackName, modPack := range *modPackMap {
 		var modPackResult ModPackResult
 		modPackResult.Name = modPackName
 		modPackResult.Mods = modPack.Mods.ListInstalledMods()
 
-		modPackResultList.ModPacks = append(modPackResultList.ModPacks, modPackResult)
+		list = append(list, modPackResult)
 	}
 
-	return modPackResultList
+	return list
 }
 
 func (modPackMap *ModPackMap) CreateModPack(modPackName string) error {
@@ -155,7 +152,7 @@ func (modPackMap *ModPackMap) CreateModPack(modPackName string) error {
 	//reload the ModPackList
 	err = modPackMap.reload()
 	if err != nil {
-		log.Printf("error reloading ModPacks: %s", err)
+		log.Printf("error reloading ModPack: %s", err)
 		return err
 	}
 
@@ -181,7 +178,7 @@ func (modPackMap *ModPackMap) CreateEmptyModPack(packName string) error {
 
 	err = modPackMap.reload()
 	if err != nil {
-		log.Printf("error reloading ModPacks: %s", err)
+		log.Printf("error reloading ModPack: %s", err)
 		return err
 	}
 	return nil

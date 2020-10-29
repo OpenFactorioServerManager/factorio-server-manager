@@ -85,7 +85,7 @@ func ModPackCreateHandler(w http.ResponseWriter, r *http.Request) {
 	var modPackStruct struct {
 		Name string `json:"name"`
 	}
-	ReadFromRequestBody(w, r, &resp, &modPackStruct)
+	err = ReadFromRequestBody(w, r, &resp, &modPackStruct)
 	if err != nil {
 		return
 	}
