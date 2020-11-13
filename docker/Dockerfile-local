@@ -17,10 +17,9 @@ RUN apk add --no-cache curl tar xz unzip jq
 WORKDIR /opt
 
 # Install FSM
-RUN curl --location "https://github.com/mroote/factorio-server-manager/releases/download/${MANAGER_VERSION}/factorio-server-manager-linux-${MANAGER_VERSION}.zip" \
-         --output /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
-    && unzip /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
-    && rm /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
+COPY factorio-server-manager-linux.zip /factorio-server-manager-linux.zip
+RUN unzip /factorio-server-manager-linux.zip \
+    && rm /factorio-server-manager-linux.zip \
     && mv factorio-server-manager fsm
 
 COPY entrypoint.sh /opt
