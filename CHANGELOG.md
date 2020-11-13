@@ -5,11 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Updated adminLTE to v3 with bootstrap 4. - Thanks to @knoxfighter
 - Autostart factorio, when starting the server-manager - Thanks to @Psychomantis71
 
+### Changed
+- Complete rework of the UI - Thanks to @jannaahs
+- Backend is refactored and improved - Thanks to @knoxfighter and @jannaahs
+
 ### Fixed
-- Console page is know working correctly (directly reloading still bugged until new UI) - Thanks to @jannaahs
+- Console page is now working correctly (directly reloading still bugged until new UI) - Thanks to @jannaahs
+- Mod Search fixed by new implementation, which does not rely on the search endpoint of the mod portal - Thanks to @jannaahs
 
 ## [0.8.2] - 2020-01-08
 Many bugfixes and a few small features in this release.
