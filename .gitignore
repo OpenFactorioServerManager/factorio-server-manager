@@ -10,7 +10,6 @@ build/
 /mod_packs/*
 npm-debug.log
 .idea/
-/package-lock.json
 factorio.auth
 /pkg/
 mix-manifest.json
