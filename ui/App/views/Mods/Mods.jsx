@@ -2,7 +2,6 @@ import Panel from "../../components/Panel";
 import React, {useEffect, useState} from "react";
 import modsResource from "../../../api/resources/mods";
 import Button from "../../components/Button";
-import Mod from "./components/Mod";
 import server from "../../../api/resources/server";
 import TabControl from "../../components/Tabs/TabControl";
 import Tab from "../../components/Tabs/Tab";
@@ -21,7 +20,6 @@ const Mods = () => {
     const [factorioVersion, setFactorioVersion] = useState(null);
     const [fuse, setFuse] = useState(undefined);
     const [isDeletingAllMods, setIsDeletingAllMods] = useState(false);
-    const [isDownloadingAllMods, setIsDownloadingAllMods] = useState(false);
     const [isUpdatingAllMods, setIsUpdatingAllMods] = useState(false);
     const [updatableMods, setUpdatableMods] = useState([]);
 
@@ -44,12 +42,6 @@ const Mods = () => {
         modsResource.deleteAll()
             .then(fetchInstalledMods)
             .finally(() => setIsDeletingAllMods(false))
-    }
-
-    const downloadAllMods = () => {
-        setIsDownloadingAllMods(true)
-        modsResource.downloadAll()
-            .finally(() => setIsDownloadingAllMods(false))
     }
 
     const updateAllMods = () => {
@@ -105,9 +97,9 @@ const Mods = () => {
             .then(fetchInstalledMods)
     }
 
-    const updateMod = (modName, downloadUrl, fileName) => {
+    const updateMod = version => {
         return modsResource
-            .update(modName, downloadUrl, fileName)
+            .update(version)
             .then(fetchInstalledMods)
     }
 
