@@ -65,8 +65,9 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse, refetchInstalledMods}) =>
     }
 
     const install = async release => {
-        await modsResource.portal.install(release.download_url, release.file_name, selectedMod.item.name)
-        refetchInstalledMods()
+        return modsResource.portal
+            .install(release.download_url, release.file_name, selectedMod.item.name)
+            .then(refetchInstalledMods)
     }
 
     const incrementHoveredMod = () => {

@@ -16,7 +16,8 @@ const CreateModPack = ({onSuccess}) => {
     const createModPack = (data) => {
         setIsCreating(true);
 
-        modsResource.packs.create(data.name)
+        modsResource.packs
+            .create(data.name)
             .then(onSuccess)
             .finally(() => {
                 setIsCreating(false)
@@ -25,7 +26,7 @@ const CreateModPack = ({onSuccess}) => {
     }
 
     return <>
-        <Button onClick={() => setIsOpen(true)}>Create Mod Pack</Button>
+        <Button size="sm" onClick={() => setIsOpen(true)}>Add ModPack with current installed Mods</Button>
         <Modal title="Create Mod Pack" isOpen={isOpen} content={
             <form onSubmit={handleSubmit(createModPack)}>
                 <div className="mb-4">
@@ -34,9 +35,11 @@ const CreateModPack = ({onSuccess}) => {
                 </div>
                 <Button size="sm" isLoading={isCreating} isSubmit={true}>Create</Button>
             </form>
-        }>
-
-        </Modal>
+        }
+        actions={
+            <Button onClick={() => setIsOpen(false)} size="sm" type="danger">Cancel</Button>
+        }
+        />
     </>
 }
 

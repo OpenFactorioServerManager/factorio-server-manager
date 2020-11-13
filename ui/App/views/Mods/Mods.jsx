@@ -12,6 +12,7 @@ import LoadMods from "./components/LoadMods";
 import Fuse from "fuse.js";
 import CreateModPack from "./components/CreateModPack";
 import ModPack from "./components/ModPack";
+import ModList from "./components/ModList";
 
 const Mods = () => {
 
@@ -19,6 +20,14 @@ const Mods = () => {
     const [modPacks, setModPacks] = useState([])
     const [factorioVersion, setFactorioVersion] = useState(null);
     const [fuse, setFuse] = useState(undefined);
+    const [isDeletingAllMods, setIsDeletingAllMods] = useState(false);
+    const [isDownloadingAllMods, setIsDownloadingAllMods] = useState(false);
+    const [isUpdatingAllMods, setIsUpdatingAllMods] = useState(false);
+    const [updatableMods, setUpdatableMods] = useState([]);
+
+    const addUpdatableMod = mod => {
+        setUpdatableMods(mods => [...mods, mod])
+    };
 
     const fetchInstalledMods = () => {
         modsResource.installed()
@@ -31,8 +40,29 @@ const Mods = () => {
     }
 
     const deleteAllMods = () => {
+        setIsDeletingAllMods(true);
         modsResource.deleteAll()
             .then(fetchInstalledMods)
+            .finally(() => setIsDeletingAllMods(false))
+    }
+
+    const downloadAllMods = () => {
+        setIsDownloadingAllMods(true)
+        modsResource.downloadAll()
+            .finally(() => setIsDownloadingAllMods(false))
+    }
+
+    const updateAllMods = () => {
+        setIsUpdatingAllMods(true);
+
+        let promises = [];
+        for (const updatableMod of updatableMods) {
+            promises.push(modsResource.update(updatableMod))
+        }
+
+        Promise.all(promises)
+            .then(fetchInstalledMods)
+            .finally(() => setIsUpdatingAllMods(false));
     }
 
     useEffect(() => {
@@ -63,6 +93,24 @@ const Mods = () => {
 
     }, []);
 
+    const toggleMod = modName => {
+        return modsResource
+            .toggle(modName)
+            .then(fetchInstalledMods)
+    }
+
+    const deleteMod = modName => {
+        return modsResource
+            .delete(modName)
+            .then(fetchInstalledMods)
+    }
+
+    const updateMod = (modName, downloadUrl, fileName) => {
+        return modsResource
+            .update(modName, downloadUrl, fileName)
+            .then(fetchInstalledMods)
+    }
+
     return (
         <div>
             <TabControl>
@@ -81,26 +129,14 @@ const Mods = () => {
                 title="Mods"
                 className="mb-6"
                 content={
-                    <table className="w-full">
-                        <thead>
-                        <tr className="text-left py-1">
-                            <th>Name</th>
-                            <th>Enabled</th>
-                            <th>Compatibility</th>
-                            <th>Mod Version</th>
-                            <th>Factorio Version</th>
-                            <th/>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {factorioVersion !== null && installedMods.map((mod, i) => <Mod mod={mod} key={i}
-                                                                                        refreshInstalledMods={fetchInstalledMods}
-                                                                                        factorioVersion={factorioVersion}/>)}
-                        </tbody>
-                    </table>
+                    <ModList addUpdatableMod={addUpdatableMod} toggleMod={toggleMod} updateMod={updateMod} deleteMod={deleteMod} mods={installedMods} factorioVersion={factorioVersion}/>
                 }
                 actions={
-                    <Button size="sm" type="danger" onClick={deleteAllMods}>Delete all Mods</Button>
+                    <>
+                        <Button size="sm" className="mr-2" type="danger" isLoading={isDeletingAllMods} onClick={deleteAllMods}>Delete all Mods</Button>
+                        <Button size="sm" className="mr-2" isLoading={isUpdatingAllMods} onClick={updateAllMods}>Update all Mods</Button>
+                        <a className="bg-gray-light py-1 px-2 hover:glow-orange hover:bg-orange inline-block accentuated text-black font-bold" href={modsResource.downloadAllURL}>Download all Mods</a>
+                    </>
                 }
             />
 
@@ -108,17 +144,7 @@ const Mods = () => {
                 title="Mod packs"
                 className="mb-6"
                 content={
-                    <table className="w-full">
-                        <thead>
-                        <tr className="text-left py-1">
-                            <th>Name</th>
-                            <th/>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {modPacks.map((pack, i) => <ModPack key={i} modPack={pack} reloadModPacks={fetchModPacks}/>)}
-                        </tbody>
-                    </table>
+                    modPacks.map((pack, i) => <ModPack factorioVersion={factorioVersion} key={i} modPack={pack} reloadMods={fetchInstalledMods} reloadModPacks={fetchModPacks}/>)
                 }
                 actions={
                     <CreateModPack onSuccess={fetchModPacks}/>

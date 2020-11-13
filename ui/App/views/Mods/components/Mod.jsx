@@ -12,31 +12,10 @@ import modsResource from "../../../../api/resources/mods";
 import React, {useEffect, useState} from "react";
 import {coerce, gt, satisfies} from "semver";
 
-const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
+const Mod = ({ mod, factorioVersion, toggleMod, deleteMod, updateMod, addUpdatableMod}) => {
 
     const [newVersion, setNewVersion] = useState(null)
     const [icon, setIcon] = useState(faArrowCircleUp)
-
-    const toggleMod = async modName => {
-        modsResource
-            .toggle(modName)
-            .then(refreshInstalledMods)
-    }
-
-    const deleteMod = async modName => {
-        modsResource
-            .delete(modName)
-            .then(refreshInstalledMods)
-    }
-
-    const updateMod = async (modName, download_url, file_name) => {
-        setIcon(faSpinner);
-        modsResource.update(modName, download_url, file_name)
-            .then(async () => {
-                await refreshInstalledMods();
-            })
-            .finally(() => setIcon(faArrowCircleUp))
-    }
 
     useEffect(() => {
         (async () => {
@@ -60,11 +39,15 @@ const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
             });
 
             if (newestRelease && newestRelease.version !== mod.version) {
-                setNewVersion({
+                const installableVersion = {
                     downloadUrl: newestRelease.download_url,
-                    file_name: newestRelease.file_name,
-                    version: newestRelease.version
-                });
+                    fileName: newestRelease.file_name,
+                    modName: mod.name
+                }
+                setNewVersion(installableVersion);
+                if (addUpdatableMod !== null) {
+                    addUpdatableMod(installableVersion)
+                }
             } else {
                 setNewVersion(null);
             }
@@ -90,7 +73,11 @@ const Mod = ({refreshInstalledMods, mod, factorioVersion}) => {
                 }
             </td>
             <td className="pr-4">{mod.version} {newVersion && <FontAwesomeIcon spin={icon === faSpinner}
-                                                                               onClick={() => updateMod(mod.name, newVersion.downloadUrl, mod.file_name)}
+                                                                               onClick={() => {
+                                                                                   setIcon(faSpinner)
+                                                                                   updateMod(newVersion)
+                                                                                       .finally(() => setIcon(faArrowCircleUp))
+                                                                               }}
                                                                                className="hover:text-orange cursor-pointer ml-1"
                                                                                icon={icon}/>}</td>
             <td className="pr-4">{mod.factorio_version}</td>

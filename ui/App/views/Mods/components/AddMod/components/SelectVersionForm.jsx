@@ -13,8 +13,6 @@ const SelectVersionForm = ({releases, isOpen, close, install}) => {
         close()
     }
 
-    // const orderedReleases = releases.reverse()
-
     return (
         <Modal
             isOpen={isOpen}
