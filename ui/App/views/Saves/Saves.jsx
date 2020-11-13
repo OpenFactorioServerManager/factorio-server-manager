@@ -57,8 +57,8 @@ const Saves = ({serverStatus}) => {
                 className="mb-4"
                 title="Saves"
                 content={
-                    <div className="overflow-x-auto">
-                        <table style={{"width" : "max-content"}}>
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full">
                             <thead>
                             <tr className="text-left py-1">
                                 <th>Name</th>
