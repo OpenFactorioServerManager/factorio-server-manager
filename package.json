@@ -11,19 +11,18 @@
     "build": "npm run production",
     "prod": "npm run production",
     "production": "webpack --config=webpack.config.js --mode=production --hide-modules --progress",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css": "tailwindcss build ui/index.scss -o app/index.css"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mroote/factorio-server-manager.git"
+    "url": "git+https://github.com/OpenFactorioServerManager/factorio-server-manager.git"
   },
   "author": "Mitch Roote <mitch@r00t.ca>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mroote/factorio-server-manager/issues"
+    "url": "https://github.com/OpenFactorioServerManager/factorio-server-manager/issues"
   },
-  "homepage": "https://github.com/mroote/factorio-server-manager#readme",
+  "homepage": "https://github.com/OpenFactorioServerManager/factorio-server-manager#readme",
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
