@@ -1,6 +1,7 @@
 # Build tool for Factorio Server Manager
 
 NODE_ENV:=production
+GO111MODULE:="on"
 
 #TODO add support for a mac build maybe?
 UNAME := $(shell uname)
