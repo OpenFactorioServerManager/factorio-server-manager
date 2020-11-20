@@ -1,7 +1,7 @@
 version: "3"
 services:
   factorio-server-manager:
-    image: "sammann/fsm-docker:latest"
+    image: "ofsm/ofsm:develop"
     container_name: "factorio-server-manager"
     restart: "unless-stopped"
     environment:

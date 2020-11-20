@@ -85,6 +85,14 @@ Authentication is supported in the application but it is recommended to ensure a
 ## Development
 For development purposes it also has the ability to create the docker image from local sourcecode. This is done by running `build.sh` in the `docker` directory. This will delete all old executables and the node_modules directory (runs `make build`). The created docker image will have the tag `factorio-server-manager:dev`.
 
+### Creating release bundles
+A Dockerfile-build file is included for creating the release bundles.
+
+To create the bundle build the Dockerfile-build file with the following command. The release bundles are output to the ./dist directory.
+```
+DOCKER_BUILDKIT=1 docker build --no-cache -f Dockerfile-build -t ofsm-build --target=output -o dist .
+```
+
 ## For everyone who actually read this thing to the end
 
 And now go and build some nice factories!
