@@ -23,6 +23,6 @@ RUN curl --location "https://github.com/mroote/factorio-server-manager/releases/
     && rm /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
     && mv factorio-server-manager fsm
 
-COPY entrypoint.sh /opt
+COPY entrypoint.sh /opt/entrypoint.sh
 
 ENTRYPOINT ["/opt/entrypoint.sh"]
