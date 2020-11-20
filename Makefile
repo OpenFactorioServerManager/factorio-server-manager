@@ -1,7 +1,6 @@
 # Build tool for Factorio Server Manager
 
 NODE_ENV:=production
-GO111MODULE:="on"
 
 #TODO add support for a mac build maybe?
 UNAME := $(shell uname)
@@ -28,13 +27,13 @@ factorio-server-manager-linux:
 	@echo "Building Backend - Linux"
 	@mkdir -p factorio-server-manager
 	@cd src; \
-	GOOS=linux GOARCH=amd64 go build -o ../factorio-server-manager/factorio-server-manager .
+	GO111MODULE:="on" GOOS=linux GOARCH=amd64 go build -o ../factorio-server-manager/factorio-server-manager .
 
 factorio-server-manager-windows:
 	@echo "Building Backend - Windows"
 	@mkdir -p factorio-server-manager
 	@cd src; \
-	GOOS=windows GOARCH=386 go build -o ../factorio-server-manager/factorio-server-manager.exe .
+	GO111MODULE:="on" GOOS=windows GOARCH=386 go build -o ../factorio-server-manager/factorio-server-manager.exe .
 
 gen_release: build/factorio-server-manager-linux.zip build/factorio-server-manager-windows.zip
 	@echo "Done"
