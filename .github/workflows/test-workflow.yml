@@ -1,4 +1,7 @@
 on: [push, pull_request]
+env:
+  factorio_password: ${{ secrets.FACTORIO_USERNAME }}
+  factorio_username: ${{ secrets.FACTORIO_PASSWORD }}
 jobs:
   test-npm:
     strategy:
@@ -22,11 +25,14 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
-      - run: cd src; go test ./...
+      - if: ${{ secrets.FACTORIO_USERNAME }}
+        run: cd src; go test ./... -v
+      - if: !${{ secrets.FACTORIO_USERNAME }}
+        run: cd src; go test ./... -v -test.short
   docker-push:
     needs:  [test-npm, test-go]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/github-actions'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -44,4 +50,4 @@ jobs:
           context: ./docker/
           file: ./docker/Dockerfile-local
           push: true
-          tags: ofsm/ofsm:github-actions
+          tags: ofsm/ofsm:develop
