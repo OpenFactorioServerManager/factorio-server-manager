@@ -3,7 +3,13 @@ module.exports = {
     removeDeprecatedGapUtilities: true,
     purgeLayersByDefault: true,
   },
-  purge: [],
+  purge: {
+    mode: 'all',
+    content: [
+      './ui/**/*.jsx',
+      './ui/**/*.html',
+    ]
+},
   theme: {
     extend: {
       width: {
