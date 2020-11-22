@@ -38,7 +38,8 @@ jobs:
       - run: make build; cp build/factorio-server-manager-linux.zip docker/factorio-server-manager-linux.zip
       - id: docker_build
         uses: docker/build-push-action@v2
-        context: docker
-        file: Dockerfile-local
-        push: true
-        tags: ofsm/ofsm:github-actions
+        with:
+          context: docker
+          file: Dockerfile-local
+          push: true
+          tags: ofsm/ofsm:github-actions
