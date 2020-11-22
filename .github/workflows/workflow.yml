@@ -23,3 +23,22 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
       - run: cd src; go test ./...
+  docker-push:
+    runs-on: ubuntu-latest
+    if: github.event_name == "push" && github.ref == "refs/heads/github-actions"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - uses: actions/setup-go@v2
+      - name: Login to dockerhub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: make build; cp build/factorio-server-manager-linux.zip docker/factorio-server-manager-linux.zip
+      - id: docker_build
+        uses: docker/build-push-action@v2
+        context: docker
+        file: Dockerfile-local
+        push: true
+        tags: ofsm/ofsm:github-actions
