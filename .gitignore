@@ -17,3 +17,4 @@ mix-manifest.json
 /app/*.js*
 /app/*.css*
 .vscode
+.env
