@@ -14,6 +14,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: make gen_release
+      - run: tree
       - name: Upload release (windows)
         uses: actions/upload-release-asset@v1.0.2
         env:
