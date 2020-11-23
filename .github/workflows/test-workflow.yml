@@ -27,7 +27,7 @@ jobs:
           go-version: ${{ matrix.go }}
       - if: contains(secrets, 'FACTORIO_USERNAME')
         run: cd src; go test ./... -v
-      - if: !contains(secrets, 'FACTORIO_USERNAME')
+      - if: "!contains(secrets, 'FACTORIO_USERNAME')"
         run: cd src; go test ./... -v -test.short
   docker-push:
     needs:  [test-npm, test-go]
