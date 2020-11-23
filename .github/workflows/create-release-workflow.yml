@@ -1,0 +1,37 @@
+on:
+  release:
+    types: [created]
+jobs:
+  test-npm:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - uses: actions/setup-go@v2
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - run: make gen_release
+      - name: Upload release (windows)
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./factorio-server-manager/factorio-server-manager-windows.zip
+          asset_name: factorio-server-manager-windows-${GITHUB_REF#refs/*/}.zip
+          asset_content_type: application/octet-stream
+      - name: Upload release (linux)
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./factorio-server-manager/factorio-server-manager-linux.zip
+          asset_name: factorio-server-manager-linux-${GITHUB_REF#refs/*/}.zip
+          asset_content_type: application/octet-stream
