@@ -28,7 +28,7 @@ jobs:
       - if: ${{ matrix.go }} == 'ubuntu-latest'
         run: |
           cd src
-          if [$factorio_password != ""]; then
+          if [ "$factorio_password" != ""]; then
             go test ./... -v
           else
             go test ./... -v -test.short
