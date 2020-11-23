@@ -25,10 +25,13 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
-      - if: ${{ secrets.FACTORIO_USERNAME }}
-        run: cd src; go test ./... -v
-      - if: !${{ secrets.FACTORIO_USERNAME }}
-        run: cd src; go test ./... -v -test.short
+      - run: |
+         cd src
+         if ["$factorio_password" != ""]; then
+            go test ./... -v
+         else
+            go test ./... -v -test.short
+         fi
   docker-push:
     needs:  [test-npm, test-go]
     runs-on: ubuntu-latest
