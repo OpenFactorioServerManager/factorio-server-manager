@@ -38,7 +38,7 @@ jobs:
       - if: contains(matrix.os, 'windows')
         run: |
           cd src
-          if (Test-Path 'env:factorio_password ') {
+          if (Test-Path 'env:factorio_password') {
             echo "run full test suit"
             go test ./... -v
           } else {
