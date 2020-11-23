@@ -48,7 +48,7 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
     return (
         <>
             {/*Sidebar*/}
-            <div className="w-full md:w-88 md:fixed md:top-0 md:left-0 bg-gray-dark md:h-screen">
+            <div className="w-full md:w-88 md:fixed md:top-0 md:left-0 bg-gray-dark md:h-screen overflow-y-auto">
                 <div className="py-4 px-2 accentuated">
                     <div className="mx-4 justify-between flex text-center">
                         <span className="text-dirty-white text-xl">Factorio Server Manager</span>
@@ -96,9 +96,9 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
             </div>
 
             {/*Main*/}
-            <div className="md:ml-88 bg-gray-100 bg-black min-h-screen">
-                <div className="container mx-auto bg-gray-100 pt-16 px-6">
-                    {children}
+            <div className="md:ml-88 min-h-screen">
+                <div className="container mx-auto pt-16 px-6">
+                    {children}c
                 </div>
             </div>
         </>
