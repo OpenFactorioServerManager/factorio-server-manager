@@ -29,8 +29,10 @@ jobs:
         run: |
           cd src
           if [[ -z "$factorio_password" ]]; then
+            echo "run only short tests"
             go test ./... -v -test.short
           else
+            echo "run full test suit"
             go test ./... -v
           fi
   docker-push:
