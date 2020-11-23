@@ -2,7 +2,7 @@ on:
   release:
     types: [published]
 jobs:
-  test-npm:
+  add-assets-to-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -10,7 +10,7 @@ jobs:
       - uses: actions/setup-go@v2
       - name: Get release
         id: get_release
-        uses: bruceadams/get-release@v1
+        uses: bruceadams/get-release@v1.2.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: make gen_release
