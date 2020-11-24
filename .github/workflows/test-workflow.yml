@@ -1,4 +1,8 @@
-on: [push, pull_request]
+on: 
+  push:
+    tags-ignore:
+      - '*' # ignore all releases
+  pull_request:
 env:
   factorio_password: ${{ secrets.FACTORIO_PASSWORD }}
   factorio_username: ${{ secrets.FACTORIO_USERNAME }}
