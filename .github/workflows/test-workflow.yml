@@ -5,6 +5,8 @@ on:
     tags-ignore:
       - '*.*'
   pull_request:
+    branches:
+      - '**'
 env:
   factorio_password: ${{ secrets.FACTORIO_PASSWORD }}
   factorio_username: ${{ secrets.FACTORIO_USERNAME }}
