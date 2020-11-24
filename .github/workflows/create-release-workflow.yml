@@ -21,7 +21,7 @@ jobs:
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./build/factorio-server-manager-windows.zip
-          asset_name: 'factorio-server-manager-windows-${{GITHUB_REF#refs/*/}}.zip'
+          asset_name: factorio-server-manager-windows-${{GITHUB_REF#refs/*/}}.zip
           asset_content_type: application/octet-stream
       - name: Upload release (linux)
         uses: actions/upload-release-asset@v1.0.2
@@ -30,5 +30,5 @@ jobs:
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./build/factorio-server-manager-linux.zip
-          asset_name: 'factorio-server-manager-linux-${{GITHUB_REF#refs/*/}}.zip'
+          asset_name: factorio-server-manager-linux-${{GITHUB_REF#refs/*/}}.zip
           asset_content_type: application/octet-stream
