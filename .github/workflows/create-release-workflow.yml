@@ -56,6 +56,5 @@ jobs:
           context: ./docker/
           file: ./docker/Dockerfile-local
           push: true
-          tags: ofsm/ofsm:develop,ofsm/ofsm:${{ steps.tag_name.outputs.tag }}
-#          tags: ofsm/ofsm:latest,ofsm/ofsm:${{ steps.tag_name.outputs.tag }}
+          tags: ofsm/ofsm:latest,ofsm/ofsm:${{ steps.tag_name.outputs.tag }}
 
