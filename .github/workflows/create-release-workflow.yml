@@ -14,15 +14,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: make gen_release
-      - run: ls -al .
-      - run: ls -al ./factorio-server-manager
       - name: Upload release (windows)
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./factorio-server-manager/factorio-server-manager-windows.zip
+          asset_path: ./build/factorio-server-manager-windows.zip
           asset_name: factorio-server-manager-windows-${GITHUB_REF#refs/*/}.zip
           asset_content_type: application/octet-stream
       - name: Upload release (linux)
@@ -31,6 +29,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./factorio-server-manager/factorio-server-manager-linux.zip
+          asset_path: ./build/factorio-server-manager-linux.zip
           asset_name: factorio-server-manager-linux-${GITHUB_REF#refs/*/}.zip
           asset_content_type: application/octet-stream
