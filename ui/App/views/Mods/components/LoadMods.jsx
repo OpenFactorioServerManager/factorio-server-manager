@@ -23,7 +23,10 @@ const LoadMods = ({refreshMods}) => {
         savesResource.mods(data.save)
             .then(({mods}) => {
                 modsResource.portal.installMultiple(mods)
-                    .then(refreshMods)
+                    .then(() => {
+                        refreshMods()
+                        window.flash(`Mods are loaded from save file ${data.save}.`, "green")
+                    })
                     .finally(() => setIsLoading(false))
             })
             .catch(() => setIsLoading(false))
