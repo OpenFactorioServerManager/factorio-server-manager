@@ -33,10 +33,11 @@ const ServerSettings = () => {
                 data[key] = settings[key];
             }
         });
-        const res = settingsResource.server.update(data);
-        if (res) {
-            fetchSettings();
-        }
+       settingsResource.server.update(data)
+           .then(() => {
+               fetchSettings()
+                   .then(() => window.flash("Settings saved.", "green"))
+           });
     }
 
     useEffect(() => {
