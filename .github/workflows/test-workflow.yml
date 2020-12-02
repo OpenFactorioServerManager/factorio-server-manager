@@ -50,7 +50,7 @@ jobs:
       - if: contains(matrix.os, 'windows')
         run: |
           cd src
-          if (-not (Test-Path env:factorio_password)) {
+          if (-not [Environment]::GetEnvironmentVariable('factorio_password', 'Machine')) {
             echo "run only short tests"
             go test ./... -v -test.short
           } else {
