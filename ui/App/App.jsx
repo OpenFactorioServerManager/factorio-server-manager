@@ -39,7 +39,7 @@ const App = () => {
             await updateServerStatus();
 
             socket.emit('server status subscribe');
-            socket.on('status update', updateServerStatus)
+            socket.on('server_status', updateServerStatus)
         }
     },[]);
 

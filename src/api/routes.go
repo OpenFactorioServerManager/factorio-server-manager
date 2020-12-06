@@ -1,21 +1,12 @@
 package api
 
 import (
+	"github.com/mroote/factorio-server-manager/api/websocket"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
 )
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	//TODO Proper origin check
-	CheckOrigin: func(r *http.Request) bool { return true },
-}
-
-type Handler func(*Client, interface{})
 
 type Route struct {
 	Name        string
@@ -26,13 +17,8 @@ type Route struct {
 
 type Routes []Route
 
-type WSRouter struct {
-	rules map[string]Handler
-}
-
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
-	ws := NewWSRouter()
 
 	// API subrouter
 	// Serves all JSON REST handlers prefixed with /api
@@ -57,10 +43,15 @@ func NewRouter() *mux.Router {
 	r.Path("/ws").
 		Methods("GET").
 		Name("Websocket").
-		Handler(AuthorizeHandler(ws))
-	ws.Handle("command send", CommandSend)
-	ws.Handle("log subscribe", LogSubscribe)
-	ws.Handle("server status subscribe", ServerStatusSubscribe)
+		Handler(
+			AuthorizeHandler(
+				http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						websocket.ServeWs(w, r)
+					},
+				),
+			),
+		)
 
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
@@ -123,34 +114,6 @@ func AuthorizeHandler(h http.Handler) http.Handler {
 		}
 		h.ServeHTTP(w, r)
 	})
-}
-
-func NewWSRouter() *WSRouter {
-	return &WSRouter{
-		rules: make(map[string]Handler),
-	}
-}
-
-func (ws *WSRouter) Handle(msgName string, handler Handler) {
-	ws.rules[msgName] = handler
-}
-
-func (ws *WSRouter) FindHandler(msgName string) (Handler, bool) {
-	handler, found := ws.rules[msgName]
-	return handler, found
-}
-
-func (ws *WSRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	socket, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("Error opening ws connection: %s", err)
-		return
-	}
-	client := NewClient(socket, ws.FindHandler)
-	defer client.Close()
-	go client.Write()
-	client.Read()
 }
 
 // Defines all API REST endpoints

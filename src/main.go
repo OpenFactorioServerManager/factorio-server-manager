@@ -26,8 +26,9 @@ func main() {
 	// Initialize authentication system
 	api.GetAuth()
 
-	// Initialize HTTP router
+	// Initialize HTTP router -- also initializes websocket
 	router := api.NewRouter()
+
 	log.Printf("Starting server on: %s:%s", config.ServerIP, config.ServerPort)
 	log.Fatal(http.ListenAndServe(config.ServerIP+":"+config.ServerPort, router))
 

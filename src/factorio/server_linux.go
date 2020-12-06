@@ -14,13 +14,13 @@ func (server *Server) Kill() error {
 	err := server.Cmd.Process.Signal(os.Kill)
 	if err != nil {
 		if err.Error() == "os: process already finished" {
-			server.Running = false
+			server.SetRunning(false)
 			return err
 		}
 		log.Printf("Error sending SIGKILL to Factorio process: %s", err)
 		return err
 	}
-	server.Running = false
+	server.SetRunning(false)
 	log.Printf("Sent SIGKILL to Factorio process. Factorio forced to exit.")
 
 	err = server.Rcon.Close()
@@ -35,13 +35,13 @@ func (server *Server) Stop() error {
 	err := server.Cmd.Process.Signal(os.Interrupt)
 	if err != nil {
 		if err.Error() == "os: process already finished" {
-			server.Running = false
+			server.SetRunning(false)
 			return err
 		}
 		log.Printf("Error sending SIGINT to Factorio process: %s", err)
 		return err
 	}
-	server.Running = false
+	server.SetRunning(false)
 	log.Printf("Sent SIGINT to Factorio process. Factorio shutting down...")
 
 	err = server.Rcon.Close()
