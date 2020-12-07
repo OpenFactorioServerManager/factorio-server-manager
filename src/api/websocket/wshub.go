@@ -1,11 +1,14 @@
 package websocket
 
 import (
+	"github.com/mroote/factorio-server-manager/bootstrap"
 	"reflect"
 )
 
 // the hub, that is exported and can be used anywhere to work with the websocket
 var WebsocketHub *wsHub
+
+var LogCache []string
 
 // a controlHandler is used to determine, if something has to be done, on a specific command.
 // register a handler with `wsHub.RegisterControlHandler`
@@ -170,6 +173,17 @@ func (room *wsRoom) run() {
 		select {
 		case client := <-room.register:
 			room.clients[client] = true
+
+			// some hardcoded stuff for gamelog room
+			if room.name == "gamelog" {
+				// send cached log to registered client
+				for _, logLine := range LogCache {
+					client.send <- wsMessage{
+						RoomName: "gamelog",
+						Message:  logLine,
+					}
+				}
+			}
 		case client := <-room.unregister:
 			if _, ok := room.clients[client]; ok {
 				delete(room.clients, client)
@@ -185,6 +199,23 @@ func (room *wsRoom) run() {
 				case client.send <- message:
 				default:
 					room.unregister <- client
+				}
+			}
+
+			// some hardcoded stuff for gamelog room
+			if room.name == "gamelog" {
+				// add the line to the cache
+				LogCache = append(LogCache, message.Message.(string))
+				config := bootstrap.GetConfig()
+
+				// Set ConsoleCacheSize to 25 if not set!
+				if config.ConsoleCacheSize == 0 {
+					config.ConsoleCacheSize = 25
+				}
+
+				// When cache is bigger than max size, delete one line
+				if len(LogCache) > config.ConsoleCacheSize {
+					LogCache = LogCache[1:]
 				}
 			}
 		}

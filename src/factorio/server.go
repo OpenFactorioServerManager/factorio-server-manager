@@ -303,15 +303,18 @@ func (server *Server) Run() error {
 func (server *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 	stdScanner := bufio.NewScanner(std)
 	for stdScanner.Scan() {
-		log.Printf("Factorio Server: %s", stdScanner.Text())
-		if err := server.writeLog(stdScanner.Text()); err != nil {
+		text := stdScanner.Text()
+
+		log.Printf("Factorio Server: %s", text)
+		if err := server.writeLog(text); err != nil {
 			log.Printf("Error: %s", err)
 		}
 
+		// send the reported line per websocket
 		wsRoom := websocket.WebsocketHub.GetRoom("gamelog")
-		go wsRoom.Send(stdScanner.Text())
+		go wsRoom.Send(text)
 
-		line := strings.Fields(stdScanner.Text())
+		line := strings.Fields(text)
 		// Ensure logline slice is in bounds
 		if len(line) > 1 {
 			// Check if Factorio Server reports any errors if so handle it
