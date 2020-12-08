@@ -46,13 +46,13 @@ func (server *Server) Kill() error {
 	err := server.Cmd.Process.Signal(os.Kill)
 	if err != nil {
 		if err.Error() == "os: process already finished" {
-			server.Running = false
+			server.SetRunning(false)
 			return err
 		}
 		log.Printf("Error sending SIGKILL to Factorio process: %s", err)
 		return err
 	}
-	server.Running = false
+	server.SetRunning(false)
 	log.Println("Sent SIGKILL to Factorio process. Factorio forced to exit.")
 
 	return nil
@@ -77,6 +77,6 @@ func (server *Server) Stop() error {
 	// Re-enable handling of CTRL+C after we're sure that the factrio server is shut down.
 	setCtrlHandlingIsDisabledForThisProcess(false)
 
-	server.Running = false
+	server.SetRunning(false)
 	return nil
 }

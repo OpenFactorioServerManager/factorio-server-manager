@@ -14,12 +14,13 @@ const Console = ({serverStatus}) => {
             setLogs(lines => [...lines, line]);
         }
 
-        socket.on('log update', appendLog)
+        socket.on('gamelog', appendLog)
         socket.emit('log subscribe')
         consoleInput.current?.focus();
 
         return () => {
-            socket.off('log update', appendLog);
+            socket.off('gamelog', appendLog);
+            socket.emit("log unsubscribe")
         }
     }, []);
 

@@ -6,20 +6,64 @@ const socket = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
 const bus = new EventEmitter();
 
 bus.on('log subscribe', () => {
-    socket.send(JSON.stringify({name: 'log subscribe'}));
+    socket.send(
+        JSON.stringify(
+            {
+                room_name: "",
+                controls: {
+                    type: "subscribe",
+                    value: "gamelog"
+                }
+            }
+        )
+    );
 });
 
+bus.on('log unsubscribe', () => {
+    socket.send(
+        JSON.stringify(
+            {
+                room_name: "",
+                controls: {
+                    type: "unsubscribe",
+                    value: "gamelog"
+                }
+            }
+        )
+    );
+})
+
 bus.on('server status subscribe', () => {
-    socket.send(JSON.stringify({name: 'server status subscribe'}));
+    socket.send(
+        JSON.stringify(
+            {
+                room_name: "",
+                controls: {
+                    type: "subscribe",
+                    value: "server_status"
+                }
+            }
+        )
+    );
 });
 
 bus.on('command send', command => {
-    socket.send(JSON.stringify({name: 'command send', data: command}));
+    socket.send(
+        JSON.stringify(
+            {
+                room_name: "",
+                controls: {
+                    type: "command",
+                    value: command
+                }
+            }
+        )
+    );
 });
 
 socket.onmessage = e => {
-    const {name, data} = JSON.parse(e.data)
-    bus.emit(name, data);
+    const {room_name, message} = JSON.parse(e.data);
+    bus.emit(room_name, message);
 }
 
 export default bus;

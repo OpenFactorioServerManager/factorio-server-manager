@@ -216,7 +216,7 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	config := bootstrap.GetConfig()
-	resp, err = factorio.TailLog(config.FactorioLog)
+	resp, err = factorio.TailLog()
 	if err != nil {
 		resp = fmt.Sprintf("Could not tail %s: %s", config.FactorioLog, err)
 		return
@@ -257,7 +257,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	if server.Running {
+	if server.GetRunning() {
 		resp = "Factorio server is already running"
 		w.WriteHeader(http.StatusConflict)
 		return
@@ -299,7 +299,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	timeout := 0
 	for timeout <= 3 {
 		time.Sleep(1 * time.Second)
-		if server.Running {
+		if server.GetRunning() {
 			log.Printf("Running Factorio server detected")
 			break
 		} else {
@@ -309,7 +309,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		timeout++
 	}
 
-	if server.Running == false {
+	if server.GetRunning() == false {
 		resp = fmt.Sprintf("Error starting Factorio server: %s", err)
 		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -329,7 +329,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	var server = factorio.GetFactorioServer()
-	if server.Running {
+	if server.GetRunning() {
 		err := server.Stop()
 		if err != nil {
 			resp = fmt.Sprintf("Error stopping factorio server: %s", err)
@@ -356,7 +356,7 @@ func KillServer(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	var server = factorio.GetFactorioServer()
-	if server.Running {
+	if server.GetRunning() {
 		err := server.Kill()
 		if err != nil {
 			resp = fmt.Sprintf("Error killing factorio server: %s", err)
@@ -381,7 +381,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	var server = factorio.GetFactorioServer()
-	if server.Running {
+	if server.GetRunning() {
 		resp["status"] = "running"
 		resp["port"] = strconv.Itoa(server.Port)
 		resp["savefile"] = server.Savefile

@@ -55,6 +55,7 @@ type Config struct {
 	GlibcLocation           string
 	GlibcLibLoc             string
 	Autostart               string
+	ConsoleCacheSize        int `json:"console_cache_size"` // the amount of cached lines, inside the factorio output cache
 }
 
 var instantiated Config

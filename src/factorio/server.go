@@ -3,6 +3,7 @@ package factorio
 import (
 	"bufio"
 	"encoding/json"
+	"github.com/mroote/factorio-server-manager/api/websocket"
 	"github.com/mroote/factorio-server-manager/bootstrap"
 	"io"
 	"io/ioutil"
@@ -24,7 +25,7 @@ type Server struct {
 	Latency        int                    `json:"latency"`
 	BindIP         string                 `json:"bindip"`
 	Port           int                    `json:"port"`
-	Running        bool                   `json:"running"`
+	running        bool                   `json:"running"`
 	Version        Version                `json:"fac_version"`
 	BaseModVersion string                 `json:"base_mod_version"`
 	StdOut         io.ReadCloser          `json:"-"`
@@ -38,8 +39,20 @@ type Server struct {
 var instantiated Server
 var once sync.Once
 
-func (server *Server) autostart() {
+func (server *Server) SetRunning(newState bool) {
+	if server.running != newState {
+		log.Println("new state, will also send to correct room")
+		server.running = newState
+		wsRoom := websocket.WebsocketHub.GetRoom("server_status")
+		wsRoom.Send("Server status has changed")
+	}
+}
 
+func (server *Server) GetRunning() bool {
+	return server.running
+}
+
+func (server *Server) autostart() {
 	var err error
 	if server.BindIP == "" {
 		server.BindIP = "0.0.0.0"
@@ -193,6 +206,7 @@ func NewFactorioServer() (err error) {
 
 	SetFactorioServer(server)
 
+	// autostart factorio is configured to do so
 	if config.Autostart == "true" {
 		go instantiated.autostart()
 	}
@@ -274,12 +288,12 @@ func (server *Server) Run() error {
 		log.Printf("Factorio process failed to start: %s", err)
 		return err
 	}
-	server.Running = true
+	server.SetRunning(true)
 
 	err = server.Cmd.Wait()
 	if err != nil {
 		log.Printf("Factorio process exited with error: %s", err)
-		server.Running = false
+		server.SetRunning(false)
 		return err
 	}
 
@@ -289,12 +303,18 @@ func (server *Server) Run() error {
 func (server *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 	stdScanner := bufio.NewScanner(std)
 	for stdScanner.Scan() {
-		log.Printf("Factorio Server: %s", stdScanner.Text())
-		if err := server.writeLog(stdScanner.Text()); err != nil {
+		text := stdScanner.Text()
+
+		log.Printf("Factorio Server: %s", text)
+		if err := server.writeLog(text); err != nil {
 			log.Printf("Error: %s", err)
 		}
 
-		line := strings.Fields(stdScanner.Text())
+		// send the reported line per websocket
+		wsRoom := websocket.WebsocketHub.GetRoom("gamelog")
+		go wsRoom.Send(text)
+
+		line := strings.Fields(text)
 		// Ensure logline slice is in bounds
 		if len(line) > 1 {
 			// Check if Factorio Server reports any errors if so handle it
@@ -351,4 +371,28 @@ func (server *Server) checkLogError(logline []string) error {
 	log.Println(logline)
 
 	return nil
+}
+
+func init() {
+	websocket.WebsocketHub.RegisterControlHandler <- serverWebsocketControl
+}
+
+// react to websocket control messages and run the command if it is requested
+func serverWebsocketControl(controls websocket.WsControls) {
+	log.Println(controls)
+	if controls.Type == "command" {
+		command := controls.Value
+		server := GetFactorioServer()
+		if server.GetRunning() {
+			log.Printf("Received command: %v", command)
+
+			reqId, err := server.Rcon.Write(command)
+			if err != nil {
+				log.Printf("Error sending rcon command: %s", err)
+				return
+			}
+
+			log.Printf("Command send to Factorio: %s, with rcon request id: %v", command, reqId)
+		}
+	}
 }
