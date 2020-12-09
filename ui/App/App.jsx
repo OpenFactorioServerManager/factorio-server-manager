@@ -1,196 +1,87 @@
-import React from 'react';
-import {Switch, Route, withRouter} from 'react-router-dom';
-import Header from './components/Header.jsx';
-import Sidebar from './components/Sidebar.jsx';
-import Footer from './components/Footer.jsx';
-import Socket from '../socket.js';
-import Index from "./components/Index";
-import UsersContent from "./components/UsersContent";
-import ModsContent from "./components/ModsContent";
-import LogsContent from "./components/LogsContent";
-import SavesContent from "./components/SavesContent";
-import ConfigContent from "./components/ConfigContent";
-import ConsoleContent from "./components/ConsoleContent";
+import React, {useCallback, useState} from 'react';
 
-class App extends React.Component {
-    constructor(props) {
-        super(props);
-        this.checkLogin = this.checkLogin.bind(this);
-        this.flashMessage = this.flashMessage.bind(this);
-        this.facServStatus = this.facServStatus.bind(this);
-        this.getSaves = this.getSaves.bind(this);
-        this.getStatus = this.getStatus.bind(this);
-        this.connectWebSocket = this.connectWebSocket.bind(this);
-        this.getFactorioVersion = this.getFactorioVersion.bind(this);
+import user from "../api/resources/user";
+import Login from "./views/Login";
+import {Redirect, Route, Switch, useHistory} from "react-router";
+import Controls from "./views/Controls";
+import {BrowserRouter} from "react-router-dom";
+import Logs from "./views/Logs";
+import Saves from "./views/Saves/Saves";
+import Layout from "./components/Layout";
+import server from "../api/resources/server";
+import Mods from "./views/Mods/Mods";
+import UserManagement from "./views/UserManagement/UserManagment";
+import ServerSettings from "./views/ServerSettings";
+import GameSettings from "./views/GameSettings";
+import Console from "./views/Console";
+import Help from "./views/Help";
+import socket from "../api/socket";
+import {Flash} from "./components/Flash";
 
-        this.state = {
-            serverRunning: "stopped",
-            serverStatus: {},
-            factorioVersion: "",
-            saves: [],
-            loggedIn: false,
-            username: "",
-            messages: [],
-            showMessage: false,
+
+const App = () => {
+
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [serverStatus, setServerStatus] = useState(null);
+    const history = useHistory();
+
+    const updateServerStatus = async () => {
+        const status = await server.status();
+        if (status) {
+            setServerStatus(status)
         }
     }
 
-    componentDidMount() {
-        this.checkLogin();
-    }
+    const handleAuthenticationStatus = useCallback(async () => {
+        const status = await user.status();
+        if (status?.Username) {
+            setIsAuthenticated(true);
+            await updateServerStatus();
 
-    connectWebSocket() {
-        let ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-        let ws = new WebSocket(ws_scheme + "://" + window.location.host + "/ws");
-        this.socket = new Socket(ws);
-    }
-
-    flashMessage(message) {
-        var m = this.state.messages;
-        m.push(message);
-        this.setState({messages: m, showMessage: true});
-    }
-
-    checkLogin() {
-        $.ajax({
-            url: "/api/user/status",
-            type: "GET",
-            dataType: "json",
-            success: (data) => {
-                if (data.success === true) {
-                    this.setState({
-                        loggedIn: true,
-                        username: data.data.Username
-                    });
-
-                    this.connectWebSocket();
-                    this.getFactorioVersion(); //Init serverStatus, so i know, which factorio-version is installed
-                } else {
-                    this.props.history.push("/login");
-                }
-            },
-            error: () => {
-                this.props.history.push("/login");
-            }
-        })
-    }
-
-    facServStatus() {
-        $.ajax({
-            url: "/api/server/status",
-            dataType: "json",
-            success: (data) => {
-                this.setState({
-                    serverRunning: data.data.status
-                })
-            }
-        })
-    }
-
-    getSaves() {
-        $.ajax({
-            url: "/api/saves/list",
-            dataType: "json",
-            success: (data) => {
-                if (data.success === true) {
-                    this.setState({saves: data.data})
-                } else {
-                    this.setState({saves: []})
-                }
-            },
-            error: (xhr, status, err) => {
-                console.log('api/saves/list', status, err.toString());
-            }
-        });
-
-        if (!this.state.saves) {
-            this.setState({saves:[]});
+            socket.emit('server status subscribe');
+            socket.on('server_status', updateServerStatus)
         }
-    }
+    },[]);
 
-    getStatus() {
-        $.ajax({
-            url: "/api/server/status",
-            dataType: "json",
-            success: (data) => {
-                this.setState({
-                    serverStatus: data.data
-                })
-            },
-            error: (xhr, status, err) => {
-                console.log('api/server/status', status, err.toString());
-            }
-        })
-    }
-
-    getFactorioVersion() {
-        $.ajax({
-            url: "/api/server/facVersion",
-            // dataType: "json",
-            success: (data) => {
-                this.setState({
-                    factorioVersion: data.data.base_mod_version
-                });
-            },
-            error: (xhr, status, err) => {
-                console.log('api/server/status', status, err.toString());
-            }
-        })
-    }
-
-    render() {
-        // render main application,
-        // if logged in show application
-        // if not logged in show Not logged in message
-        let appProps = {
-            message: "",
-            messages: this.state.messages,
-            flashMessage: this.flashMessage,
-            facServStatus: this.facServStatus,
-            serverStatus: this.state.serverStatus,
-            factorioVersion: this.state.factorioVersion,
-            getStatus: this.getStatus,
-            saves: this.state.saves,
-            getSaves: this.getSaves,
-            username: this.state.username,
-            socket: this.socket
-        };
-
-        let resp;
-        if (this.state.loggedIn) {
-            resp =
-                <div className="wrapper">
-                    <Header
-                        username={this.state.username}
-                        loggedIn={this.state.loggedIn}
-                        messages={this.state.messages}
-                    />
-
-                    <Sidebar
-                        serverStatus={this.facServStatus}
-                        serverRunning={this.state.serverRunning}
-                    />
-
-                    {/*Render react-router components and pass in props*/}
-                    <Switch>
-                        <Route path="/server" render={(props) => {return <Index {...props} {...appProps}/>}}/>
-                        <Route path="/settings" render={(props) => {return <UsersContent {...props} {...appProps}/>}}/>
-                        <Route path="/mods" render={(props) => {return <ModsContent {...props} {...appProps}/>}}/>
-                        <Route path="/logs" render={(props) => {return <LogsContent {...props} {...appProps}/>}}/>
-                        <Route path="/saves" render={(props) => {return <SavesContent {...props} {...appProps}/>}}/>
-                        <Route path="/config" render={(props) => {return <ConfigContent {...props} {...appProps}/>}}/>
-                        <Route path="/console" render={(props) => {return <ConsoleContent {...props} {...appProps}/>}}/>
-                        <Route exact path="/" render={(props) => {return <Index {...props} {...appProps} />}}/>
-                    </Switch>
-
-                    <Footer />
-                </div>
-        } else {
-            resp = <div><p>Not Logged in</p></div>;
+    const handleLogout = useCallback(async () => {
+        const loggedOut = await user.logout();
+        if (loggedOut) {
+            setIsAuthenticated(false);
+            history.push('/login');
         }
+    }, []);
 
-        return resp;
-    }
+    const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
+        <Route {...rest} render={(props) => (
+            isAuthenticated && Component
+                ? <Component serverStatus={serverStatus} updateServerStatus={updateServerStatus} {...props} />
+                : <Redirect to={{
+                    pathname: '/login',
+                    state: {from: props.location}
+                }}/>
+        )}/>
+    ), [isAuthenticated, serverStatus]);
+
+    return (
+        <BrowserRouter basename="/">
+            <Switch>
+                <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
+
+                <Layout handleLogout={handleLogout} serverStatus={serverStatus} updateServerStatus={updateServerStatus}>
+                    <ProtectedRoute exact path="/" component={Controls}/>
+                    <ProtectedRoute path="/saves" component={Saves}/>
+                    <ProtectedRoute path="/mods" component={Mods}/>
+                    <ProtectedRoute path="/server-settings" component={ServerSettings}/>
+                    <ProtectedRoute path="/game-settings" component={GameSettings}/>
+                    <ProtectedRoute path="/console" component={Console}/>
+                    <ProtectedRoute path="/logs" component={Logs}/>
+                    <ProtectedRoute path="/user-management" component={UserManagement}/>
+                    <ProtectedRoute path="/help" component={Help}/>
+                    <Flash/>
+                </Layout>
+            </Switch>
+        </BrowserRouter>
+    );
 }
 
-export default withRouter(App);
+export default App;

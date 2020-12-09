@@ -81,16 +81,13 @@ Custom glibc example:
 ```
 
 ## Manage Factorio Server
-![Factorio Server Manager Screenshot](http://i.imgur.com/q7tbzdH.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](screenshots/Screenshot_Controls.png)
 
 ## Manage save files
-![Factorio Server Manager Screenshot](http://i.imgur.com/M7kBAhI.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](screenshots/Screenshot_Saves.png)
 
 ## Manage mods
-![Factorio Server Manager Screenshot](https://imgur.com/QIb0Kr4.png "Factorio Server Manager")
-
-## Manage modpacks
-![Factorio Server Manager Screenshot](https://imgur.com/O701fB8.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](screenshots/Screenshot_Mods.png)
 
 
 

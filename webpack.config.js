@@ -1,6 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 /**
  * TODO remove when webpack fixed this error:
  * Links to this error:
@@ -15,7 +15,7 @@ var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 
 module.exports = (env, argv) => {
-    const isProduction = argv.mode == 'production';
+    const isProduction = argv.mode === 'production';
 
     return {
         entry: {
@@ -33,7 +33,7 @@ module.exports = (env, argv) => {
             },
             extensions: ['.js', '.json', '.jsx']
         },
-        devtool: (isProduction) ? "none" : "source-map",
+        devtool: isProduction ? "none" : "source-map",
         module: {
             rules: [
                 {
@@ -70,12 +70,22 @@ module.exports = (env, argv) => {
                                 // always make sourceMap. resolver-url-loader is needing it
                                 "sourceMap": true,
                             }
+                        },
+                        {
+                            loader: 'postcss-loader',
+                            options: {
+                                ident: 'postcss',
+                                plugins: [
+                                    require('tailwindcss'),
+                                    require('autoprefixer'),
+                                ],
+                            },
                         }
                     ]
                 },
                 {
                     test: /(\.(png|jpe?g|gif)$|^((?!font).)*\.svg$)/,
-                    loaders: [
+                    use: [
                         {
                             loader: "file-loader",
                             options: {
@@ -97,7 +107,7 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /(\.(woff2?|ttf|eot|otf)$|font.*\.svg$)/,
-                    loaders: [
+                    use: [
                         {
                             loader: "file-loader",
                             options: {

@@ -1,36 +1,43 @@
-@import "scss/variables";
+@import "tailwindcss/base";
+@import "tailwindcss/utilities";
+@import "tailwindcss/components";
 
-/**
- * Modules
- */
-@import "../node_modules/bootstrap/scss/bootstrap";
-@import "../node_modules/admin-lte/build/scss/AdminLTE-raw";
-@import "scss/customizations/adminLTE3-skin-blue";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/solid";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/regular";
-@import "../node_modules/bootstrap-fileinput/scss/fileinput";
-@import "../node_modules/sweetalert2/src/sweetalert2";
+.accentuated-t {
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
 
-/**
- * Customizations
- */
-@import "scss/customizations/buttons";
-@import "scss/customizations/form";
-@import "scss/customizations/badges";
-@import "scss/customizations/sidebar";
-@import "scss/content";
-@import "scss/customizations/navigation";
-@import "scss/customizations/breadcrumbs";
-@import "scss/customizations/table";
-@import "scss/customizations/card";
+.accentuated-r {
+  border-right: 2px solid rgba(0, 0, 0, 0.2);
+}
 
-@import "scss/customizations/sweetalert";
+.accentuated-b {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+}
 
-/**
- * Pages
- */
-@import "scss/pages/serverCtl";
-@import "scss/pages/logs";
-@import "scss/pages/saves";
-@import "scss/pages/login";
+.accentuated-l {
+  border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.accentuated {
+  @apply .accentuated-t .accentuated-r .accentuated-b .accentuated-l
+}
+
+.accentuated-x {
+  @apply .accentuated-r .accentuated-l
+}
+
+.accentuated-y {
+  @apply .accentuated-t .accentuated-b
+}
+
+.hover\:glow-orange:hover {
+  box-shadow: 0 0 3px 1px rgba(227, 152, 39, 0.8);
+}
+
+.hover\:glow-green:hover {
+  box-shadow: 0 0 3px 1px rgba(94, 182, 99, 0.8);
+}
+
+.hover\:glow-red:hover {
+  box-shadow: 0 0 3px 1px rgba(254, 90, 90, 0.8);
+}

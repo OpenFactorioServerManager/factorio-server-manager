@@ -50,12 +50,12 @@ jobs:
       - if: contains(matrix.os, 'windows')
         run: |
           cd src
-          if (Test-Path 'env:factorio_password') {
+          if ([Environment]::GetEnvironmentVariable('factorio_password', 'Machine')) {
             echo "run full test suit"
             go test ./... -v
           } else {
             echo "run only short tests"
-            go test ./... -v -test.short
+            go test ./... -v "-test.short"
           }
   docker-push:
     needs:  [test-npm, test-go]
