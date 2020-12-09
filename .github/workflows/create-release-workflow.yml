@@ -16,7 +16,8 @@ jobs:
         uses: bruceadams/get-release@v1.2.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - run: make gen_release
+      - name: Create release bundles
+        run: make gen_release
       - name: Upload release (windows)
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -36,6 +37,7 @@ jobs:
           asset_name: factorio-server-manager-linux-${{ steps.tag_name.outputs.tag }}.zip
           asset_content_type: application/octet-stream
   docker-push:
+    needs: ['add-assets-to-release']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
