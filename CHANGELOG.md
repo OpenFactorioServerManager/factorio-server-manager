@@ -10,10 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Complete rework of the UI - Thanks to @jannaahs
 - Backend is refactored and improved - Thanks to @knoxfighter and @jannaahs
+- Rework of the docker image, so it allows easy updating of factorio - Thanks to @ita-sammann
 
 ### Fixed
 - Console page is now working correctly (directly reloading still bugged until new UI) - Thanks to @jannaahs
 - Mod Search fixed by new implementation, which does not rely on the search endpoint of the mod portal - Thanks to @jannaahs
+- Listen on port 80, previously port 8080 was used. Can be changed with `--port <port>`
 
 ## [0.8.2] - 2020-01-08
 Many bugfixes and a few small features in this release.
