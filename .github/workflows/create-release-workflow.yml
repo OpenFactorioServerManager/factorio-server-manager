@@ -1,6 +1,6 @@
 on:
   release:
-    types: [unpublished]
+    types: [prereleased]
 jobs:
   add-assets-to-release:
     runs-on: ubuntu-latest
