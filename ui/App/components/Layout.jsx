@@ -98,7 +98,7 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
             {/*Main*/}
             <div className="md:ml-88 min-h-screen">
                 <div className="container mx-auto pt-16 px-6">
-                    {children}c
+                    {children}
                 </div>
             </div>
         </>
