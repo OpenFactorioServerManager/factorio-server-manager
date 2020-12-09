@@ -17,7 +17,7 @@ type Flags struct {
 	FactorioDir        string `long:"dir" default:"./" description:"Specify location of Factorio directory."`
 	ServerIP           string `long:"host" default:"0.0.0.0" description:"Specify IP for webserver to listen on."`
 	FactorioIP         string `long:"game-bind-address" default:"0.0.0.0" description:"Specify IP for Fcatorio gamer server to listen on."`
-	FactorioPort       string `long:"port" default:"8080" description:"Specify a port for the server."`
+	FactorioPort       string `long:"port" default:"80" description:"Specify a port for the server."`
 	FactorioConfigFile string `long:"config" default:"config/config.ini" description:"Specify location of Factorio config.ini file"`
 	FactorioMaxUpload  int64  `long:"max-upload" default:"20.971.520" description:"Maximum filesize for uploaded files (default 20MB)."`
 	FactorioBinary     string `long:"bin" default:"bin/x64/factorio" description:"Location of Factorio Server binary file"`
