@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"time"
 )
 
 type Flags struct {
@@ -95,7 +96,10 @@ func (config *Config) loadServerConfig() {
 
 // Returns random port to use for rcon connection
 func randomPort() int {
-	return rand.Intn(45000-40000) + 40000
+	// rand needs to be initialized, else we always get the same number
+	rand.Seed(time.Now().UnixNano())
+	// get a random number between 40000 and 45000
+	return rand.Intn(5000) + 40000
 }
 
 func mapFlags(flags Flags) Config {
