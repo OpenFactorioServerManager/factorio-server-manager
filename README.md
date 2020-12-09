@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/OpenFactorioServerManager/factorio-server-manager.svg?branch=master)](https://travis-ci.com/OpenFactorioServerManager/factorio-server-manager)
+![.github/workflows/test-workflow.yml](https://github.com/OpenFactorioServerManager/factorio-server-manager/workflows/.github/workflows/test-workflow.yml/badge.svg)
 
 # Factorio Server Manager
 
@@ -17,12 +17,12 @@ This tool runs on a Factorio server and allows management of the Factorio server
 ## Installation Docker
 1. Pull the Docker container from Docker Hub using the pull command
    ```
-   docker pull majormjr/factorio-server-manager
+   docker pull ofsm/ofsm:latest
    ```
 
 2. Now you can start the container by running:
    ```
-   docker run --name factorio-manager -d -p 80:80 -p 443:443 -p 34197:34197/udp majormjr/factorio-server-manager
+   docker run --name factorio-manager -d -p 80:80 34197:34197/udp ofsm/ofsm:latest
    ```
 
 ## Installation Linux
@@ -182,6 +182,8 @@ go build
 ## Authors
 
 * **Mitch Roote** - [roote.ca](https://roote.ca)
+* **[knoxfighter](https://github.com/knoxfighter)**
+* **[Jannaahs](https://github.com/jannaahs)**
 
 ## Special Thanks
 - **[All Contributions](https://github.com/OpenFactorioServerManager/factorio-server-manager/graphs/contributors)**
