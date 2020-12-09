@@ -36,9 +36,9 @@ random_pass() {
 
 install_game() {
     curl --location "https://www.factorio.com/get-download/${FACTORIO_VERSION}/headless/linux64" \
-         --output /tmp/factorio_${FACTORIO_VERSION}.tar.xz \
-    && tar -xf /tmp/factorio_${FACTORIO_VERSION}.tar.xz \
-    && rm /tmp/factorio_${FACTORIO_VERSION}.tar.xz
+         --output /tmp/factorio_${FACTORIO_VERSION}.tar.xz
+    tar -xf /tmp/factorio_${FACTORIO_VERSION}.tar.xz
+    rm /tmp/factorio_${FACTORIO_VERSION}.tar.xz
 }
 
 if [ ! -f /opt/fsm-data/conf.json ]; then
@@ -47,5 +47,5 @@ fi
 
 install_game
 
-cd /opt/fsm && ./factorio-server-manager -conf /opt/fsm-data/conf.json -dir /opt/factorio -port 80
+cd /opt/fsm && ./factorio-server-manager --conf /opt/fsm-data/conf.json --dir /opt/factorio -port 80
 
