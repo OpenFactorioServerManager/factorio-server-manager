@@ -1,9 +1,6 @@
 on:
-  push:
-    tags:
-      - '*.*.*'
-  workflow_dispatch:
-
+  release:
+    types: [published]
 jobs:
   add-assets-to-release:
     runs-on: ubuntu-latest
@@ -14,6 +11,11 @@ jobs:
       - name: Get git tag
         id: tag_name
         uses: little-core-labs/get-git-tag@v3.0.2
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Create release bundles
         run: make gen_release
       - name: Upload release (windows)
