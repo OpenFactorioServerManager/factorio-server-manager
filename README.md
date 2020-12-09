@@ -22,7 +22,7 @@ This tool runs on a Factorio server and allows management of the Factorio server
 
 2. Now you can start the container by running:
    ```
-   docker run --name factorio-manager -d -p 80:80 34197:34197/udp ofsm/ofsm:latest
+   docker run --name ofsm -d -p 80:80 -p 34197:34197/udp ofsm/ofsm:latest
    ```
 
 ## Installation Linux
