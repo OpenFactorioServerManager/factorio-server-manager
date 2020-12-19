@@ -98,6 +98,16 @@ It also acts as the webserver to serve the front end react application
 
 All api actions are accessible with the /api route.  The frontend is accessible from /.
 
+### API Auth
+
+To authenticate with the API and get access to its functionality, you need to login first.
+
+Here is a small example showing how to do it with a local install using default credentials, via the tool curl:
+```
+curl --cookie-jar cookie.txt --insecure --data '{"username":"admin","password":"factorio"}' -H "Content-Type: application/json"  -X POST https://localhost/api/login
+curl --cookie cookie.txt --insecure https://localhost/api/server/status
+```
+
 #### Requirements
 + Go 1.11
 + NodeJS
