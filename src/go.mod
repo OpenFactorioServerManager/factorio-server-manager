@@ -10,10 +10,13 @@ require (
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.1
 	github.com/hpcloud/tail v1.0.0
+	github.com/jessevdk/go-flags v1.4.0
+	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.2.0 // indirect
 	github.com/majormjr/rcon v0.0.0-20120923215419-8fbb8268b60a
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
+	github.com/stretchr/testify v1.6.1
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20191029031824-8986dd9e96cf // indirect
 	google.golang.org/appengine v1.6.5 // indirect

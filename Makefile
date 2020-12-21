@@ -27,13 +27,13 @@ factorio-server-manager-linux:
 	@echo "Building Backend - Linux"
 	@mkdir -p factorio-server-manager
 	@cd src; \
-	GOOS=linux GOARCH=amd64 go build -o ../factorio-server-manager/factorio-server-manager .
+	GO111MODULE=on GOOS=linux GOARCH=amd64 go build -ldflags="-extldflags=-static" -o ../factorio-server-manager/factorio-server-manager .
 
 factorio-server-manager-windows:
 	@echo "Building Backend - Windows"
 	@mkdir -p factorio-server-manager
 	@cd src; \
-	GOOS=windows GOARCH=386 go build -o ../factorio-server-manager/factorio-server-manager.exe .
+	GO111MODULE=on GOOS=windows GOARCH=386 go build -ldflags="-extldflags=-static" -o ../factorio-server-manager/factorio-server-manager.exe .
 
 gen_release: build/factorio-server-manager-linux.zip build/factorio-server-manager-windows.zip
 	@echo "Done"
@@ -47,6 +47,6 @@ clean:
 	@-rm app/style.css.map
 	@-rm -r app/fonts/vendor/
 	@-rm -r app/images/vendor/
-	@-rm -r node_modules/
+	@-rm -rf node_modules/
 	@-rm -r pkg/
 	@-rm -r factorio-server-manager

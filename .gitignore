@@ -1,5 +1,6 @@
 node_modules/
 dev/
+dev_packs/
 /factorio-server-manager*
 /factorio_server_manager*
 auth.leveldb*
@@ -9,7 +10,6 @@ build/
 /mod_packs/*
 npm-debug.log
 .idea/
-/package-lock.json
 factorio.auth
 /pkg/
 mix-manifest.json
@@ -17,3 +17,4 @@ mix-manifest.json
 /app/*.js*
 /app/*.css*
 .vscode
+.env

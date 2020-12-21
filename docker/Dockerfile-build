@@ -1,20 +1,23 @@
-FROM alpine:latest
+FROM alpine:latest as build
 
 RUN apk add --no-cache git make musl-dev go nodejs npm zip
 
-ENV FAC_BRANCH=develop
+ENV FACTORIO_BRANCH=develop
 ENV GOROOT /usr/lib/go
 ENV GOPATH /go
 ENV PATH /go/bin:$PATH
-ENV FAC_ROOT /go/src/factorio-server-manager
+ENV FACTORIO_ROOT /go/src/factorio-server-manager
 
-COPY build.sh /usr/local/bin/build.sh
+COPY build-release.sh /usr/local/bin/build-release.sh
 
 RUN mkdir -p ${GOPATH}/bin
-RUN chmod u+x /usr/local/bin/build.sh
+RUN chmod u+x /usr/local/bin/build-release.sh
 
-WORKDIR $FAC_ROOT
+WORKDIR $FACTORIO_ROOT
 
 VOLUME /build
 
-CMD ["/usr/local/bin/build.sh"]
+RUN ["/usr/local/bin/build-release.sh"]
+
+FROM scratch as output
+COPY --from=build ${FACTORIO_ROOT}/build/* .
