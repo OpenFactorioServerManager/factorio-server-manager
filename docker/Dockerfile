@@ -1,7 +1,7 @@
 # Glibc is required for Factorio Server binaries to run
 FROM frolvlad/alpine-glibc
 
-ENV FACTORIO_VERSION=latest \
+ENV FACTORIO_VERSION=stable \
     MANAGER_VERSION=0.8.2 \
     ADMIN_USER=admin \
     ADMIN_PASS=factorio \
@@ -17,7 +17,7 @@ RUN apk add --no-cache curl tar xz unzip jq
 WORKDIR /opt
 
 # Install FSM
-RUN curl --location "https://github.com/mroote/factorio-server-manager/releases/download/${MANAGER_VERSION}/factorio-server-manager-linux-${MANAGER_VERSION}.zip" \
+RUN curl --location "https://github.com/OpenFactorioServerManager/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux-$MANAGER_VERSION.zip" \
          --output /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
     && unzip /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
     && rm /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
