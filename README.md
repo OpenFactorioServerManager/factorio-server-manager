@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mroote/factorio-server-manager.svg?branch=master)](https://travis-ci.org/mroote/factorio-server-manager)
+![.github/workflows/test-workflow.yml](https://github.com/OpenFactorioServerManager/factorio-server-manager/workflows/.github/workflows/test-workflow.yml/badge.svg)
 
 # Factorio Server Manager
 
@@ -17,17 +17,17 @@ This tool runs on a Factorio server and allows management of the Factorio server
 ## Installation Docker
 1. Pull the Docker container from Docker Hub using the pull command
    ```
-   docker pull majormjr/factorio-server-manager
+   docker pull ofsm/ofsm:latest
    ```
 
 2. Now you can start the container by running:
    ```
-   docker run --name factorio-manager -d -p 80:80 -p 443:443 -p 34197:34197/udp majormjr/factorio-server-manager
+   docker run --name ofsm -d -p 80:80 -p 34197:34197/udp ofsm/ofsm:latest
    ```
 
 ## Installation Linux
 1. Download the latest release
-  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+  * [https://github.com/OpenFactorioServerManager/factorio-server-manager/releases](https://github.com/OpenFactorioServerManager/factorio-server-manager/releases)
 2. Download the Factorio Standalone server and install to a known directory.
 3. Run the server binary file, use the --dir flag to point the management server to your Factorio installation. If you are using the steam installation, point FSM to the steam directory.
   * ```./factorio-server-manager --dir /home/user/.factorio ```
@@ -36,7 +36,7 @@ This tool runs on a Factorio server and allows management of the Factorio server
 
 ## Installation Windows
 1. Download the latest release
-  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+  * [https://github.com/OpenFactorioServerManager/factorio-server-manager/releases](https://github.com/OpenFactorioServerManager/factorio-server-manager/releases)
 2. Download the Factorio Standalone server and install to a known directory.
 3. Run the server binary file via cmd or Powershell, use the --dir flag to point the management server to your Factorio installation.
   * ```.\factorio-server-manager --dir C:/Users/username/Factorio```
@@ -66,7 +66,10 @@ Usage of ./factorio-server-manager:
         Path to the glibc ld.so file (default "/opt/glibc-2.18/lib/ld-2.18.so")
   -glibc-lib-loc
         Path to the glibc lib folder (default "/opt/glibc-2.18/lib")
-        
+  -autostart
+          Autostarts Factorio Server when FSM is starting. Default false [true/false]
+          (If no IP and/or port provided at startup, it will bind the factorio server to all interfaces 
+          and set the server port to the default 34197, always loads latest save)       
 Example:
 
 ./factorio-server-manager --dir /home/user/.factorio --host 10.0.0.1
@@ -78,16 +81,13 @@ Custom glibc example:
 ```
 
 ## Manage Factorio Server
-![Factorio Server Manager Screenshot](http://i.imgur.com/q7tbzdH.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](screenshots/Screenshot_Controls.png)
 
 ## Manage save files
-![Factorio Server Manager Screenshot](http://i.imgur.com/M7kBAhI.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](screenshots/Screenshot_Saves.png)
 
 ## Manage mods
-![Factorio Server Manager Screenshot](https://imgur.com/QIb0Kr4.png "Factorio Server Manager")
-
-## Manage modpacks
-![Factorio Server Manager Screenshot](https://imgur.com/O701fB8.png "Factorio Server Manager")
+![Factorio Server Manager Screenshot](screenshots/Screenshot_Mods.png)
 
 
 
@@ -110,19 +110,19 @@ curl --cookie cookie.txt --insecure https://localhost/api/server/status
 
 #### Requirements
 + Go 1.11
-+ NodeJS
++ NodeJS >10.13.0
 
 #### Building Releases
 Creates a release zip for windows and linux: (this will install the dependencies listed in gopkgdeps)
 ```
-git clone https://github.com/mroote/factorio-server-manager.git
+git clone git@github.com:OpenFactorioServerManager/factorio-server-manager.git
 cd factorio-server-manager
 make gen_release
 ```
 
 #### Building a Testing Binary:
 ```
-git clone https://github.com/mroote/factorio-server-manager.git
+git clone git@github.com:OpenFactorioServerManager/factorio-server-manager.git
 cd factorio-server-manager
 make
 ./factorio-server-manager/factorio-server-manager
@@ -152,7 +152,7 @@ In every of those cases, also images and fonts will be copied to the app-folder.
 
 ### Building for Windows
 1. Download the latest release source zip file
-  * [https://github.com/mroote/factorio-server-manager/releases](https://github.com/mroote/factorio-server-manager/releases)
+  * [https://github.com/OpenFactorioServerManager/factorio-server-manager/releases](https://github.com/OpenFactorioServerManager/factorio-server-manager/releases)
 2. Unzip the Factorio Standalone server and move it to a known directory.
 3. Download and install Go 1.11 or newer. https://golang.org/dl/
 4. Download and install NodeJS 64-bit or 32-bit depending on your operating system, most users need 64-bit nowadays.
@@ -185,15 +185,18 @@ go build
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
 3. Commit your changes: `git commit -am 'Add some feature'`
+4. Add your changes a in human readable way into CHANGELOG.md
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
 ## Authors
 
 * **Mitch Roote** - [roote.ca](https://roote.ca)
+* **[knoxfighter](https://github.com/knoxfighter)**
+* **[Jannaahs](https://github.com/jannaahs)**
 
 ## Special Thanks
-- **[All Contributions](https://github.com/mroote/factorio-server-manager/graphs/contributors)**
+- **[All Contributions](https://github.com/OpenFactorioServerManager/factorio-server-manager/graphs/contributors)**
 - **mickael9** for reverseengineering the factorio-save-file: https://forums.factorio.com/viewtopic.php?f=5&t=8568#
 
 ## License
