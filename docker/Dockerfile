@@ -16,11 +16,6 @@ RUN apk add --no-cache curl tar xz unzip jq
 
 WORKDIR /opt
 
-# Install Factorio
-RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/headless/linux64 -o /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
-    tar Jxf /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
-    rm /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
-
 # Install FSM
 RUN curl --location "https://github.com/OpenFactorioServerManager/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux-$MANAGER_VERSION.zip" \
          --output /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
