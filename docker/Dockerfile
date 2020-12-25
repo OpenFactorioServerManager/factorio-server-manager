@@ -23,11 +23,6 @@ RUN curl --location "https://github.com/OpenFactorioServerManager/factorio-serve
     && rm /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
     && mv factorio-server-manager fsm
 
-# Setup Nginx
-    mkdir -p /run/nginx && \
-    chown nginx:root /var/lib/nginx
-
-
 COPY ./entrypoint.sh /opt/entrypoint.sh
 
 ENTRYPOINT ["/opt/entrypoint.sh"]
