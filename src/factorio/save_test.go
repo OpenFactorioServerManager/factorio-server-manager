@@ -4,7 +4,57 @@ import (
 	"testing"
 )
 
+// 1.1 Binary seems equal to 0.18/1.0 binary, just the default values changed
+func Test1_1(t *testing.T) {
+	file, err := OpenArchiveFile("../factorio_testfiles/test_1_1.zip", "level.dat")
+	if err != nil {
+		t.Fatalf("Error opening level.dat: %s", err)
+	}
+	defer file.Close()
+
+	var header SaveHeader
+	err = header.ReadFrom(file)
+	if err != nil {
+		t.Fatalf("Error reading header: %s", err)
+	}
+
+	testHeader := SaveHeader{
+		FactorioVersion:           Version{1, 1, 6, 4},
+		Campaign:                  "transport-belt-madness",
+		Name:                      "level-01",
+		BaseMod:                   "base",
+		Difficulty:                1,
+		Finished:                  false,
+		PlayerWon:                 false,
+		NextLevel:                 "",
+		CanContinue:               false,
+		FinishedButContinuing:     false,
+		SavingReplay:              false,
+		AllowNonAdminDebugOptions: true,
+		LoadedFrom:                Version{1, 1, 6},
+		LoadedFromBuild:           57355,
+		AllowedCommands:           1,
+		Mods: []Mod{
+			{
+				Version: Version{1, 1, 6},
+				Name:    "base",
+			},
+			{
+				Version: Version{3, 0, 0},
+				Name:    "belt-balancer",
+			},
+			{
+				Version: Version{3, 0, 0},
+				Name:    "train-station-overview",
+			},
+		},
+	}
+
+	header.Equals(testHeader, t)
+}
+
 // 0.18 Binary seems equal to 0.17 binary, just the default values changed
+// 1.0 == 0.18.48
 func Test0_18(t *testing.T) {
 	file, err := OpenArchiveFile("../factorio_testfiles/test_0_18.zip", "level.dat")
 	if err != nil {

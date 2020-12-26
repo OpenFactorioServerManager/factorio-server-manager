@@ -39,10 +39,10 @@ func SetupModPacks(t *testing.T, empty bool, emptyMods bool) {
 		assert.NoError(t, err, "error creating mods")
 
 		if !emptyMods {
-			err = modList.DownloadMod("/download/belt-balancer/5e9f9db4bf9d30000c5303f2", "belt-balancer_2.1.3.zip", "belt-balancer")
+			err = modList.DownloadMod("/download/belt-balancer/5fc1aca2bfe1b005c6943bf1", "belt-balancer_3.0.0.zip", "belt-balancer")
 			assert.NoError(t, err, `Error downloading Mod "belt-balancer"`)
 
-			err = modList.DownloadMod("/download/train-station-overview/5e8a0a8ee8864f000d0cb022", "train-station-overview_2.0.3.zip", "train-station-overview")
+			err = modList.DownloadMod("/download/train-station-overview/5fc1b28cd3d1bb6fd86d9432", "train-station-overview_3.0.0.zip", "train-station-overview")
 			assert.NoError(t, err, `Error downloading Mod "train-station-overview"`)
 		}
 	}
@@ -111,7 +111,7 @@ func TestModPackListHandler(t *testing.T) {
 		SetupModPacks(t, false, false)
 		defer CleanupModPacks(t)
 
-		expected := `[{"name":"test","mods":{"mods":[{"name":"belt-balancer","version":"2.1.3","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.3.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"2.0.3","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_2.0.3.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true}]}}]`
+		expected := `[{"name":"test","mods":{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}}]`
 
 		CallRoute(t, method, route, route, nil, handlerFunc, http.StatusOK, expected)
 	})
@@ -140,7 +140,7 @@ func TestModPackCreateHandler(t *testing.T) {
 		defer CleanupMods(t)
 
 		requestBody := strings.NewReader(`{"name": "test"}`)
-		expected := `[{"name":"test","mods":{"mods":[{"name":"belt-balancer","version":"2.1.3","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.3.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"2.0.3","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_2.0.3.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true}]}}]`
+		expected := `[{"name":"test","mods":{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}}]`
 
 		CallRoute(t, method, route, route, requestBody, handlerFunc, http.StatusOK, expected)
 	})
@@ -183,7 +183,7 @@ func TestModPackLoadHandler(t *testing.T) {
 		SetupMods(t, true)
 		defer CleanupMods(t)
 
-		expected := `{"mods":[{"name":"belt-balancer","version":"2.1.3","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.3.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"2.0.3","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_2.0.3.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
+		expected := `{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
 
 		CallRoute(t, method, baseRoute, route, nil, handlerFunc, http.StatusOK, expected)
 
@@ -246,7 +246,7 @@ func TestModPackModListHandler(t *testing.T) {
 		SetupModPacks(t, false, false)
 		defer CleanupModPacks(t)
 
-		expected := `{"mods":[{"name":"belt-balancer","version":"2.1.3","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.3.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"2.0.3","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_2.0.3.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
+		expected := `{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
 
 		CallRoute(t, method, baseRoute, route, nil, handlerFunc, http.StatusOK, expected)
 	})
@@ -397,13 +397,13 @@ func TestModPackModUpdateHandler(t *testing.T) {
 	route := "/mods/packs/test/mod/update"
 	handlerFunc := ModPackModUpdateHandler
 
-	requestBodySuccess := `{"modName": "belt-balancer", "downloadUrl": "/download/belt-balancer/5e711cd95bcf4f000b96b22c", "fileName": "belt-balancer_2.1.2.zip"}`
+	requestBodySuccess := `{"modName": "belt-balancer", "downloadUrl": "/download/belt-balancer/5fc1aca2bfe1b005c6943bf1", "fileName": "belt-balancer_3.0.0.zip"}`
 
 	t.Run("success", func(t *testing.T) {
 		SetupModPacks(t, false, false)
 		defer CleanupModPacks(t)
 
-		expected := `{"name":"belt-balancer","version":"2.1.2","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.2.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true}`
+		expected := `{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}`
 
 		CallRoute(t, method, baseRoute, route, strings.NewReader(requestBodySuccess), handlerFunc, http.StatusOK, expected)
 	})
@@ -419,7 +419,7 @@ func TestModPackModUpdateHandler(t *testing.T) {
 		err, _ = packMap["test"].Mods.ModSimpleList.ToggleMod("belt-balancer")
 		assert.NoError(t, err, "Error toggling mod")
 
-		expected := `{"name":"belt-balancer","version":"2.1.2","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.2.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":false}`
+		expected := `{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":false}`
 
 		CallRoute(t, method, baseRoute, route, strings.NewReader(requestBodySuccess), handlerFunc, http.StatusOK, expected)
 	})
@@ -524,7 +524,7 @@ func TestModPackModUploadHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		recorder := ModPackModUploadRequest(t, true, "../factorio_testfiles/belt-balancer_2.1.3.zip")
+		recorder := ModPackModUploadRequest(t, true, "../factorio_testfiles/belt-balancer_3.0.0.zip")
 
 		// status has to be 200
 		if recorder.Code != http.StatusOK {
@@ -540,11 +540,11 @@ func TestModPackModUploadHandler(t *testing.T) {
 				{
 					ModInfo: factorio.ModInfo{
 						Name:            "belt-balancer",
-						Version:         "2.1.3",
+						Version:         "3.0.0",
 						Title:           "Belt Balancer",
 						Author:          "knoxfighter",
-						FileName:        "belt-balancer_2.1.3.zip",
-						FactorioVersion: factorio.Version{0, 18, 0, 0},
+						FileName:        "belt-balancer_3.0.0.zip",
+						FactorioVersion: factorio.Version{1, 1, 0, 0},
 						Dependencies:    nil,
 						Compatibility:   true,
 					},
@@ -596,9 +596,9 @@ func TestModPackModPortalInstallHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		requestBody := strings.NewReader(`{"modName": "belt-balancer", "downloadUrl": "/download/belt-balancer/5e711cd95bcf4f000b96b22c", "fileName": "belt-balancer_2.1.2.zip"}`)
+		requestBody := strings.NewReader(`{"modName": "belt-balancer", "downloadUrl": "/download/belt-balancer/5fc1aca2bfe1b005c6943bf1", "fileName": "belt-balancer_3.0.0.zip"}`)
 
-		expected := `{"mods":[{"name":"belt-balancer","version":"2.1.2","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.2.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
+		expected := `{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
 
 		CallRoute(t, method, baseRoute, route, requestBody, handlerFunc, http.StatusOK, expected)
 	})
@@ -629,9 +629,9 @@ func TestModPackModPortalInstallMultipleHandler(t *testing.T) {
 		SetupModPacks(t, false, true)
 		defer CleanupModPacks(t)
 
-		requestBody := strings.NewReader(`[{"name": "belt-balancer", "version": "2.1.2"}, {"name": "train-station-overview", "version": "2.0.2"}]`)
+		requestBody := strings.NewReader(`[{"name": "belt-balancer", "version": "3.0.0"}, {"name": "train-station-overview", "version": "3.0.0"}]`)
 
-		expected := `{"mods":[{"name":"belt-balancer","version":"2.1.2","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_2.1.2.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"2.0.2","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_2.0.2.zip","factorio_version":"0.18.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
+		expected := `{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
 
 		CallRoute(t, method, baseRoute, route, requestBody, handlerFunc, http.StatusOK, expected)
 	})
