@@ -184,7 +184,8 @@ func NewFactorioServer() (err error) {
 	if (server.Version.Greater(Version{0, 17, 0})) {
 		if _, err = os.Stat(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)); os.IsNotExist(err) {
 			//save empty admins-file
-			_ = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
+			err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), []byte("[]"), 0664)
+			server.Settings["admins"] = make([]string, 0)
 		} else {
 			var data []byte
 			data, err = ioutil.ReadFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile))
