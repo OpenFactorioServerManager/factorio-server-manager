@@ -106,7 +106,7 @@ const Controls = ({serverStatus, updateServerStatus}) => {
                                         inputRef={register({required: true})}
                                     >
                                         {saves.map(save => (
-                                            <option value={save.name} key={save.name}>{save.name}</option>))}
+                                            <option value={save.name} selected={save.name === "Load Latest"} key={save.name}>{save.name}</option>))}
                                     </Select>
                                 </div>
                             </div>
