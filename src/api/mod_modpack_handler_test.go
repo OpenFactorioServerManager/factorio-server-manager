@@ -44,6 +44,9 @@ func SetupModPacks(t *testing.T, empty bool, emptyMods bool) {
 
 			err = modList.DownloadMod("/download/train-station-overview/5fc1b28cd3d1bb6fd86d9432", "train-station-overview_3.0.0.zip", "train-station-overview")
 			assert.NoError(t, err, `Error downloading Mod "train-station-overview"`)
+
+			err = modList.DownloadMod("/download/sonaxaton-infinite-resources/5dca095d440570000be0de82", "sonaxaton-infinite-resources_0.4.1.zip", "sonaxaton-infinite-resources")
+			assert.NoError(t, err, `Error downloading Mod "sonaxaton-infinite-resources""`)
 		}
 	}
 }
@@ -111,7 +114,48 @@ func TestModPackListHandler(t *testing.T) {
 		SetupModPacks(t, false, false)
 		defer CleanupModPacks(t)
 
-		expected := `[{"name":"test","mods":{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}}]`
+		expected := `[
+  {
+    "name": "test",
+    "mods": {
+      "mods": [
+        {
+          "name": "belt-balancer",
+          "version": "3.0.0",
+          "title": "Belt Balancer",
+          "author": "knoxfighter",
+          "file_name": "belt-balancer_3.0.0.zip",
+          "factorio_version": "1.1.0.0",
+          "dependencies": null,
+          "compatibility": true,
+          "enabled": true
+        },
+        {
+          "name": "sonaxaton-infinite-resources",
+          "version": "0.4.1",
+          "title": "Infinite Resources",
+          "author": "sonaxaton",
+          "file_name": "sonaxaton-infinite-resources_0.4.1.zip",
+          "factorio_version": "0.17.0.0",
+          "dependencies": null,
+          "compatibility": false,
+          "enabled": true
+        },
+        {
+          "name": "train-station-overview",
+          "version": "3.0.0",
+          "title": "Train Station Overview",
+          "author": "knoxfighter",
+          "file_name": "train-station-overview_3.0.0.zip",
+          "factorio_version": "1.1.0.0",
+          "dependencies": null,
+          "compatibility": true,
+          "enabled": true
+        }
+      ]
+    }
+  }
+]`
 
 		CallRoute(t, method, route, route, nil, handlerFunc, http.StatusOK, expected)
 	})
@@ -140,7 +184,48 @@ func TestModPackCreateHandler(t *testing.T) {
 		defer CleanupMods(t)
 
 		requestBody := strings.NewReader(`{"name": "test"}`)
-		expected := `[{"name":"test","mods":{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}}]`
+		expected := `[
+  {
+    "name": "test",
+    "mods": {
+      "mods": [
+        {
+          "name": "belt-balancer",
+          "version": "3.0.0",
+          "title": "Belt Balancer",
+          "author": "knoxfighter",
+          "file_name": "belt-balancer_3.0.0.zip",
+          "factorio_version": "1.1.0.0",
+          "dependencies": null,
+          "compatibility": true,
+          "enabled": true
+        },
+	    {
+	      "name": "sonaxaton-infinite-resources",
+  	      "version": "0.4.1",
+	      "title": "Infinite Resources",
+	      "author": "sonaxaton",
+	      "file_name": "sonaxaton-infinite-resources_0.4.1.zip",
+	      "factorio_version": "0.17.0.0",
+	      "dependencies": null,
+	      "compatibility": false,
+	      "enabled": true
+	    },
+        {
+          "name": "train-station-overview",
+          "version": "3.0.0",
+          "title": "Train Station Overview",
+          "author": "knoxfighter",
+          "file_name": "train-station-overview_3.0.0.zip",
+          "factorio_version": "1.1.0.0",
+          "dependencies": null,
+          "compatibility": true,
+          "enabled": true
+        }
+      ]
+    }
+  }
+]`
 
 		CallRoute(t, method, route, route, requestBody, handlerFunc, http.StatusOK, expected)
 	})
@@ -183,7 +268,43 @@ func TestModPackLoadHandler(t *testing.T) {
 		SetupMods(t, true)
 		defer CleanupMods(t)
 
-		expected := `{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
+		expected := `{
+  "mods": [
+    {
+      "name": "belt-balancer",
+      "version": "3.0.0",
+      "title": "Belt Balancer",
+      "author": "knoxfighter",
+      "file_name": "belt-balancer_3.0.0.zip",
+      "factorio_version": "1.1.0.0",
+      "dependencies": null,
+      "compatibility": true,
+      "enabled": true
+    },
+    {
+      "name": "sonaxaton-infinite-resources",
+      "version": "0.4.1",
+      "title": "Infinite Resources",
+      "author": "sonaxaton",
+      "file_name": "sonaxaton-infinite-resources_0.4.1.zip",
+      "factorio_version": "0.17.0.0",
+      "dependencies": null,
+      "compatibility": false,
+      "enabled": true
+    },
+    {
+      "name": "train-station-overview",
+      "version": "3.0.0",
+      "title": "Train Station Overview",
+      "author": "knoxfighter",
+      "file_name": "train-station-overview_3.0.0.zip",
+      "factorio_version": "1.1.0.0",
+      "dependencies": null,
+      "compatibility": true,
+      "enabled": true
+    }
+  ]
+}`
 
 		CallRoute(t, method, baseRoute, route, nil, handlerFunc, http.StatusOK, expected)
 
@@ -246,7 +367,43 @@ func TestModPackModListHandler(t *testing.T) {
 		SetupModPacks(t, false, false)
 		defer CleanupModPacks(t)
 
-		expected := `{"mods":[{"name":"belt-balancer","version":"3.0.0","title":"Belt Balancer","author":"knoxfighter","file_name":"belt-balancer_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true},{"name":"train-station-overview","version":"3.0.0","title":"Train Station Overview","author":"knoxfighter","file_name":"train-station-overview_3.0.0.zip","factorio_version":"1.1.0.0","dependencies":null,"compatibility":true,"enabled":true}]}`
+		expected := `{
+  "mods": [
+    {
+      "name": "belt-balancer",
+      "version": "3.0.0",
+      "title": "Belt Balancer",
+      "author": "knoxfighter",
+      "file_name": "belt-balancer_3.0.0.zip",
+      "factorio_version": "1.1.0.0",
+      "dependencies": null,
+      "compatibility": true,
+      "enabled": true
+    },
+    {
+      "name": "sonaxaton-infinite-resources",
+      "version": "0.4.1",
+      "title": "Infinite Resources",
+      "author": "sonaxaton",
+      "file_name": "sonaxaton-infinite-resources_0.4.1.zip",
+      "factorio_version": "0.17.0.0",
+      "dependencies": null,
+      "compatibility": false,
+      "enabled": true
+    },
+    {
+      "name": "train-station-overview",
+      "version": "3.0.0",
+      "title": "Train Station Overview",
+      "author": "knoxfighter",
+      "file_name": "train-station-overview_3.0.0.zip",
+      "factorio_version": "1.1.0.0",
+      "dependencies": null,
+      "compatibility": true,
+      "enabled": true
+    }
+  ]
+}`
 
 		CallRoute(t, method, baseRoute, route, nil, handlerFunc, http.StatusOK, expected)
 	})
