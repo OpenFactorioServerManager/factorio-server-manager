@@ -86,7 +86,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 				// skip optional and incompatible dependencies
 				parts := strings.Split(dep, " ")
 				if len(parts) > 3 {
-					log.Printf("skipping dependency '%s' in '%s': invalid format\n", dep, modInfo.Name)
+					log.Printf("skipping dependency '%s' in '%s': optional dependency or invalid format\n", dep, modInfo.Name)
 					continue
 				}
 				if parts[0] != "base" {
