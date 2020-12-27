@@ -25,7 +25,7 @@ func (s Save) String() string {
 func ListSaves(saveDir string) (saves []Save, err error) {
 	saves = []Save{}
 	err = filepath.Walk(saveDir, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() && info.Name() == "saves" {
+		if info == nil || (info.IsDir() && info.Name() == "saves") {
 			return nil
 		}
 		saves = append(saves, Save{
