@@ -70,7 +70,7 @@ func (v Version) Greater(b Version) bool { return !v.Equals(b) && !v.Less(b) }
 // GreaterC called to determine the compatibility with a greater version
 // Versions, that have different super/major version are not compatible!
 func (v *Version) GreaterC(b Version) bool {
-	return v[0] == b[0] && v[1] == b[1] && (v[2] > b[2] || (v[2] == b[2] && v[3] > b[3]))
+	return (v[0] == b[0] && v[1] == b[1] && (v[2] > b[2] || (v[2] == b[2] && v[3] > b[3]))) || (v[0] == 1 && b[0] == 0 && v[1] == 0 && b[1] == 18)
 }
 
 func (v Version) ge(b Version) bool  { return v.Equals(b) || v.Greater(b) }

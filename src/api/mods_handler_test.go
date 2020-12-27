@@ -523,3 +523,64 @@ func TestModUploadHandler(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code, "wrong response code.")
 	})
 }
+
+func Test_018_10_Compatibility(t *testing.T) {
+	CheckShort(t)
+
+	var err error
+
+	// set test environment to verson 1.0.0
+	factorio.SetFactorioServer(factorio.Server{
+		Version:        factorio.Version{1, 0, 0, 0},
+		BaseModVersion: "1.0.0",
+	})
+
+	// when done reset the environment to what it should be
+	defer factorio.SetFactorioServer(factorio.Server{
+		Version:        factorio.Version{1, 1, 6, 0},
+		BaseModVersion: "1.1.6",
+	})
+
+	// manually setup the environment, it has to be specific
+
+	config := bootstrap.GetConfig()
+
+	// check if dev directory exists and create it
+	if _, err = os.Stat(config.FactorioModsDir); os.IsNotExist(err) {
+		err = os.Mkdir(config.FactorioModsDir, 0775)
+	}
+	if err != nil {
+		log.Fatalf(`Error creating "dev" directory: %s`, err)
+		return
+	}
+
+	mod, err := factorio.NewMods(config.FactorioModsDir)
+	if err != nil {
+		t.Fatalf("couldn't create Mods object: %s", err)
+	}
+
+	err = mod.DownloadMod("/download/belt-balancer/5e9f9db4bf9d30000c5303f2", "belt-balancer_2.1.3.zip", "belt-balancer")
+	if err != nil {
+		t.Fatalf(`Error downloading Mod "belt-balancer": %s`, err)
+	}
+
+	defer CleanupMods(t)
+
+	route := "/api/mods/list"
+
+	expected := `[
+  {
+    "name": "belt-balancer",
+    "version": "2.1.3",
+    "title": "Belt Balancer",
+    "author": "knoxfighter",
+    "file_name": "belt-balancer_2.1.3.zip",
+    "factorio_version": "0.18.0.0",
+    "dependencies": null,
+    "compatibility": true,
+    "enabled": true
+  }
+]`
+
+	CallRoute(t, "GET", route, route, nil, ListInstalledModsHandler, http.StatusOK, expected)
+}
