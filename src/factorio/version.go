@@ -42,7 +42,13 @@ func (v Version) Equals(b Version) bool {
 	return v[0] == b[0] && v[1] == b[1] && v[2] == b[2] && v[3] == b[3]
 }
 
+/**
+ * Greater cannot be !Less, cause incompatibility is given, when changing super-major or major version.
+ * So this will give incompatibilities between two different versions.
+ */
+
 // Less returns true if the receiver version is less than the argument version
+// This has to be kept like it is, it used to determine the versions for the binary level.dat
 func (v Version) Less(b Version) bool {
 	switch {
 	case v[0] < b[0]:
@@ -61,23 +67,30 @@ func (v Version) Less(b Version) bool {
 // Greater returns true if the receiver version is greater than the argument version
 func (v Version) Greater(b Version) bool { return !v.Equals(b) && !v.Less(b) }
 
-func (v Version) ge(b Version) bool { return v.Equals(b) || v.Greater(b) }
-func (v Version) le(b Version) bool { return v.Equals(b) || v.Less(b) }
+// GreaterC called to determine the compatibility with a greater version
+// Versions, that have different super/major version are not compatible!
+func (v *Version) GreaterC(b Version) bool {
+	return (v[0] == b[0] && v[1] == b[1] && (v[2] > b[2] || (v[2] == b[2] && v[3] > b[3]))) || (v[0] == 1 && b[0] == 0 && v[1] == 0 && b[1] == 18)
+}
 
-// Compare returns true if the comparison between the two version operands is valid.
+func (v Version) ge(b Version) bool  { return v.Equals(b) || v.Greater(b) }
+func (v Version) geC(b Version) bool { return v.Equals(b) || v.GreaterC(b) }
+func (v Version) le(b Version) bool  { return v.Equals(b) || v.Less(b) }
+
+// Compatible returns true if the comparison between the two version operands is valid.
 // Supported ops are: ==, !=, >, <, >=, <=
-func (v Version) Compare(b Version, op string) bool {
+func (v Version) Compatible(b Version, op string) bool {
 	switch op {
 	case "==":
 		return v.Equals(b)
 	case "!=":
 		return !v.Equals(b)
 	case ">":
-		return v.Greater(b)
+		return v.GreaterC(b)
 	case "<":
 		return v.Less(b)
 	case ">=":
-		return v.ge(b)
+		return v.geC(b)
 	case "<=":
 		return v.le(b)
 	default:

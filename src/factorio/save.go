@@ -76,6 +76,7 @@ type Mod struct {
 	CRC     uint32  `json:"crc"`
 }
 
+// Mostly based on https://forums.factorio.com/viewtopic.php?f=5&t=8568&p=277892&hilit=level.dat+python#p277892
 func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 	var scratch [8]byte
 
@@ -91,7 +92,7 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 
 	atLeast016 := !h.FactorioVersion.Less(Version{0, 16, 0, 0})
 
-	if h.FactorioVersion.Greater(Version{0, 17, 0, 0}) {
+	if !h.FactorioVersion.Less(Version{0, 17, 0, 0}) {
 		//FIXME correct naming
 		_, err = r.Read(scratch[:1])
 		if err != nil {
@@ -99,39 +100,46 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 		}
 	}
 
+	// campaign, example: "transport-belt-madness
 	h.Campaign, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read Campaign: %v", err)
 	}
 
+	// level name, example: "level-01"
 	h.Name, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read Name: %v", err)
 	}
 
+	// name of the base mod, example: "base"
 	h.BaseMod, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read BaseMod: %v", err)
 	}
 
+	// Read Difficulty
 	_, err = r.Read(scratch[:1])
 	if err != nil {
 		return fmt.Errorf("read Difficulty: %v", err)
 	}
 	h.Difficulty = scratch[0]
 
+	// Read finished as bool
 	_, err = r.Read(scratch[:1])
 	if err != nil {
 		return fmt.Errorf("read Finished: %v", err)
 	}
 	h.Finished = scratch[0] != 0
 
+	// Read playerWon as bool
 	_, err = r.Read(scratch[:1])
 	if err != nil {
 		return fmt.Errorf("read PlayerWon: %v", err)
 	}
 	h.PlayerWon = scratch[0] != 0
 
+	// Read NextLevel string (normally empty)
 	h.NextLevel, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read NextLevel: %v", err)
@@ -257,6 +265,7 @@ func readOptimUint(r io.Reader, v Version, bitSize int) (uint32, error) {
 func readString(r io.Reader, game Version, forceOptimized bool) (s string, err error) {
 	var n uint32
 
+	// since 0.16 read optimized uint
 	if !game.Less(Version{0, 16, 0, 0}) || forceOptimized {
 		n, err = readOptimUint(r, game, 32)
 		if err != nil {
