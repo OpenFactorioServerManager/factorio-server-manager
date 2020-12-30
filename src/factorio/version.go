@@ -73,9 +73,8 @@ func (v *Version) GreaterC(b Version) bool {
 	return (v[0] == b[0] && v[1] == b[1] && (v[2] > b[2] || (v[2] == b[2] && v[3] > b[3]))) || (v[0] == 1 && b[0] == 0 && v[1] == 0 && b[1] == 18)
 }
 
-func (v Version) ge(b Version) bool  { return v.Equals(b) || v.Greater(b) }
-func (v Version) geC(b Version) bool { return v.Equals(b) || v.GreaterC(b) }
-func (v Version) le(b Version) bool  { return v.Equals(b) || v.Less(b) }
+func (v Version) ge(b Version) bool { return v.Equals(b) || v.Greater(b) }
+func (v Version) le(b Version) bool { return v.Equals(b) || v.Less(b) }
 
 // Compatible returns true if the comparison between the two version operands is valid.
 // Supported ops are: ==, !=, >, <, >=, <=
@@ -86,11 +85,11 @@ func (v Version) Compatible(b Version, op string) bool {
 	case "!=":
 		return !v.Equals(b)
 	case ">":
-		return v.GreaterC(b)
+		return v.Greater(b)
 	case "<":
 		return v.Less(b)
 	case ">=":
-		return v.geC(b)
+		return v.ge(b)
 	case "<=":
 		return v.le(b)
 	default:
