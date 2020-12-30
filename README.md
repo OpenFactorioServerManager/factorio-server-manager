@@ -25,7 +25,7 @@ This tool runs on a Factorio server and allows management of the Factorio server
 ## Manage mods
 ![Factorio Server Manager Screenshot](screenshots/Screenshot_Mods.png)
 
-## [Development](https://github.com/OpenFactorioServerManager/factorio-server-manager/wiki/Developmen)
+## [Development](https://github.com/OpenFactorioServerManager/factorio-server-manager/wiki/Development)
 
 ## Contributing
 1. Fork it!
