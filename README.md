@@ -14,16 +14,16 @@ This tool runs on a Factorio server and allows management of the Factorio server
 * Authentication for protecting against unauthorized users
 * Available as a Docker container
 
-## [Installation and Usage](https://github.com/OpenFactorioServerManager/factorio-server-manager/wiki/Installation-and-Usage)
-
-## Manage Factorio Server
+#### Manage Factorio Server
 ![Factorio Server Manager Screenshot](screenshots/Screenshot_Controls.png)
 
-## Manage save files
+#### Manage save files
 ![Factorio Server Manager Screenshot](screenshots/Screenshot_Saves.png)
 
-## Manage mods
+#### Manage mods
 ![Factorio Server Manager Screenshot](screenshots/Screenshot_Mods.png)
+
+## [Installation and Usage](https://github.com/OpenFactorioServerManager/factorio-server-manager/wiki/Installation-and-Usage)
 
 ## [Development](https://github.com/OpenFactorioServerManager/factorio-server-manager/wiki/Development)
 
