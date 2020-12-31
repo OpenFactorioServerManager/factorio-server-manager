@@ -17,12 +17,17 @@ const ModList = ({mods, factorioVersion, updateMod, toggleMod, deleteMod, addUpd
             </tr>
             </thead>
             <tbody>
-            {factorioVersion !== null && mods.map((mod, i) => <Mod mod={mod} key={i}
-                                                                   updateMod={updateMod}
-                                                                   toggleMod={toggleMod}
-                                                                   deleteMod={deleteMod}
-                                                                   addUpdatableMod={addUpdatableMod}
-                                                                   factorioVersion={factorioVersion}/>)}
+            {
+                factorioVersion !== null && mods.map(
+                    (mod, i) =>
+                        <Mod mod={mod} key={i}
+                             updateMod={updateMod}
+                             toggleMod={toggleMod}
+                             deleteMod={deleteMod}
+                             addUpdatableMod={addUpdatableMod}
+                             factorioVersion={factorioVersion}/>
+                )
+            }
             </tbody>
         </table>
     )

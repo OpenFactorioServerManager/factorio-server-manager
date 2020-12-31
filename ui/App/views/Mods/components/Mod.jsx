@@ -12,7 +12,7 @@ import modsResource from "../../../../api/resources/mods";
 import React, {useEffect, useState} from "react";
 import {coerce, gt, satisfies} from "semver";
 
-const Mod = ({ mod, factorioVersion, toggleMod, deleteMod, updateMod, addUpdatableMod}) => {
+const Mod = ({mod, factorioVersion, toggleMod, deleteMod, updateMod, addUpdatableMod}) => {
 
     const [newVersion, setNewVersion] = useState(null)
     const [icon, setIcon] = useState(faArrowCircleUp)
@@ -25,9 +25,15 @@ const Mod = ({ mod, factorioVersion, toggleMod, deleteMod, updateMod, addUpdatab
             let newestRelease;
             data.releases.forEach(release => {
                 if (
-                    gt(coerce(release.version).version, coerce(mod.version).version) && (
-                        satisfies(factorioVersion, coerce(release.info_json.factorio_version).version) ||
-                        (satisfies(factorioVersion, "1.0.0") && satisfies(coerce(release.info_json.factorio_version).version, "0.18.x"))
+                    gt(
+                        coerce(release.version),
+                        coerce(mod.version)
+                    ) && (
+                        satisfies(factorioVersion, "~"+coerce(release.info_json.factorio_version).version) ||
+                        (
+                            satisfies(factorioVersion, "1.0.0") &&
+                            satisfies(coerce(release.info_json.factorio_version), "0.18.x")
+                        )
                     )
                 ) {
                     if (!newestRelease) {
