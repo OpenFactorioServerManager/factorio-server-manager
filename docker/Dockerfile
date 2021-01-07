@@ -2,7 +2,7 @@
 FROM frolvlad/alpine-glibc
 
 ENV FACTORIO_VERSION=stable \
-    MANAGER_VERSION=0.8.2 \
+    MANAGER_VERSION=0.9.0 \
     ADMIN_USER=admin \
     ADMIN_PASS=factorio \
     RCON_PASS="" \
