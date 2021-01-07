@@ -1,8 +1,10 @@
-#!/bin/sh
+#!/bin/bash
+set -eou pipefail
+(
+  cd ..
+  make build
+  cp build/factorio-server-manager-linux.zip docker/factorio-server-manager-linux.zip
+)
+docker build -f Dockerfile-local -t factorio-server-manager:dev .
 
-echo "Cloning ${FAC_BRANCH}"
-git clone -b ${FAC_BRANCH} https://github.com/mroote/factorio-server-manager.git ${FAC_ROOT}
-echo "Creating build..."
-make gen_release
-echo "Copying build artifacts..."
-cp -v build/* /build/
+rm factorio-server-manager-linux.zip
