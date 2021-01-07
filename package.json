@@ -55,7 +55,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "fuse.js": "^6.4.1",
     "react-hook-form": "^5.7.2",
     "regenerator-runtime": "^0.13.7",
