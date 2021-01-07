@@ -1,4 +1,5 @@
 ![.github/workflows/test-workflow.yml](https://github.com/OpenFactorioServerManager/factorio-server-manager/workflows/.github/workflows/test-workflow.yml/badge.svg)
+![Discord](https://img.shields.io/discord/779512040934342687?label=Discord)
 
 # Factorio Server Manager
 
