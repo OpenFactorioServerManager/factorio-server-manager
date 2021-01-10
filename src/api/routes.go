@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/mroote/factorio-server-manager/api/websocket"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -20,36 +19,40 @@ type Routes []Route
 func NewRouter() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 
+	// create subrouter for authenticated calls
+	sr := r.NewRoute().Subrouter()
+	sr.Use(AuthMiddleware)
+
 	// API subrouter
 	// Serves all JSON REST handlers prefixed with /api
 	s := r.PathPrefix("/api").Subrouter()
+	s.Use(AuthMiddleware)
 	for _, route := range apiRoutes {
 		s.Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
-			Handler(AuthorizeHandler(route.HandlerFunc))
+			Handler(route.HandlerFunc)
 	}
 
 	// The login handler does not check for authentication.
-	s.Path("/login").
+	r.Path("/api/login").
 		Methods("POST").
 		Name("LoginUser").
+		//HandlerFunc(LoginUser)
 		HandlerFunc(LoginUser)
 
 	// Route for initializing websocket connection
 	// Clients connecting to /ws establish websocket connection by upgrading
 	// HTTP session.
 	// Ensure user is logged in with the AuthorizeHandler middleware
-	r.Path("/ws").
+	sr.Path("/ws").
 		Methods("GET").
 		Name("Websocket").
 		Handler(
-			AuthorizeHandler(
-				http.HandlerFunc(
-					func(w http.ResponseWriter, r *http.Request) {
-						websocket.ServeWs(w, r)
-					},
-				),
+			http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					websocket.ServeWs(w, r)
+				},
 			),
 		)
 
@@ -60,38 +63,39 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Login").
 		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
-	r.Path("/saves").
+
+	sr.Path("/saves").
 		Methods("GET").
 		Name("Saves").
-		Handler(AuthorizeHandler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/")))))
-	r.Path("/mods").
+		Handler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/"))))
+	sr.Path("/mods").
 		Methods("GET").
 		Name("Mods").
-		Handler(AuthorizeHandler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/")))))
-	r.Path("/server-settings").
+		Handler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/"))))
+	sr.Path("/server-settings").
 		Methods("GET").
 		Name("Server settings").
-		Handler(AuthorizeHandler(http.StripPrefix("/server-settings", http.FileServer(http.Dir("./app/")))))
-	r.Path("/game-settings").
+		Handler(http.StripPrefix("/server-settings", http.FileServer(http.Dir("./app/"))))
+	sr.Path("/game-settings").
 		Methods("GET").
 		Name("Game settings").
-		Handler(AuthorizeHandler(http.StripPrefix("/game-settings", http.FileServer(http.Dir("./app/")))))
-	r.Path("/console").
+		Handler(http.StripPrefix("/game-settings", http.FileServer(http.Dir("./app/"))))
+	sr.Path("/console").
 		Methods("GET").
 		Name("Console").
-		Handler(AuthorizeHandler(http.StripPrefix("/console", http.FileServer(http.Dir("./app/")))))
-	r.Path("/logs").
+		Handler(http.StripPrefix("/console", http.FileServer(http.Dir("./app/"))))
+	sr.Path("/logs").
 		Methods("GET").
 		Name("Logs").
-		Handler(AuthorizeHandler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/")))))
-	r.Path("/user-management").
+		Handler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/"))))
+	sr.Path("/user-management").
 		Methods("GET").
 		Name("User management").
-		Handler(AuthorizeHandler(http.StripPrefix("/user-management", http.FileServer(http.Dir("./app/")))))
-	r.Path("/help").
+		Handler(http.StripPrefix("/user-management", http.FileServer(http.Dir("./app/"))))
+	sr.Path("/help").
 		Methods("GET").
 		Name("Help").
-		Handler(AuthorizeHandler(http.StripPrefix("/help", http.FileServer(http.Dir("./app/")))))
+		Handler(http.StripPrefix("/help", http.FileServer(http.Dir("./app/"))))
 
 	// catch all route
 	r.PathPrefix("/").
@@ -100,20 +104,6 @@ func NewRouter() *mux.Router {
 		Handler(http.FileServer(http.Dir("./app/")))
 
 	return r
-}
-
-// Middleware returns a http.HandlerFunc which authenticates the users request
-// Redirects user to login page if no session is found
-func AuthorizeHandler(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		Auth := GetAuth()
-		if err := Auth.aaa.Authorize(w, r, true); err != nil {
-			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
-		h.ServeHTTP(w, r)
-	})
 }
 
 // Defines all API REST endpoints

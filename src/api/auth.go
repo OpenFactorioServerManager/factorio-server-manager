@@ -1,12 +1,16 @@
 package api
 
 import (
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"log"
-	"os"
-	"sync"
-
+	"encoding/base64"
+	"encoding/json"
 	"github.com/apexskier/httpauth"
+	"github.com/gorilla/sessions"
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/syndtr/goleveldb/leveldb"
+	"golang.org/x/crypto/bcrypt"
+	"log"
+	"math/rand"
+	"net/http"
 )
 
 type AuthHTTP struct {
@@ -21,101 +25,256 @@ type User struct {
 	Email    string `json:"email"`
 }
 
-var once sync.Once
-var instantiated *AuthHTTP
-
-func GetAuth() *AuthHTTP {
-	once.Do(func() {
-		Auth := &AuthHTTP{}
-		config := bootstrap.GetConfig()
-		_ = Auth.CreateAuth(config.DatabaseFile, config.CookieEncryptionKey)
-		_ = Auth.CreateOrUpdateUser(config.Username, config.Password, "admin", "")
-		instantiated = Auth
-	})
-	return instantiated
+type Auth struct {
+	db *leveldb.DB
 }
 
-func (auth *AuthHTTP) CreateAuth(backendFile string, cookieKey string) error {
+var (
+	sessionStore *sessions.CookieStore
+	auth         Auth
+)
+
+func SetupAuth() {
 	var err error
-	os.Mkdir(backendFile, 0755)
 
-	auth.backend, err = httpauth.NewLeveldbAuthBackend(backendFile)
+	config := bootstrap.GetConfig()
+
+	cookieEncryptionKey, err := base64.StdEncoding.DecodeString(config.CookieEncryptionKey)
 	if err != nil {
-		log.Printf("Error creating Auth backend: %s", err)
+		panic(err)
+	}
+	sessionStore = sessions.NewCookieStore(cookieEncryptionKey)
+	sessionStore.Options = &sessions.Options{
+		Path:   "",
+		Secure: true,
+	}
+
+	auth.db, err = leveldb.OpenFile(config.DatabaseFile, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	// check if db is empty, if so, add default user
+	iterator := auth.db.NewIterator(nil, nil)
+	if !iterator.Next() {
+		var password = generateRandomPassword()
+
+		var user User
+		user.Username = "admin"
+		user.Password = password
+		user.Role = "admin"
+
+		err = auth.addUser(user)
+		if err != nil {
+			panic(err)
+		}
+
+		log.Println("Created default admin user. Please change it's password as soon as possible.")
+		log.Printf("Username: %s", user.Username)
+		log.Printf("Password: %s", password)
+	} else {
+		// if first key is userdata, migrate it from old design
+		if string(iterator.Key()) == "httpauth::userdata" {
+			value := iterator.Value()
+
+			var migrationData map[string]struct {
+				Username string
+				Email    string
+				Hash     string
+				Role     string
+			}
+			err = json.Unmarshal(value, &migrationData)
+			if err != nil {
+				panic(err)
+			}
+
+			for _, user := range migrationData {
+				newUser := User{
+					Username: user.Username,
+					Password: user.Hash,
+					Role:     user.Role,
+					Email:    user.Email,
+				}
+				err = auth.addUserWithHash(newUser)
+				if err != nil {
+					panic(err)
+				}
+			}
+
+			// remove userdata from db
+			err = auth.db.Delete(iterator.Key(), nil)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+}
+
+var randLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func generateRandomPassword() string {
+	pass := make([]rune, 24)
+	for i := range pass {
+		pass[i] = randLetters[rand.Intn(len(randLetters))]
+	}
+	return string(pass)
+}
+
+func (a *Auth) checkPassword(username, password string) error {
+	dbUser, err := a.db.Get([]byte(username), nil)
+	if err != nil {
+		// TODO
 		return err
 	}
 
-	roles := make(map[string]httpauth.Role)
-	roles["user"] = 30
-	roles["admin"] = 80
-
-	auth.aaa, err = httpauth.NewAuthorizer(auth.backend, []byte(cookieKey), "user", roles)
+	var user User
+	err = json.Unmarshal(dbUser, &user)
 	if err != nil {
-		log.Printf("Error creating authorizer: %s", err)
+		// TODO
+		return err
+	}
+
+	decodedHashPw, err := base64.StdEncoding.DecodeString(user.Password)
+	if err != nil {
+		// TODO
+		return err
+	}
+
+	err = bcrypt.CompareHashAndPassword(decodedHashPw, []byte(password))
+	if err != nil {
+		// TODO
+		return err
+	}
+
+	// Password correct
+	return nil
+}
+
+func (a *Auth) deleteUser(username string) error {
+	err := a.db.Delete([]byte(username), nil)
+	if err != nil {
+		// TODO
+		return err
+	}
+	return nil
+}
+
+func (a *Auth) hasUser(username string) (bool, error) {
+	return a.db.Has([]byte(username), nil)
+}
+
+func (a *Auth) getUser(username string) (User, error) {
+	userJson, err := a.db.Get([]byte(username), nil)
+	if err != nil {
+		// TODO
+		return User{}, err
+	}
+
+	var user User
+	err = json.Unmarshal(userJson, &user)
+	if err != nil {
+		// TODO
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func (a *Auth) listUsers() ([]User, error) {
+	var users []User
+	iterator := a.db.NewIterator(nil, nil)
+	for iterator.Next() {
+		userJson := iterator.Value()
+
+		var user User
+		err := json.Unmarshal(userJson, &user)
+		if err != nil {
+			// TODO
+			return nil, err
+		}
+		user.Password = ""
+
+		users = append(users, user)
+	}
+	return users, nil
+}
+
+func (a *Auth) addUser(user User) error {
+	// encrypt password
+	pwHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		// TODO
+		return err
+	}
+
+	user.Password = base64.StdEncoding.EncodeToString(pwHash)
+
+	// save user as json
+	userJson, err := json.Marshal(user)
+	if err != nil {
+		// TODO
+		return err
+	}
+
+	// add user to db
+	err = a.db.Put([]byte(user.Username), userJson, nil)
+	if err != nil {
+		// TODO
 		return err
 	}
 
 	return nil
 }
 
-func (auth *AuthHTTP) CreateOrUpdateUser(username, password, role, email string) error {
-	user := httpauth.UserData{Username: username, Role: role, Email: email}
-	err := auth.backend.SaveUser(user)
+func (a *Auth) addUserWithHash(user User) error {
+	// save user as json
+	userJson, err := json.Marshal(user)
 	if err != nil {
-		log.Printf("Error saving user: %s", err)
+		// TODO
 		return err
 	}
 
-	err = auth.aaa.Update(nil, nil, username, password, email)
+	// add user to db
+	err = a.db.Put([]byte(user.Username), userJson, nil)
 	if err != nil {
-		log.Printf("Error updating user: %s", err)
-		return err
-	}
-
-	log.Printf("Created/Updated user: %s", user.Username)
-
-	return nil
-}
-
-func (auth *AuthHTTP) listUsers() ([]User, error) {
-	var userResponse []User
-	users, err := auth.backend.Users()
-	if err != nil {
-		log.Printf("Error list users: %s", err)
-		return nil, err
-	}
-
-	for _, user := range users {
-		u := User{Username: user.Username, Role: user.Role, Email: user.Email}
-		userResponse = append(userResponse, u)
-	}
-
-	log.Printf("listing users: %v found", len(users))
-	return userResponse, nil
-}
-
-func (auth *AuthHTTP) addUser(username, password, email, role string) error {
-	user := httpauth.UserData{Username: username, Hash: []byte(password), Email: email, Role: role}
-	err := auth.backend.SaveUser(user)
-	if err != nil {
-		log.Printf("Error creating user %v: %s", user, err)
-	}
-	err = auth.aaa.Update(nil, nil, username, password, email)
-	if err != nil {
-		log.Printf("Error saving user: %s", err)
-		return err
-	}
-
-	log.Printf("Added user: %v", user)
-	return nil
-}
-
-func (auth *AuthHTTP) removeUser(username string) error {
-	err := auth.backend.DeleteUser(username)
-	if err != nil {
-		log.Printf("Could not delete user %s, error: %s", username, err)
+		// TODO
 		return err
 	}
 
 	return nil
+}
+
+func (a *Auth) removeUser(username string) error {
+	return a.db.Delete([]byte(username), nil)
+}
+
+// middleware function, that will be called for every request, that has to be authorized
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		session, err := sessionStore.Get(r, "authentication")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		username, ok := session.Values["username"]
+		if !ok {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		hasUser, err := auth.hasUser(username.(string))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if hasUser {
+			next.ServeHTTP(w, r)
+		} else {
+			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+	})
 }

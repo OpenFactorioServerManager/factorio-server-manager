@@ -416,6 +416,7 @@ func UnmarshallUserJson(body []byte, resp *interface{}, w http.ResponseWriter) (
 	return
 }
 
+// Handler for the Login
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
@@ -429,20 +430,31 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ReadRequestBody(w, r, &resp)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	user, err := UnmarshallUserJson(body, &resp, w)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	log.Printf("Logging in user: %s", user.Username)
-	Auth := GetAuth()
-	err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
+
+	err = auth.checkPassword(user.Username, user.Password)
 	if err != nil {
-		resp = fmt.Sprintf("Error loggin in user: %s, error: %s", user.Username, err)
-		log.Println(resp)
+		// TODO
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	session, _ := sessionStore.Get(r, "authentication")
+	session.Values["username"] = user.Username
+	err = session.Save(r, w)
+	if err != nil {
+		// TODO
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -458,10 +470,17 @@ func LogoutUser(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	Auth := GetAuth()
-	if err = Auth.aaa.Logout(w, r); err != nil {
-		log.Printf("Error logging out current user")
-		w.WriteHeader(http.StatusInternalServerError)
+
+	session, err := sessionStore.Get(r, "authentication")
+	if err != nil {
+		// TODO
+		return
+	}
+
+	delete(session.Values, "username")
+	err = session.Save(r, w)
+	if err != nil {
+		// TODO
 		return
 	}
 
@@ -478,12 +497,17 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	Auth := GetAuth()
-	user, err := Auth.aaa.CurrentUser(w, r)
+
+	session, err := sessionStore.Get(r, "authentication")
 	if err != nil {
-		resp = fmt.Sprintf("Error getting user status: %s, error: %s", user.Username, err)
-		log.Println(resp)
-		w.WriteHeader(http.StatusInternalServerError)
+		// TODO
+		return
+	}
+
+	username := session.Values["username"].(string)
+	user, err := auth.getUser(username)
+	if err != nil {
+		// TODO
 		return
 	}
 
@@ -498,8 +522,8 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	Auth := GetAuth()
-	users, err := Auth.listUsers()
+
+	users, err := auth.listUsers()
 	if err != nil {
 		resp = fmt.Sprintf("Error listing users: %s", err)
 		log.Println(resp)
@@ -529,8 +553,8 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	Auth := GetAuth()
-	err = Auth.addUser(user.Username, user.Password, user.Email, user.Role)
+
+	err = auth.addUser(user)
 	if err != nil {
 		resp = fmt.Sprintf("Error in adding user {%s}: %s", user.Username, err)
 		log.Println(resp)
@@ -559,8 +583,8 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	Auth := GetAuth()
-	err = Auth.removeUser(user.Username)
+
+	err = auth.removeUser(user.Username)
 	if err != nil {
 		resp = fmt.Sprintf("Error in removing user {%s}, error: %s", user.Username, err)
 		log.Println(resp)

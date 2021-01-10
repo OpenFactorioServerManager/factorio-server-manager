@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// Initialize authentication system
-	api.GetAuth()
+	api.SetupAuth()
 
 	// Initialize HTTP router -- also initializes websocket
 	router := api.NewRouter()
