@@ -18,3 +18,4 @@ services:
       - "./factorio-data/saves:/opt/factorio/saves"
       - "./factorio-data/mods:/opt/factorio/mods"
       - "./factorio-data/config:/opt/factorio/config"
+      - "./fsm/mod_packs:/opt/fsm/mod_packs"
