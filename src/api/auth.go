@@ -3,22 +3,19 @@ package api
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/apexskier/httpauth"
 	"github.com/gorilla/sessions"
 	"github.com/mroote/factorio-server-manager/bootstrap"
 	"github.com/syndtr/goleveldb/leveldb"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"log"
 	"math/rand"
 	"net/http"
 )
 
-type AuthHTTP struct {
-	backend httpauth.LeveldbAuthBackend
-	aaa     httpauth.Authorizer
-}
-
 type User struct {
+	gorm.Model
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
@@ -26,7 +23,7 @@ type User struct {
 }
 
 type Auth struct {
-	db *leveldb.DB
+	db *gorm.DB
 }
 
 var (
@@ -49,10 +46,12 @@ func SetupAuth() {
 		Secure: true,
 	}
 
-	auth.db, err = leveldb.OpenFile(config.DatabaseFile, nil)
+	auth.db, err = gorm.Open(sqlite.Open(config.SQLiteDatabaseFile), nil)
 	if err != nil {
 		panic(err)
 	}
+
+	auth.db.Get
 
 	// check if db is empty, if so, add default user
 	iterator := auth.db.NewIterator(nil, nil)
@@ -73,41 +72,52 @@ func SetupAuth() {
 		log.Printf("Username: %s", user.Username)
 		log.Printf("Password: %s", password)
 	} else {
-		// if first key is userdata, migrate it from old design
-		if string(iterator.Key()) == "httpauth::userdata" {
-			value := iterator.Value()
 
-			var migrationData map[string]struct {
-				Username string
-				Email    string
-				Hash     string
-				Role     string
-			}
-			err = json.Unmarshal(value, &migrationData)
-			if err != nil {
-				panic(err)
-			}
-
-			for _, user := range migrationData {
-				newUser := User{
-					Username: user.Username,
-					Password: user.Hash,
-					Role:     user.Role,
-					Email:    user.Email,
-				}
-				err = auth.addUserWithHash(newUser)
-				if err != nil {
-					panic(err)
-				}
-			}
-
-			// remove userdata from db
-			err = auth.db.Delete(iterator.Key(), nil)
-			if err != nil {
-				panic(err)
-			}
-		}
 	}
+	iterator.Release()
+}
+
+func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
+	oldDB, err := leveldb.OpenFile(oldDBFile, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	newDB, err := gorm.Open(sqlite.Open(newDBFile), nil)
+	if err != nil {
+		panic(err)
+	}
+
+	newDB.AutoMigrate(&User{})
+
+	oldUserData, err := oldDB.Get([]byte("httpauth::userdata"), nil)
+	if err != nil {
+		panic(err)
+	}
+
+	var migrationData map[string]struct {
+		Username string
+		Email    string
+		Hash     string
+		Role     string
+	}
+	err = json.Unmarshal(oldUserData, &migrationData)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, datum := range migrationData {
+		user := &User{
+			Username: datum.Username,
+			Password: datum.Hash,
+			Role:     datum.Role,
+			Email:    datum.Email,
+		}
+
+		newDB.Create(user)
+	}
+
+	oldDB.Close()
 }
 
 var randLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -196,6 +206,7 @@ func (a *Auth) listUsers() ([]User, error) {
 
 		users = append(users, user)
 	}
+	iterator.Release()
 	return users, nil
 }
 

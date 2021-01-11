@@ -25,7 +25,9 @@ const CreateUserForm = ({updateUserList}) => {
                        ref={register({required: true})}
                        id="username"
                        name="username"
-                       type="text" placeholder="Username"/>
+                       type="text"
+                       placeholder="Username"
+                />
                 {errors.username && <span className="block text-red">Username is required</span>}
             </div>
             <div className="mb-4">
@@ -38,7 +40,9 @@ const CreateUserForm = ({updateUserList}) => {
                        name="role"
                        value="admin"
                        disabled={true}
-                       type="text" placeholder="Role"/>
+                       type="text"
+                       placeholder="Role"
+                />
                 {errors.role && <span className="block text-red">Role is required</span>}
             </div>
             <div className="mb-4">
@@ -46,10 +50,12 @@ const CreateUserForm = ({updateUserList}) => {
                     Email
                 </label>
                 <input className="shadow appearance-none border w-full py-2 px-3 text-black"
-                       ref={register({required: true})}
+                       ref={register({required: false})}
                        id="email"
                        name="email"
-                       type="text" placeholder="Email"/>
+                       type="text"
+                       placeholder="Email"
+                />
                 {errors.email && <span className="block text-red">Email is required</span>}
             </div>
             <div className="mb-4">
@@ -60,7 +66,9 @@ const CreateUserForm = ({updateUserList}) => {
                        ref={register({required: true})}
                        id="password"
                        name="password"
-                       type="password" placeholder="Password"/>
+                       type="password"
+                       placeholder="Password"
+                />
                 {errors.password && <span className="block text-red">Password is required</span>}
             </div>
             <div className="mb-4">
@@ -71,8 +79,11 @@ const CreateUserForm = ({updateUserList}) => {
                        ref={register({required: true, validate: confirmation => confirmation === password})}
                        id="password_confirmation"
                        name="password_confirmation"
-                       type="password" placeholder="Password Confirmation"/>
-                {errors.password_confirmation && <span className="block text-red">Password Confirmation is required and must match the Password</span>}
+                       type="password"
+                       placeholder="Password Confirmation"
+                />
+                {errors.password_confirmation &&
+                <span className="block text-red">Password Confirmation is required and must match the Password</span>}
             </div>
             <Button isSubmit={true} type="success">Save</Button>
         </form>

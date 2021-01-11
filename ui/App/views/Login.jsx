@@ -15,7 +15,7 @@ const Login = ({handleLogin}) => {
 
     const onSubmit = async data => {
         const loginAttempt = await user.login(data)
-        if (loginAttempt?.Username) {
+        if (loginAttempt?.username) {
             await handleLogin();
             history.push('/');
         }
@@ -25,7 +25,7 @@ const Login = ({handleLogin}) => {
     useEffect(() => {
         (async () => {
             const status = await user.status()
-            if (status?.Username) {
+            if (status?.username) {
                 await handleLogin();
                 history.push(location?.state?.from || '/');
             }

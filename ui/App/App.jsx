@@ -34,7 +34,7 @@ const App = () => {
 
     const handleAuthenticationStatus = useCallback(async () => {
         const status = await user.status();
-        if (status?.Username) {
+        if (status?.username) {
             setIsAuthenticated(true);
             await updateServerStatus();
 

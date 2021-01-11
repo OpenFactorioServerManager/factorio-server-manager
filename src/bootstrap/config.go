@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gorilla/securecookie"
 	"github.com/jessevdk/go-flags"
+	"github.com/mroote/factorio-server-manager/api"
 	"log"
 	"math/rand"
 	"os"
@@ -48,6 +49,7 @@ type Config struct {
 	ServerPort              string `json:"server_port,omitempty"`
 	MaxUploadSize           int64  `json:"max_upload_size,omitempty"`
 	DatabaseFile            string `json:"database_file,omitempty"`
+	SQLiteDatabaseFile      string `json:"sq_lite_database_file,omitempty"`
 	CookieEncryptionKey     string `json:"cookie_encryption_key,omitempty"`
 	SettingsFile            string `json:"settings_file,omitempty"`
 	LogFile                 string `json:"log_file,omitempty"`
@@ -105,6 +107,14 @@ func (config *Config) updateConfigFile() {
 		encoder.SetIndent("", "\t")
 		err = encoder.Encode(conf)
 		failOnError(err, "Error encoding JSON config file.")
+	}
+
+	if conf.DatabaseFile != "" {
+		// Migrate leveldb to sqlite
+		conf.DatabaseFile = ""
+		conf.SQLiteDatabaseFile = "sqlite.db"
+
+		api.MigrateLevelDBToSqlite(conf.DatabaseFile, conf.SQLiteDatabaseFile)
 	}
 }
 

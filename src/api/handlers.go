@@ -459,6 +459,11 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("User: %s, logged in successfully", user.Username)
+
+	user.Password = ""
+	resp = user
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func LogoutUser(w http.ResponseWriter, r *http.Request) {
@@ -510,6 +515,8 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 		// TODO
 		return
 	}
+
+	user.Password = ""
 
 	resp = user
 }
