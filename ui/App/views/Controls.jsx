@@ -104,10 +104,12 @@ const Controls = ({serverStatus, updateServerStatus}) => {
                                     <Select
                                         name="save"
                                         inputRef={register({required: true})}
-                                    >
-                                        {saves.map(save => (
-                                            <option value={save.name} selected={save.name === "Load Latest"} key={save.name}>{save.name}</option>))}
-                                    </Select>
+                                        defaultValue="Load Latest"
+                                        options={saves.map(save => new Object({
+                                            value: save.name,
+                                            name: save.name
+                                        }))}
+                                    />
                                 </div>
                             </div>
                         </>
@@ -128,6 +130,6 @@ const Controls = ({serverStatus, updateServerStatus}) => {
         />
         </form>
     )
-}
+};
 
 export default Controls;
