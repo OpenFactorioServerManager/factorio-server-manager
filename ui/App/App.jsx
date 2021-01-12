@@ -32,14 +32,12 @@ const App = () => {
         }
     }
 
-    const handleAuthenticationStatus = useCallback(async () => {
-        const status = await user.status();
+    const handleAuthenticationStatus = useCallback(async (status) => {
         if (status?.username) {
             setIsAuthenticated(true);
-            await updateServerStatus();
-
+            await updateServerStatus()
             socket.emit('server status subscribe');
-            socket.on('server_status', updateServerStatus)
+            socket.on('server_status', updateServerStatus);
         }
     },[]);
 

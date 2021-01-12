@@ -462,8 +462,6 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	user.Password = ""
 	resp = user
-
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func LogoutUser(w http.ResponseWriter, r *http.Request) {

@@ -11,12 +11,12 @@ import {Flash} from "../components/Flash";
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
     const history = useHistory();
-    const location = useLocation()
+    const location = useLocation();
 
     const onSubmit = async data => {
         const loginAttempt = await user.login(data)
         if (loginAttempt?.username) {
-            await handleLogin();
+            await handleLogin(loginAttempt);
             history.push('/');
         }
     };
@@ -24,9 +24,9 @@ const Login = ({handleLogin}) => {
     // on mount check if user is authenticated
     useEffect(() => {
         (async () => {
-            const status = await user.status()
+            const status = await user.status();
             if (status?.username) {
-                await handleLogin();
+                await handleLogin(status);
                 history.push(location?.state?.from || '/');
             }
         })();
