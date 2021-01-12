@@ -2,25 +2,16 @@ package api
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"github.com/gorilla/sessions"
 	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/syndtr/goleveldb/leveldb"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
-	"math/rand"
 	"net/http"
 )
 
-type User struct {
-	gorm.Model
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
-	Email    string `json:"email"`
-}
+type User bootstrap.User
 
 type Auth struct {
 	db *gorm.DB
@@ -51,19 +42,21 @@ func SetupAuth() {
 		panic(err)
 	}
 
-	auth.db.Get
+	auth.db.AutoMigrate(&User{})
 
-	// check if db is empty, if so, add default user
-	iterator := auth.db.NewIterator(nil, nil)
-	if !iterator.Next() {
-		var password = generateRandomPassword()
+	var userCount int64
+	auth.db.Model(&User{}).Count(&userCount)
+
+	if userCount == 0 {
+		// no user created yet, create a default one
+		var password = bootstrap.GenerateRandomPassword()
 
 		var user User
 		user.Username = "admin"
 		user.Password = password
 		user.Role = "admin"
 
-		err = auth.addUser(user)
+		err := auth.addUser(user)
 		if err != nil {
 			panic(err)
 		}
@@ -71,77 +64,15 @@ func SetupAuth() {
 		log.Println("Created default admin user. Please change it's password as soon as possible.")
 		log.Printf("Username: %s", user.Username)
 		log.Printf("Password: %s", password)
-	} else {
-
 	}
-	iterator.Release()
-}
-
-func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
-	oldDB, err := leveldb.OpenFile(oldDBFile, nil)
-	if err != nil {
-		panic(err)
-	}
-
-	newDB, err := gorm.Open(sqlite.Open(newDBFile), nil)
-	if err != nil {
-		panic(err)
-	}
-
-	newDB.AutoMigrate(&User{})
-
-	oldUserData, err := oldDB.Get([]byte("httpauth::userdata"), nil)
-	if err != nil {
-		panic(err)
-	}
-
-	var migrationData map[string]struct {
-		Username string
-		Email    string
-		Hash     string
-		Role     string
-	}
-	err = json.Unmarshal(oldUserData, &migrationData)
-	if err != nil {
-		panic(err)
-	}
-
-	for _, datum := range migrationData {
-		user := &User{
-			Username: datum.Username,
-			Password: datum.Hash,
-			Role:     datum.Role,
-			Email:    datum.Email,
-		}
-
-		newDB.Create(user)
-	}
-
-	oldDB.Close()
-}
-
-var randLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-func generateRandomPassword() string {
-	pass := make([]rune, 24)
-	for i := range pass {
-		pass[i] = randLetters[rand.Intn(len(randLetters))]
-	}
-	return string(pass)
 }
 
 func (a *Auth) checkPassword(username, password string) error {
-	dbUser, err := a.db.Get([]byte(username), nil)
-	if err != nil {
-		// TODO
-		return err
-	}
-
 	var user User
-	err = json.Unmarshal(dbUser, &user)
-	if err != nil {
+	result := a.db.Where(&User{Username: username}).Take(&user)
+	if result.Error != nil {
 		// TODO
-		return err
+		return result.Error
 	}
 
 	decodedHashPw, err := base64.StdEncoding.DecodeString(user.Password)
@@ -161,30 +92,30 @@ func (a *Auth) checkPassword(username, password string) error {
 }
 
 func (a *Auth) deleteUser(username string) error {
-	err := a.db.Delete([]byte(username), nil)
-	if err != nil {
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Delete(&User{})
+	if result.Error != nil {
 		// TODO
-		return err
+		return result.Error
 	}
 	return nil
 }
 
 func (a *Auth) hasUser(username string) (bool, error) {
-	return a.db.Has([]byte(username), nil)
+	var count int64
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Count(&count)
+	if result.Error != nil {
+		// TODO
+		return false, result.Error
+	}
+	return count == 1, nil
 }
 
 func (a *Auth) getUser(username string) (User, error) {
-	userJson, err := a.db.Get([]byte(username), nil)
-	if err != nil {
-		// TODO
-		return User{}, err
-	}
-
 	var user User
-	err = json.Unmarshal(userJson, &user)
-	if err != nil {
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Take(&user)
+	if result.Error != nil {
 		// TODO
-		return User{}, err
+		return User{}, result.Error
 	}
 
 	return user, nil
@@ -192,21 +123,11 @@ func (a *Auth) getUser(username string) (User, error) {
 
 func (a *Auth) listUsers() ([]User, error) {
 	var users []User
-	iterator := a.db.NewIterator(nil, nil)
-	for iterator.Next() {
-		userJson := iterator.Value()
-
-		var user User
-		err := json.Unmarshal(userJson, &user)
-		if err != nil {
-			// TODO
-			return nil, err
-		}
-		user.Password = ""
-
-		users = append(users, user)
+	result := a.db.Find(&users)
+	if result.Error != nil {
+		// TODO
+		return nil, result.Error
 	}
-	iterator.Release()
 	return users, nil
 }
 
@@ -220,43 +141,34 @@ func (a *Auth) addUser(user User) error {
 
 	user.Password = base64.StdEncoding.EncodeToString(pwHash)
 
-	// save user as json
-	userJson, err := json.Marshal(user)
-	if err != nil {
-		// TODO
-		return err
-	}
-
 	// add user to db
-	err = a.db.Put([]byte(user.Username), userJson, nil)
-	if err != nil {
+	result := a.db.Create(&user)
+	if result.Error != nil {
 		// TODO
-		return err
+		return result.Error
 	}
 
 	return nil
 }
 
 func (a *Auth) addUserWithHash(user User) error {
-	// save user as json
-	userJson, err := json.Marshal(user)
-	if err != nil {
-		// TODO
-		return err
-	}
-
 	// add user to db
-	err = a.db.Put([]byte(user.Username), userJson, nil)
-	if err != nil {
+	result := a.db.Create(&user)
+	if result.Error != nil {
 		// TODO
-		return err
+		return result.Error
 	}
 
 	return nil
 }
 
 func (a *Auth) removeUser(username string) error {
-	return a.db.Delete([]byte(username), nil)
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Delete(&User{})
+	if result.Error != nil {
+		// TODO
+		return result.Error
+	}
+	return nil
 }
 
 // middleware function, that will be called for every request, that has to be authorized

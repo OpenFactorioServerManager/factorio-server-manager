@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gorilla/securecookie"
 	"github.com/jessevdk/go-flags"
-	"github.com/mroote/factorio-server-manager/api"
 	"log"
 	"math/rand"
 	"os"
@@ -83,13 +82,18 @@ func GetConfig() Config {
 }
 
 func (config *Config) updateConfigFile() {
-	file, err := os.OpenFile(config.ConfFile, os.O_RDWR, 0)
+	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
 	failOnError(err, "Error opening file")
 	defer file.Close()
 
 	var conf Config
 	decoder := json.NewDecoder(file)
 	decoder.Decode(&conf)
+
+	err = file.Close()
+	failOnError(err, "Error closing json file")
+
+	var resave bool
 
 	// set cookie encryption key, if empty
 	// also set it, if the base64 string is not valid
@@ -99,22 +103,31 @@ func (config *Config) updateConfigFile() {
 		randomKey := securecookie.GenerateRandomKey(32)
 		conf.CookieEncryptionKey = base64.StdEncoding.EncodeToString(randomKey)
 
-		// save the cookie again
-		_, err = file.Seek(0, 0)
-		failOnError(err, "Error seeking to the begin of JSON config file")
+		resave = true
+	}
+
+	if conf.DatabaseFile != "" {
+		// Migrate leveldb to sqlite
+		// set new db name
+		conf.SQLiteDatabaseFile = "sqlite.db"
+
+		MigrateLevelDBToSqlite(conf.DatabaseFile, conf.SQLiteDatabaseFile)
+
+		// remove old db name
+		conf.DatabaseFile = ""
+		resave = true
+	}
+
+	if resave {
+		// save json file again
+		file, err = os.OpenFile(config.ConfFile, os.O_WRONLY, 0)
+		failOnError(err, "Error opening file for writing")
+		defer file.Close()
 
 		encoder := json.NewEncoder(file)
 		encoder.SetIndent("", "\t")
 		err = encoder.Encode(conf)
 		failOnError(err, "Error encoding JSON config file.")
-	}
-
-	if conf.DatabaseFile != "" {
-		// Migrate leveldb to sqlite
-		conf.DatabaseFile = ""
-		conf.SQLiteDatabaseFile = "sqlite.db"
-
-		api.MigrateLevelDBToSqlite(conf.DatabaseFile, conf.SQLiteDatabaseFile)
 	}
 }
 
