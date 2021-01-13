@@ -11,8 +11,8 @@ import (
 	"github.com/mroote/factorio-server-manager/bootstrap"
 )
 
+// TailLog tails the Factorio game log file
 func TailLog(filename string) ([]string, error) {
-	// Tail the Factorio game log file
 	var result []string
 
 	config := bootstrap.GetConfig()
@@ -36,7 +36,7 @@ func getOffset(line string) (string, error) {
 	re, _ := regexp.Compile(`^\d+.\d+`)
 
 	if !re.MatchString(line) {
-		log.Printf("This line has no offset", line)
+		log.Printf("This line has no offset %v\n", line)
 		return "error", errors.New(line)
 	}
 
@@ -60,9 +60,9 @@ func replaceTimestampInLine(line string, offset string, startTime time.Time) str
 
 	if err == nil {
 		return timestamp.Format("2006-01-02 15:04:05") + ":" + strings.Replace(line, offset, "", 1)
-	} else {
-		return line
 	}
+
+	return line
 }
 
 func reformatTimestamps(log []string) []string {
