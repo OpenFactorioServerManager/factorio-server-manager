@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
 	"io"
 	"io/ioutil"
 	"log"
@@ -15,6 +13,9 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/mroote/factorio-server-manager/factorio"
 
 	"github.com/gorilla/mux"
 )
@@ -216,7 +217,7 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	config := bootstrap.GetConfig()
-	resp, err = factorio.TailLog()
+	resp, err = factorio.TailLog(config.FactorioLog)
 	if err != nil {
 		resp = fmt.Sprintf("Could not tail %s: %s", config.FactorioLog, err)
 		return

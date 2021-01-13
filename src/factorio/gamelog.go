@@ -11,8 +11,9 @@ import (
 	"github.com/mroote/factorio-server-manager/bootstrap"
 )
 
-func tailLog(filename string) ([]string, error) {
-	result := []string{}
+func TailLog(filename string) ([]string, error) {
+	// Tail the Factorio game log file
+	var result []string
 
 	config := bootstrap.GetConfig()
 
@@ -46,7 +47,7 @@ func getOffset(line string) (string, error) {
 
 func getStartTime(line string) time.Time {
 	re, _ := regexp.Compile(`\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}`)
-	date := string(re.FindString(line))
+	date := re.FindString(line)
 	startTime, _ := time.Parse(time.RFC3339, strings.Replace(date, " ", "T", 1)+"Z")
 
 	return startTime
@@ -67,10 +68,10 @@ func replaceTimestampInLine(line string, offset string, startTime time.Time) str
 func reformatTimestamps(log []string) []string {
 	firstLine := log[0]
 	startTime := getStartTime(firstLine)
-	result := []string{}
+	var result []string
 
-	for i := range log {
-		line := strings.TrimLeft(log[i], " \t")
+	for _, line := range log {
+		line = strings.TrimLeft(line, " \t")
 		offset, _ := getOffset(line)
 		result = append(result, replaceTimestampInLine(line, offset, startTime))
 	}
