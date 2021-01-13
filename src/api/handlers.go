@@ -552,8 +552,6 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Adding user: %v", string(body))
-
 	user, err := UnmarshallUserJson(body, &resp, w)
 	if err != nil {
 		return

@@ -9,7 +9,7 @@ const CreateUserForm = ({updateUserList}) => {
     const password = watch('password');
 
     const onSubmit = async (data) => {
-        const res = user.add(data);
+        const res = await user.add(data);
         if (res) {
             updateUserList()
         }

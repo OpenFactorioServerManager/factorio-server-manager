@@ -33,7 +33,7 @@ func SetupAuth() {
 	}
 	sessionStore = sessions.NewCookieStore(cookieEncryptionKey)
 	sessionStore.Options = &sessions.Options{
-		Path:   "",
+		Path:   "/",
 		Secure: true,
 	}
 
