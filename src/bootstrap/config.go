@@ -109,7 +109,9 @@ func (config *Config) updateConfigFile() {
 	if conf.DatabaseFile != "" {
 		// Migrate leveldb to sqlite
 		// set new db name
-		conf.SQLiteDatabaseFile = "sqlite.db"
+		// just rename the file from the old path
+		dbFileDir := filepath.Dir(conf.DatabaseFile)
+		conf.SQLiteDatabaseFile = filepath.Join(dbFileDir, "sqlite.db")
 
 		MigrateLevelDBToSqlite(conf.DatabaseFile, conf.SQLiteDatabaseFile)
 
