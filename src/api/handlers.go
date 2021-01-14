@@ -597,6 +597,66 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 	resp = fmt.Sprintf("User: %s successfully removed.", user.Username)
 }
 
+func ChangePassword(w http.ResponseWriter, r *http.Request) {
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	body, err := ReadRequestBody(w, r, &resp)
+	if err != nil {
+		return
+	}
+
+	var user struct {
+		OldPassword        string `json:"old_password"`
+		NewPassword        string `json:"new_password"`
+		NewPasswordConfirm string `json:"new_password_confirmation"`
+	}
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		resp = fmt.Sprintf("Unable to parse the request body: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// only allow to change its own password
+	// get username from session cookie
+	session, err := sessionStore.Get(r, "authentication")
+	if err != nil {
+		// TODO
+		return
+	}
+
+	username := session.Values["username"].(string)
+
+	// check if password for user is correct
+	err = auth.checkPassword(username, user.OldPassword)
+	if err != nil {
+		// TODO
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	// only run, when confirmation correct
+	if user.NewPassword != user.NewPasswordConfirm {
+		// TODO
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = auth.changePassword(username, user.NewPassword)
+	if err != nil {
+		// TODO
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
 // GetServerSettings returns JSON response of server-settings.json file
 func GetServerSettings(w http.ResponseWriter, r *http.Request) {
 	var resp interface{}

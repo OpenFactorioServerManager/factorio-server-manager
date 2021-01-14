@@ -200,6 +200,11 @@ var apiRoutes = Routes{
 		"/user/remove",
 		RemoveUser,
 	}, {
+		"ChangePassword",
+		"POST",
+		"/user/password",
+		ChangePassword,
+	}, {
 		"GetServerSettings",
 		"GET",
 		"/settings",

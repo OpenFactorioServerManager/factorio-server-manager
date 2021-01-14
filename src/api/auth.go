@@ -171,6 +171,29 @@ func (a *Auth) removeUser(username string) error {
 	return nil
 }
 
+func (a *Auth) changePassword(username, password string) error {
+	var user User
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Take(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	hashPW, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		// TODO
+		return err
+	}
+
+	user.Password = base64.StdEncoding.EncodeToString(hashPW)
+
+	result = a.db.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 // middleware function, that will be called for every request, that has to be authorized
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
