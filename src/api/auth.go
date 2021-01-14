@@ -71,19 +71,21 @@ func (a *Auth) checkPassword(username, password string) error {
 	var user User
 	result := a.db.Where(&User{Username: username}).Take(&user)
 	if result.Error != nil {
-		// TODO
+		log.Printf("Error reading user from database: %s", result.Error)
 		return result.Error
 	}
 
 	decodedHashPw, err := base64.StdEncoding.DecodeString(user.Password)
 	if err != nil {
-		// TODO
+		log.Printf("Error decoding base64 password: %s", err)
 		return err
 	}
 
 	err = bcrypt.CompareHashAndPassword(decodedHashPw, []byte(password))
 	if err != nil {
-		// TODO
+		if err != bcrypt.ErrMismatchedHashAndPassword {
+			log.Printf("Unexpected error comparing hash and pw: %s", err)
+		}
 		return err
 	}
 
@@ -94,7 +96,7 @@ func (a *Auth) checkPassword(username, password string) error {
 func (a *Auth) deleteUser(username string) error {
 	result := a.db.Model(&User{}).Where(&User{Username: username}).Delete(&User{})
 	if result.Error != nil {
-		// TODO
+		log.Printf("Error deleting user from database: %s", result.Error)
 		return result.Error
 	}
 	return nil
@@ -104,7 +106,7 @@ func (a *Auth) hasUser(username string) (bool, error) {
 	var count int64
 	result := a.db.Model(&User{}).Where(&User{Username: username}).Count(&count)
 	if result.Error != nil {
-		// TODO
+		log.Printf("Error cheking user exisits in database: %s", result.Error)
 		return false, result.Error
 	}
 	return count == 1, nil
@@ -114,7 +116,7 @@ func (a *Auth) getUser(username string) (User, error) {
 	var user User
 	result := a.db.Model(&User{}).Where(&User{Username: username}).Take(&user)
 	if result.Error != nil {
-		// TODO
+		log.Printf("Error reading user from database: %s", result.Error)
 		return User{}, result.Error
 	}
 
@@ -125,7 +127,7 @@ func (a *Auth) listUsers() ([]User, error) {
 	var users []User
 	result := a.db.Find(&users)
 	if result.Error != nil {
-		// TODO
+		log.Printf("Error listing all users in database: %s", result.Error)
 		return nil, result.Error
 	}
 	return users, nil
@@ -135,7 +137,7 @@ func (a *Auth) addUser(user User) error {
 	// encrypt password
 	pwHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		// TODO
+		log.Printf("Error generating bcrypt hash from password: %s", err)
 		return err
 	}
 
@@ -144,7 +146,7 @@ func (a *Auth) addUser(user User) error {
 	// add user to db
 	result := a.db.Create(&user)
 	if result.Error != nil {
-		// TODO
+		log.Printf("Error creating user in database: %s", result.Error)
 		return result.Error
 	}
 
@@ -155,19 +157,10 @@ func (a *Auth) addUserWithHash(user User) error {
 	// add user to db
 	result := a.db.Create(&user)
 	if result.Error != nil {
-		// TODO
+		log.Printf("Error creating user in database: %s", result.Error)
 		return result.Error
 	}
 
-	return nil
-}
-
-func (a *Auth) removeUser(username string) error {
-	result := a.db.Model(&User{}).Where(&User{Username: username}).Delete(&User{})
-	if result.Error != nil {
-		// TODO
-		return result.Error
-	}
 	return nil
 }
 
@@ -175,12 +168,13 @@ func (a *Auth) changePassword(username, password string) error {
 	var user User
 	result := a.db.Model(&User{}).Where(&User{Username: username}).Take(&user)
 	if result.Error != nil {
+		log.Printf("Error reading user from database: %s", result.Error)
 		return result.Error
 	}
 
 	hashPW, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		// TODO
+		log.Printf("Error generatig bcrypt hash from new password: %s", err)
 		return err
 	}
 
@@ -188,6 +182,7 @@ func (a *Auth) changePassword(username, password string) error {
 
 	result = a.db.Save(&user)
 	if result.Error != nil {
+		log.Printf("Error resaving user in database: %s", result.Error)
 		return result.Error
 	}
 

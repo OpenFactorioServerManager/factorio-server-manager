@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gorilla/sessions"
 	"github.com/mroote/factorio-server-manager/bootstrap"
 	"github.com/mroote/factorio-server-manager/factorio"
 	"io"
@@ -46,6 +47,26 @@ func ReadRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}) 
 	body, err = ioutil.ReadAll(r.Body)
 	if err != nil {
 		*resp = fmt.Sprintf("%s: %s", readHttpBodyError, err)
+		log.Println(*resp)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	return
+}
+
+func ReadSessionStore(w http.ResponseWriter, r *http.Request, resp *interface{}, name string) (session *sessions.Session, err error) {
+	session, err = sessionStore.Get(r, name)
+	if err != nil {
+		*resp = fmt.Sprintf("Error reading session cookie [%s]: %s", name, err)
+		log.Println(*resp)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	return
+}
+
+func SaveSession(w http.ResponseWriter, r *http.Request, resp *interface{}, session *sessions.Session) (err error) {
+	err = session.Save(r, w)
+	if err != nil {
+		*resp = fmt.Sprintf("Error saving session cookie: %s", err)
 		log.Println(*resp)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -430,13 +451,11 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ReadRequestBody(w, r, &resp)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	user, err := UnmarshallUserJson(body, &resp, w)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -444,17 +463,21 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	err = auth.checkPassword(user.Username, user.Password)
 	if err != nil {
-		// TODO
+		resp = fmt.Sprintf("Password for use %s wrong", user.Username)
+		log.Println(resp)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	session, _ := sessionStore.Get(r, "authentication")
-	session.Values["username"] = user.Username
-	err = session.Save(r, w)
+	session, err := ReadSessionStore(w, r, &resp, "authentication")
 	if err != nil {
-		// TODO
-		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	session.Values["username"] = user.Username
+
+	err = SaveSession(w, r, &resp, session)
+	if err != nil {
 		return
 	}
 
@@ -474,16 +497,15 @@ func LogoutUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	session, err := sessionStore.Get(r, "authentication")
+	session, err := ReadSessionStore(w, r, &resp, "authentication")
 	if err != nil {
-		// TODO
 		return
 	}
 
 	delete(session.Values, "username")
-	err = session.Save(r, w)
+
+	err = SaveSession(w, r, &resp, session)
 	if err != nil {
-		// TODO
 		return
 	}
 
@@ -501,16 +523,18 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	session, err := sessionStore.Get(r, "authentication")
+	session, err := ReadSessionStore(w, r, &resp, "authentication")
 	if err != nil {
-		// TODO
 		return
 	}
 
 	username := session.Values["username"].(string)
+
 	user, err := auth.getUser(username)
 	if err != nil {
-		// TODO
+		resp = fmt.Sprintf("Error getting user: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -587,7 +611,7 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = auth.removeUser(user.Username)
+	err = auth.deleteUser(user.Username)
 	if err != nil {
 		resp = fmt.Sprintf("Error in removing user {%s}, error: %s", user.Username, err)
 		log.Println(resp)
@@ -626,9 +650,8 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	// only allow to change its own password
 	// get username from session cookie
-	session, err := sessionStore.Get(r, "authentication")
+	session, err := ReadSessionStore(w, r, &resp, "authentication")
 	if err != nil {
-		// TODO
 		return
 	}
 
@@ -637,21 +660,24 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	// check if password for user is correct
 	err = auth.checkPassword(username, user.OldPassword)
 	if err != nil {
-		// TODO
+		resp = fmt.Sprintf("Password for use %s wrong", username)
+		log.Println(resp)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
 	// only run, when confirmation correct
 	if user.NewPassword != user.NewPasswordConfirm {
-		// TODO
+		resp = fmt.Sprintf("Password confirmation incorrect")
+		log.Println(resp)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	err = auth.changePassword(username, user.NewPassword)
 	if err != nil {
-		// TODO
+		resp = fmt.Sprintf("Error changing password: %s", err)
+		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
