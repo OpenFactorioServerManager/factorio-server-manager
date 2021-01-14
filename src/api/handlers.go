@@ -463,7 +463,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	err = auth.checkPassword(user.Username, user.Password)
 	if err != nil {
-		resp = fmt.Sprintf("Password for use %s wrong", user.Username)
+		resp = fmt.Sprintf("Password for user %s wrong", user.Username)
 		log.Println(resp)
 		w.WriteHeader(http.StatusUnauthorized)
 		return

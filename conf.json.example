@@ -1,6 +1,6 @@
 {
 	"sq_lite_database_file": "sqlite.db",
 	"log_file": "factorio-server-manager.log",
-	"rcon_pass": "factorio_rcon",
+	"rcon_pass": "",
 	"settings_file": "server-settings.json"
 }

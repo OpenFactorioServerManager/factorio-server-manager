@@ -106,6 +106,16 @@ func (config *Config) updateConfigFile() {
 		resave = true
 	}
 
+	if conf.FactorioRconPass == "" || conf.FactorioRconPass == "factorio_rcon" {
+		// password is "factorio" .. change it
+		conf.FactorioRconPass = GenerateRandomPassword()
+
+		log.Println("Rcon password default one or empty, generated new one:")
+		log.Printf("Password: %s", conf.FactorioRconPass)
+
+		resave = true
+	}
+
 	if conf.DatabaseFile != "" {
 		// Migrate leveldb to sqlite
 		// set new db name
