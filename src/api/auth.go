@@ -42,7 +42,10 @@ func SetupAuth() {
 		panic(err)
 	}
 
-	auth.db.AutoMigrate(&User{})
+	err = auth.db.AutoMigrate(&User{})
+	if err != nil {
+		panic(err)
+	}
 
 	var userCount int64
 	auth.db.Model(&User{}).Count(&userCount)
@@ -194,7 +197,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, err := sessionStore.Get(r, "authentication")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			if session != nil {
+				session.Options.MaxAge = -1
+				err2 := session.Save(r, w)
+				if err2 != nil {
+					log.Printf("Error deleting cookie: %s", err2)
+				}
+			}
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 

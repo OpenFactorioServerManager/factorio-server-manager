@@ -58,7 +58,14 @@ func ReadSessionStore(w http.ResponseWriter, r *http.Request, resp *interface{},
 	if err != nil {
 		*resp = fmt.Sprintf("Error reading session cookie [%s]: %s", name, err)
 		log.Println(*resp)
-		w.WriteHeader(http.StatusInternalServerError)
+		if session != nil {
+			session.Options.MaxAge = -1
+			err2 := session.Save(r, w)
+			if err2 != nil {
+				log.Printf("Error deleting session cookie: %s", err2)
+			}
+		}
+		w.WriteHeader(http.StatusUnauthorized)
 	}
 	return
 }
