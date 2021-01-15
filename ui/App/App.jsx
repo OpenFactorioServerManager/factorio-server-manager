@@ -45,7 +45,6 @@ const App = () => {
         const loggedOut = await user.logout();
         if (loggedOut) {
             setIsAuthenticated(false);
-            history.push('/login');
         }
     }, []);
 
