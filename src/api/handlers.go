@@ -688,6 +688,8 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	resp = true
 }
 
 // GetServerSettings returns JSON response of server-settings.json file

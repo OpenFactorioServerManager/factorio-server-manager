@@ -11,6 +11,8 @@ const ChangePasswordForm = () => {
         const res = await user.changePassword(data);
         if (res) {
             // Update successful
+            console.log("password change successful");
+            window.flash("Password changed", "green")
         }
     }
 
