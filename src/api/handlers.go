@@ -667,7 +667,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	// check if password for user is correct
 	err = auth.checkPassword(username, user.OldPassword)
 	if err != nil {
-		resp = fmt.Sprintf("Password for use %s wrong", username)
+		resp = fmt.Sprintf("Password for user %s wrong", username)
 		log.Println(resp)
 		w.WriteHeader(http.StatusUnauthorized)
 		return

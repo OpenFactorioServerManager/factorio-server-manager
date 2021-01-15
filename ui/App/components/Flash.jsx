@@ -6,15 +6,21 @@ export const Flash = () => {
     let [message, setMessage] = useState('');
     let [color, setColor] = useState('');
 
+    let flashListener = ({message, color}) => {
+        setVisibility(true);
+        setMessage(message);
+        setColor(color);
+        setTimeout(() => {
+            setVisibility(false);
+        }, 4000);
+    }
+
     useEffect(() => {
-        Bus.addListener('flash', ({message, color}) => {
-            setVisibility(true);
-            setMessage(message);
-            setColor(color);
-            setTimeout(() => {
-                setVisibility(false);
-            }, 4000);
-        });
+        Bus.addListener('flash', flashListener);
+
+        return function () {
+            Bus.removeListener('flash', flashListener);
+        }
     }, []);
 
     return (
