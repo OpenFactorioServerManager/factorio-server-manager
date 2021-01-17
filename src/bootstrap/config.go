@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/jessevdk/go-flags"
@@ -94,7 +93,7 @@ func (config *Config) loadServerConfig() {
 	err = decoder.Decode(&config)
 	failOnError(err, "Error decoding JSON config file.")
 
-	if !strings.HasPrefix(config.SettingsFile, "/") {
+	if !filepath.IsAbs(config.SettingsFile) {
 		config.SettingsFile = filepath.Join(config.FactorioConfigDir, config.SettingsFile)
 	}
 
@@ -134,7 +133,7 @@ func mapFlags(flags Flags) Config {
 		MaxUploadSize:           flags.FactorioMaxUpload,
 	}
 
-	if strings.HasPrefix(flags.FactorioBinary, "/") {
+	if filepath.IsAbs(flags.FactorioBinary) {
 		config.FactorioBinary = flags.FactorioBinary
 	} else {
 		config.FactorioBinary = filepath.Join(flags.FactorioDir, flags.FactorioBinary)
