@@ -3,13 +3,14 @@ package bootstrap
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jessevdk/go-flags"
 	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/jessevdk/go-flags"
 )
 
 type Flags struct {
@@ -31,6 +32,7 @@ type Flags struct {
 type Config struct {
 	FactorioDir             string `json:"factorio_dir"`
 	FactorioSavesDir        string `json:"saves_dir"`
+	FactorioBaseModDir      string `json:"basemod_dir"`
 	FactorioModsDir         string `json:"mods_dir"`
 	FactorioModPackDir      string `json:"mod_pack_dir"`
 	FactorioConfigFile      string `json:"config_file"`
@@ -91,6 +93,14 @@ func (config *Config) loadServerConfig() {
 	err = decoder.Decode(&config)
 	failOnError(err, "Error decoding JSON config file.")
 
+	if !filepath.IsAbs(config.SettingsFile) {
+		config.SettingsFile = filepath.Join(config.FactorioConfigDir, config.SettingsFile)
+	}
+
+	if config.FactorioBaseModDir == "" {
+		config.FactorioBaseModDir = filepath.Join(config.FactorioDir, "data", "base")
+	}
+
 	config.FactorioRconPort = randomPort()
 }
 
@@ -118,10 +128,15 @@ func mapFlags(flags Flags) Config {
 		FactorioModPackDir:      flags.ModPackDir,
 		FactorioConfigDir:       filepath.Join(flags.FactorioDir, "config"),
 		FactorioConfigFile:      filepath.Join(flags.FactorioDir, flags.FactorioConfigFile),
-		FactorioBinary:          filepath.Join(flags.FactorioDir, flags.FactorioBinary),
 		FactorioCredentialsFile: "./factorio.auth",
 		FactorioAdminFile:       "server-adminlist.json",
 		MaxUploadSize:           flags.FactorioMaxUpload,
+	}
+
+	if filepath.IsAbs(flags.FactorioBinary) {
+		config.FactorioBinary = flags.FactorioBinary
+	} else {
+		config.FactorioBinary = filepath.Join(flags.FactorioDir, flags.FactorioBinary)
 	}
 
 	if runtime.GOOS == "windows" {

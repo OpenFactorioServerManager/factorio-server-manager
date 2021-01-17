@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
 	"io"
 	"io/ioutil"
 	"log"
@@ -15,6 +13,9 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/mroote/factorio-server-manager/factorio"
 
 	"github.com/gorilla/mux"
 )
@@ -628,7 +629,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	config := bootstrap.GetConfig()
-	err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), settings, 0644)
+	err = ioutil.WriteFile(config.SettingsFile, settings, 0644)
 	if err != nil {
 		resp = fmt.Sprintf("Failed to save server settings: %v\n", err)
 		log.Println(resp)
