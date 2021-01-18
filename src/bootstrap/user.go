@@ -23,12 +23,14 @@ type User struct {
 func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
 	oldDB, err := leveldb.OpenFile(oldDBFile, nil)
 	if err != nil {
+		log.Printf("Error opening old leveldb: %s", err)
 		panic(err)
 	}
 	defer oldDB.Close()
 
 	newDB, err := gorm.Open(sqlite.Open(newDBFile), nil)
 	if err != nil {
+		log.Printf("Error open sqlite and gorm: %s", err)
 		panic(err)
 	}
 	defer func() {
@@ -39,15 +41,20 @@ func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
 		if db != nil {
 			err2 = db.Close()
 			if err2 != nil {
+				log.Printf("Error closing real DB of gorm: %s", err2)
 				panic(err2)
 			}
 		}
 	}()
 
-	newDB.AutoMigrate(&User{})
+	err = newDB.AutoMigrate(&User{})
+	if err != nil {
+		log.Printf("Error autoMigrating sqlite database with user: %s", err)
+	}
 
 	oldUserData, err := oldDB.Get([]byte("httpauth::userdata"), nil)
 	if err != nil {
+		log.Printf("Error getting `httpauth::userdata` from leveldb: %s", err)
 		panic(err)
 	}
 
@@ -59,6 +66,7 @@ func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
 	}
 	err = json.Unmarshal(oldUserData, &migrationData)
 	if err != nil {
+		log.Printf("Error unmarshalling old ")
 		panic(err)
 	}
 
@@ -66,6 +74,7 @@ func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
 		// check if password is "factorio", which was the default password in the old system
 		decodedHash, err := base64.StdEncoding.DecodeString(datum.Hash)
 		if err != nil {
+			log.Printf("Error decoding base64 hash: %s", err)
 			panic(err)
 		}
 
@@ -76,6 +85,7 @@ func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
 
 			bcryptPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 			if err != nil {
+				log.Printf("Error generating has from password: %s", err)
 				panic(err)
 			}
 
@@ -99,8 +109,10 @@ func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
 	oldDB.Close()
 
 	// delete oldDB
+	log.Println("Deleting old leveldb database.")
 	err = os.RemoveAll(oldDBFile)
 	if err != nil {
+		log.Printf("Error removing leveldb: %s", err)
 		panic(err)
 	}
 }

@@ -29,6 +29,7 @@ func SetupAuth() {
 
 	cookieEncryptionKey, err := base64.StdEncoding.DecodeString(config.CookieEncryptionKey)
 	if err != nil {
+		log.Printf("Error decoding base64 cookie encryption key: %s", err)
 		panic(err)
 	}
 	sessionStore = sessions.NewCookieStore(cookieEncryptionKey)
@@ -39,11 +40,13 @@ func SetupAuth() {
 
 	auth.db, err = gorm.Open(sqlite.Open(config.SQLiteDatabaseFile), nil)
 	if err != nil {
+		log.Printf("Error opening sqlite or goem database: %s", err)
 		panic(err)
 	}
 
 	err = auth.db.AutoMigrate(&User{})
 	if err != nil {
+		log.Printf("Error AutoMigrating gorm database: %s", err)
 		panic(err)
 	}
 
@@ -61,6 +64,7 @@ func SetupAuth() {
 
 		err := auth.addUser(user)
 		if err != nil {
+			log.Printf("Error adding admin user to db: %s", err)
 			panic(err)
 		}
 
@@ -210,6 +214,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		username, ok := session.Values["username"]
 		if !ok {
+			http.Error(w, "Could not read username from sessioncookie", http.StatusUnauthorized)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
