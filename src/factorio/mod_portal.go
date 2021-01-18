@@ -30,7 +30,7 @@ type ModPortalStruct struct {
 
 // get all mods uploaded to the factorio modPortal
 func ModPortalList() (interface{}, error, int) {
-	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods?page_size=max", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods?page_size=500", nil)
 	if err != nil {
 		return "error", err, http.StatusInternalServerError
 	}
