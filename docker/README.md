@@ -37,7 +37,7 @@ docker-compose -f docker-compose.simple.yaml up -d
 
 By default container will download the latest version of factorio. If you want to use specific version, you can change
 the value of `FACTORIO_VERSION=latest` variable in the `docker-compose.yaml` file.
-Every version can be used. Using `latest` will download the newest beta version. Using `stable` will download the newest stable version.
+Any version can be used. Using `latest` will download the newest beta version. Using `stable` will download the newest stable version.
 
 ## Accessing the application
 

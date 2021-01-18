@@ -109,7 +109,7 @@ func (a *Auth) hasUser(username string) (bool, error) {
 	var count int64
 	result := a.db.Model(&User{}).Where(&User{Username: username}).Count(&count)
 	if result.Error != nil {
-		log.Printf("Error cheking user exisits in database: %s", result.Error)
+		log.Printf("Error checking if user exists in database: %s", result.Error)
 		return false, result.Error
 	}
 	return count == 1, nil
