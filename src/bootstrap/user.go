@@ -25,11 +25,24 @@ func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
 	if err != nil {
 		panic(err)
 	}
+	defer oldDB.Close()
 
 	newDB, err := gorm.Open(sqlite.Open(newDBFile), nil)
 	if err != nil {
 		panic(err)
 	}
+	defer func() {
+		db, err2 := newDB.DB()
+		if err2 != nil {
+			log.Printf("Error getting real DB from gorm: %s", err2)
+		}
+		if db != nil {
+			err2 = db.Close()
+			if err2 != nil {
+				panic(err2)
+			}
+		}
+	}()
 
 	newDB.AutoMigrate(&User{})
 
