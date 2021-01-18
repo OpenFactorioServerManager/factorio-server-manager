@@ -3,8 +3,6 @@ package factorio
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/mroote/factorio-server-manager/api/websocket"
-	"github.com/mroote/factorio-server-manager/bootstrap"
 	"io"
 	"io/ioutil"
 	"log"
@@ -15,6 +13,9 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/mroote/factorio-server-manager/api/websocket"
+	"github.com/mroote/factorio-server-manager/bootstrap"
 
 	"github.com/majormjr/rcon"
 )
@@ -85,7 +86,7 @@ func NewFactorioServer() (err error) {
 		return
 	}
 
-	settingsPath := filepath.Join(config.FactorioConfigDir, config.SettingsFile)
+	settingsPath := config.SettingsFile
 	var settings *os.File
 
 	if _, err = os.Stat(settingsPath); os.IsNotExist(err) {
@@ -165,7 +166,7 @@ func NewFactorioServer() (err error) {
 	}
 
 	//Load baseMod version
-	baseModInfoFile := filepath.Join(config.FactorioDir, "data", "base", "info.json")
+	baseModInfoFile := filepath.Join(config.FactorioBaseModDir, "info.json")
 	bmifBa, err := ioutil.ReadFile(baseModInfoFile)
 	if err != nil {
 		log.Printf("couldn't open baseMods info.json: %s", err)
@@ -226,7 +227,7 @@ func (server *Server) Run() error {
 	if err != nil {
 		log.Println("Failed to marshal FactorioServerSettings: ", err)
 	} else {
-		ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), data, 0644)
+		ioutil.WriteFile(config.SettingsFile, data, 0644)
 	}
 
 	args := []string{}
@@ -241,7 +242,7 @@ func (server *Server) Run() error {
 	args = append(args,
 		"--bind", server.BindIP,
 		"--port", strconv.Itoa(server.Port),
-		"--server-settings", filepath.Join(config.FactorioConfigDir, config.SettingsFile),
+		"--server-settings", config.SettingsFile,
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass)
 

@@ -750,7 +750,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	config := bootstrap.GetConfig()
-	err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), settings, 0644)
+	err = ioutil.WriteFile(config.SettingsFile, settings, 0644)
 	if err != nil {
 		resp = fmt.Sprintf("Failed to save server settings: %v\n", err)
 		log.Println(resp)

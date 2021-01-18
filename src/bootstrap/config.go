@@ -33,6 +33,7 @@ type Flags struct {
 type Config struct {
 	FactorioDir             string `json:"factorio_dir,omitempty"`
 	FactorioSavesDir        string `json:"saves_dir,omitempty"`
+	FactorioBaseModDir      string `json:"basemod_dir,omitempty"`
 	FactorioModsDir         string `json:"mods_dir,omitempty"`
 	FactorioModPackDir      string `json:"mod_pack_dir,omitempty"`
 	FactorioConfigFile      string `json:"config_file,omitempty"`
@@ -158,6 +159,14 @@ func (config *Config) loadServerConfig() {
 	err = decoder.Decode(&config)
 	failOnError(err, "Error decoding JSON config file.")
 
+	if !filepath.IsAbs(config.SettingsFile) {
+		config.SettingsFile = filepath.Join(config.FactorioConfigDir, config.SettingsFile)
+	}
+
+	if config.FactorioBaseModDir == "" {
+		config.FactorioBaseModDir = filepath.Join(config.FactorioDir, "data", "base")
+	}
+
 	// Set random port as rconPort
 	config.FactorioRconPort = randomPort()
 }
@@ -186,10 +195,15 @@ func mapFlags(flags Flags) Config {
 		FactorioModPackDir:      flags.ModPackDir,
 		FactorioConfigDir:       filepath.Join(flags.FactorioDir, "config"),
 		FactorioConfigFile:      filepath.Join(flags.FactorioDir, flags.FactorioConfigFile),
-		FactorioBinary:          filepath.Join(flags.FactorioDir, flags.FactorioBinary),
 		FactorioCredentialsFile: "./factorio.auth",
 		FactorioAdminFile:       "server-adminlist.json",
 		MaxUploadSize:           flags.FactorioMaxUpload,
+	}
+
+	if filepath.IsAbs(flags.FactorioBinary) {
+		config.FactorioBinary = flags.FactorioBinary
+	} else {
+		config.FactorioBinary = filepath.Join(flags.FactorioDir, flags.FactorioBinary)
 	}
 
 	if runtime.GOOS == "windows" {

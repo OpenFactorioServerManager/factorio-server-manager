@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/mroote/factorio-server-manager/api"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/mroote/factorio-server-manager/api"
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/mroote/factorio-server-manager/factorio"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 	// Initialize Factorio Server struct
 	err := factorio.NewFactorioServer()
 	if err != nil {
-		log.Printf("Error occurred during Server initializaion: %v\n", err)
+		log.Printf("Error occurred during Server initialization: %v\n", err)
 		return
 	}
 
