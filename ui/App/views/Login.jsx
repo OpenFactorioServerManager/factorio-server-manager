@@ -14,10 +14,14 @@ const Login = ({handleLogin}) => {
     const location = useLocation();
 
     const onSubmit = async data => {
-        const loginAttempt = await user.login(data)
-        if (loginAttempt?.username) {
-            await handleLogin(loginAttempt);
-            history.push('/');
+        try {
+            const loginAttempt = await user.login(data)
+            if (loginAttempt?.username) {
+                await handleLogin(loginAttempt);
+                history.push('/');
+            }
+        } catch (e) {
+            window.flash("Login failed. Username or Password wrong.", "red");
         }
     };
 
