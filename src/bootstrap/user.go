@@ -50,6 +50,7 @@ func MigrateLevelDBToSqlite(oldDBFile, newDBFile string) {
 	err = newDB.AutoMigrate(&User{})
 	if err != nil {
 		log.Printf("Error autoMigrating sqlite database with user: %s", err)
+		panic(err)
 	}
 
 	oldUserData, err := oldDB.Get([]byte("httpauth::userdata"), nil)
