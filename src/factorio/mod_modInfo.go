@@ -111,7 +111,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 			server := GetFactorioServer()
 
 			// check both the factorio-version and the base mod dependency
-			modInfo.Compatibility = server.Version.GreaterC(modInfo.FactorioVersion)
+			modInfo.Compatibility = server.Version.Compatible(modInfo.FactorioVersion, ">=")
 			if modInfo.Compatibility && !base.Equals(NilVersion) {
 				modInfo.Compatibility = server.Version.Compatible(base, op)
 			}
