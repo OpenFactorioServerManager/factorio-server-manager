@@ -9,8 +9,8 @@ const Input = ({
                    hasAutoComplete = true,
                    onKeyDown = () => null,
                    min = null,
-                   value = null,
-                   disabled = true
+                   value = undefined,
+                   disabled = false
                }) => {
     return (
         <input
