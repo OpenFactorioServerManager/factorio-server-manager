@@ -6,6 +6,7 @@ import savesResource from "../../api/resources/saves";
 import {useForm} from "react-hook-form";
 import Select from "../components/Select";
 import Input from "../components/Input";
+import Error from "../components/Error";
 
 const Controls = ({serverStatus, updateServerStatus}) => {
 
@@ -79,7 +80,7 @@ const Controls = ({serverStatus, updateServerStatus}) => {
                                     defaultValue={"0.0.0.0"}
                                     inputRef={register({required: true, pattern: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'})}
                                 />
-                                {errors.ip && <span className="block text-red">IP is required and must be valid.</span>}
+                                <Error error={errors.ip} message="IP is required and must be valid."/>
                             </div>
                             <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
                                 <div className="font-bold">Port</div>
@@ -90,7 +91,7 @@ const Controls = ({serverStatus, updateServerStatus}) => {
                                     defaultValue={"34197"}
                                     inputRef={register({required: true})}
                                 />
-                                {errors.port && <span className="block text-red">Port is required</span>}
+                                <Error error={errors.port} message="Port is required"/>
                             </div>
                             <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
                                 <div className="font-bold">Factorio Version</div>
