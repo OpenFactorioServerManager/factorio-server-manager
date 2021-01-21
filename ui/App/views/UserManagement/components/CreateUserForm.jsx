@@ -2,6 +2,7 @@ import {useForm} from "react-hook-form";
 import React from "react";
 import user from "../../../../api/resources/user";
 import Button from "../../../components/Button";
+import Input from "../../../components/Input";
 
 const CreateUserForm = ({updateUserList}) => {
 
@@ -21,57 +22,58 @@ const CreateUserForm = ({updateUserList}) => {
                 <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
                     Username
                 </label>
-                <input className="shadow appearance-none border w-full py-2 px-3 text-black"
-                       ref={register({required: true})}
-                       id="username"
-                       name="username"
-                       type="text" placeholder="Username"/>
+                <Input
+                    inputRef={register({required: true})}
+                    name="username"
+                    type="text"
+                    placeholder="Username"
+                />
                 {errors.username && <span className="block text-red">Username is required</span>}
             </div>
             <div className="mb-4">
                 <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
                     Role
                 </label>
-                <input className="shadow appearance-none border w-full py-2 px-3 text-black"
-                       ref={register({required: true})}
-                       id="role"
+                <Input inputRef={register({required: true})}
                        name="role"
                        value="admin"
                        disabled={true}
-                       type="text" placeholder="Role"/>
+                       type="text"
+                       placeholder="Role"
+                />
                 {errors.role && <span className="block text-red">Role is required</span>}
             </div>
             <div className="mb-4">
                 <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
                     Email
                 </label>
-                <input className="shadow appearance-none border w-full py-2 px-3 text-black"
-                       ref={register({required: true})}
-                       id="email"
+                <Input inputRef={register({required: true})}
                        name="email"
-                       type="text" placeholder="Email"/>
+                       type="text"
+                       placeholder="Email"
+                />
                 {errors.email && <span className="block text-red">Email is required</span>}
             </div>
             <div className="mb-4">
                 <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
                     Password
                 </label>
-                <input className="shadow appearance-none border w-full py-2 px-3 text-black"
-                       ref={register({required: true})}
-                       id="password"
+                <Input inputRef={register({required: true})}
                        name="password"
-                       type="password" placeholder="Password"/>
+                       type="password"
+                       placeholder="Password"
+                />
                 {errors.password && <span className="block text-red">Password is required</span>}
             </div>
             <div className="mb-4">
                 <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
                     Password Confirmation
                 </label>
-                <input className="shadow appearance-none border w-full py-2 px-3 text-black"
-                       ref={register({required: true, validate: confirmation => confirmation === password})}
-                       id="password_confirmation"
+                <Input inputRef={register({required: true, validate: confirmation => confirmation === password})}
                        name="password_confirmation"
-                       type="password" placeholder="Password Confirmation"/>
+                       type="password"
+                       placeholder="Password Confirmation"
+                />
                 {errors.password_confirmation && <span className="block text-red">Password Confirmation is required and must match the Password</span>}
             </div>
             <Button isSubmit={true} type="success">Save</Button>

@@ -5,6 +5,7 @@ import server from "../../api/resources/server";
 import savesResource from "../../api/resources/saves";
 import {useForm} from "react-hook-form";
 import Select from "../components/Select";
+import Input from "../components/Input";
 
 const Controls = ({serverStatus, updateServerStatus}) => {
 
@@ -73,24 +74,21 @@ const Controls = ({serverStatus, updateServerStatus}) => {
                             </div>
                             <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
                                 <div className="font-bold">IP</div>
-                                <input
+                                <Input
                                     name="ip"
-                                    className="shadow appearance-none w-full mr-2 py-2 px-3 text-black"
-                                    type="text"
                                     defaultValue={"0.0.0.0"}
-                                    ref={register({required: true, pattern: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'})}
+                                    inputRef={register({required: true, pattern: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'})}
                                 />
                                 {errors.ip && <span className="block text-red">IP is required and must be valid.</span>}
                             </div>
                             <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
                                 <div className="font-bold">Port</div>
-                                <input
+                                <Input
                                     name="port"
-                                    className="shadow appearance-none w-full py-2 px-3 text-black"
                                     type="number"
                                     min={1}
                                     defaultValue={"34197"}
-                                    ref={register({required: true})}
+                                    inputRef={register({required: true})}
                                 />
                                 {errors.port && <span className="block text-red">Port is required</span>}
                             </div>

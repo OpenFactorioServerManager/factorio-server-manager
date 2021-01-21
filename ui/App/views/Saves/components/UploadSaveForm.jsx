@@ -30,7 +30,6 @@ const UploadSaveForm = ({onSuccess}) => {
                         id="savefile" type="file"/>
                     <div className="px-2 py-3">{fileName}</div>
                 </div>
-
                 {errors.savefile && <span className="block text-red">Savefile is required</span>}
             </div>
             <Button type="success" isSubmit={true}>Upload</Button>
