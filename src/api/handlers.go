@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gorilla/sessions"
+	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/mroote/factorio-server-manager/factorio"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,9 +16,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
 
 	"github.com/gorilla/mux"
 )
@@ -48,6 +48,33 @@ func ReadRequestBody(w http.ResponseWriter, r *http.Request) (body []byte, resp 
 	body, err = ioutil.ReadAll(r.Body)
 	if err != nil {
 		resp = fmt.Sprintf("%s: %s", readHttpBodyError, err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	return
+}
+
+func ReadSessionStore(w http.ResponseWriter, r *http.Request, name string) (session *sessions.Session, resp interface{}, err error) {
+	session, err = sessionStore.Get(r, name)
+	if err != nil {
+		resp = fmt.Sprintf("Error reading session cookie [%s]: %s", name, err)
+		log.Println(resp)
+		if session != nil {
+			session.Options.MaxAge = -1
+			err2 := session.Save(r, w)
+			if err2 != nil {
+				log.Printf("Error deleting session cookie: %s", err2)
+			}
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+	return
+}
+
+func SaveSession(w http.ResponseWriter, r *http.Request, session *sessions.Session) (resp interface{}, err error) {
+	err = session.Save(r, w)
+	if err != nil {
+		resp = fmt.Sprintf("Error saving session cookie: %s", err)
 		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -418,6 +445,7 @@ func UnmarshallUserJson(body []byte, w http.ResponseWriter) (user User, resp int
 	return
 }
 
+// Handler for the Login
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
@@ -440,15 +468,31 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Logging in user: %s", user.Username)
-	Auth := GetAuth()
-	err = Auth.aaa.Login(w, r, user.Username, user.Password, "/")
+
+	err = auth.checkPassword(user.Username, user.Password)
 	if err != nil {
-		resp = fmt.Sprintf("Error loggin in user: %s, error: %s", user.Username, err)
+		resp = fmt.Sprintf("Password for user %s wrong", user.Username)
 		log.Println(resp)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	session, resp, err := ReadSessionStore(w, r, "authentication")
+	if err != nil {
+		return
+	}
+
+	session.Values["username"] = user.Username
+
+	resp, err = SaveSession(w, r, session)
+	if err != nil {
 		return
 	}
 
 	log.Printf("User: %s, logged in successfully", user.Username)
+
+	user.Password = ""
+	resp = user
 }
 
 func LogoutUser(w http.ResponseWriter, r *http.Request) {
@@ -460,10 +504,16 @@ func LogoutUser(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	Auth := GetAuth()
-	if err = Auth.aaa.Logout(w, r); err != nil {
-		log.Printf("Error logging out current user")
-		w.WriteHeader(http.StatusInternalServerError)
+
+	session, resp, err := ReadSessionStore(w, r, "authentication")
+	if err != nil {
+		return
+	}
+
+	delete(session.Values, "username")
+
+	resp, err = SaveSession(w, r, session)
+	if err != nil {
 		return
 	}
 
@@ -480,14 +530,23 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	Auth := GetAuth()
-	user, err := Auth.aaa.CurrentUser(w, r)
+
+	session, resp, err := ReadSessionStore(w, r, "authentication")
 	if err != nil {
-		resp = fmt.Sprintf("Error getting user status: %s, error: %s", user.Username, err)
+		return
+	}
+
+	username := session.Values["username"].(string)
+
+	user, err := auth.getUser(username)
+	if err != nil {
+		resp = fmt.Sprintf("Error getting user: %s", err)
 		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	user.Password = ""
 
 	resp = user
 }
@@ -500,8 +559,8 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-	Auth := GetAuth()
-	users, err := Auth.listUsers()
+
+	users, err := auth.listUsers()
 	if err != nil {
 		resp = fmt.Sprintf("Error listing users: %s", err)
 		log.Println(resp)
@@ -525,14 +584,12 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Adding user: %v", string(body))
-
 	user, resp, err := UnmarshallUserJson(body, w)
 	if err != nil {
 		return
 	}
-	Auth := GetAuth()
-	err = Auth.addUser(user.Username, user.Password, user.Email, user.Role)
+
+	err = auth.addUser(user)
 	if err != nil {
 		resp = fmt.Sprintf("Error in adding user {%s}: %s", user.Username, err)
 		log.Println(resp)
@@ -561,8 +618,8 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	Auth := GetAuth()
-	err = Auth.removeUser(user.Username)
+
+	err = auth.deleteUser(user.Username)
 	if err != nil {
 		resp = fmt.Sprintf("Error in removing user {%s}, error: %s", user.Username, err)
 		log.Println(resp)
@@ -570,6 +627,70 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp = fmt.Sprintf("User: %s successfully removed.", user.Username)
+}
+
+func ChangePassword(w http.ResponseWriter, r *http.Request) {
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	body, resp, err := ReadRequestBody(w, r)
+	if err != nil {
+		return
+	}
+
+	var user struct {
+		OldPassword        string `json:"old_password"`
+		NewPassword        string `json:"new_password"`
+		NewPasswordConfirm string `json:"new_password_confirmation"`
+	}
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		resp = fmt.Sprintf("Unable to parse the request body: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// only allow to change its own password
+	// get username from session cookie
+	session, resp, err := ReadSessionStore(w, r, "authentication")
+	if err != nil {
+		return
+	}
+
+	username := session.Values["username"].(string)
+
+	// check if password for user is correct
+	err = auth.checkPassword(username, user.OldPassword)
+	if err != nil {
+		resp = fmt.Sprintf("Password for user %s wrong", username)
+		log.Println(resp)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	// only run, when confirmation correct
+	if user.NewPassword != user.NewPasswordConfirm {
+		resp = fmt.Sprintf("Password confirmation incorrect")
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = auth.changePassword(username, user.NewPassword)
+	if err != nil {
+		resp = fmt.Sprintf("Error changing password: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp = true
 }
 
 // GetServerSettings returns JSON response of server-settings.json file

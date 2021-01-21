@@ -11,22 +11,26 @@ import {Flash} from "../components/Flash";
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
     const history = useHistory();
-    const location = useLocation()
+    const location = useLocation();
 
     const onSubmit = async data => {
-        const loginAttempt = await user.login(data)
-        if (loginAttempt?.Username) {
-            await handleLogin();
-            history.push('/');
+        try {
+            const loginAttempt = await user.login(data)
+            if (loginAttempt?.username) {
+                await handleLogin(loginAttempt);
+                history.push('/');
+            }
+        } catch (e) {
+            window.flash("Login failed. Username or Password wrong.", "red");
         }
     };
 
     // on mount check if user is authenticated
     useEffect(() => {
         (async () => {
-            const status = await user.status()
-            if (status?.Username) {
-                await handleLogin();
+            const status = await user.status();
+            if (status?.username) {
+                await handleLogin(status);
                 history.push(location?.state?.from || '/');
             }
         })();
