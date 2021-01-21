@@ -71,12 +71,12 @@ func ModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 		Filename    string `json:"fileName"`
 		ModName     string `json:"modName"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &data)
+	resp, err = ReadFromRequestBody(w, r, &data)
 	if err != nil {
 		return
 	}
 
-	mods, err := CreateNewMods(w, &resp)
+	mods, resp, err := CreateNewMods(w)
 	if err != nil {
 		return
 	}
@@ -106,7 +106,7 @@ func ModPortalLoginHandler(w http.ResponseWriter, r *http.Request) {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &data)
+	resp, err = ReadFromRequestBody(w, r, &data)
 	if err != nil {
 		return
 	}
@@ -174,12 +174,12 @@ func ModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Request) {
 		Name    string           `json:"name"`
 		Version factorio.Version `json:"version"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &data)
+	resp, err = ReadFromRequestBody(w, r, &data)
 	if err != nil {
 		return
 	}
 
-	modList, err := CreateNewMods(w, &resp)
+	modList, resp, err := CreateNewMods(w)
 	if err != nil {
 		return
 	}
