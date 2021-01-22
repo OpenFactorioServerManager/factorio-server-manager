@@ -2,6 +2,7 @@ import Panel from "../../components/Panel";
 import React, {useCallback, useEffect, useState} from "react";
 import user from "../../../api/resources/user";
 import CreateUserForm from "./components/CreateUserForm";
+import ChangePasswordForm from "./components/ChangePasswordForm"
 import {faTrashAlt} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
@@ -56,8 +57,14 @@ const UserManagement = () => {
                 className="mb-4"
             />
             <Panel
+                title="Change Password"
+                content={<ChangePasswordForm/>}
+                className="mb-4"
+            />
+            <Panel
                 title="Create User"
                 content={<CreateUserForm updateUserList={updateList}/>}
+                className="mb-4"
             />
         </>
     )

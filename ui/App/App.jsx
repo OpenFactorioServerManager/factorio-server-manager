@@ -32,14 +32,12 @@ const App = () => {
         }
     }
 
-    const handleAuthenticationStatus = useCallback(async () => {
-        const status = await user.status();
-        if (status?.Username) {
+    const handleAuthenticationStatus = useCallback(async (status) => {
+        if (status?.username) {
             setIsAuthenticated(true);
-            await updateServerStatus();
-
+            await updateServerStatus()
             socket.emit('server status subscribe');
-            socket.on('server_status', updateServerStatus)
+            socket.on('server_status', updateServerStatus);
         }
     },[]);
 
@@ -47,7 +45,6 @@ const App = () => {
         const loggedOut = await user.logout();
         if (loggedOut) {
             setIsAuthenticated(false);
-            history.push('/login');
         }
     }, []);
 

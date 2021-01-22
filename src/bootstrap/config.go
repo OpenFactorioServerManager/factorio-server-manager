@@ -1,16 +1,17 @@
 package bootstrap
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/securecookie"
+	"github.com/jessevdk/go-flags"
 	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
 	"time"
-
-	"github.com/jessevdk/go-flags"
 )
 
 type Flags struct {
@@ -30,35 +31,34 @@ type Flags struct {
 }
 
 type Config struct {
-	FactorioDir             string `json:"factorio_dir"`
-	FactorioSavesDir        string `json:"saves_dir"`
-	FactorioBaseModDir      string `json:"basemod_dir"`
-	FactorioModsDir         string `json:"mods_dir"`
-	FactorioModPackDir      string `json:"mod_pack_dir"`
-	FactorioConfigFile      string `json:"config_file"`
-	FactorioConfigDir       string `json:"config_directory"`
-	FactorioLog             string `json:"logfile"`
-	FactorioBinary          string `json:"factorio_binary"`
-	FactorioRconPort        int    `json:"rcon_port"`
-	FactorioRconPass        string `json:"rcon_pass"`
-	FactorioCredentialsFile string `json:"factorio_credentials_file"`
-	FactorioIP              string `json:"factorio_ip"`
+	FactorioDir             string `json:"factorio_dir,omitempty"`
+	FactorioSavesDir        string `json:"saves_dir,omitempty"`
+	FactorioBaseModDir      string `json:"basemod_dir,omitempty"`
+	FactorioModsDir         string `json:"mods_dir,omitempty"`
+	FactorioModPackDir      string `json:"mod_pack_dir,omitempty"`
+	FactorioConfigFile      string `json:"config_file,omitempty"`
+	FactorioConfigDir       string `json:"config_directory,omitempty"`
+	FactorioLog             string `json:"logfile,omitempty"`
+	FactorioBinary          string `json:"factorio_binary,omitempty"`
+	FactorioRconPort        int    `json:"rcon_port,omitempty"`
+	FactorioRconPass        string `json:"rcon_pass,omitempty"`
+	FactorioCredentialsFile string `json:"factorio_credentials_file,omitempty"`
+	FactorioIP              string `json:"factorio_ip,omitempty"`
 	FactorioAdminFile       string `json:"-"`
-	ServerIP                string `json:"server_ip"`
-	ServerPort              string `json:"server_port"`
-	MaxUploadSize           int64  `json:"max_upload_size"`
-	Username                string `json:"username"`
-	Password                string `json:"password"`
-	DatabaseFile            string `json:"database_file"`
-	CookieEncryptionKey     string `json:"cookie_encryption_key"`
-	SettingsFile            string `json:"settings_file"`
-	LogFile                 string `json:"log_file"`
-	ConfFile                string
-	GlibcCustom             string
-	GlibcLocation           string
-	GlibcLibLoc             string
-	Autostart               string
-	ConsoleCacheSize        int `json:"console_cache_size"` // the amount of cached lines, inside the factorio output cache
+	ServerIP                string `json:"server_ip,omitempty"`
+	ServerPort              string `json:"server_port,omitempty"`
+	MaxUploadSize           int64  `json:"max_upload_size,omitempty"`
+	DatabaseFile            string `json:"database_file,omitempty"`
+	SQLiteDatabaseFile      string `json:"sq_lite_database_file,omitempty"`
+	CookieEncryptionKey     string `json:"cookie_encryption_key,omitempty"`
+	SettingsFile            string `json:"settings_file,omitempty"`
+	LogFile                 string `json:"log_file,omitempty"`
+	ConfFile                string `json:"-"`
+	GlibcCustom             string `json:"-"`
+	GlibcLocation           string `json:"-"`
+	GlibcLibLoc             string `json:"-"`
+	Autostart               string `json:"-"`
+	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
 }
 
 var instantiated Config
@@ -82,12 +82,78 @@ func GetConfig() Config {
 	return instantiated
 }
 
+func (config *Config) updateConfigFile() {
+	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
+	failOnError(err, "Error opening file")
+	defer file.Close()
+
+	var conf Config
+	decoder := json.NewDecoder(file)
+	decoder.Decode(&conf)
+
+	err = file.Close()
+	failOnError(err, "Error closing json file")
+
+	var resave bool
+
+	// set cookie encryption key, if empty
+	// also set it, if the base64 string is not valid
+	_, base64Err := base64.StdEncoding.DecodeString(conf.CookieEncryptionKey)
+	if conf.CookieEncryptionKey == "" || conf.CookieEncryptionKey == "topsecretkey" || base64Err != nil {
+		log.Println("CookieEncryptionKey invalid or empty, create new random one")
+		randomKey := securecookie.GenerateRandomKey(32)
+		conf.CookieEncryptionKey = base64.StdEncoding.EncodeToString(randomKey)
+
+		resave = true
+	}
+
+	if conf.FactorioRconPass == "" || conf.FactorioRconPass == "factorio_rcon" {
+		// password is "factorio" .. change it
+		conf.FactorioRconPass = GenerateRandomPassword()
+
+		log.Println("Rcon password default one or empty, generated new one:")
+		log.Printf("Password: %s", conf.FactorioRconPass)
+
+		resave = true
+	}
+
+	if conf.DatabaseFile != "" {
+		// Migrate leveldb to sqlite
+		// set new db name
+		// just rename the file from the old path
+		dbFileDir := filepath.Dir(conf.DatabaseFile)
+		conf.SQLiteDatabaseFile = filepath.Join(dbFileDir, "sqlite.db")
+
+		MigrateLevelDBToSqlite(conf.DatabaseFile, conf.SQLiteDatabaseFile)
+
+		// remove old db name
+		conf.DatabaseFile = ""
+		resave = true
+	}
+
+	if resave {
+		// save json file again
+		file, err = os.OpenFile(config.ConfFile, os.O_WRONLY, 0)
+		failOnError(err, "Error opening file for writing")
+		defer file.Close()
+
+		encoder := json.NewEncoder(file)
+		encoder.SetIndent("", "\t")
+		err = encoder.Encode(conf)
+		failOnError(err, "Error encoding JSON config file.")
+	}
+}
+
 // Loads server configuration files
 // JSON config file contains default values,
 // config file will overwrite any provided flags
 func (config *Config) loadServerConfig() {
-	file, err := os.Open(config.ConfFile)
+	// load and potentially update conf.json
+	config.updateConfigFile()
+
+	file, err := os.OpenFile(config.ConfFile, os.O_RDWR, 0)
 	failOnError(err, "Error loading config file.")
+	defer file.Close()
 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
@@ -101,6 +167,7 @@ func (config *Config) loadServerConfig() {
 		config.FactorioBaseModDir = filepath.Join(config.FactorioDir, "data", "base")
 	}
 
+	// Set random port as rconPort
 	config.FactorioRconPort = randomPort()
 }
 
