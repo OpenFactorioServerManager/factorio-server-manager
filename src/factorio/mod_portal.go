@@ -30,8 +30,7 @@ type ModPortalStruct struct {
 
 // get all mods uploaded to the factorio modPortal
 func ModPortalList() (interface{}, error, int) {
-	// FIXME revert to `page_size=max` when the api got fixed: https://forums.factorio.com/viewtopic.php?f=189&t=94119&p=531316
-	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods?page_size=999999", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://mods.factorio.com/api/mods?page_size=max", nil)
 	if err != nil {
 		return "error", err, http.StatusInternalServerError
 	}
