@@ -8,7 +8,7 @@ const UploadMod = ({refetchInstalledMods}) => {
 
     const defaultFileName = 'Select File ...'
     const [fileName, setFileName] = useState(defaultFileName);
-    const {register, handleSubmit } = useForm();
+    const {register, handleSubmit} = useForm();
     const [isUploading, setIsUploading] = useState(false);
 
     const onSubmit = (data, e) => {
@@ -32,7 +32,8 @@ const UploadMod = ({refetchInstalledMods}) => {
                     name="mod_file"
                     ref={register}
                     id="mod_file"
-                    type="file"/>
+                    type="file"
+                />
                 <div className="px-2 py-2">{fileName}</div>
             </div>
             <Button isLoading={isUploading} isSubmit={true}>Upload</Button>

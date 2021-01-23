@@ -36,28 +36,29 @@ func WriteResponse(w http.ResponseWriter, data interface{}) {
 	}
 }
 
-func ReadRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}) (body []byte, err error) {
+func ReadRequestBody(w http.ResponseWriter, r *http.Request) (body []byte, resp interface{}, err error) {
 	if r.Body == nil {
-		*resp = fmt.Sprintf("%s: no request body", readHttpBodyError)
-		log.Println(*resp)
+		resp = fmt.Sprintf("%s: no request body", readHttpBodyError)
+		log.Println(resp)
 		w.WriteHeader(http.StatusBadRequest)
-		return nil, errors.New("no request body")
+		err = errors.New("no request body")
+		return
 	}
 
 	body, err = ioutil.ReadAll(r.Body)
 	if err != nil {
-		*resp = fmt.Sprintf("%s: %s", readHttpBodyError, err)
-		log.Println(*resp)
+		resp = fmt.Sprintf("%s: %s", readHttpBodyError, err)
+		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	return
 }
 
-func ReadSessionStore(w http.ResponseWriter, r *http.Request, resp *interface{}, name string) (session *sessions.Session, err error) {
+func ReadSessionStore(w http.ResponseWriter, r *http.Request, name string) (session *sessions.Session, resp interface{}, err error) {
 	session, err = sessionStore.Get(r, name)
 	if err != nil {
-		*resp = fmt.Sprintf("Error reading session cookie [%s]: %s", name, err)
-		log.Println(*resp)
+		resp = fmt.Sprintf("Error reading session cookie [%s]: %s", name, err)
+		log.Println(resp)
 		if session != nil {
 			session.Options.MaxAge = -1
 			err2 := session.Save(r, w)
@@ -70,11 +71,11 @@ func ReadSessionStore(w http.ResponseWriter, r *http.Request, resp *interface{},
 	return
 }
 
-func SaveSession(w http.ResponseWriter, r *http.Request, resp *interface{}, session *sessions.Session) (err error) {
+func SaveSession(w http.ResponseWriter, r *http.Request, session *sessions.Session) (resp interface{}, err error) {
 	err = session.Save(r, w)
 	if err != nil {
-		*resp = fmt.Sprintf("Error saving session cookie: %s", err)
-		log.Println(*resp)
+		resp = fmt.Sprintf("Error saving session cookie: %s", err)
+		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	return
@@ -293,7 +294,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Starting Factorio server.")
 
-	body, err := ReadRequestBody(w, r, &resp)
+	body, resp, err := ReadRequestBody(w, r)
 	if err != nil {
 		return
 	}
@@ -434,11 +435,11 @@ func FactorioVersion(w http.ResponseWriter, r *http.Request) {
 
 // Unmarshall the User object from the given bytearray
 // This function has side effects (it will write to resp and to w, in case of an error)
-func UnmarshallUserJson(body []byte, resp *interface{}, w http.ResponseWriter) (user User, err error) {
+func UnmarshallUserJson(body []byte, w http.ResponseWriter) (user User, resp interface{}, err error) {
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		*resp = fmt.Sprintf("Unable to parse the request body: %s", err)
-		log.Println(*resp)
+		resp = fmt.Sprintf("Unable to parse the request body: %s", err)
+		log.Println(resp)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	return
@@ -456,12 +457,12 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
+	body, resp, err := ReadRequestBody(w, r)
 	if err != nil {
 		return
 	}
 
-	user, err := UnmarshallUserJson(body, &resp, w)
+	user, resp, err := UnmarshallUserJson(body, w)
 	if err != nil {
 		return
 	}
@@ -476,14 +477,14 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := ReadSessionStore(w, r, &resp, "authentication")
+	session, resp, err := ReadSessionStore(w, r, "authentication")
 	if err != nil {
 		return
 	}
 
 	session.Values["username"] = user.Username
 
-	err = SaveSession(w, r, &resp, session)
+	resp, err = SaveSession(w, r, session)
 	if err != nil {
 		return
 	}
@@ -504,14 +505,14 @@ func LogoutUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	session, err := ReadSessionStore(w, r, &resp, "authentication")
+	session, resp, err := ReadSessionStore(w, r, "authentication")
 	if err != nil {
 		return
 	}
 
 	delete(session.Values, "username")
 
-	err = SaveSession(w, r, &resp, session)
+	resp, err = SaveSession(w, r, session)
 	if err != nil {
 		return
 	}
@@ -530,7 +531,7 @@ func GetCurrentLogin(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	session, err := ReadSessionStore(w, r, &resp, "authentication")
+	session, resp, err := ReadSessionStore(w, r, "authentication")
 	if err != nil {
 		return
 	}
@@ -578,12 +579,12 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
+	body, resp, err := ReadRequestBody(w, r)
 	if err != nil {
 		return
 	}
 
-	user, err := UnmarshallUserJson(body, &resp, w)
+	user, resp, err := UnmarshallUserJson(body, w)
 	if err != nil {
 		return
 	}
@@ -608,12 +609,12 @@ func RemoveUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
+	body, resp, err := ReadRequestBody(w, r)
 	if err != nil {
 		return
 	}
 
-	user, err := UnmarshallUserJson(body, &resp, w)
+	user, resp, err := UnmarshallUserJson(body, w)
 	if err != nil {
 		return
 	}
@@ -637,7 +638,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
+	body, resp, err := ReadRequestBody(w, r)
 	if err != nil {
 		return
 	}
@@ -657,7 +658,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	// only allow to change its own password
 	// get username from session cookie
-	session, err := ReadSessionStore(w, r, &resp, "authentication")
+	session, resp, err := ReadSessionStore(w, r, "authentication")
 	if err != nil {
 		return
 	}
@@ -716,7 +717,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	body, err := ReadRequestBody(w, r, &resp)
+	body, resp, err := ReadRequestBody(w, r)
 	if err != nil {
 		return
 	}

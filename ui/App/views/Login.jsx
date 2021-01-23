@@ -7,6 +7,7 @@ import Panel from "../components/Panel";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import {Flash} from "../components/Flash";
+import Error from "../components/Error";
 
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
@@ -45,7 +46,7 @@ const Login = ({handleLogin}) => {
                         <div className="mb-4">
                             <Label text="Username" htmlFor="username"/>
                             <Input inputRef={register({required: true})} name="username" placeholder="Username"/>
-                            {errors.username && <span className="block text-red">Username is required</span>}
+                            <Error error={errors.username} message="Username is required"/>
                         </div>
                         <div className="mb-6">
                             <Label text="Password" htmlFor="password"/>
@@ -55,7 +56,7 @@ const Login = ({handleLogin}) => {
                                 type="password"
                                 placeholder="******************"
                             />
-                            {errors.password && <span className="block text-red">Password is required</span>}
+                            <Error error={errors.password} message="Password is required"/>
                         </div>
                         <div className="text-center">
                             <Button type="success" className="w-full" isSubmit={true}>Sign In</Button>

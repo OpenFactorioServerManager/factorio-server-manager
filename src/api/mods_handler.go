@@ -14,28 +14,28 @@ import (
 	"path/filepath"
 )
 
-func CreateNewMods(w http.ResponseWriter, resp *interface{}) (modList factorio.Mods, err error) {
+func CreateNewMods(w http.ResponseWriter) (modList factorio.Mods, resp interface{}, err error) {
 	config := bootstrap.GetConfig()
 	modList, err = factorio.NewMods(config.FactorioModsDir)
 	if err != nil {
-		*resp = fmt.Sprintf("Error creating mods object: %s", err)
-		log.Println(*resp)
+		resp = fmt.Sprintf("Error creating mods object: %s", err)
+		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	return
 }
 
-func ReadFromRequestBody(w http.ResponseWriter, r *http.Request, resp *interface{}, data interface{}) (err error) {
+func ReadFromRequestBody(w http.ResponseWriter, r *http.Request, data interface{}) (resp interface{}, err error) {
 	//Get Data out of the request
-	body, err := ReadRequestBody(w, r, resp)
+	body, resp, err := ReadRequestBody(w, r)
 	if err != nil {
 		return
 	}
 
 	err = json.Unmarshal(body, data)
 	if err != nil {
-		*resp = fmt.Sprintf("Error unmarshalling requested struct JSON: %s", err)
-		log.Println(*resp)
+		resp = fmt.Sprintf("Error unmarshalling requested struct JSON: %s", err)
+		log.Println(resp)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -53,7 +53,7 @@ func ListInstalledModsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	modList, err := CreateNewMods(w, &resp)
+	modList, resp, err := CreateNewMods(w)
 	if err != nil {
 		return
 	}
@@ -75,12 +75,12 @@ func ModToggleHandler(w http.ResponseWriter, r *http.Request) {
 		Name string `json:"name"`
 	}
 
-	err = ReadFromRequestBody(w, r, &resp, &data)
+	resp, err = ReadFromRequestBody(w, r, &data)
 	if err != nil {
 		return
 	}
 
-	mods, err := CreateNewMods(w, &resp)
+	mods, resp, err := CreateNewMods(w)
 	if err != nil {
 		return
 	}
@@ -109,12 +109,12 @@ func ModDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get Data out of the request
-	err = ReadFromRequestBody(w, r, &resp, &data)
+	resp, err = ReadFromRequestBody(w, r, &data)
 	if err != nil {
 		return
 	}
 
-	modList, err := CreateNewMods(w, &resp)
+	modList, resp, err := CreateNewMods(w)
 	if err != nil {
 		return
 	}
@@ -169,12 +169,12 @@ func ModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		Filename    string `json:"fileName"`
 	}
 
-	err = ReadFromRequestBody(w, r, &resp, &modData)
+	resp, err = ReadFromRequestBody(w, r, &modData)
 	if err != nil {
 		return
 	}
 
-	mods, err := CreateNewMods(w, &resp)
+	mods, resp, err := CreateNewMods(w)
 	if err != nil {
 		return
 	}
@@ -219,7 +219,7 @@ func ModUploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer formFile.Close()
 
-	mods, err := CreateNewMods(w, &resp)
+	mods, resp, err := CreateNewMods(w)
 	if err != nil {
 		return
 	}
@@ -310,7 +310,7 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	var saveFileStruct struct {
 		Name string `json:"saveFile"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &saveFileStruct)
+	resp, err = ReadFromRequestBody(w, r, &saveFileStruct)
 	if err != nil {
 		return
 	}
