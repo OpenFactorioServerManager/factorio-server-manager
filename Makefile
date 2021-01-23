@@ -18,6 +18,7 @@ build/factorio-server-manager-%.zip: clean app/bundle factorio-server-manager-%
 	@cp -r app/ factorio-server-manager/
 	@cp conf.json.example factorio-server-manager/conf.json
 	@zip -r $@ factorio-server-manager > /dev/null
+	@rm -r factorio-server-manager/
 
 app/bundle:
 	@echo "Building Frontend"
