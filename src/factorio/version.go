@@ -73,7 +73,13 @@ func (v *Version) GreaterC(b Version) bool {
 	return (v[0] == b[0] && v[1] == b[1] && (v[2] > b[2] || (v[2] == b[2] && v[3] > b[3]))) || (v[0] == 1 && b[0] == 0 && v[1] == 0 && b[1] == 18)
 }
 
+// check greater equal of versions
 func (v Version) ge(b Version) bool { return v.Equals(b) || v.Greater(b) }
+
+// check greater equal of versions, with factorio incompatibility
+func (v Version) GEC(b Version) bool {
+	return v.Equals(b) || v.GreaterC(b)
+}
 func (v Version) le(b Version) bool { return v.Equals(b) || v.Less(b) }
 
 // Compatible returns true if the comparison between the two version operands is valid.
