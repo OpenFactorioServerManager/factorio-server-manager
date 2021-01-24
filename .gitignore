@@ -1,8 +1,8 @@
 node_modules/
 dev/
 dev_packs/
-/factorio-server-manager*
-/factorio_server_manager*
+factorio-server-manager*
+factorio_server_manager*
 auth.leveldb*
 conf.json
 *.exe
