@@ -1,7 +1,8 @@
 #!/bin/sh
 
-echo "Cloning ${FACTORIO_BRANCH}"
-git clone -b ${FACTORIO_BRANCH} https://github.com/mroote/factorio-server-manager.git ${FACTORIO_ROOT}
+go_version=$(go version)
+
+echo "Go Version: ${go_version}"
 echo "Creating build..."
 make gen_release
 echo "Copying build artifacts from ${PWD}"

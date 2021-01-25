@@ -85,6 +85,8 @@ For development purposes it also has the ability to create the docker image from
 A Dockerfile-build file is included for creating the release bundles.
 
 To create the bundle build the Dockerfile-build file with the following command. The release bundles are output to the ./dist directory.
+
+Run this command from the root factorio-server-manager directory.
 ```
 DOCKER_BUILDKIT=1 docker build --no-cache -f Dockerfile-build -t ofsm-build --target=output -o dist .
 ```
