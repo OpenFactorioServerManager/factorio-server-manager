@@ -88,7 +88,7 @@ To create the bundle build the Dockerfile-build file with the following command.
 
 Run this command from the root factorio-server-manager directory.
 ```
-DOCKER_BUILDKIT=1 docker build --no-cache -f Dockerfile-build -t ofsm-build --target=output -o dist .
+DOCKER_BUILDKIT=1 docker build --no-cache -f docker/Dockerfile-build -t ofsm-build --target=output -o dist .
 ```
 
 ## For everyone who actually read this thing to the end
