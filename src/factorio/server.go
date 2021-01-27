@@ -16,8 +16,7 @@ import (
 
 	"github.com/OpenFactorioServerManager/factorio-server-manager/api/websocket"
 	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
-
-	"github.com/majormjr/rcon"
+	"github.com/OpenFactorioServerManager/rcon"
 )
 
 type Server struct {

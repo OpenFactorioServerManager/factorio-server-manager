@@ -6,7 +6,7 @@ import (
 
 	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 
-	"github.com/majormjr/rcon"
+	"github.com/OpenFactorioServerManager/rcon"
 )
 
 func connectRC() error {

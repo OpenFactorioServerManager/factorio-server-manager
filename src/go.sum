@@ -1,3 +1,5 @@
+github.com/OpenFactorioServerManager/rcon v0.0.0-20120923215419-8fbb8268b60a h1:BExxUM1IlQh7ba2D7ZTQ/aHe65YLI0GHgoPe1c3IIdA=
+github.com/OpenFactorioServerManager/rcon v0.0.0-20120923215419-8fbb8268b60a/go.mod h1:ttMDbVLzmIWHIVGL6Wa+QG+hCzURs5gZDT12l5spIlg=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=

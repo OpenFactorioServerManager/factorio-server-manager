@@ -3,6 +3,7 @@ module github.com/OpenFactorioServerManager/factorio-server-manager
 go 1.13
 
 require (
+	github.com/OpenFactorioServerManager/rcon v0.0.0-20120923215419-8fbb8268b60a
 	github.com/go-ini/ini v1.49.0
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/gorilla/mux v1.7.3
