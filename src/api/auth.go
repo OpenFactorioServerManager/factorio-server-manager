@@ -104,7 +104,7 @@ func (a *Auth) checkPassword(username, password string) error {
 
 func (a *Auth) deleteUser(username string) error {
 	var adminUserCount int64
-	result := a.db.Where(&User{Role: "admin"}).Count(&adminUserCount)
+	result := a.db.Model(&User{}).Where(&User{Role: "admin"}).Count(&adminUserCount)
 	if result.Error != nil {
 		log.Printf("Error retrieving admin user list from database: %s", result.Error)
 		return result.Error
