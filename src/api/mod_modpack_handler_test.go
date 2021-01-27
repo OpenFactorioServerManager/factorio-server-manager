@@ -12,7 +12,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/OpenFactorioServerManager/factorio-server-manager"
 	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 	"github.com/OpenFactorioServerManager/factorio-server-manager/factorio"
 	"github.com/gorilla/mux"
