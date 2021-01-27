@@ -1,9 +1,10 @@
 package factorio
 
 import (
-	"github.com/hpcloud/tail"
-	"github.com/mroote/factorio-server-manager/bootstrap"
 	"log"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/hpcloud/tail"
 )
 
 func TailLog() ([]string, error) {

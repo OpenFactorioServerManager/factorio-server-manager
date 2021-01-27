@@ -5,13 +5,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/mroote/factorio-server-manager/lockfile"
 	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/lockfile"
 )
 
 type Mods struct {

@@ -1,9 +1,10 @@
 package factorio
 
 import (
-	"github.com/mroote/factorio-server-manager/bootstrap"
 	"log"
 	"strconv"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 
 	"github.com/majormjr/rcon"
 )

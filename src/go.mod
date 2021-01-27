@@ -1,4 +1,4 @@
-module github.com/mroote/factorio-server-manager
+module github.com/OpenFactorioServerManager/factorio-server-manager
 
 go 1.13
 

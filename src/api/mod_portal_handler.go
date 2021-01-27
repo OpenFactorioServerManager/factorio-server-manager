@@ -2,10 +2,11 @@ package api
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/mroote/factorio-server-manager/factorio"
 	"log"
 	"net/http"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/factorio"
+	"github.com/gorilla/mux"
 )
 
 func ModPortalListModsHandler(w http.ResponseWriter, r *http.Request) {

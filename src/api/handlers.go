@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gorilla/sessions"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,6 +13,10 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/factorio"
+	"github.com/gorilla/sessions"
 
 	"github.com/gorilla/mux"
 )
