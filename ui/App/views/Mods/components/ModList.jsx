@@ -2,7 +2,7 @@ import Mod from "./Mod";
 import React from "react";
 
 
-const ModList = ({mods, factorioVersion, updateMod, toggleMod, deleteMod, addUpdatableMod = null}) => {
+const ModList = ({mods, factorioVersion, updateMod, toggleMod, deleteMod, addUpdatableMod = null, disabled = false}) => {
 
     return (
         <table className="w-full">
@@ -25,7 +25,9 @@ const ModList = ({mods, factorioVersion, updateMod, toggleMod, deleteMod, addUpd
                              toggleMod={toggleMod}
                              deleteMod={deleteMod}
                              addUpdatableMod={addUpdatableMod}
-                             factorioVersion={factorioVersion}/>
+                             factorioVersion={factorioVersion}
+                             disabled={disabled}
+                        />
                 )
             }
             </tbody>

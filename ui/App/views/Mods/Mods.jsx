@@ -13,7 +13,7 @@ import CreateModPack from "./components/CreateModPack";
 import ModPack from "./components/ModPack";
 import ModList from "./components/ModList";
 
-const Mods = () => {
+const Mods = ({serverStatus}) => {
 
     const [installedMods, setInstalledMods] = useState([]);
     const [modPacks, setModPacks] = useState([])
@@ -103,31 +103,55 @@ const Mods = () => {
             .then(fetchInstalledMods)
     }
 
+    let disabled = serverStatus.status !== "stopped"
+
     return (
         <div>
-            <TabControl>
-                <Tab title="Install Mod">
-                    <AddMod refetchInstalledMods={fetchInstalledMods} fuse={fuse}/>
-                </Tab>
-                <Tab title="Upload Mod">
-                    <UploadMod refetchInstalledMods={fetchInstalledMods}/>
-                </Tab>
-                <Tab title="Load Mod from Save">
-                    <LoadMods refreshMods={fetchInstalledMods}/>
-                </Tab>
-            </TabControl>
-
+            {disabled ?
+                <Panel className="mb-6"
+                       content={
+                           <div className="text-red font-bold text-xl">
+                               Changing mods is disabled while the server is running!
+                           </div>
+                       }
+                />
+                :
+                <TabControl>
+                    <Tab title="Install Mod">
+                        <AddMod refetchInstalledMods={fetchInstalledMods} fuse={fuse}/>
+                    </Tab>
+                    <Tab title="Upload Mod">
+                        <UploadMod refetchInstalledMods={fetchInstalledMods}/>
+                    </Tab>
+                    <Tab title="Load Mod from Save">
+                        <LoadMods refreshMods={fetchInstalledMods}/>
+                    </Tab>
+                </TabControl>
+            }
             <Panel
                 title="Mods"
                 className="mb-6"
                 content={
-                    <ModList addUpdatableMod={addUpdatableMod} toggleMod={toggleMod} updateMod={updateMod} deleteMod={deleteMod} mods={installedMods} factorioVersion={factorioVersion}/>
+                    <ModList addUpdatableMod={addUpdatableMod}
+                             toggleMod={toggleMod}
+                             updateMod={updateMod}
+                             deleteMod={deleteMod}
+                             mods={installedMods}
+                             factorioVersion={factorioVersion}
+                             disabled={disabled}
+                    />
                 }
                 actions={
                     <>
-                        <Button size="sm" className="mr-2" type="danger" isLoading={isDeletingAllMods} onClick={deleteAllMods}>Delete all Mods</Button>
-                        <Button size="sm" className="mr-2" isLoading={isUpdatingAllMods} onClick={updateAllMods}>Update all Mods</Button>
-                        <a className="bg-gray-light py-1 px-2 hover:glow-orange hover:bg-orange inline-block accentuated text-black font-bold" href={modsResource.downloadAllURL}>Download all Mods</a>
+                        {
+                            !disabled &&
+                            <Button size="sm" className="mr-2" type="danger" isLoading={isDeletingAllMods}
+                                    onClick={deleteAllMods}>Delete all Mods</Button> &&
+                            <Button size="sm" className="mr-2" isLoading={isUpdatingAllMods}
+                                    onClick={updateAllMods}>Update all Mods</Button>
+                        }
+                        <a className="bg-gray-light py-1 px-2 hover:glow-orange hover:bg-orange inline-block accentuated text-black font-bold"
+                           href={modsResource.downloadAllURL}>Download all Mods</a>
                     </>
                 }
             />
@@ -136,7 +160,16 @@ const Mods = () => {
                 title="Mod packs"
                 className="mb-6"
                 content={
-                    modPacks.map((pack, i) => <ModPack factorioVersion={factorioVersion} key={i} modPack={pack} reloadMods={fetchInstalledMods} reloadModPacks={fetchModPacks}/>)
+                    modPacks.map(
+                        (pack, i) =>
+                            <ModPack factorioVersion={factorioVersion}
+                                     key={i}
+                                     modPack={pack}
+                                     reloadMods={fetchInstalledMods}
+                                     reloadModPacks={fetchModPacks}
+                                     disabled={disabled}
+                            />
+                    )
                 }
                 actions={
                     <CreateModPack onSuccess={fetchModPacks}/>
