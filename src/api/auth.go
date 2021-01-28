@@ -2,13 +2,14 @@ package api
 
 import (
 	"encoding/base64"
+	"log"
+	"net/http"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 	"github.com/gorilla/sessions"
-	"github.com/mroote/factorio-server-manager/bootstrap"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"log"
-	"net/http"
 )
 
 type User bootstrap.User

@@ -4,14 +4,15 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"fmt"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
-	"github.com/mroote/factorio-server-manager/lockfile"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/factorio"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/lockfile"
 )
 
 func CreateNewMods(w http.ResponseWriter) (modList factorio.Mods, resp interface{}, err error) {
