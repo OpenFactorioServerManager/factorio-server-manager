@@ -22,6 +22,8 @@ jobs:
       - run: echo $GITHUB_REPOSITORY_OWNER_PART
       - name: Cancel this build
         uses: andymckay/cancel-action@0.2
+        with:
+          token: ${{ github.token }}
         if: github.event_name == 'pull_request' && env.GITHUB_REPOSITORY_OWNER_PART == 'OpenFactorioServerManager'
   test-npm:
     needs: [ check-double-run ]
