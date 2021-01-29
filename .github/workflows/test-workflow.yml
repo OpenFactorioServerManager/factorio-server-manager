@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: rlespinasse/github-slug-action@v3.x
-      - run: echo ${{ GITHUB_REPOSITORY_OWNER_PART }}
+      - run: echo $GITHUB_REPOSITORY_OWNER_PART
       - name: Cancel this build
         uses: andymckay/cancel-action@0.2
         if: github.event_name == 'pull_request' && env.GITHUB_REPOSITORY_OWNER_PART != "OpenFactorioServerManager"
