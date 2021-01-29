@@ -21,7 +21,7 @@ jobs:
       - uses: rlespinasse/github-slug-action@v3.x
       - run: echo $GITHUB_REPOSITORY_OWNER_PART
       - name: Cancel this build
-        uses: andymckay/cancel-action@0.2
+        uses: knoxfighter/cancel-action@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         if: github.event_name == 'pull_request' && env.GITHUB_REPOSITORY_OWNER_PART == 'OpenFactorioServerManager'
