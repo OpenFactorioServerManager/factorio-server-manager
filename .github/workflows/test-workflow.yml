@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: rlespinasse/github-slug-action@v3.x
-      - run: echo $GITHUB_BASE_REF
+      - run: echo ${{ github.repository }}
       - name: Cancel this build
         uses: knoxfighter/cancel-action@master
         with:
