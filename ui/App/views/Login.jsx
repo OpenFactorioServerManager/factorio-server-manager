@@ -22,6 +22,7 @@ const Login = ({handleLogin}) => {
                 history.push('/');
             }
         } catch (e) {
+            console.log(e);
             window.flash("Login failed. Username or Password wrong.", "red");
         }
     };
