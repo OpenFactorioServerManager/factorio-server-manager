@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: rlespinasse/github-slug-action@v3.x
-      - run: echo ${{ github.context }}
+      - run: echo "${{ github.context.ref }} -- ${{ github.context.sha }}"
       - name: Cancel this build
         uses: knoxfighter/cancel-action@master
         with:
