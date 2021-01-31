@@ -103,18 +103,22 @@ func (a *Auth) checkPassword(username, password string) error {
 }
 
 func (a *Auth) deleteUser(username string) error {
-	var adminUserCount int64
-	result := a.db.Model(&User{}).Where(&User{Role: "admin"}).Count(&adminUserCount)
-	if result.Error != nil {
-		log.Printf("Error retrieving admin user list from database: %s", result.Error)
-		return result.Error
+	adminUsers := []User{}
+	adminQuery := a.db.Find(&User{}).Where(&User{Role: "admin"}).Find(&adminUsers)
+	if adminQuery.Error != nil {
+		log.Printf("Error retrieving admin user list from database: %s", adminQuery.Error)
+		return adminQuery.Error
 	}
 
-	if adminUserCount <= 1 {
-		return errors.New("cannot delete single admin user")
+	for _, user := range adminUsers {
+		if user.Username == username {
+			if adminQuery.RowsAffected == 1 {
+				return errors.New("cannot delete single admin user")
+			}
+		}
 	}
 
-	result = a.db.Model(&User{}).Where(&User{Username: username}).Delete(&User{})
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Delete(&User{})
 	if result.Error != nil {
 		log.Printf("Error deleting user from database: %s", result.Error)
 		return result.Error
