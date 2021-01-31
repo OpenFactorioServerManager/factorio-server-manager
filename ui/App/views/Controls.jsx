@@ -17,6 +17,10 @@ const Controls = ({serverStatus, updateServerStatus}) => {
     const { handleSubmit, register, errors } = useForm();
 
     const startServer = async (data) => {
+        if(saves.length === 1 && saves[0].name === "Load Latest") {
+            window.flash("Save must be created before starting server", "red");
+            return;
+        }
         await server.start(data.ip, parseInt(data.port), data.save);
         await updateServerStatus();
     }
