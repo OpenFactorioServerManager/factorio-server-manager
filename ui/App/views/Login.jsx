@@ -24,6 +24,7 @@ const Login = ({handleLogin}) => {
         } catch (e) {
             console.log(e);
             window.flash("Login failed. Username or Password wrong.", "red");
+            throw e;
         }
     };
 
