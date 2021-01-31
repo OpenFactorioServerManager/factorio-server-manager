@@ -1,4 +1,3 @@
-import regeneratorRuntime from "regenerator-runtime";
 import client from "../client";
 
 export default {
