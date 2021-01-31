@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+### Added
+- Config files can be defined with absolute paths. - Thanks to @FoxAmes
+
+### Changed
+- Rework of the authentication, to have a bit more security. - Thanks to @knoxfighter
+- Changed from leveldb to sqlite3 as backend database. - Thanks to @knoxfighter
+- generate new random passwords, if no exist, or if they are "factorio". - Thanks to @knoxfighter
+- Use "OpenFactorioServerManager" instead of "mroote" as go package name. - Thanks to @mroote
+
+### Fixed
+- Crosscompilation with mingw-w64 on linux. (Broke with sqlite3) - Thanks to @knoxfighter
+- Crash on async writing to websocket room array. - Thanks to @knoxfighter
+
 ## [0.9.0] - 2021-01-07
 ### Added
 - Autostart factorio, when starting the server-manager - Thanks to @Psychomantis71
