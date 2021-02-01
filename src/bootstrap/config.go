@@ -59,9 +59,14 @@ type Config struct {
 	GlibcLibLoc             string `json:"-"`
 	Autostart               string `json:"-"`
 	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
+	Secure                  bool   `json:"secure"`
 }
 
-var instantiated Config
+// set Configs default values. JSON unmarshal will replace when it found something different
+var instantiated = Config{
+	ConsoleCacheSize: 25,
+	Secure:           true,
+}
 
 func NewConfig(args []string) Config {
 	var opts Flags
@@ -69,7 +74,7 @@ func NewConfig(args []string) Config {
 	if err != nil {
 		failOnError(err, "Failed to parse arguments")
 	}
-	instantiated = mapFlags(opts)
+	instantiated.mapFlags(opts)
 	instantiated.loadServerConfig()
 
 	abs, err := filepath.Abs(instantiated.FactorioModPackDir)
@@ -179,26 +184,24 @@ func randomPort() int {
 	return rand.Intn(5000) + 40000
 }
 
-func mapFlags(flags Flags) Config {
-	var config = Config{
-		Autostart:               flags.Autostart,
-		GlibcCustom:             flags.GlibcCustom,
-		GlibcLocation:           flags.GlibcLocation,
-		GlibcLibLoc:             flags.GlibcLibLoc,
-		ConfFile:                flags.ConfFile,
-		FactorioDir:             flags.FactorioDir,
-		ServerIP:                flags.ServerIP,
-		ServerPort:              flags.FactorioPort,
-		FactorioIP:              flags.FactorioIP,
-		FactorioSavesDir:        filepath.Join(flags.FactorioDir, "saves"),
-		FactorioModsDir:         filepath.Join(flags.FactorioDir, "mods"),
-		FactorioModPackDir:      flags.ModPackDir,
-		FactorioConfigDir:       filepath.Join(flags.FactorioDir, "config"),
-		FactorioConfigFile:      filepath.Join(flags.FactorioDir, flags.FactorioConfigFile),
-		FactorioCredentialsFile: "./factorio.auth",
-		FactorioAdminFile:       "server-adminlist.json",
-		MaxUploadSize:           flags.FactorioMaxUpload,
-	}
+func (config *Config) mapFlags(flags Flags) {
+	config.Autostart = flags.Autostart
+	config.GlibcCustom = flags.GlibcCustom
+	config.GlibcLocation = flags.GlibcLocation
+	config.GlibcLibLoc = flags.GlibcLibLoc
+	config.ConfFile = flags.ConfFile
+	config.FactorioDir = flags.FactorioDir
+	config.ServerIP = flags.ServerIP
+	config.ServerPort = flags.FactorioPort
+	config.FactorioIP = flags.FactorioIP
+	config.FactorioSavesDir = filepath.Join(flags.FactorioDir, "saves")
+	config.FactorioModsDir = filepath.Join(flags.FactorioDir, "mods")
+	config.FactorioModPackDir = flags.ModPackDir
+	config.FactorioConfigDir = filepath.Join(flags.FactorioDir, "config")
+	config.FactorioConfigFile = filepath.Join(flags.FactorioDir, flags.FactorioConfigFile)
+	config.FactorioCredentialsFile = "./factorio.auth"
+	config.FactorioAdminFile = "server-adminlist.json"
+	config.MaxUploadSize = flags.FactorioMaxUpload
 
 	if filepath.IsAbs(flags.FactorioBinary) {
 		config.FactorioBinary = flags.FactorioBinary
@@ -212,8 +215,6 @@ func mapFlags(flags Flags) Config {
 	} else {
 		config.FactorioLog = filepath.Join(config.FactorioDir, "factorio-current.log")
 	}
-
-	return config
 }
 
 func failOnError(err error, msg string) {

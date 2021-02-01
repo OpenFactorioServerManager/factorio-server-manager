@@ -210,11 +210,6 @@ func (room *wsRoom) run() {
 				LogCache = append(LogCache, message.Message.(string))
 				config := bootstrap.GetConfig()
 
-				// Set ConsoleCacheSize to 25 if not set!
-				if config.ConsoleCacheSize == 0 {
-					config.ConsoleCacheSize = 25
-				}
-
 				// When cache is bigger than max size, delete one line
 				if len(LogCache) > config.ConsoleCacheSize {
 					LogCache = LogCache[1:]
