@@ -59,7 +59,7 @@ type Config struct {
 	GlibcLibLoc             string `json:"-"`
 	Autostart               string `json:"-"`
 	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
-	Secure                  bool   `json:"secure"`
+	Secure                  bool   `json:"secure"` // set to `false` to use this tool without SSL/TLS (Default: `true`)
 }
 
 // set Configs default values. JSON unmarshal will replace when it found something different
