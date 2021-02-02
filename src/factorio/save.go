@@ -3,9 +3,9 @@ package factorio
 import (
 	"archive/zip"
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
+	"os"
 )
 
 type archiveFile struct {
@@ -27,7 +27,8 @@ func (af *archiveFile) Close() error {
 	return nil
 }
 
-func OpenArchiveFile(path string, name string) (r io.ReadCloser, err error) {
+// openNames contains a list of all. Will stop searching at the first occurance
+func OpenArchiveFile(path string, openNames ...string) (r io.ReadCloser, err error) {
 	archive, err := zip.OpenReader(path)
 	if err != nil {
 		return nil, err
@@ -36,18 +37,21 @@ func OpenArchiveFile(path string, name string) (r io.ReadCloser, err error) {
 	f := &archiveFile{archive: archive}
 
 	for _, file := range archive.File {
-		if file.FileInfo().Name() == name {
-			f.ReadCloser, err = file.Open()
-			if err != nil {
-				archive.Close()
-				return nil, err
+		name := file.FileInfo().Name()
+		for _, openName := range openNames {
+			if name == openName {
+				f.ReadCloser, err = file.Open()
+				if err != nil {
+					archive.Close()
+					return nil, err
+				}
+				return f, nil
 			}
-			return f, nil
 		}
 	}
 
 	archive.Close()
-	return nil, errors.New("file not found")
+	return nil, os.ErrNotExist
 }
 
 type SaveHeader struct {
@@ -100,7 +104,7 @@ func (h *SaveHeader) ReadFrom(r io.Reader) (err error) {
 		}
 	}
 
-	// campaign, example: "transport-belt-madness
+	// campaign, example: "transport-belt-madness"
 	h.Campaign, err = readString(r, Version(h.FactorioVersion), false)
 	if err != nil {
 		return fmt.Errorf("read Campaign: %v", err)

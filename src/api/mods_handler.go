@@ -311,15 +311,16 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 	var saveFileStruct struct {
 		Name string `json:"saveFile"`
 	}
+
 	resp, err = ReadFromRequestBody(w, r, &saveFileStruct)
 	if err != nil {
 		return
 	}
+
 	config := bootstrap.GetConfig()
 	path := filepath.Join(config.FactorioSavesDir, saveFileStruct.Name)
-	f, err := factorio.OpenArchiveFile(path, "level.dat")
+	f, err := factorio.OpenArchiveFile(path, "level.dat", "level-init.dat")
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		resp = fmt.Sprintf("cannot open save level file: %v", err)
 		log.Println(resp)
 		w.WriteHeader(http.StatusInternalServerError)
