@@ -319,6 +319,7 @@ func LoadModsFromSaveHandler(w http.ResponseWriter, r *http.Request) {
 
 	config := bootstrap.GetConfig()
 	path := filepath.Join(config.FactorioSavesDir, saveFileStruct.Name)
+
 	f, err := factorio.OpenArchiveFile(path, "level.dat", "level-init.dat")
 	if err != nil {
 		resp = fmt.Sprintf("cannot open save level file: %v", err)
