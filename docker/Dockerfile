@@ -2,7 +2,7 @@
 FROM frolvlad/alpine-glibc
 
 ENV FACTORIO_VERSION=stable \
-    MANAGER_VERSION=0.9.0 \
+    MANAGER_VERSION=0.10.0 \
     RCON_PASS=""
 
 VOLUME /opt/fsm-data /opt/factorio/saves /opt/factorio/mods /opt/factorio/config
