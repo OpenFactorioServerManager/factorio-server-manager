@@ -1,8 +1,9 @@
 package websocket
 
 import (
-	"github.com/mroote/factorio-server-manager/bootstrap"
 	"reflect"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 )
 
 // the hub, that is exported and can be used anywhere to work with the websocket
@@ -38,9 +39,6 @@ type wsMessage struct {
 type wsRoom struct {
 	// same as the key of the map in the wsHub
 	name string
-
-	// the wsHub this room is part of
-	hub *wsHub
 
 	// clients that are in this room. This list is a sublist of the one inside the hub
 	clients map[*wsClient]bool
@@ -155,7 +153,6 @@ func (hub *wsHub) GetRoom(name string) *wsRoom {
 	} else {
 		room := &wsRoom{
 			name:       name,
-			hub:        hub,
 			clients:    make(map[*wsClient]bool),
 			register:   make(chan *wsClient),
 			unregister: make(chan *wsClient),
@@ -187,11 +184,16 @@ func (room *wsRoom) run() {
 		case client := <-room.unregister:
 			if _, ok := room.clients[client]; ok {
 				delete(room.clients, client)
-				if len(room.clients) == 0 {
-					// remove this room
-					delete(room.hub.rooms, room.name)
-					return
-				}
+				// FIXME when more rooms are used, remove empty rooms.
+				// Since we only have a few rooms at the same time, just keep them.
+				// This is code, that will cause a concurrent call on `wsHub.rooms`.
+				// To fix this, move the deletion into the hub.
+				// Be careful to think about race conditions, if a user registered to the room, before room was really deleted.
+				//if len(room.clients) == 0 {
+				//	//remove this room
+				//	delete(room.hub.rooms, room.name)
+				//	return
+				//}
 			}
 		case message := <-room.send:
 			for client := range room.clients {
@@ -207,11 +209,6 @@ func (room *wsRoom) run() {
 				// add the line to the cache
 				LogCache = append(LogCache, message.Message.(string))
 				config := bootstrap.GetConfig()
-
-				// Set ConsoleCacheSize to 25 if not set!
-				if config.ConsoleCacheSize == 0 {
-					config.ConsoleCacheSize = 25
-				}
 
 				// When cache is bigger than max size, delete one line
 				if len(LogCache) > config.ConsoleCacheSize {

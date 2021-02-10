@@ -3,8 +3,7 @@ package factorio
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/mroote/factorio-server-manager/api/websocket"
-	"github.com/mroote/factorio-server-manager/bootstrap"
+	"errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,7 +15,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/majormjr/rcon"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/api/websocket"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/OpenFactorioServerManager/rcon"
 )
 
 type Server struct {
@@ -85,7 +86,7 @@ func NewFactorioServer() (err error) {
 		return
 	}
 
-	settingsPath := filepath.Join(config.FactorioConfigDir, config.SettingsFile)
+	settingsPath := config.SettingsFile
 	var settings *os.File
 
 	if _, err = os.Stat(settingsPath); os.IsNotExist(err) {
@@ -165,7 +166,7 @@ func NewFactorioServer() (err error) {
 	}
 
 	//Load baseMod version
-	baseModInfoFile := filepath.Join(config.FactorioDir, "data", "base", "info.json")
+	baseModInfoFile := filepath.Join(config.FactorioBaseModDir, "info.json")
 	bmifBa, err := ioutil.ReadFile(baseModInfoFile)
 	if err != nil {
 		log.Printf("couldn't open baseMods info.json: %s", err)
@@ -226,7 +227,16 @@ func (server *Server) Run() error {
 	if err != nil {
 		log.Println("Failed to marshal FactorioServerSettings: ", err)
 	} else {
-		ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.SettingsFile), data, 0644)
+		ioutil.WriteFile(config.SettingsFile, data, 0644)
+	}
+
+	saves, err := ListSaves(config.FactorioSavesDir)
+	if err != nil {
+		log.Println("Failed to get saves list: ", err)
+	}
+
+	if len(saves) == 0 {
+		return errors.New("No savefile exists on the server")
 	}
 
 	args := []string{}
@@ -241,7 +251,7 @@ func (server *Server) Run() error {
 	args = append(args,
 		"--bind", server.BindIP,
 		"--port", strconv.Itoa(server.Port),
-		"--server-settings", filepath.Join(config.FactorioConfigDir, config.SettingsFile),
+		"--server-settings", config.SettingsFile,
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass)
 

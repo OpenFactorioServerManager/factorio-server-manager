@@ -2,11 +2,8 @@
 FROM frolvlad/alpine-glibc
 
 ENV FACTORIO_VERSION=stable \
-    MANAGER_VERSION=0.9.0 \
-    ADMIN_USER=admin \
-    ADMIN_PASS=factorio \
-    RCON_PASS="" \
-    COOKIE_ENCRYPTION_KEY=""
+    MANAGER_VERSION=0.10.0 \
+    RCON_PASS=""
 
 VOLUME /opt/fsm-data /opt/factorio/saves /opt/factorio/mods /opt/factorio/config
 

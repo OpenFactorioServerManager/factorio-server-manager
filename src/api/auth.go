@@ -1,121 +1,236 @@
 package api
 
 import (
-	"github.com/mroote/factorio-server-manager/bootstrap"
+	"encoding/base64"
 	"log"
-	"os"
-	"sync"
+	"net/http"
 
-	"github.com/apexskier/httpauth"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/gorilla/sessions"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-type AuthHTTP struct {
-	backend httpauth.LeveldbAuthBackend
-	aaa     httpauth.Authorizer
+type User bootstrap.User
+
+type Auth struct {
+	db *gorm.DB
 }
 
-type User struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
-	Email    string `json:"email"`
-}
+var (
+	sessionStore *sessions.CookieStore
+	auth         Auth
+)
 
-var once sync.Once
-var instantiated *AuthHTTP
-
-func GetAuth() *AuthHTTP {
-	once.Do(func() {
-		Auth := &AuthHTTP{}
-		config := bootstrap.GetConfig()
-		_ = Auth.CreateAuth(config.DatabaseFile, config.CookieEncryptionKey)
-		_ = Auth.CreateOrUpdateUser(config.Username, config.Password, "admin", "")
-		instantiated = Auth
-	})
-	return instantiated
-}
-
-func (auth *AuthHTTP) CreateAuth(backendFile string, cookieKey string) error {
+func SetupAuth() {
 	var err error
-	os.Mkdir(backendFile, 0755)
 
-	auth.backend, err = httpauth.NewLeveldbAuthBackend(backendFile)
+	config := bootstrap.GetConfig()
+
+	cookieEncryptionKey, err := base64.StdEncoding.DecodeString(config.CookieEncryptionKey)
 	if err != nil {
-		log.Printf("Error creating Auth backend: %s", err)
+		log.Printf("Error decoding base64 cookie encryption key: %s", err)
+		panic(err)
+	}
+	sessionStore = sessions.NewCookieStore(cookieEncryptionKey)
+	sessionStore.Options = &sessions.Options{
+		Path:   "/",
+		Secure: config.Secure,
+	}
+
+	auth.db, err = gorm.Open(sqlite.Open(config.SQLiteDatabaseFile), nil)
+	if err != nil {
+		log.Printf("Error opening sqlite or gorm database: %s", err)
+		panic(err)
+	}
+
+	err = auth.db.AutoMigrate(&User{})
+	if err != nil {
+		log.Printf("Error AutoMigrating gorm database: %s", err)
+		panic(err)
+	}
+
+	var userCount int64
+	auth.db.Model(&User{}).Count(&userCount)
+
+	if userCount == 0 {
+		// no user created yet, create a default one
+		var password = bootstrap.GenerateRandomPassword()
+
+		var user User
+		user.Username = "admin"
+		user.Password = password
+		user.Role = "admin"
+
+		err := auth.addUser(user)
+		if err != nil {
+			log.Printf("Error adding admin user to db: %s", err)
+			panic(err)
+		}
+
+		log.Println("Created default admin user. Please change it's password as soon as possible.")
+		log.Printf("Username: %s", user.Username)
+		log.Printf("Password: %s", password)
+	}
+}
+
+func (a *Auth) checkPassword(username, password string) error {
+	var user User
+	result := a.db.Where(&User{Username: username}).Take(&user)
+	if result.Error != nil {
+		log.Printf("Error reading user from database: %s", result.Error)
+		return result.Error
+	}
+
+	decodedHashPw, err := base64.StdEncoding.DecodeString(user.Password)
+	if err != nil {
+		log.Printf("Error decoding base64 password: %s", err)
 		return err
 	}
 
-	roles := make(map[string]httpauth.Role)
-	roles["user"] = 30
-	roles["admin"] = 80
-
-	auth.aaa, err = httpauth.NewAuthorizer(auth.backend, []byte(cookieKey), "user", roles)
+	err = bcrypt.CompareHashAndPassword(decodedHashPw, []byte(password))
 	if err != nil {
-		log.Printf("Error creating authorizer: %s", err)
+		if err != bcrypt.ErrMismatchedHashAndPassword {
+			log.Printf("Unexpected error comparing hash and pw: %s", err)
+		}
 		return err
+	}
+
+	// Password correct
+	return nil
+}
+
+func (a *Auth) deleteUser(username string) error {
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Delete(&User{})
+	if result.Error != nil {
+		log.Printf("Error deleting user from database: %s", result.Error)
+		return result.Error
+	}
+	return nil
+}
+
+func (a *Auth) hasUser(username string) (bool, error) {
+	var count int64
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Count(&count)
+	if result.Error != nil {
+		log.Printf("Error checking if user exists in database: %s", result.Error)
+		return false, result.Error
+	}
+	return count == 1, nil
+}
+
+func (a *Auth) getUser(username string) (User, error) {
+	var user User
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Take(&user)
+	if result.Error != nil {
+		log.Printf("Error reading user from database: %s", result.Error)
+		return User{}, result.Error
+	}
+
+	return user, nil
+}
+
+func (a *Auth) listUsers() ([]User, error) {
+	var users []User
+	result := a.db.Find(&users)
+	if result.Error != nil {
+		log.Printf("Error listing all users in database: %s", result.Error)
+		return nil, result.Error
+	}
+	return users, nil
+}
+
+func (a *Auth) addUser(user User) error {
+	// encrypt password
+	pwHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("Error generating bcrypt hash from password: %s", err)
+		return err
+	}
+
+	user.Password = base64.StdEncoding.EncodeToString(pwHash)
+
+	// add user to db
+	result := a.db.Create(&user)
+	if result.Error != nil {
+		log.Printf("Error creating user in database: %s", result.Error)
+		return result.Error
 	}
 
 	return nil
 }
 
-func (auth *AuthHTTP) CreateOrUpdateUser(username, password, role, email string) error {
-	user := httpauth.UserData{Username: username, Role: role, Email: email}
-	err := auth.backend.SaveUser(user)
-	if err != nil {
-		log.Printf("Error saving user: %s", err)
-		return err
+func (a *Auth) addUserWithHash(user User) error {
+	// add user to db
+	result := a.db.Create(&user)
+	if result.Error != nil {
+		log.Printf("Error creating user in database: %s", result.Error)
+		return result.Error
 	}
-
-	err = auth.aaa.Update(nil, nil, username, password, email)
-	if err != nil {
-		log.Printf("Error updating user: %s", err)
-		return err
-	}
-
-	log.Printf("Created/Updated user: %s", user.Username)
 
 	return nil
 }
 
-func (auth *AuthHTTP) listUsers() ([]User, error) {
-	var userResponse []User
-	users, err := auth.backend.Users()
-	if err != nil {
-		log.Printf("Error list users: %s", err)
-		return nil, err
+func (a *Auth) changePassword(username, password string) error {
+	var user User
+	result := a.db.Model(&User{}).Where(&User{Username: username}).Take(&user)
+	if result.Error != nil {
+		log.Printf("Error reading user from database: %s", result.Error)
+		return result.Error
 	}
 
-	for _, user := range users {
-		u := User{Username: user.Username, Role: user.Role, Email: user.Email}
-		userResponse = append(userResponse, u)
-	}
-
-	log.Printf("listing users: %v found", len(users))
-	return userResponse, nil
-}
-
-func (auth *AuthHTTP) addUser(username, password, email, role string) error {
-	user := httpauth.UserData{Username: username, Hash: []byte(password), Email: email, Role: role}
-	err := auth.backend.SaveUser(user)
+	hashPW, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		log.Printf("Error creating user %v: %s", user, err)
-	}
-	err = auth.aaa.Update(nil, nil, username, password, email)
-	if err != nil {
-		log.Printf("Error saving user: %s", err)
+		log.Printf("Error generatig bcrypt hash from new password: %s", err)
 		return err
 	}
 
-	log.Printf("Added user: %v", user)
-	return nil
-}
+	user.Password = base64.StdEncoding.EncodeToString(hashPW)
 
-func (auth *AuthHTTP) removeUser(username string) error {
-	err := auth.backend.DeleteUser(username)
-	if err != nil {
-		log.Printf("Could not delete user %s, error: %s", username, err)
-		return err
+	result = a.db.Save(&user)
+	if result.Error != nil {
+		log.Printf("Error resaving user in database: %s", result.Error)
+		return result.Error
 	}
 
 	return nil
+}
+
+// middleware function, that will be called for every request, that has to be authorized
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		session, err := sessionStore.Get(r, "authentication")
+		if err != nil {
+			if session != nil {
+				session.Options.MaxAge = -1
+				err2 := session.Save(r, w)
+				if err2 != nil {
+					log.Printf("Error deleting cookie: %s", err2)
+				}
+			}
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		username, ok := session.Values["username"]
+		if !ok {
+			http.Error(w, "Could not read username from sessioncookie", http.StatusUnauthorized)
+			return
+		}
+
+		hasUser, err := auth.hasUser(username.(string))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if hasUser {
+			next.ServeHTTP(w, r)
+		} else {
+			log.Printf("Unauthenticated request %s %s %s", r.Method, r.Host, r.RequestURI)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+	})
 }

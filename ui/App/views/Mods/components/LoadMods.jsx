@@ -35,9 +35,15 @@ const LoadMods = ({refreshMods}) => {
     return (
         <form onSubmit={handleSubmit(loadMods)}>
             <Label text="Save" htmlFor="save"/>
-            <Select name="save" inputRef={register} className="mb-4">
-                {saves?.map(save => <option value={save.name} key={save.name}>{save.name}</option>)}
-            </Select>
+            <Select
+                name="save"
+                inputRef={register}
+                className="mb-4"
+                options={saves?.map(save => new Object({
+                    name: save.name,
+                    value: save.name
+                }))}
+            />
             <Button isSubmit={true} isLoading={isLoading}>Load</Button>
         </form>
     )
