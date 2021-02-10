@@ -2,12 +2,6 @@ package api
 
 import (
 	"bytes"
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io"
 	"log"
 	"mime/multipart"
@@ -17,6 +11,13 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/factorio"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMain(m *testing.M) {

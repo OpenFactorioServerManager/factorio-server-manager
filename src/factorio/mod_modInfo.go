@@ -4,13 +4,14 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"errors"
-	"github.com/mroote/factorio-server-manager/lockfile"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/lockfile"
 )
 
 type ModInfoList struct {

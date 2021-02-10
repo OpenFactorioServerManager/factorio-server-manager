@@ -4,14 +4,15 @@ import (
 	"archive/zip"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/factorio"
+	"github.com/gorilla/mux"
 )
 
 func CheckModPackExists(modPackMap factorio.ModPackMap, modPackName string, w http.ResponseWriter) (resp interface{}, err error) {

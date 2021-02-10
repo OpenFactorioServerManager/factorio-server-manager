@@ -2,13 +2,14 @@ package api
 
 import (
 	"encoding/base64"
+	"log"
+	"net/http"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 	"github.com/gorilla/sessions"
-	"github.com/mroote/factorio-server-manager/bootstrap"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"log"
-	"net/http"
 )
 
 type User bootstrap.User
@@ -35,12 +36,12 @@ func SetupAuth() {
 	sessionStore = sessions.NewCookieStore(cookieEncryptionKey)
 	sessionStore.Options = &sessions.Options{
 		Path:   "/",
-		Secure: true,
+		Secure: config.Secure,
 	}
 
 	auth.db, err = gorm.Open(sqlite.Open(config.SQLiteDatabaseFile), nil)
 	if err != nil {
-		log.Printf("Error opening sqlite or goem database: %s", err)
+		log.Printf("Error opening sqlite or gorm database: %s", err)
 		panic(err)
 	}
 

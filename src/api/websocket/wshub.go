@@ -1,8 +1,9 @@
 package websocket
 
 import (
-	"github.com/mroote/factorio-server-manager/bootstrap"
 	"reflect"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 )
 
 // the hub, that is exported and can be used anywhere to work with the websocket
@@ -208,11 +209,6 @@ func (room *wsRoom) run() {
 				// add the line to the cache
 				LogCache = append(LogCache, message.Message.(string))
 				config := bootstrap.GetConfig()
-
-				// Set ConsoleCacheSize to 25 if not set!
-				if config.ConsoleCacheSize == 0 {
-					config.ConsoleCacheSize = 25
-				}
 
 				// When cache is bigger than max size, delete one line
 				if len(LogCache) > config.ConsoleCacheSize {

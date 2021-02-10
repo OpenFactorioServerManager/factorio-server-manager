@@ -3,6 +3,7 @@ package factorio
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,10 +15,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/mroote/factorio-server-manager/api/websocket"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-
-	"github.com/majormjr/rcon"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/api/websocket"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/OpenFactorioServerManager/rcon"
 )
 
 type Server struct {
@@ -228,6 +228,15 @@ func (server *Server) Run() error {
 		log.Println("Failed to marshal FactorioServerSettings: ", err)
 	} else {
 		ioutil.WriteFile(config.SettingsFile, data, 0644)
+	}
+
+	saves, err := ListSaves(config.FactorioSavesDir)
+	if err != nil {
+		log.Println("Failed to get saves list: ", err)
+	}
+
+	if len(saves) == 0 {
+		return errors.New("No savefile exists on the server")
 	}
 
 	args := []string{}
