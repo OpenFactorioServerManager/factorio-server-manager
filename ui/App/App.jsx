@@ -17,6 +17,7 @@ import Console from "./views/Console";
 import Help from "./views/Help";
 import socket from "../api/socket";
 import {Flash} from "./components/Flash";
+import MapGenerator from "./views/MapGenerator/MapGenerator";
 
 
 const App = () => {
@@ -67,6 +68,7 @@ const App = () => {
                 <Layout handleLogout={handleLogout} serverStatus={serverStatus} updateServerStatus={updateServerStatus}>
                     <ProtectedRoute exact path="/" component={Controls}/>
                     <ProtectedRoute path="/saves" component={Saves}/>
+                    <ProtectedRoute path="/map-generator" component={MapGenerator}/>
                     <ProtectedRoute path="/mods" component={Mods}/>
                     <ProtectedRoute path="/server-settings" component={ServerSettings}/>
                     <ProtectedRoute path="/game-settings" component={GameSettings}/>

@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import saves from "../../../../api/resources/saves";
 import Error from "../../../components/Error";
+import Label from "../../../components/Label";
 
 
 const UploadSaveForm = ({onSuccess}) => {
@@ -19,17 +20,15 @@ const UploadSaveForm = ({onSuccess}) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-6">
-                <label className="block text-white text-sm font-bold mb-2" htmlFor="password">
-                    Save File
-                </label>
-                <div className="relative bg-white shadow text-black w-full">
+                <Label text="Save File" htmlFor="savefile"/>
+                <div className="relative rounded-sm bg-gray-light shadow text-black w-full">
                     <input
-                        className="absolute left-0 top-0 opacity-0 cursor-pointer w-full h-full"
+                        className="absolute  left-0 top-0 opacity-0 cursor-pointer w-full h-full"
                         ref={register({required: true})}
                         onChange={e => setFileName(e.currentTarget.files[0].name)}
                         name="savefile"
                         id="savefile" type="file"/>
-                    <div className="px-2 py-3">{fileName}</div>
+                    <div className="px-3 py-2">{fileName}</div>
                 </div>
                 <Error error={errors.savefile} message="Savefile is required"/>
             </div>

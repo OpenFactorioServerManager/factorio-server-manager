@@ -22,6 +22,9 @@ const Button = ({ children, type, onClick, isSubmit, className, size, isLoading,
         case 'sm':
             padding = 'py-1 px-2';
             break;
+        case 'none':
+            padding = '';
+            break;
         default:
             padding = 'py-2 px-4'
     }

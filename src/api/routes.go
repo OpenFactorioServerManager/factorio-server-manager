@@ -94,6 +94,10 @@ func NewRouter() *mux.Router {
 		Methods("GET").
 		Name("Saves").
 		Handler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/"))))
+	sr.Path("/map-generator").
+		Methods("GET").
+		Name("MapGenerator").
+		Handler(http.StripPrefix("/map-generator", http.FileServer(http.Dir("./app/"))))
 	sr.Path("/mods").
 		Methods("GET").
 		Name("Mods").

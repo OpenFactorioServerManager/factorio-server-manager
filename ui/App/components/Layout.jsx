@@ -72,6 +72,7 @@ const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
                         <div className="text-white text-center rounded-sm bg-black shadow-inner mx-4 p-1">
                             <Link to="/">Controls</Link>
                             <Link to="/saves">Saves</Link>
+                            <Link to="/map-generator">Map Generator</Link>
                             <Link to="/mods">Mods</Link>
                             <Link to="/server-settings">Server Settings</Link>
                             <Link to="/game-settings">Game Settings</Link>
