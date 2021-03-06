@@ -170,6 +170,12 @@ var apiRoutes = Routes{
 		CreateSaveHandler,
 		true,
 	}, {
+		"GenerateMapPreview",
+		"GET",
+		"/saves/preview",
+		GenerateMapPreview,
+		true,
+	}, {
 		"LoadModsFromSave",
 		"POST",
 		"/saves/mods",

@@ -421,6 +421,28 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GenerateMapPreview(w http.ResponseWriter, r *http.Request) {
+	var resp interface{}
+
+	defer func() {
+		WriteResponse(w, resp)
+	}()
+
+	// todo: evaluate post params to create a custom map-gen-setting file
+	p := "./map-gen-settings.json.example"
+
+	previewImagePath, err := factorio.GenerateMapPreview(p)
+
+	if err != nil {
+		resp = fmt.Sprintf("Error creating map preview %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp = previewImagePath
+}
+
 func FactorioVersion(w http.ResponseWriter, r *http.Request) {
 	resp := map[string]string{}
 
