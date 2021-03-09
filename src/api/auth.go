@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/base64"
+	"errors"
 	"log"
 	"net/http"
 
@@ -102,6 +103,21 @@ func (a *Auth) checkPassword(username, password string) error {
 }
 
 func (a *Auth) deleteUser(username string) error {
+	adminUsers := []User{}
+	adminQuery := a.db.Find(&User{}).Where(&User{Role: "admin"}).Find(&adminUsers)
+	if adminQuery.Error != nil {
+		log.Printf("Error retrieving admin user list from database: %s", adminQuery.Error)
+		return adminQuery.Error
+	}
+
+	for _, user := range adminUsers {
+		if user.Username == username {
+			if adminQuery.RowsAffected == 1 {
+				return errors.New("cannot delete single admin user")
+			}
+		}
+	}
+
 	result := a.db.Model(&User{}).Where(&User{Username: username}).Delete(&User{})
 	if result.Error != nil {
 		log.Printf("Error deleting user from database: %s", result.Error)
