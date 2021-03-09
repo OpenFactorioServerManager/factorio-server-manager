@@ -76,6 +76,7 @@ func CreateSave(filePath string) (string, error) {
 	cmdOutput, err := exec.Command(config.FactorioBinary, args...).Output()
 	if err != nil {
 		log.Printf("Error in creating Factorio save: %s", err)
+		log.Println(string(cmdOutput))
 		return "", err
 	}
 
