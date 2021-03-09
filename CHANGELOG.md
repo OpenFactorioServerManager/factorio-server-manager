@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.10.1] - 2021-02-10
+## [0.10.1] - 2021-03-09
 ### Fixed
 - Single admin user can no longer be deleted (so there is always a user)
 - fixed incompatibility to glibc 2.32 by linking dynamic on linux
