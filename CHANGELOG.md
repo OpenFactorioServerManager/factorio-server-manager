@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.10.1] - 2021-02-10
+### Fixed
+- Single admin user can no longer be deleted (so there is always a user)
+- fixed incompatibility to glibc 2.32 by linking dynamic on linux
+- Moved from alpine to ubuntu docker image base, to prevent factorio not running correctly
+
 ## [0.10.0] - 2021-02-10
 ### Added
 - Config files can be defined with absolute paths. - Thanks to @FoxAmes
