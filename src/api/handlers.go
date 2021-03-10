@@ -423,15 +423,44 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 
 func GenerateMapPreview(w http.ResponseWriter, r *http.Request) {
 	var resp interface{}
+	var mapGenSettingsFileName string
 
 	defer func() {
+		if mapGenSettingsFileName != "" {
+			_ = os.Remove(mapGenSettingsFileName)
+		}
 		WriteResponse(w, resp)
 	}()
 
-	// todo: evaluate post params to create a custom map-gen-setting file
-	p := "./map-gen-settings.json.example"
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	previewImagePath, err := factorio.GenerateMapPreview(p)
+	body, resp, err := ReadRequestBody(w, r)
+	if err != nil {
+		return
+	}
+
+	mapGenSettings, resp, err := UnmarshallMapGenSettingsJson(body, w)
+	if err != nil {
+		return
+	}
+
+	mapGenSettingsFileContent, err := json.MarshalIndent(mapGenSettings, "", "")
+
+	mapGenSettingsFile, err := ioutil.TempFile("", "factorio-map-gen-settings")
+
+	if err != nil {
+		return
+	}
+
+	mapGenSettingsFileName = mapGenSettingsFile.Name()
+
+	_, err = mapGenSettingsFile.Write(mapGenSettingsFileContent)
+
+	if err != nil {
+		return
+	}
+
+	previewImagePath, err := factorio.GenerateMapPreview(mapGenSettingsFileName)
 
 	if err != nil {
 		resp = fmt.Sprintf("Error creating map preview %s", err)
@@ -460,6 +489,17 @@ func FactorioVersion(w http.ResponseWriter, r *http.Request) {
 // This function has side effects (it will write to resp and to w, in case of an error)
 func UnmarshallUserJson(body []byte, w http.ResponseWriter) (user User, resp interface{}, err error) {
 	err = json.Unmarshal(body, &user)
+	if err != nil {
+		resp = fmt.Sprintf("Unable to parse the request body: %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	return
+}
+
+func UnmarshallMapGenSettingsJson(body []byte, w http.ResponseWriter) (mapGenSettings factorio.MapGenSettings, resp interface{}, err error) {
+	mapGenSettings = factorio.DefaultMapGenSettings()
+	err = json.Unmarshal(body, &mapGenSettings)
 	if err != nil {
 		resp = fmt.Sprintf("Unable to parse the request body: %s", err)
 		log.Println(resp)

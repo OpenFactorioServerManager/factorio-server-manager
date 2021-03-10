@@ -171,7 +171,7 @@ var apiRoutes = Routes{
 		true,
 	}, {
 		"GenerateMapPreview",
-		"GET",
+		"POST",
 		"/saves/preview",
 		GenerateMapPreview,
 		true,
