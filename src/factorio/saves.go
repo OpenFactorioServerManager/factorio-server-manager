@@ -85,7 +85,7 @@ func CreateSave(filePath string) (string, error) {
 	return result, nil
 }
 
-func GenerateMapPreview(mapSettingsPath string) (string, error) {
+func GenerateMapPreview(mapSettingsGenFilePath string, mapSettingsFilePath string) (string, error) {
 
 	if _, err := os.Stat("./map_previews"); err != nil {
 		err = os.Mkdir("./map_previews", 664)
@@ -101,7 +101,14 @@ func GenerateMapPreview(mapSettingsPath string) (string, error) {
 	// source: https://wiki.factorio.com/Command_line_parameters
 	previewFolder += string(filepath.Separator)
 
-	args := []string{"--map-gen-settings", mapSettingsPath, "--generate-map-preview", previewFolder}
+	args := []string{
+		"--map-gen-settings",
+		mapSettingsGenFilePath,
+		"--generate-map-preview",
+		previewFolder,
+		"--map-settings",
+		mapSettingsFilePath,
+	}
 
 	config := bootstrap.GetConfig()
 	log.Println(filepath.Abs(config.FactorioBinary))
