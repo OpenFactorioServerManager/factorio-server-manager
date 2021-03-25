@@ -156,7 +156,7 @@ func (config *Config) loadServerConfig() {
 	// load and potentially update conf.json
 	config.updateConfigFile()
 
-	file, err := os.OpenFile(config.ConfFile, os.O_RDWR, 0)
+	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
 	failOnError(err, "Error loading config file.")
 	defer file.Close()
 
