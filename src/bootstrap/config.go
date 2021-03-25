@@ -44,7 +44,7 @@ type Config struct {
 	FactorioRconPass        string `json:"rcon_pass,omitempty"`
 	FactorioCredentialsFile string `json:"factorio_credentials_file,omitempty"`
 	FactorioIP              string `json:"factorio_ip,omitempty"`
-	FactorioAdminFile       string `json:"-"`
+	FactorioAdminFile       string `json:"factorio_admin_file,omitempty"`
 	ServerIP                string `json:"server_ip,omitempty"`
 	ServerPort              string `json:"server_port,omitempty"`
 	MaxUploadSize           int64  `json:"max_upload_size,omitempty"`
@@ -170,6 +170,10 @@ func (config *Config) loadServerConfig() {
 
 	if config.FactorioBaseModDir == "" {
 		config.FactorioBaseModDir = filepath.Join(config.FactorioDir, "data", "base")
+	}
+
+	if !filepath.IsAbs(config.FactorioAdminFile) {
+		config.FactorioAdminFile = filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)
 	}
 
 	// Set random port as rconPort
