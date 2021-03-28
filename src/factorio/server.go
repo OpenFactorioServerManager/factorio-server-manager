@@ -359,10 +359,10 @@ func (server *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 
 func (server *Server) writeLog(logline string) error {
 	config := bootstrap.GetConfig()
-	logfileName := filepath.Join(config.FactorioDir, "factorio-server-console.log")
+	logfileName := config.ConsoleLogFile
 	file, err := os.OpenFile(logfileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		log.Printf("Cannot open logfile for appending Factorio Server output: %s", err)
+		log.Printf("Cannot open logfile %s for appending Factorio Server output: %s", logfileName, err)
 		return err
 	}
 	defer file.Close()
@@ -370,7 +370,7 @@ func (server *Server) writeLog(logline string) error {
 	logline = logline + "\n"
 
 	if _, err = file.WriteString(logline); err != nil {
-		log.Printf("Error appending to factorio-server-console.log: %s", err)
+		log.Printf("Error appending to %s: %s", logfileName, err)
 		return err
 	}
 

@@ -59,6 +59,7 @@ type Config struct {
 	GlibcLibLoc             string `json:"-"`
 	Autostart               string `json:"-"`
 	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
+	ConsoleLogFile          string `json:"console_log_file,omitempty"`
 	Secure                  bool   `json:"secure"` // set to `false` to use this tool without SSL/TLS (Default: `true`)
 }
 
@@ -206,6 +207,7 @@ func (config *Config) mapFlags(flags Flags) {
 	config.FactorioCredentialsFile = "./factorio.auth"
 	config.FactorioAdminFile = "server-adminlist.json"
 	config.MaxUploadSize = flags.FactorioMaxUpload
+	config.ConsoleLogFile = filepath.Join(flags.FactorioDir, "factorio-server-console.log")
 
 	if filepath.IsAbs(flags.FactorioBinary) {
 		config.FactorioBinary = flags.FactorioBinary
