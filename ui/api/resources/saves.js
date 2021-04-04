@@ -9,7 +9,19 @@ export default {
         const response = await client.get(`/api/saves/rm/${save.name}`);
         return response.data;
     },
-    create: async (name) => {
+    defaultMapSettings: async () => {
+        const response = await client.get('/api/saves/default-map-settings');
+        return response.data;
+    },
+    defaultMapGenSettings: async () => {
+        const response = await client.get('/api/saves/default-map-gen-settings');
+        return response.data;
+    },
+    preview: async mapSettings => {
+        const response = await client.post(`/api/saves/preview`, mapSettings);
+        return response.data;
+    },
+    create: async name => {
         const response = await client.get(`/api/saves/create/${name}`);
         return response.data;
     },

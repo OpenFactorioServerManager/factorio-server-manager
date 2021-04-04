@@ -2,7 +2,7 @@ import React from "react";
 import ResourceConfigurator from "./components/ResourceConfigurator";
 
 const Resources = () => {
-    return <table className="w-full">
+    return <table className="w-1/2">
         <thead>
             <tr>
                 <th colSpan={2}>Name</th>
@@ -12,11 +12,12 @@ const Resources = () => {
             </tr>
         </thead>
         <tbody>
-            <ResourceConfigurator name="iron"/>
-            <ResourceConfigurator name="copper"/>
-            <ResourceConfigurator name="coal"/>
-            <ResourceConfigurator name="uranium"/>
-            <ResourceConfigurator name="crude-oil"/>
+            <ResourceConfigurator label="Iron Ore" namePrefix="iron-ore"/>
+            <ResourceConfigurator label="Copper Ore" namePrefix="copper-ore"/>
+            <ResourceConfigurator label="Stone Ore" namePrefix="stone"/>
+            <ResourceConfigurator label="Coal" namePrefix="coal"/>
+            <ResourceConfigurator label="Uranium Ore" namePrefix="uranium-ore"/>
+            <ResourceConfigurator label="Crude Oil" namePrefix="crude-oil"/>
         </tbody>
     </table>
 }

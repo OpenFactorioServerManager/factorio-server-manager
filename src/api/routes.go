@@ -176,6 +176,18 @@ var apiRoutes = Routes{
 		GenerateMapPreview,
 		true,
 	}, {
+		"DefaultMapSettings",
+		"GET",
+		"/saves/default-map-settings",
+		DefaultMapSettings,
+		false,
+	}, {
+		"DefaultMapGenSettings",
+		"GET",
+		"/saves/default-map-gen-settings",
+		DefaultMapGenSettings,
+		false,
+	}, {
 		"LoadModsFromSave",
 		"POST",
 		"/saves/mods",

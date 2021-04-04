@@ -1,16 +1,16 @@
 import React from "react";
 import Slider from "../../../../../components/Slider";
 
-const ResourceConfigurator = ({ name }) => {
+const ResourceConfigurator = ({ label, namePrefix }) => {
     return <tr>
         <td>
-            <input
-                type="checkbox"
-                checked={true}
-            />
+            {/*<input*/}
+            {/*    type="checkbox"*/}
+            {/*    checked={true}*/}
+            {/*/>*/}
         </td>
         <td className="px-2">
-             {name}
+             {label}
         </td>
         <td className="px-2">
             <Slider/>

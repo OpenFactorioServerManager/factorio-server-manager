@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useState, useEffect} from 'react';
 
 import user from "../api/resources/user";
 import Login from "./views/Login";
@@ -49,7 +49,7 @@ const App = () => {
         }
     }, []);
 
-    const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
+    const ProtectedRoute = ({component: Component, ...rest}) => (
         <Route {...rest} render={(props) => (
             isAuthenticated && Component
                 ? <Component serverStatus={serverStatus} updateServerStatus={updateServerStatus} {...props} />
@@ -58,14 +58,20 @@ const App = () => {
                     state: {from: props.location}
                 }}/>
         )}/>
-    ), [isAuthenticated, serverStatus]);
+    );
+
+    useEffect(() => {
+        (async () => {
+            updateServerStatus()
+        })();
+    }, []);
 
     return (
         <BrowserRouter basename="/">
             <Switch>
                 <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
 
-                <Layout handleLogout={handleLogout} serverStatus={serverStatus} updateServerStatus={updateServerStatus}>
+                <Layout handleLogout={handleLogout} serverStatus={serverStatus}>
                     <ProtectedRoute exact path="/" component={Controls}/>
                     <ProtectedRoute path="/saves" component={Saves}/>
                     <ProtectedRoute path="/map-generator" component={MapGenerator}/>

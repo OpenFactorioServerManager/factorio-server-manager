@@ -4,15 +4,11 @@ import Button from "./Button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBars} from "@fortawesome/free-solid-svg-icons";
 
-const Layout = ({children, handleLogout, serverStatus, updateServerStatus}) => {
+const Layout = ({children, handleLogout, serverStatus}) => {
 
     const [isNavCollapsed, setIsNavCollapsed] = useState(true);
 
-    useEffect(() => {
-        (async () => {
-            updateServerStatus()
-        })();
-    }, []);
+
 
     const Status = ({info}) => {
 

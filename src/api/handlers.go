@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -421,10 +422,19 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func DefaultMapSettings(w http.ResponseWriter, r *http.Request) {
+	WriteResponse(w, factorio.DefaultMapSettings())
+}
+
+func DefaultMapGenSettings(w http.ResponseWriter, r *http.Request) {
+	WriteResponse(w, factorio.DefaultMapGenSettings())
+}
+
 func GenerateMapPreview(w http.ResponseWriter, r *http.Request) {
 	var resp interface{}
 	var mapGenSettingsFileName string
 	var mapSettingsFileName string
+	var previewImagePath string
 
 	defer func() {
 		if mapGenSettingsFileName != "" {
@@ -432,6 +442,9 @@ func GenerateMapPreview(w http.ResponseWriter, r *http.Request) {
 		}
 		if mapSettingsFileName != "" {
 			_ = os.Remove(mapSettingsFileName)
+		}
+		if previewImagePath != "" {
+			_ = os.Remove(previewImagePath)
 		}
 		WriteResponse(w, resp)
 	}()
@@ -473,7 +486,6 @@ func GenerateMapPreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var previewImagePath string
 	previewImagePath, err = factorio.GenerateMapPreview(mapGenSettingsFileName, mapSettingsFileName)
 
 	if err != nil {
@@ -483,7 +495,16 @@ func GenerateMapPreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp = previewImagePath
+	previewImage, err := ioutil.ReadFile(previewImagePath)
+
+	if err != nil {
+		resp = fmt.Sprintf("Error read preview image %s", err)
+		log.Println(resp)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp = "data:image/png;base64," + base64.StdEncoding.EncodeToString(previewImage)
 }
 
 func FactorioVersion(w http.ResponseWriter, r *http.Request) {
