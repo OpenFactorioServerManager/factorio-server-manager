@@ -1,6 +1,6 @@
 import React from "react";
 
-const Enemy = () => {
+const Enemy = ({settings, setSettings}) => {
     return <></>
 }
 

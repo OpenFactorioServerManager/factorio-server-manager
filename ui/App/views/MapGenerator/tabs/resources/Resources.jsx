@@ -1,8 +1,8 @@
 import React from "react";
 import ResourceConfigurator from "./components/ResourceConfigurator";
 
-const Resources = () => {
-    return <table className="w-1/2">
+const Resources = ({settings, setSettings}) => {
+    return <table className="flex-1">
         <thead>
             <tr>
                 <th colSpan={2}>Name</th>

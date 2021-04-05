@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import TabControl from "../../components/Tabs/TabControl";
 import Tab from "../../components/Tabs/Tab";
 import Button from "../../components/Button";
@@ -6,27 +6,42 @@ import Resources from "./tabs/resources/Resources";
 import Terrain from "./tabs/Terrain";
 import Enemy from "./tabs/Enemy";
 import Advanced from "./tabs/Advanced";
-import {useForm} from "react-hook-form";
 import SeedInput from "./components/SeedInput";
 import MapTypeSelect from "./components/MapTypeSelect";
 import saves from "../../../api/resources/saves";
 import MapPreviewImage from "./components/MapPreviewImage";
 
+let timeoutPreviewHandle = null;
 
 const MapGenerator = () => {
 
-    const {register, handleSubmit} = useForm();
+    const [isPreviewDisplayed, setIsPreviewDisplayed] = useState(false)
     const [seed, setSeed] = useState(0);
     const [settings, setSettings] = useState({});
     const [previewImage, setPreviewImage] = useState(null);
+    const [previewImageSeed, setPreviewImageSeed] = useState(null);
     const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
-    const loadPreview = () => {
-        setIsLoadingPreview(true)
 
-        saves.preview(settings)
-            .then(imageData => setPreviewImage(imageData))
-            .finally(() => setIsLoadingPreview(false))
+    const loadPreview = (force = false) => {
+        if (isLoadingPreview || (!isPreviewDisplayed && !force)) {
+            return;
+        }
+
+        const previewHandler = () => {
+            setIsLoadingPreview(true)
+            setPreviewImageSeed(settings.seed)
+
+            saves.preview(settings)
+                .then(imageData => setPreviewImage(imageData))
+                .finally(() => setIsLoadingPreview(false))
+        }
+
+        if (timeoutPreviewHandle) {
+            clearTimeout(timeoutPreviewHandle);
+            timeoutPreviewHandle = null
+        }
+        timeoutPreviewHandle = setTimeout(previewHandler, 600);
     }
 
     const randomSeed = () => {
@@ -35,65 +50,70 @@ const MapGenerator = () => {
     }
 
     const updateSeed = value => {
-        setSeed(value)
-        setSettings(Object.assign(settings, {seed: value}))
+        setSeed(value);
+        setSettings(Object.assign(settings, {seed: value}));
+        loadPreview();
     }
 
     useEffect(() => {
-        console.log('test')
-
         Promise.all([
             saves.defaultMapGenSettings()
-                .then(mapGenSettings => setSettings(Object.assign(settings,mapGenSettings))),
+                .then(mapGenSettings => setSettings(Object.assign(settings, mapGenSettings))),
             saves.defaultMapSettings()
-                .then(mapSettings => setSettings(Object.assign(settings,mapSettings))),
+                .then(mapSettings => setSettings(Object.assign(settings, mapSettings))),
 
-        ])
-            .finally(() => {
-                randomSeed()
-                loadPreview()
-            })
-
+        ]).finally(() => {
+            randomSeed()
+            loadPreview()
+        })
     }, []);
 
-    return <form onSubmit={handleSubmit(data => null)}>
-        <TabControl
-            actions={
-                <Button size="sm" isSubmit={true} onClick={loadPreview} isLoading={isLoadingPreview} type="success">Generate Map</Button>
-            }
-            title={
-                <div className="flex justify-between my-1">
-                    <MapTypeSelect/>
-                    <SeedInput updateSeed={updateSeed} seed={seed} generateRandomSeed={randomSeed}/>
-                </div>
-            }
-        >
-            <Tab title="Resources">
-                <div className="flex">
-                    <Resources/>
-                    <MapPreviewImage imageData={previewImage}/>
-                </div>
-            </Tab>
-            <Tab title="Terrain">
-                <div className="flex">
-                    <Terrain/>
-                    <MapPreviewImage imageData={previewImage}/>
-                </div>
-            </Tab>
-            <Tab title="Enemy">
-                <div className="flex">
-                    <Enemy/>
-                    <MapPreviewImage imageData={previewImage}/>
-                </div>
-            </Tab>
-            <Tab title="Advanced">
-                <div className="flex">
-                    <Advanced/>
-                    <MapPreviewImage imageData={previewImage}/>
-                </div>
-            </Tab>
-        </TabControl>
-    </form>
+    return <TabControl
+        actions={
+            <div className="flex justify-between">
+                <Button size="sm"  type="success">Generate Map</Button>
+                {isPreviewDisplayed
+                    ? <Button size="sm" onClick={() => setIsPreviewDisplayed(false)}>Hide Preview</Button>
+                    : <Button size="sm" onClick={() => {
+                        setIsPreviewDisplayed(true)
+                        loadPreview(true)
+                    }
+                    }>Show Preview</Button>
+                }
+            </div>
+        }
+        title={
+            <div className="flex justify-between my-1">
+                <MapTypeSelect/>
+                <SeedInput updateSeed={updateSeed} seed={seed} generateRandomSeed={randomSeed}/>
+            </div>
+        }
+    >
+        <Tab title="Resources">
+            <div className="flex space-x-8">
+                <Resources settings={settings} setSettings={setSettings}/>
+                <MapPreviewImage imageData={previewImage} isLoading={isLoadingPreview} show={isPreviewDisplayed} seed={previewImageSeed}/>
+            </div>
+        </Tab>
+        <Tab title="Terrain">
+            <div className="flex space-x-8">
+                <Terrain settings={settings} setSettings={setSettings}/>
+                <MapPreviewImage imageData={previewImage} isLoading={isLoadingPreview} show={isPreviewDisplayed} seed={previewImageSeed}/>
+            </div>
+        </Tab>
+        <Tab title="Enemy">
+            <div className="flex space-x-8">
+                <Enemy settings={settings} setSettings={setSettings}/>
+                <MapPreviewImage imageData={previewImage} isLoading={isLoadingPreview} show={isPreviewDisplayed} seed={previewImageSeed}/>
+            </div>
+        </Tab>
+        <Tab title="Advanced">
+            <div className="flex space-x-8">
+                <Advanced/>
+                <MapPreviewImage imageData={previewImage} isLoading={isLoadingPreview} show={isPreviewDisplayed} seed={previewImageSeed}/>
+            </div>
+        </Tab>
+    </TabControl>
 }
 
 export default MapGenerator;

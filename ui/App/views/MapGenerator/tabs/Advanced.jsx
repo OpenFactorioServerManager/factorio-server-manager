@@ -2,8 +2,8 @@ import React from "react";
 import Label from "../../../components/Label";
 import Input from "../../../components/Input";
 
-const Advanced = () => {
-    return <div className="flex justify-between w-1/2">
+const Advanced = ({settings, setSettings}) => {
+    return <div className="flex justify-between">
         <div>
             Map Size
         </div>

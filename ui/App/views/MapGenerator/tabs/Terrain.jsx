@@ -1,6 +1,6 @@
 import React from "react";
 
-const Terrain = () => {
+const Terrain = ({settings, setSettings}) => {
     return <></>
 }
 
