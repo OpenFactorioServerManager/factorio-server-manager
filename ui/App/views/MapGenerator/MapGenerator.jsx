@@ -22,6 +22,11 @@ const MapGenerator = () => {
     const [previewImageSeed, setPreviewImageSeed] = useState(null);
     const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
+    const updateSettings = newSettings => {
+        setSettings(newSettings)
+        loadPreview();
+    }
+
 
     const loadPreview = (force = false) => {
         if (isLoadingPreview || (!isPreviewDisplayed && !force)) {
@@ -91,19 +96,19 @@ const MapGenerator = () => {
     >
         <Tab title="Resources">
             <div className="flex space-x-8">
-                <Resources settings={settings} setSettings={setSettings}/>
+                <Resources settings={settings} setSettings={updateSettings}/>
                 <MapPreviewImage imageData={previewImage} isLoading={isLoadingPreview} show={isPreviewDisplayed} seed={previewImageSeed}/>
             </div>
         </Tab>
         <Tab title="Terrain">
             <div className="flex space-x-8">
-                <Terrain settings={settings} setSettings={setSettings}/>
+                <Terrain settings={settings} setSettings={updateSettings}/>
                 <MapPreviewImage imageData={previewImage} isLoading={isLoadingPreview} show={isPreviewDisplayed} seed={previewImageSeed}/>
             </div>
         </Tab>
         <Tab title="Enemy">
             <div className="flex space-x-8">
-                <Enemy settings={settings} setSettings={setSettings}/>
+                <Enemy settings={settings} setSettings={updateSettings}/>
                 <MapPreviewImage imageData={previewImage} isLoading={isLoadingPreview} show={isPreviewDisplayed} seed={previewImageSeed}/>
             </div>
         </Tab>

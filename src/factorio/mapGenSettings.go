@@ -1,9 +1,9 @@
 package factorio
 
 type MapResource struct {
-	Frequency int `json:"frequency"`
-	Size      int `json:"size"`
-	Richness  int `json:"richness"`
+	Frequency float32 `json:"frequency"`
+	Size      float32 `json:"size"`
+	Richness  float32 `json:"richness"`
 }
 
 type AutoPlaceControls struct {

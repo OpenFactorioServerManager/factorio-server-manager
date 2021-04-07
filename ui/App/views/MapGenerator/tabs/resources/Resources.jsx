@@ -5,19 +5,19 @@ const Resources = ({settings, setSettings}) => {
     return <table className="flex-1">
         <thead>
             <tr>
-                <th colSpan={2}>Name</th>
+                <th>Name</th>
                 <th>Frequency</th>
                 <th>Size</th>
                 <th>Richness</th>
             </tr>
         </thead>
         <tbody>
-            <ResourceConfigurator label="Iron Ore" namePrefix="iron-ore"/>
-            <ResourceConfigurator label="Copper Ore" namePrefix="copper-ore"/>
-            <ResourceConfigurator label="Stone Ore" namePrefix="stone"/>
-            <ResourceConfigurator label="Coal" namePrefix="coal"/>
-            <ResourceConfigurator label="Uranium Ore" namePrefix="uranium-ore"/>
-            <ResourceConfigurator label="Crude Oil" namePrefix="crude-oil"/>
+            <ResourceConfigurator settings={settings} setSettings={setSettings} label="Iron Ore" name="iron-ore"/>
+            <ResourceConfigurator settings={settings} setSettings={setSettings} label="Copper Ore" name="copper-ore"/>
+            <ResourceConfigurator settings={settings} setSettings={setSettings} label="Stone Ore" name="stone"/>
+            <ResourceConfigurator settings={settings} setSettings={setSettings} label="Coal" name="coal"/>
+            <ResourceConfigurator settings={settings} setSettings={setSettings} label="Uranium Ore" name="uranium-ore"/>
+            <ResourceConfigurator settings={settings} setSettings={setSettings} label="Crude Oil" name="crude-oil"/>
         </tbody>
     </table>
 }

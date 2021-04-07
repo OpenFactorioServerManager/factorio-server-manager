@@ -4,8 +4,9 @@ const Input = ({
                    name,
                    inputRef,
                    placeholder = null,
+                    className = null,
                    type = "text",
-                   defaultValue = null,
+                   defaultValue = undefined,
                    hasAutoComplete = true,
                    onKeyDown = () => null,
                    onChange = () => null,
@@ -15,7 +16,7 @@ const Input = ({
                }) => {
     return (
         <input
-            className="shadow bg-gray-light rounded-sm appearance-none w-full py-2 px-3 text-black"
+            className={`shadow bg-gray-light rounded-sm appearance-none w-full py-2 px-3 text-black ${className}`}
             placeholder={placeholder}
             ref={inputRef}
             name={name}
