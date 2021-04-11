@@ -1,11 +1,11 @@
 import React, {useState} from "react";
 
-const Select = ({name, inputRef, options, className = "", defaultValue = ""}) => {
+const Select = ({name, inputRef, options, isInline = false, className = "", defaultValue = ""}) => {
 
     const [value, setValue] = useState(defaultValue);
 
     return (
-        <div className={`${className} relative`}>
+        <div className={`${className} relative ` + (isInline ? 'w-48 inline-block': 'w-full block')}>
             <select
                 className="shadow rounded-sm appearance-none bg-gray-light w-full py-2 px-3 text-black"
                 name={name}

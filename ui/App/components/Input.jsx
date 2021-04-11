@@ -4,7 +4,7 @@ const Input = ({
                    name,
                    inputRef,
                    placeholder = null,
-                    className = null,
+                   isInline= false,
                    type = "text",
                    defaultValue = undefined,
                    hasAutoComplete = true,
@@ -16,7 +16,11 @@ const Input = ({
                }) => {
     return (
         <input
-            className={`shadow bg-gray-light rounded-sm appearance-none w-full py-2 px-3 text-black ${className}`}
+            className={
+                "shadow rounded-sm appearance-none py-2 px-3  border border-gray-light "
+                + (isInline ? 'w-48 inline-block ' : 'w-full block ')
+                + (disabled ? 'bg-gray-dark text-gray-light cursor-not-allowed' : 'bg-gray-light text-black')
+            }
             placeholder={placeholder}
             ref={inputRef}
             name={name}

@@ -5,8 +5,9 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 const MapPreviewImage = ({imageData, show, isLoading, seed}) => {
     return <>
-        {show && <div className="flex-1 accentuated rounded-sm relative">
-            {isLoading &&
+        {show && <div className="flex-1">
+            <div className="accentuated rounded-sm relative min-h-1/2">
+                {isLoading &&
                 <>
                     <div className="absolute z-20 opacity-50 bg-black w-full h-full"/>
                     <div className="absolute z-30 flex justify-center items-center w-full h-full">
@@ -16,11 +17,12 @@ const MapPreviewImage = ({imageData, show, isLoading, seed}) => {
                         </div>
                     </div>
                 </>
-            }
-            <div className="absolute z-10 bottom-0 right-0">
-                <p className="text-xs px-1">Seed: {seed}</p>
+                }
+                <div className="absolute z-10 bottom-0 right-0">
+                    <p className="text-xs px-1">Seed: {seed}</p>
+                </div>
+                <img src={imageData}/>
             </div>
-            <img src={imageData}/>
         </div>}
     </>
 }

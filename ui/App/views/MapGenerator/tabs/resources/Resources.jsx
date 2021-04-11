@@ -2,13 +2,13 @@ import React from "react";
 import ResourceConfigurator from "./components/ResourceConfigurator";
 
 const Resources = ({settings, setSettings}) => {
-    return <table className="flex-1">
+    return <table className="flex-1 border border-black rounded p-2">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Frequency</th>
-                <th>Size</th>
-                <th>Richness</th>
+            <tr className="border border-black rounded">
+                <th className="border border-black"/>
+                <th className="border border-black p-2 font-normal">Frequency</th>
+                <th className="border border-black p-2 font-normal">Size</th>
+                <th className="border border-black p-2 font-normal">Richness</th>
             </tr>
         </thead>
         <tbody>

@@ -11,21 +11,21 @@ const ResourceConfigurator = ({label, name, settings, setSettings }) => {
         setSettings(tmpSettings);
     }
 
-    return <tr >
-        <td className="p-2">
+    return <tr className="border border-black">
+        <td className="p-2 border border-black">
              {label}
         </td>
-        <td className="p-2">
+        <td className="p-2 border border-black">
             <Input className="text-center" value={resource?.frequency ? resource.frequency : ""} onChange={event => {
                 updateResource('frequency', event.target.value)
             }}/>
         </td>
-        <td className="p-2">
+        <td className="p-2 border border-black">
             <Input className="text-center" value={resource?.size ? resource.size : ""} onChange={event => {
                 updateResource('size', event.target.value)
             }}/>
         </td>
-        <td className="p-2">
+        <td className="p-2 border border-black">
             <Input className="text-center" value={resource?.richness ? resource.richness : ""} onChange={event => {
                 updateResource('richness', event.target.value)
             }}/>

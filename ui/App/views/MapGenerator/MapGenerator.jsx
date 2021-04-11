@@ -114,7 +114,7 @@ const MapGenerator = () => {
         </Tab>
         <Tab title="Advanced">
             <div className="flex space-x-8">
-                <Advanced/>
+                <Advanced settings={settings} setSettings={updateSettings}/>
                 <MapPreviewImage imageData={previewImage} isLoading={isLoadingPreview} show={isPreviewDisplayed} seed={previewImageSeed}/>
             </div>
         </Tab>
