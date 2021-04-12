@@ -88,10 +88,18 @@ const Enemy = ({settings, setSettings}) => {
                 <tbody>
                 <tr>
                     <td>
-                        <Label text="Maximum expansion size"/>
+                        <Label text="Maximum expansion distance"/>
                     </td>
                     <td className="text-right">
-                        <Input isInline disabled={!settings?.enemy_expansion?.enabled}/>
+                        <Input isInline
+                               value={settings?.enemy_expansion?.max_expansion_distance || 7}
+                               disabled={!settings?.enemy_expansion?.enabled}
+                               onChange={event => {
+                                   let tmp = copy(settings)
+                                   tmp.enemy_expansion.max_expansion_distance = parseInt(event.target.value);
+                                   setSettings(tmp)
+                               }}
+                        />
                     </td>
                 </tr>
                 <tr>
@@ -99,7 +107,15 @@ const Enemy = ({settings, setSettings}) => {
                         <Label text="Minimum group size"/>
                     </td>
                     <td className="text-right">
-                        <Input isInline disabled={!settings?.enemy_expansion?.enabled}/>
+                        <Input isInline
+                               value={settings?.enemy_expansion?.settler_group_min_size || 5}
+                               disabled={!settings?.enemy_expansion?.enabled}
+                               onChange={event => {
+                                   let tmp = copy(settings)
+                                   tmp.enemy_expansion.settler_group_min_size = parseInt(event.target.value);
+                                   setSettings(tmp)
+                               }}
+                        />
                     </td>
                 </tr>
                 <tr>
@@ -107,7 +123,15 @@ const Enemy = ({settings, setSettings}) => {
                         <Label text="Maximum group size"/>
                     </td>
                     <td className="text-right">
-                        <Input isInline disabled={!settings?.enemy_expansion?.enabled}/>
+                        <Input isInline
+                               value={settings?.enemy_expansion?.settler_group_max_size || 20}
+                               disabled={!settings?.enemy_expansion?.enabled}
+                               onChange={event => {
+                                   let tmp = copy(settings)
+                                   tmp.enemy_expansion.settler_group_max_size = parseInt(event.target.value);
+                                   setSettings(tmp)
+                               }}
+                        />
                     </td>
                 </tr>
                 <tr>
@@ -115,7 +139,15 @@ const Enemy = ({settings, setSettings}) => {
                         <Label text="Minimum cooldown"/>
                     </td>
                     <td className="text-right">
-                        <Input isInline disabled={!settings?.enemy_expansion?.enabled}/>
+                        <Input isInline
+                               value={settings?.enemy_expansion?.min_expansion_cooldown || 14400}
+                               disabled={!settings?.enemy_expansion?.enabled}
+                               onChange={event => {
+                                   let tmp = copy(settings)
+                                   tmp.enemy_expansion.min_expansion_cooldown = parseInt(event.target.value);
+                                   setSettings(tmp)
+                               }}
+                        />
                     </td>
                 </tr>
                 <tr>
@@ -123,7 +155,15 @@ const Enemy = ({settings, setSettings}) => {
                         <Label text="Maximum cooldown"/>
                     </td>
                     <td className="text-right">
-                        <Input isInline disabled={!settings?.enemy_expansion?.enabled}/>
+                        <Input isInline
+                               value={settings?.enemy_expansion?.max_expansion_cooldown || 216000}
+                               disabled={!settings?.enemy_expansion?.enabled}
+                               onChange={event => {
+                                   let tmp = copy(settings)
+                                   tmp.enemy_expansion.max_expansion_cooldown = parseInt(event.target.value);
+                                   setSettings(tmp)
+                               }}
+                        />
                     </td>
                 </tr>
                 </tbody>

@@ -25,6 +25,7 @@ type CliffSettings struct {
 }
 
 type PropertyExpressionNames struct {
+	Elevation                   string `json:"elevation"`
 	MoistureFrequencyMultiplier string `json:"control-setting:moisture:frequency:multiplier"`
 	MoistureBias                string `json:"control-setting:moisture:bias"`
 	AuxFrequencyMultiplier      string `json:"control-setting:aux:frequency:multiplier"`

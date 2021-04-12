@@ -42,10 +42,17 @@ const Advanced = ({settings, setSettings}) => {
             </div>
             <div className="text-right">
                 <Label isInline text="Difficulty"/>
-                <Select isInline options={[
-                    {value: 'normal', name: 'Normal'},
-                    {value: 'expensive', name: 'Expensive'}
-                ]}/>
+                <Select isInline
+                        options={[
+                            {value: 0, name: 'Normal'},
+                            {value: 1, name: 'Expensive'}
+                        ]}
+                        onChange={event => {
+                            let tmp = copy(settings)
+                            tmp.difficulty_settings.recipe_difficulty = event.target.value
+                            setSettings(tmp, false)
+                        }}
+                />
             </div>
         </div>
         <div className="flex justify-between border border-black rounded p-2 mb-1">
@@ -55,10 +62,17 @@ const Advanced = ({settings, setSettings}) => {
             <div className="text-right">
                 <div className="mb-1">
                     <Label isInline text="Difficulty"/>
-                    <Select isInline options={[
-                        {value: 'normal', name: 'Normal'},
-                        {value: 'expensive', name: 'Expensive'}
-                    ]}/>
+                    <Select isInline
+                            options={[
+                                {value: 0, name: 'Normal'},
+                                {value: 1, name: 'Expensive'}
+                            ]}
+                            onChange={event => {
+                                let tmp = copy(settings)
+                                tmp.difficulty_settings.technology_difficulty = event.target.value
+                                setSettings(tmp, false)
+                            }}
+                    />
                 </div>
                 <div className="mb-1">
                     <Label isInline text="Price multiplier"/>
@@ -66,18 +80,25 @@ const Advanced = ({settings, setSettings}) => {
                            value={settings?.difficulty_settings?.technology_price_multiplier || 1}
                            onChange={event => {
                                let tmp = copy(settings)
-                               tmp.difficulty_settings.technology_price_multiplier = event.target.value
+                               tmp.difficulty_settings.technology_price_multiplier = parseInt(event.target.value)
                                setSettings(tmp)
                            }}
                     />
                 </div>
                 <div>
                     <Label isInline text="Research queue availability"/>
-                    <Select isInline options={[
-                        {value: 'after-the-game-is-finished', name: 'After the game is finished'},
-                        {value: 'always', name: 'Always'},
-                        {value: 'never', name: 'Never'}
-                    ]}/>
+                    <Select isInline
+                            options={[
+                                {value: 'after-victory', name: 'After rocket launch'},
+                                {value: 'always', name: 'Always'},
+                                {value: 'never', name: 'Never'}
+                            ]}
+                            onChange={event => {
+                                let tmp = copy(settings);
+                                tmp.difficulty_settings.research_queue_setting = event.target.value;
+                                setSettings(settings, false);
+                            }}
+                    />
                 </div>
             </div>
         </div>

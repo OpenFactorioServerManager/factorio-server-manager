@@ -10,6 +10,7 @@ import SeedInput from "./components/SeedInput";
 import MapTypeSelect from "./components/MapTypeSelect";
 import saves from "../../../api/resources/saves";
 import MapPreviewImage from "./components/MapPreviewImage";
+import copy from "../../copy";
 
 let timeoutPreviewHandle = null;
 
@@ -22,13 +23,15 @@ const MapGenerator = () => {
     const [previewImageSeed, setPreviewImageSeed] = useState(null);
     const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
-    const updateSettings = newSettings => {
+    const updateSettings = (newSettings, shouldLoadPreview = true) => {
         setSettings(newSettings)
-        loadPreview();
+        if (shouldLoadPreview) {
+            loadPreview(newSettings)
+        }
     }
 
 
-    const loadPreview = (force = false) => {
+    const loadPreview = (settings, force = false) => {
         if (isLoadingPreview || (!isPreviewDisplayed && !force)) {
             return;
         }
@@ -37,7 +40,17 @@ const MapGenerator = () => {
             setIsLoadingPreview(true)
             setPreviewImageSeed(settings.seed)
 
-            saves.preview(settings)
+            let tmpSettings = copy(settings);
+
+            if (!tmpSettings.cliff_settings.enabled) {
+                tmpSettings.cliff_settings.richness = 0;
+            }
+
+            if (!tmpSettings.water_enabled) {
+                tmpSettings.water = 0;
+            }
+
+            saves.preview(tmpSettings)
                 .then(imageData => setPreviewImage(imageData))
                 .finally(() => setIsLoadingPreview(false))
         }
@@ -56,8 +69,9 @@ const MapGenerator = () => {
 
     const updateSeed = value => {
         setSeed(value);
-        setSettings(Object.assign(settings, {seed: value}));
-        loadPreview();
+        const newSettings = Object.assign(settings, {seed: value});
+        setSettings(newSettings);
+        loadPreview(newSettings);
     }
 
     useEffect(() => {
@@ -69,7 +83,6 @@ const MapGenerator = () => {
 
         ]).finally(() => {
             randomSeed()
-            loadPreview()
         })
     }, []);
 
@@ -81,7 +94,7 @@ const MapGenerator = () => {
                     ? <Button size="sm" onClick={() => setIsPreviewDisplayed(false)}>Hide Preview</Button>
                     : <Button size="sm" onClick={() => {
                         setIsPreviewDisplayed(true)
-                        loadPreview(true)
+                        loadPreview(settings,true)
                     }
                     }>Show Preview</Button>
                 }

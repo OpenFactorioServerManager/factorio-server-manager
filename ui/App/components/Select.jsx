@@ -1,8 +1,15 @@
 import React, {useState} from "react";
 
-const Select = ({name, inputRef, options, isInline = false, className = "", defaultValue = ""}) => {
+const Select = ({name, inputRef, options, onChange= null, isInline = false, className = "", defaultValue = ""}) => {
 
     const [value, setValue] = useState(defaultValue);
+
+    const updateValue = event => {
+        if (onChange !== null) {
+            onChange(event);
+        }
+        setValue(event.target.value)
+    }
 
     return (
         <div className={`${className} relative ` + (isInline ? 'w-48 inline-block': 'w-full block')}>
@@ -12,7 +19,7 @@ const Select = ({name, inputRef, options, isInline = false, className = "", defa
                 ref={inputRef}
                 id={name}
                 value={value}
-                onChange={optionElement => setValue(optionElement.target.value)}
+                onChange={updateValue}
             >
                 {options.map(option => <option value={option.value} key={option.value}>{option.name}</option>)}
             </select>
