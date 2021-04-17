@@ -177,8 +177,10 @@ func (config *Config) loadServerConfig() {
 		config.FactorioAdminFile = filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)
 	}
 
-	// Set random port as rconPort
-	config.FactorioRconPort = randomPort()
+	if config.FactorioRconPort == 0 {
+		config.FactorioRconPort = randomPort()
+		log.Println("Rcon port is empty, generated new one:", config.FactorioRconPort)
+	}
 }
 
 // Returns random port to use for rcon connection
