@@ -179,7 +179,6 @@ func (config *Config) loadServerConfig() {
 
 	if config.FactorioRconPort == 0 {
 		config.FactorioRconPort = randomPort()
-		log.Printf("Port number: %v", config.FactorioRconPort)
 		log.Println("Rcon port is empty, generated new one:", config.FactorioRconPort)
 	}
 }
