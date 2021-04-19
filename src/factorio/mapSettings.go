@@ -10,16 +10,16 @@ type DifficultySettings struct {
 type Pollution struct {
 	Enabled                                 bool    `json:"enabled"`
 	DiffusionRatio                          float32 `json:"diffusion_ratio"`
-	MinToDiffuse                            int     `json:"min_to_diffuse"`
-	Ageing                                  int     `json:"ageing"`
-	ExpectedMaxPerChunk                     int     `json:"expected_max_per_chunk"`
-	MinToShowPerChunk                       int     `json:"min_to_show_per_chunk"`
-	MinPollutionToDamageTrees               int     `json:"min_pollution_to_damage_trees"`
-	PollutionWithMaxForestDamage            int     `json:"pollution_with_max_forest_damage"`
-	PollutionPerTreeDamage                  int     `json:"pollution_per_tree_damage"`
-	PollutionRestoredPerTreeDamage          int     `json:"pollution_restored_per_tree_damage"`
-	MaxPollutionToRestoreTrees              int     `json:"max_pollution_to_restore_trees"`
-	EnemyAttackPollutionConsumptionModifier int     `json:"enemy_attack_pollution_consumption_modifier"`
+	MinToDiffuse                            float32 `json:"min_to_diffuse"`
+	Ageing                                  float32 `json:"ageing"`
+	ExpectedMaxPerChunk                     float32 `json:"expected_max_per_chunk"`
+	MinToShowPerChunk                       float32 `json:"min_to_show_per_chunk"`
+	MinPollutionToDamageTrees               float32 `json:"min_pollution_to_damage_trees"`
+	PollutionWithMaxForestDamage            float32 `json:"pollution_with_max_forest_damage"`
+	PollutionPerTreeDamage                  float32 `json:"pollution_per_tree_damage"`
+	PollutionRestoredPerTreeDamage          float32 `json:"pollution_restored_per_tree_damage"`
+	MaxPollutionToRestoreTrees              float32 `json:"max_pollution_to_restore_trees"`
+	EnemyAttackPollutionConsumptionModifier float32 `json:"enemy_attack_pollution_consumption_modifier"`
 }
 
 type EnemyEvolution struct {

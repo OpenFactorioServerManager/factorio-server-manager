@@ -42,7 +42,7 @@ type MapGenSettings struct {
 	Water               int               `json:"water"`
 	Width               int               `json:"width"`
 	Height              int               `json:"height"`
-	StartingArea        int               `json:"starting_area"`
+	StartingArea        float32           `json:"starting_area"`
 	PeacefulMode        bool              `json:"peaceful_mode"`
 	AutoPlaceControls   AutoPlaceControls `json:"autoplace_controls"`
 

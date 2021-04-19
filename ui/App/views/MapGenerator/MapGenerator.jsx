@@ -24,7 +24,7 @@ const MapGenerator = () => {
     const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
     const updateSettings = (newSettings, shouldLoadPreview = true) => {
-        setSettings(newSettings)
+        setSettings(newSettings);
         if (shouldLoadPreview) {
             loadPreview(newSettings)
         }
@@ -102,7 +102,7 @@ const MapGenerator = () => {
         }
         title={
             <div className="flex justify-between my-1">
-                <MapTypeSelect/>
+                <MapTypeSelect settings={settings} setSettings={updateSettings}/>
                 <SeedInput updateSeed={updateSeed} seed={seed} generateRandomSeed={randomSeed}/>
             </div>
         }

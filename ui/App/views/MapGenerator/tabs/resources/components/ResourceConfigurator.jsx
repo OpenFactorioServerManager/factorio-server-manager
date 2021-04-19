@@ -1,12 +1,13 @@
 import React from "react";
 import Input from "../../../../../components/Input";
+import copy from "../../../../../copy";
 
 const ResourceConfigurator = ({label, name, settings, setSettings }) => {
 
     const resource = settings?.autoplace_controls?.[name]
 
     const updateResource = (attribute, value) => {
-        let tmpSettings = JSON.parse(JSON.stringify(settings));
+        let tmpSettings = copy(settings);
         tmpSettings.autoplace_controls[name][attribute] = parseFloat(value)
         setSettings(tmpSettings);
     }

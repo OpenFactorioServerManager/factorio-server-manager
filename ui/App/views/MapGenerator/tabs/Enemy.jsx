@@ -19,7 +19,7 @@ const Enemy = ({settings, setSettings}) => {
                 <tr>
                     <td>
                         <Checkbox text="Enemy bases"
-                                  checked={settings?.autoplace_controls?.['enemy-base'].richness || true}
+                                  checked={settings.autoplace_controls['enemy-base'].richness === 1}
                                   onChange={event => {
                                       let tmp = copy(settings);
                                       tmp.autoplace_controls['enemy-base'].richness = event.target.checked ? 1 : 0;
@@ -29,7 +29,7 @@ const Enemy = ({settings, setSettings}) => {
                     </td>
                     <td className="text-center">
                         <Input
-                            value={settings?.autoplace_controls?.['enemy-base']?.frequency || 1}
+                            value={settings?.autoplace_controls['enemy-base'].frequency || 1}
                             disabled={!(settings?.autoplace_controls?.['enemy-base'].richness)}
                             onChange={event => {
                                 let tmp = copy(settings);
@@ -54,7 +54,15 @@ const Enemy = ({settings, setSettings}) => {
             </table>
         </div>
         <div className="border border-black rounded p-2 mb-1">
-            <Checkbox checked={false} text="Peaceful mode"/>
+            <Checkbox
+                checked={settings?.peaceful_mode || false}
+                text="Peaceful mode"
+                onChange={event => {
+                    let tmp = copy(settings);
+                    tmp.peaceful_mode = event.target.checked;
+                    setSettings(tmp);
+                }}
+            />
         </div>
         <div className="flex justify-between border border-black rounded p-2 mb-1">
             <div className="self-center">
@@ -75,7 +83,7 @@ const Enemy = ({settings, setSettings}) => {
                 <tr className="text-left">
                     <th colSpan={2}>
                         <Checkbox text="Enemy expansion" className="text-dirty-white" textSize="md"
-                                  checked={settings?.enemy_expansion?.enabled || true}
+                                  checked={settings.enemy_expansion.enabled}
                                   onChange={event => {
                                       let tmp = copy(settings)
                                       tmp.enemy_expansion.enabled = event.target.checked;

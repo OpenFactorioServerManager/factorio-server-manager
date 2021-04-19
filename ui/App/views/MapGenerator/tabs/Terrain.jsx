@@ -4,7 +4,6 @@ import Checkbox from "../../../components/Checkbox";
 import Input from "../../../components/Input";
 import Label from "../../../components/Label";
 import copy from "../../../copy";
-import {parse} from "@fortawesome/fontawesome-svg-core";
 
 const Terrain = ({settings, setSettings}) => {
     return <div className="flex-1">
@@ -13,19 +12,20 @@ const Terrain = ({settings, setSettings}) => {
                 <Label text="Maptype"/>
             </div>
             <Select isInline
+                    value={settings?.property_expression_names?.elevation || 'normal'}
                     options={[
                         {value: 'normal', name: 'Normal'},
-                        {value: 'island', name: 'Island'},
-                        {value: 'terrain-0.16', name: 'Normal 0.16'},
+                        {value: '0_17-island', name: 'Island'},
+                        {value: '0_16-elevation', name: 'Normal 0.16'},
                     ]}
                     onChange={event => {
                         let tmp = copy(settings);
 
                         switch (event.target.value) {
-                            case 'island':
-                                tmp.property_expression_names.elevation = '0_17-island'
+                            case '0_17-island':
+                                tmp.property_expression_names.elevation = '0_17-island';
                                 break;
-                            case 'terrain-0.16':
+                            case '0_16-elevation':
                                 tmp.property_expression_names.elevation = '0_16-elevation';
                                 break;
                             case 'normal':
@@ -85,7 +85,7 @@ const Terrain = ({settings, setSettings}) => {
                 <tr>
                     <td>
                         <Checkbox text="Trees"
-                                  checked={typeof settings?.autoplace_controls?.trees?.richness !== 'undefined' ? settings.autoplace_controls.trees.richness : 1}
+                                  checked={settings.autoplace_controls.trees.richness === 1}
                                   onChange={event => {
                                       let tmp = copy(settings);
                                       tmp.autoplace_controls.trees.richness = event.target.checked ? 1 : 0;

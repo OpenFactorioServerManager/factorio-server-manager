@@ -116,7 +116,7 @@ const Advanced = ({settings, setSettings}) => {
                            value={settings?.pollution?.absorption_modifier || 0}
                            onChange={event => {
                                let tmp = copy(settings)
-                               tmp.pollution.absorption_modifier = event.target.value;
+                               tmp.pollution.absorption_modifier = parseFloat(event.target.value);
                                setSettings(tmp)
                            }}
                     />
@@ -128,7 +128,7 @@ const Advanced = ({settings, setSettings}) => {
                            value={settings?.pollution?.attack_cost_modifier || 0}
                            onChange={event => {
                                let tmp = copy(settings)
-                               tmp.pollution.attack_cost_modifier = event.target.value;
+                               tmp.pollution.attack_cost_modifier = parseFloat(event.target.value);
                                setSettings(tmp)
                            }}
                     />

@@ -1,15 +1,22 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 
-const Select = ({name, inputRef, options, onChange= null, isInline = false, className = "", defaultValue = ""}) => {
+const Select = ({name, inputRef = null, options, onChange= null, isInline = false, className = "", defaultValue = null, value = null}) => {
 
-    const [value, setValue] = useState(defaultValue);
+    const [selectedValue, setSelectedValue] = useState(defaultValue || "");
 
     const updateValue = event => {
         if (onChange !== null) {
+            event.persist();
             onChange(event);
         }
-        setValue(event.target.value)
+        setSelectedValue(event.target.value);
     }
+
+    useEffect(() => {
+        if (value !== null) {
+            setSelectedValue(value);
+        }
+    }, [value])
 
     return (
         <div className={`${className} relative ` + (isInline ? 'w-48 inline-block': 'w-full block')}>
@@ -18,7 +25,7 @@ const Select = ({name, inputRef, options, onChange= null, isInline = false, clas
                 name={name}
                 ref={inputRef}
                 id={name}
-                value={value}
+                value={selectedValue}
                 onChange={updateValue}
             >
                 {options.map(option => <option value={option.value} key={option.value}>{option.name}</option>)}
