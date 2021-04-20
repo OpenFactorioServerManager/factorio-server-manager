@@ -209,8 +209,16 @@ func RemoveSave(w http.ResponseWriter, r *http.Request) {
 func CreateSaveHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
+	var mapGenSettingsFileName string
+	var mapSettingsFileName string
 
 	defer func() {
+		if mapGenSettingsFileName != "" {
+			_ = os.Remove(mapGenSettingsFileName)
+		}
+		if mapSettingsFileName != "" {
+			_ = os.Remove(mapSettingsFileName)
+		}
 		WriteResponse(w, resp)
 	}()
 
@@ -223,9 +231,47 @@ func CreateSaveHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+
+	body, resp, err := ReadRequestBody(w, r)
+	if err != nil {
+		return
+	}
+
+	var mapGenSettings factorio.MapGenSettings
+	mapGenSettings, resp, err = UnmarshallMapGenSettingsJson(body, w)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	mapGenSettingsFileName, resp, err = ParseSettingsAsFile(mapGenSettings)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var mapSettings factorio.MapSettings
+	mapSettings, resp, err = UnmarshallMapSettingsJson(body, w)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	mapSettingsFileName, resp, err = ParseSettingsAsFile(mapSettings)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	config := bootstrap.GetConfig()
 	saveFile := filepath.Join(config.FactorioSavesDir, saveName)
-	cmdOut, err := factorio.CreateSave(saveFile)
+	cmdOut, err := factorio.CreateSave(saveFile, mapGenSettingsFileName, mapSettingsFileName)
 	if err != nil {
 		resp = fmt.Sprintf("Error creating save {%s}: %s", saveName, err)
 		log.Println(resp)

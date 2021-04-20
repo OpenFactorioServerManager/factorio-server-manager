@@ -65,14 +65,21 @@ func (s *Save) Remove() error {
 }
 
 // Create savefiles for Factorio
-func CreateSave(filePath string) (string, error) {
+func CreateSave(filePath string, mapSettingsGenFilePath string, mapSettingsFilePath string) (string, error) {
 	err := os.MkdirAll(filepath.Dir(filePath), 0755)
 	if err != nil {
 		log.Printf("Error in creating Factorio save: %s", err)
 		return "", err
 	}
 
-	args := []string{"--create", filePath}
+	args := []string{
+		"--map-gen-settings",
+		mapSettingsGenFilePath,
+		"--map-settings",
+		mapSettingsFilePath,
+		"--create",
+		filePath,
+	}
 	config := bootstrap.GetConfig()
 	cmdOutput, err := exec.Command(config.FactorioBinary, args...).Output()
 	if err != nil {

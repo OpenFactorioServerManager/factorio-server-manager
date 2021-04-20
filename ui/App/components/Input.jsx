@@ -4,7 +4,7 @@ const Input = ({
                    name,
                    inputRef,
                    placeholder = null,
-                   isInline= false,
+                   isInline = false,
                    type = "text",
                    defaultValue = undefined,
                    hasAutoComplete = true,
@@ -12,12 +12,27 @@ const Input = ({
                    onChange = () => null,
                    min = null,
                    value = undefined,
-                   disabled = false
+                   disabled = false,
+                   size = 'default'
                }) => {
+
+    let padding;
+
+    switch (size) {
+        case 'sm':
+            padding = 'py-1 px-2';
+            break;
+        case 'none':
+            padding = "";
+            break;
+        default:
+            padding = 'py-2 px-3'
+    }
+
     return (
         <input
             className={
-                "shadow rounded-sm appearance-none py-2 px-3  border border-gray-light "
+                `shadow rounded-sm appearance-none border border-gray-light placeholder-white ${padding} `
                 + (isInline ? 'w-48 inline-block ' : 'w-full block ')
                 + (disabled ? 'bg-gray-dark text-gray-light cursor-not-allowed' : 'bg-gray-light text-black')
             }

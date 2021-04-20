@@ -11,6 +11,7 @@ import MapTypeSelect from "./components/MapTypeSelect";
 import saves from "../../../api/resources/saves";
 import MapPreviewImage from "./components/MapPreviewImage";
 import copy from "../../copy";
+import Input from "../../components/Input";
 
 let timeoutPreviewHandle = null;
 
@@ -22,6 +23,8 @@ const MapGenerator = () => {
     const [previewImage, setPreviewImage] = useState(null);
     const [previewImageSeed, setPreviewImageSeed] = useState(null);
     const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+    const [saveFileName, setSaveFileName] = useState("");
+    const [isGeneratingMap, setIsGeneratingMap] = useState(false);
 
     const updateSettings = (newSettings, shouldLoadPreview = true) => {
         setSettings(newSettings);
@@ -30,6 +33,12 @@ const MapGenerator = () => {
         }
     }
 
+    const createSave = () => {
+        setIsGeneratingMap(true);
+        saves.create(saveFileName, settings)
+            .then(() => flash(`Save "${saveFileName}" created`, "green"))
+            .finally(() => setIsGeneratingMap(false));
+    }
 
     const loadPreview = (settings, force = false) => {
         if (isLoadingPreview || (!isPreviewDisplayed && !force)) {
@@ -80,7 +89,6 @@ const MapGenerator = () => {
                 .then(mapGenSettings => setSettings(Object.assign(settings, mapGenSettings))),
             saves.defaultMapSettings()
                 .then(mapSettings => setSettings(Object.assign(settings, mapSettings))),
-
         ]).finally(() => {
             randomSeed()
         })
@@ -89,7 +97,24 @@ const MapGenerator = () => {
     return <TabControl
         actions={
             <div className="flex justify-between">
-                <Button size="sm"  type="success">Generate Map</Button>
+                <div>
+                    <Input
+                        size="sm"
+                        isInline
+                        placeholder="Save name"
+                        value={saveFileName}
+                        disabled={isGeneratingMap}
+                        onChange={event => setSaveFileName(event.target.value)}
+                    />
+                    <Button
+                        size="sm"
+                        isDisabled={!saveFileName}
+                        isLoading={isGeneratingMap}
+                        className="inline-block ml-1"
+                        type="success"
+                        onClick={createSave}
+                    >Generate Map</Button>
+                </div>
                 {isPreviewDisplayed
                     ? <Button size="sm" onClick={() => setIsPreviewDisplayed(false)}>Hide Preview</Button>
                     : <Button size="sm" onClick={() => {

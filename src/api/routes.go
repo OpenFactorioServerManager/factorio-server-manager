@@ -165,7 +165,7 @@ var apiRoutes = Routes{
 		false,
 	}, {
 		"CreateSave",
-		"GET",
+		"POST",
 		"/saves/create/{save}",
 		CreateSaveHandler,
 		true,
