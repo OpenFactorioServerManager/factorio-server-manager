@@ -6,29 +6,21 @@ import {faDownload, faTrashAlt} from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/Button";
 import UploadSaveModal from "./components/UploadSaveModal";
 
-const Saves = ({serverStatus}) => {
+const Saves = () => {
 
     const [saves, setSaves] = useState([]);
     const [isSaveUploadModalOpen, setIsSaveUploadModalOpen] = useState(false);
 
     const updateList = () => {
         savesResource.list()
-            .then(res => {
-                if (res) {
-                    setSaves(res);
-                }
-            })
+            .then(setSaves)
     }
 
-    useEffect(() => {
-        updateList()
-    }, []);
+    useEffect(updateList, []);
 
-    const deleteSave = async (save) => {
-        const res = await savesResource.delete(save);
-        if (res) {
-            updateList()
-        }
+    const deleteSave = save => {
+        savesResource.delete(save)
+            .then(updateList);
     }
 
     return (
@@ -38,7 +30,7 @@ const Saves = ({serverStatus}) => {
             actions={
                 <>
                     <Button size="sm" onClick={() => setIsSaveUploadModalOpen(true)}>Upload File</Button>
-                    <UploadSaveModal isOpen={isSaveUploadModalOpen} close={() => setIsSaveUploadModalOpen(false)}/>
+                    <UploadSaveModal onSuccess={updateList} isOpen={isSaveUploadModalOpen} close={() => setIsSaveUploadModalOpen(false)}/>
                 </>
             }
             content={

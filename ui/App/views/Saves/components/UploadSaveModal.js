@@ -6,27 +6,33 @@ import Error from "../../../components/Error";
 import Label from "../../../components/Label";
 import Modal from "../../../components/Modal";
 
+const defaultFileName = "Select File ..."
 
 const UploadSaveModal = ({onSuccess, close, isOpen}) => {
     const {register, handleSubmit, errors} = useForm();
-    const [fileName, setFileName] = useState('Select File ...');
+    const [fileName, setFileName] = useState(defaultFileName);
     const [isUploading, setIsUploading] = useState(false);
 
-    const onSubmit = (data, e) => {
+    const onSubmit = data => {
         setIsUploading(true);
         saves
-            .upload(data.savefile[0]).then(() => {
-                e.target.reset();
+            .upload(data.savefile[0])
+            .then(message => {
+                flash(message, "green");
                 onSuccess();
+                close();
             })
-            .finally(() => setIsUploading(false));
+            .finally(() => {
+                setFileName(defaultFileName);
+                setIsUploading(false);
+            });
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
             <Modal
                 title="Upload Save"
                 isOpen={isOpen}
+                onSubmit={handleSubmit(onSubmit)}
                 content={
                     <div className="mb-6">
                         <Label text="Save File" htmlFor="savefile"/>
@@ -46,14 +52,12 @@ const UploadSaveModal = ({onSuccess, close, isOpen}) => {
                     <>
                         <Button size="sm" type="success"
                                 isLoading={isUploading}
-                                isDisabled={fileName === 'Select File ...'}
+                                isDisabled={fileName === defaultFileName}
                                 isSubmit>Upload</Button>
                         <Button size="sm" className="ml-1" onClick={close}>Cancel</Button>
                     </>
                 }
             />
-        </form>
-
     )
 }
 
