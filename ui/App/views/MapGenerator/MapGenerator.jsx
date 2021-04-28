@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useState} from "react";
 import TabControl from "../../components/Tabs/TabControl";
 import Tab from "../../components/Tabs/Tab";
 import Button from "../../components/Button";
@@ -12,10 +12,14 @@ import saves from "../../../api/resources/saves";
 import MapPreviewImage from "./components/MapPreviewImage";
 import copy from "../../copy";
 import Input from "../../components/Input";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
 
 let timeoutPreviewHandle = null;
 
-const MapGenerator = () => {
+const MapGenerator = ({serverStatus}) => {
+
+    const isServerRunning = serverStatus.status === 'running';
 
     const [isPreviewDisplayed, setIsPreviewDisplayed] = useState(false)
     const [seed, setSeed] = useState(0);
@@ -108,12 +112,15 @@ const MapGenerator = () => {
                     />
                     <Button
                         size="sm"
-                        isDisabled={!saveFileName}
+                        isDisabled={!saveFileName || isServerRunning}
                         isLoading={isGeneratingMap}
                         className="inline-block ml-1"
                         type="success"
                         onClick={createSave}
                     >Generate Map</Button>
+                    { isServerRunning && <span className="ml-3 text-red">
+                        <FontAwesomeIcon icon={faExclamationTriangle}/> Server mus be stopped before generating map.
+                    </span>}
                 </div>
                 {isPreviewDisplayed
                     ? <Button size="sm" onClick={() => setIsPreviewDisplayed(false)}>Hide Preview</Button>
