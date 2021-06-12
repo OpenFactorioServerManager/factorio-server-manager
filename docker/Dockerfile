@@ -1,15 +1,15 @@
 # Glibc is required for Factorio Server binaries to run
-FROM frolvlad/alpine-glibc
+FROM ubuntu
 
 ENV FACTORIO_VERSION=stable \
-    MANAGER_VERSION=0.10.0 \
+    MANAGER_VERSION=0.10.1 \
     RCON_PASS=""
 
 VOLUME /opt/fsm-data /opt/factorio/saves /opt/factorio/mods /opt/factorio/config
 
 EXPOSE 80/tcp 34197/udp
 
-RUN apk add --no-cache curl tar xz unzip jq
+RUN apt-get update && apt-get install -y curl tar xz unzip jq && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
 

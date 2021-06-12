@@ -58,7 +58,7 @@ a couple of minutes, if configuration parameters are set correctly.
 
 ## Updating Credentials, adding and deleting users.
 
-An admin user is created initially using the credentials defined in the factorio-server-manager config file.
+An admin user is created initially using the credentials defined in the factorio-server-manager config file. When you haven't specified one, a random password will be logged in the container output (`docker logs factorio-server-manager`).
 
 Users can be added and deleted on the settings page.
 
