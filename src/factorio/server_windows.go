@@ -77,6 +77,5 @@ func (server *Server) Stop() error {
 	// Re-enable handling of CTRL+C after we're sure that the factrio server is shut down.
 	setCtrlHandlingIsDisabledForThisProcess(false)
 
-	server.SetRunning(false)
 	return nil
 }

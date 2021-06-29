@@ -347,6 +347,11 @@ func (server *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 						log.Printf("Error: %s", err)
 					}
 				}
+
+				// server was stopped
+				if strings.Contains(strings.Join(line, " "), "ServerMultiplayerManager.cpp:783: updateTick(0) changing state from(Disconnected) to(Closed)") {
+					server.SetRunning(false)
+				}
 			}
 		}
 	}
