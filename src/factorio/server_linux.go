@@ -50,3 +50,7 @@ func (server *Server) Stop() error {
 
 	return nil
 }
+
+func (server *Server) checkProcessHealth(text string) {
+	// ignore
+}

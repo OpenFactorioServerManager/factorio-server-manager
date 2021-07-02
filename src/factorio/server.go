@@ -302,9 +302,10 @@ func (server *Server) Run() error {
 	server.SetRunning(true)
 
 	err = server.Cmd.Wait()
+	log.Printf("Factorio process is closed")
+	server.SetRunning(false)
 	if err != nil {
 		log.Printf("Factorio process exited with error: %s", err)
-		server.SetRunning(false)
 		return err
 	}
 
@@ -340,7 +341,7 @@ func (server *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 			// check if slice index is greater than 2 to prevent panic
 			if len(line) > 2 {
 				// log line for opened rcon connection
-				if strings.Contains(strings.Join(line, " "), rconLog) {
+				if strings.Contains(text, rconLog) {
 					log.Printf("Rcon running on Factorio Server")
 					err = connectRC()
 					if err != nil {
@@ -348,10 +349,7 @@ func (server *Server) parseRunningCommand(std io.ReadCloser) (err error) {
 					}
 				}
 
-				// server was stopped
-				if strings.Contains(strings.Join(line, " "), "ServerMultiplayerManager.cpp:783: updateTick(0) changing state from(Disconnected) to(Closed)") {
-					server.SetRunning(false)
-				}
+				server.checkProcessHealth(text)
 			}
 		}
 	}
