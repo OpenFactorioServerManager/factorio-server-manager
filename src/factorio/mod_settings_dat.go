@@ -1,4 +1,4 @@
-package main
+package factorio
 
 import (
 	"encoding/binary"
@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	NONE    = 0
-	BOOL    = 1
-	DOUBLE  = 2
-	STRING  = 3
-	LIST    = 4
-	DICT    = 5
+	NONE   = 0
+	BOOL   = 1
+	DOUBLE = 2
+	STRING = 3
+	LIST   = 4
+	DICT   = 5
 )
 
 type FModData struct {
@@ -29,13 +29,14 @@ func (d *FModData) Decode(file io.Reader) error {
 	if err != nil {
 		log.Printf("could not read version: %s", err)
 	}
+
 	err = version.UnmarshalBinary(versionB[:])
 	if err != nil {
 		log.Printf("Error loading Version: %s", err)
 		return err
 	}
-	d.Version = version
 
+	d.Version = version
 
 	if Version(version).Greater(Version{0, 17, 0, 0}) {
 		//FIXME correct naming
@@ -46,7 +47,7 @@ func (d *FModData) Decode(file io.Reader) error {
 		}
 	}
 
-	d.Data, err = readTree(file)
+	d.Data, err = readTree(file, Version(d.Version))
 	if err != nil {
 		log.Printf("error loading Data: %s", err)
 		return err
@@ -55,7 +56,7 @@ func (d *FModData) Decode(file io.Reader) error {
 	return nil
 }
 
-func readStringSettings(file io.Reader) (string, error) {
+func readStringSettings(file io.Reader, version Version) (string, error) {
 	// read "empty" flag
 	empty, err := readBool(file)
 	if err != nil {
@@ -67,7 +68,7 @@ func readStringSettings(file io.Reader) (string, error) {
 		return "", nil
 	}
 
-	key, err := readString(file, FactorioServ.Version, false)
+	key, err := readString(file, version, false)
 	if err != nil {
 		log.Printf("could not read key-string: %s", err)
 		return "", err

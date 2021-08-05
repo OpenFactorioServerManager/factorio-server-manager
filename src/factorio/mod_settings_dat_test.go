@@ -1,4 +1,4 @@
-package main
+package factorio
 
 import (
 	"bytes"
@@ -6,17 +6,12 @@ import (
 	"github.com/go-test/deep"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"testing"
 )
 
 func TestModSettings0_16(t *testing.T) {
-	FactorioServ = &FactorioServer {
-		Version: Version{0, 16, 0, 0},
-	}
-
 	// Read dat and compare to JSON
-	file, err := os.Open(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.16.dat"))
+	file, err := os.Open("../factorio_mod_settings_testfiles/mod_settings_0.16.dat")
 	if err != nil {
 		t.Fatalf("could not open mod-settings.dat: %s", err)
 	}
@@ -27,7 +22,7 @@ func TestModSettings0_16(t *testing.T) {
 		t.Fatalf("could not decode FModData: %s", err)
 	}
 
-	modDataJson, err := ioutil.ReadFile(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.16.json"))
+	modDataJson, err := ioutil.ReadFile("../factorio_mod_settings_testfiles/mod_settings_0.16.json")
 	if err != nil {
 		t.Fatalf("could not read json-file: %s", err)
 	}
@@ -67,12 +62,8 @@ func TestModSettings0_16(t *testing.T) {
 }
 
 func TestModSettings0_17(t *testing.T) {
-	FactorioServ = &FactorioServer {
-		Version: Version{0, 17, 0, 0},
-	}
-
 	// Read data and compare to JSON
-	file, err := os.Open(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.17.dat"))
+	file, err := os.Open("../factorio_mod_settings_testfiles/mod_settings_0.17.dat")
 	if err != nil {
 		t.Fatalf("could not open mod-settings.dat: %s", err)
 	}
@@ -83,7 +74,7 @@ func TestModSettings0_17(t *testing.T) {
 		t.Fatalf("could not decode FModData: %s", err)
 	}
 
-	modDataJson, err := ioutil.ReadFile(filepath.Join("factorio_mod_settings_testfiles", "mod_settings_0.17.json"))
+	modDataJson, err := ioutil.ReadFile("../factorio_mod_settings_testfiles/mod_settings_0.17.json")
 	if err != nil {
 		t.Fatalf("could not read json-file: %s", err)
 	}

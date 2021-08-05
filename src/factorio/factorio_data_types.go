@@ -1,4 +1,4 @@
-package main
+package factorio
 
 import (
 	"bytes"
@@ -8,7 +8,6 @@ import (
 	"log"
 	"reflect"
 )
-
 
 ///////////////////
 // Reading ////////
@@ -44,11 +43,11 @@ func readOptimUint(r io.Reader, v Version, bitSize int) (uint32, error) {
 	}
 }
 
-func readString(r io.Reader, game Version, forceOptimized bool) (s string, err error) {
+func readString(r io.Reader, version Version, forceOptimized bool) (s string, err error) {
 	var n uint32
 
-	if !game.Less(Version{0, 16, 0, 0}) || forceOptimized {
-		n, err = readOptimUint(r, game, 32)
+	if !version.Less(Version{0, 16, 0, 0}) || forceOptimized {
+		n, err = readOptimUint(r, version, 32)
 		if err != nil {
 			return "", err
 		}
@@ -92,9 +91,9 @@ func readDouble(file io.Reader) (float64, error) {
 	return _data, nil
 }
 
-func readList(file io.Reader) ([]interface{}, error) {
+func readList(file io.Reader, version Version) ([]interface{}, error) {
 	var length uint32
-	length, err := readOptimUint(file, FactorioServ.Version, 32)
+	length, err := readOptimUint(file, version, 32)
 	if err != nil {
 		log.Printf("could not read list length")
 		return nil, err
@@ -102,7 +101,7 @@ func readList(file io.Reader) ([]interface{}, error) {
 
 	list := make([]interface{}, length)
 	for i := uint32(0); i < length; i++ {
-		list[i], err = readTree(file)
+		list[i], err = readTree(file, version)
 		if err != nil {
 			log.Printf("could not read tree of list: %s", err)
 			return nil, err
@@ -112,7 +111,7 @@ func readList(file io.Reader) ([]interface{}, error) {
 	return list, nil
 }
 
-func readDict(file io.Reader) (map[string]interface{}, error) {
+func readDict(file io.Reader, version Version) (map[string]interface{}, error) {
 	var length uint32
 	err := binary.Read(file, binary.LittleEndian, &length)
 	if err != nil {
@@ -123,14 +122,14 @@ func readDict(file io.Reader) (map[string]interface{}, error) {
 	dict := make(map[string]interface{})
 
 	for i := uint32(0); i < length; i++ {
-		key, err := readStringSettings(file)
+		key, err := readStringSettings(file, version)
 
 		if err != nil {
 			log.Printf("error loading key: %s", err)
 			return dict, err
 		}
 
-		dict[key], err = readTree(file)
+		dict[key], err = readTree(file, version)
 		if err != nil {
 			log.Printf("error loading readTree: %s", err)
 			return dict, err
@@ -140,7 +139,7 @@ func readDict(file io.Reader) (map[string]interface{}, error) {
 	return dict, nil
 }
 
-func readTree(file io.Reader) (interface{}, error) {
+func readTree(file io.Reader, version Version) (interface{}, error) {
 	//type of embedded data
 	var _type byte
 	err := binary.Read(file, binary.LittleEndian, &_type)
@@ -162,17 +161,15 @@ func readTree(file io.Reader) (interface{}, error) {
 	case DOUBLE:
 		return readDouble(file)
 	case STRING:
-		return readStringSettings(file)
+		return readStringSettings(file, version)
 	case LIST:
-		return readList(file)
+		return readList(file, version)
 	case DICT:
-		return readDict(file)
+		return readDict(file, version)
 	default:
 		return nil, fmt.Errorf("Unknown type: %s ", err)
 	}
 }
-
-
 
 ///////////////////
 // Writing ////////
@@ -265,7 +262,7 @@ func writeDict(data map[string]interface{}) ([]byte, error) {
 	return output, nil
 }
 
-func writeTree(data interface{}) (output []byte , err error) {
+func writeTree(data interface{}) (output []byte, err error) {
 	// get type
 	_type := reflect.TypeOf(data).Kind()
 
