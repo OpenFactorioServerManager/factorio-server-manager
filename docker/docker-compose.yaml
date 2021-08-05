@@ -1,0 +1,63 @@
+version: "3"
+services:
+  factorio-server-manager:
+    image: "ofsm/ofsm:latest"
+    container_name: "factorio-server-manager"
+    restart: "unless-stopped"
+    environment:
+      - "FACTORIO_VERSION=latest"
+      - "RCON_PASS"
+    volumes:
+      - "./fsm-data:/opt/fsm-data"
+      - "./factorio-data/saves:/opt/factorio/saves"
+      - "./factorio-data/mods:/opt/factorio/mods"
+      - "./factorio-data/config:/opt/factorio/config"
+      - "./factorio-data/mod_packs:/opt/fsm/mod_packs"
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.fsm.entrypoints=websecure"
+      - "traefik.http.routers.fsm.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.fsm.tls=true"
+      - "traefik.http.routers.fsm.tls.certResolver=default"
+      - "traefik.http.routers.fsm.service=fsm"
+      #- "traefik.http.routers.fsm.middlewares=fsm-auth"
+      - "traefik.http.services.fsm.loadbalancer.server.port=80"
+
+      - "traefik.udp.routers.fsm.entrypoints=factorio"
+      - "traefik.udp.routers.fsm.service=fsm"
+      - "traefik.udp.services.fsm.loadbalancer.server.port=34197"
+  traefik:
+    image: "traefik:v2.2"
+    container_name: "traefik"
+    restart: "always"
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.factorio.address=:34197/udp"
+
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+
+      - "--providers.docker"
+      - "--providers.docker.exposedByDefault=false"
+
+      - "--certificatesresolvers.default.acme.email=${EMAIL_ADDRESS}"
+      - "--certificatesresolvers.default.acme.storage=/etc/traefik/acme.json"
+      - "--certificatesresolvers.default.acme.tlschallenge=true"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "34197:34197/udp"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik-data:/etc/traefik"
+    labels:
+      - "traefik.enable=true"
+
+      #- "traefik.http.middlewares.fsm-auth.basicauth.usersfile=/etc/traefik/.htpasswd"
+      #- "traefik.http.middlewares.fsm-auth.basicauth.realm=FSM"
+#networks:
+#  default:
+#    external:
+#      name: "traefik"

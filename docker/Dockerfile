@@ -1,29 +1,25 @@
-# glibc is required for Factorio Server binaries to run
-FROM frolvlad/alpine-glibc
+# Glibc is required for Factorio Server binaries to run
+FROM ubuntu
 
-ENV FACTORIO_VERSION=latest \
-    MANAGER_VERSION=0.8.2 \
-    ADMIN_PASSWORD=factorio
+ENV FACTORIO_VERSION=stable \
+    MANAGER_VERSION=0.10.1 \
+    RCON_PASS=""
 
-VOLUME /opt/factorio/saves /opt/factorio/mods /opt/factorio/config /security
+VOLUME /opt/fsm-data /opt/factorio/saves /opt/factorio/mods /opt/factorio/config
 
-RUN apk add --no-cache curl tar unzip nginx openssl xz
+EXPOSE 80/tcp 34197/udp
 
-WORKDIR /opt/
+RUN apt-get update && apt-get install -y curl tar xz unzip jq && rm -rf /var/lib/apt/lists/*
 
-RUN curl -s -L -S -k https://www.factorio.com/get-download/$FACTORIO_VERSION/headless/linux64 -o /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
-    tar Jxf /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
-    rm /tmp/factorio_$FACTORIO_VERSION.tar.xz && \
-    curl -sLSk https://github.com/mroote/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux-${MANAGER_VERSION}.zip \
-     --cacert /opt/github.pem -o /tmp/factorio-server-manager-linux_$MANAGER_VERSION.zip && \
-    unzip -qq /tmp/factorio-server-manager-linux_$MANAGER_VERSION.zip && \
-    rm /tmp/factorio-server-manager-linux_$MANAGER_VERSION.zip && \
-    mkdir -p /run/nginx && \
-    chown nginx:root /var/lib/nginx
+WORKDIR /opt
 
-COPY "init.sh" "/opt/init.sh"
-COPY "nginx.conf" "/etc/nginx/nginx.conf"
+# Install FSM
+RUN curl --location "https://github.com/OpenFactorioServerManager/factorio-server-manager/releases/download/$MANAGER_VERSION/factorio-server-manager-linux-$MANAGER_VERSION.zip" \
+         --output /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
+    && unzip /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
+    && rm /tmp/factorio-server-manager-linux_${MANAGER_VERSION}.zip \
+    && mv factorio-server-manager fsm
 
-EXPOSE 80/tcp 443/tcp 34190-34200/udp
+COPY ./entrypoint.sh /opt/entrypoint.sh
 
-ENTRYPOINT ["/opt/init.sh"]
+ENTRYPOINT ["/opt/entrypoint.sh"]

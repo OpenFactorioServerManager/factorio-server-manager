@@ -1,0 +1,82 @@
+on: 
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '*.*'
+  pull_request:
+    branches:
+      - '**'
+env:
+  factorio_password: ${{ secrets.FACTORIO_PASSWORD }}
+  factorio_username: ${{ secrets.FACTORIO_USERNAME }}
+  mod_dir: 'dev'
+  mod_pack_dir: 'dev_pack'
+  dir: '../'
+  conf: '../../conf.json.example'
+jobs:
+  test-npm:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - run: make app/bundle
+  test-go:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        go: ['1.14', '1.15', '1']
+    runs-on: ${{ matrix.os }}
+    name: test-go ${{ matrix.go }} (${{ matrix.os }})
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+      - if: contains(matrix.os, 'ubuntu')
+        run: |
+          cd src
+          if [[ -z "$factorio_password" ]]; then
+            echo "run only short tests"
+            go test ./... -v -test.short
+          else
+            echo "run full test suit"
+            go test ./... -v
+          fi
+      - if: contains(matrix.os, 'windows')
+        run: |
+          cd src
+          if ([Environment]::GetEnvironmentVariable('factorio_password', 'Machine')) {
+            echo "run full test suit"
+            go test ./... -v
+          } else {
+            echo "run only short tests"
+            go test ./... -v "-test.short"
+          }
+  docker-push:
+    needs:  [test-npm, test-go]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref != 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: rlespinasse/github-slug-action@v3.x
+      - uses: actions/setup-node@v1
+      - uses: actions/setup-go@v2
+      - uses: docker/setup-buildx-action@v1
+      - name: Login to dockerhub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: make build; cp build/factorio-server-manager-linux.zip docker/factorio-server-manager-linux.zip
+      - id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./docker/
+          file: ./docker/Dockerfile-local
+          push: true
+          tags: ofsm/ofsm:${{ env.GITHUB_REF_SLUG }}
