@@ -72,6 +72,8 @@ func readString(r io.Reader, version Version, forceOptimized bool) (s string, er
 		return "", fmt.Errorf("failed to read string: %v", err)
 	}
 
+	log.Println(string(d))
+
 	return string(d), nil
 }
 
