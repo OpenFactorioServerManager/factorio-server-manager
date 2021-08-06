@@ -56,27 +56,6 @@ func (d *FModData) Decode(file io.Reader) error {
 	return nil
 }
 
-func readStringSettings(file io.Reader, version Version) (string, error) {
-	// read "empty" flag
-	empty, err := readBool(file)
-	if err != nil {
-		log.Printf("error loading empty flag of string: %s", err)
-		return "", err
-	}
-
-	if empty {
-		return "", nil
-	}
-
-	key, err := readString(file, version, false)
-	if err != nil {
-		log.Printf("could not read key-string: %s", err)
-		return "", err
-	}
-
-	return key, nil
-}
-
 func (d *FModData) Encode() ([]byte, error) {
 	var output []byte
 
