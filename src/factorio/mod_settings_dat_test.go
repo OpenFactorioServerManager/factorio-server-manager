@@ -67,7 +67,7 @@ func TestModSettings0_17(t *testing.T) {
 	if err != nil {
 		t.Fatalf("could not read full testfile: %s", err)
 	}
-	log.Println(readFile)
+	log.Printf("%x", readFile)
 
 	file := bytes.NewReader(readFile)
 
