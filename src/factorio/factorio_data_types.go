@@ -66,6 +66,11 @@ func readString(r io.Reader, version Version, forceOptimized bool) (s string, er
 
 	log.Printf("string-size: %d", n)
 
+	// do not read the string, when it is empty
+	if n < 1 {
+		return "", nil
+	}
+
 	d := make([]byte, n)
 	_, err = r.Read(d)
 	if err != nil {

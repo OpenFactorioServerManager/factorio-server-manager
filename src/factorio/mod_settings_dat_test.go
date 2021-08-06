@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/go-test/deep"
 	"io/ioutil"
-	"log"
 	"os"
 	"testing"
 )
@@ -63,19 +62,19 @@ func TestModSettings0_16(t *testing.T) {
 }
 
 func TestModSettings0_17(t *testing.T) {
-	readFile, err := ioutil.ReadFile("../factorio_mod_settings_testfiles/mod_settings_0.17.dat")
-	if err != nil {
-		t.Fatalf("could not read full testfile: %s", err)
-	}
-	log.Printf("%x", readFile)
-
-	file := bytes.NewReader(readFile)
+	//readFile, err := ioutil.ReadFile("../factorio_mod_settings_testfiles/mod_settings_0.17.dat")
+	//if err != nil {
+	//	t.Fatalf("could not read full testfile: %s", err)
+	//}
+	//log.Printf("%x", readFile)
+	//
+	//file := bytes.NewReader(readFile)
 
 	// Read data and compare to JSON
-	//file, err := os.Open("../factorio_mod_settings_testfiles/mod_settings_0.17.dat")
-	//if err != nil {
-	//	t.Fatalf("could not open mod-settings.dat: %s", err)
-	//}
+	file, err := os.Open("../factorio_mod_settings_testfiles/mod_settings_0.17.dat")
+	if err != nil {
+		t.Fatalf("could not open mod-settings.dat: %s", err)
+	}
 
 	var modData FModData
 	err = modData.Decode(file)
