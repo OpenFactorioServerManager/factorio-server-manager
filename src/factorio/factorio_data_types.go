@@ -13,8 +13,6 @@ import (
 // Reading ////////
 ///////////////////
 func readOptimUint(r io.Reader, v Version, bitSize int) (uint32, error) {
-	log.Println("readOptimUint")
-
 	var b [4]byte
 	if !v.Less(Version{0, 14, 14, 0}) {
 		_, err := r.Read(b[:1])
@@ -46,8 +44,6 @@ func readOptimUint(r io.Reader, v Version, bitSize int) (uint32, error) {
 }
 
 func readString(r io.Reader, version Version, forceOptimized bool) (s string, err error) {
-	log.Println("readString")
-
 	var n uint32
 
 	if !version.Less(Version{0, 16, 0, 0}) || forceOptimized {
@@ -64,8 +60,6 @@ func readString(r io.Reader, version Version, forceOptimized bool) (s string, er
 		n = uint32(binary.LittleEndian.Uint32(b[:]))
 	}
 
-	log.Printf("string-size: %d", n)
-
 	// do not read the string, when it is empty
 	if n < 1 {
 		return "", nil
@@ -77,14 +71,10 @@ func readString(r io.Reader, version Version, forceOptimized bool) (s string, er
 		return "", fmt.Errorf("failed to read string: %v", err)
 	}
 
-	log.Println(string(d))
-
 	return string(d), nil
 }
 
 func readStringSettings(file io.Reader, version Version) (string, error) {
-	log.Println("readStringSettings")
-
 	// read "empty" flag
 	empty, err := readBool(file)
 	if err != nil {
@@ -106,8 +96,6 @@ func readStringSettings(file io.Reader, version Version) (string, error) {
 }
 
 func readBool(file io.Reader) (bool, error) {
-	log.Println("readBool")
-
 	var _data byte
 	err := binary.Read(file, binary.LittleEndian, &_data)
 	if err != nil {
@@ -119,8 +107,6 @@ func readBool(file io.Reader) (bool, error) {
 }
 
 func readDouble(file io.Reader) (float64, error) {
-	log.Println("readDouble")
-
 	var _data float64
 	err := binary.Read(file, binary.LittleEndian, &_data)
 	if err != nil {
@@ -132,8 +118,6 @@ func readDouble(file io.Reader) (float64, error) {
 }
 
 func readList(file io.Reader, version Version) ([]interface{}, error) {
-	log.Println("readList")
-
 	var length uint32
 	length, err := readOptimUint(file, version, 32)
 	if err != nil {
@@ -154,8 +138,6 @@ func readList(file io.Reader, version Version) ([]interface{}, error) {
 }
 
 func readDict(file io.Reader, version Version) (map[string]interface{}, error) {
-	log.Println("readDict")
-
 	var length uint32
 	err := binary.Read(file, binary.LittleEndian, &length)
 	if err != nil {
@@ -184,8 +166,6 @@ func readDict(file io.Reader, version Version) (map[string]interface{}, error) {
 }
 
 func readTree(file io.Reader, version Version) (interface{}, error) {
-	log.Println("readTree")
-
 	//type of embedded data
 	var _type byte
 	err := binary.Read(file, binary.LittleEndian, &_type)
