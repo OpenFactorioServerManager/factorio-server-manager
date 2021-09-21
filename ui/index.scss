@@ -19,15 +19,15 @@
 }
 
 .accentuated {
-  @apply .accentuated-t .accentuated-r .accentuated-b .accentuated-l
+  @apply accentuated-t accentuated-r accentuated-b accentuated-l
 }
 
 .accentuated-x {
-  @apply .accentuated-r .accentuated-l
+  @apply accentuated-r accentuated-l
 }
 
 .accentuated-y {
-  @apply .accentuated-t .accentuated-b
+  @apply accentuated-t accentuated-b
 }
 
 .hover\:glow-orange:hover {

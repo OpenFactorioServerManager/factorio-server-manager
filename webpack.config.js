@@ -33,7 +33,7 @@ module.exports = (env, argv) => {
             },
             extensions: ['.js', '.json', '.jsx']
         },
-        devtool: isProduction ? "none" : "source-map",
+        devtool: isProduction ? false : "source-map",
         module: {
             rules: [
                 {
@@ -74,11 +74,12 @@ module.exports = (env, argv) => {
                         {
                             loader: 'postcss-loader',
                             options: {
-                                ident: 'postcss',
-                                plugins: [
-                                    require('tailwindcss'),
-                                    require('autoprefixer'),
-                                ],
+                                postcssOptions: {
+                                    plugins: [
+                                        require('tailwindcss'),
+                                        require('autoprefixer'),
+                                    ],
+                                }
                             },
                         }
                     ]
