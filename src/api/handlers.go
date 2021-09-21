@@ -133,10 +133,11 @@ func UploadSave(w http.ResponseWriter, r *http.Request) {
 
 	for _, saveFile := range r.MultipartForm.File["savefile"] {
 		ext := filepath.Ext(saveFile.Filename)
-		if ext != "zip" {
+		if ext != ".zip" {
 			// Only zip-files allowed
 			resp = fmt.Sprintf("Fileformat {%s} is not allowed", ext)
 			w.WriteHeader(http.StatusUnsupportedMediaType)
+			return
 		}
 
 		file, err := saveFile.Open()
@@ -771,7 +772,7 @@ func UpdateServerSettings(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = ioutil.WriteFile(filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile), admins, 0664)
+		err = ioutil.WriteFile(config.FactorioAdminFile, admins, 0664)
 		if err != nil {
 			resp = fmt.Sprintf("Failed to save admins: %s", err)
 			log.Println(resp)

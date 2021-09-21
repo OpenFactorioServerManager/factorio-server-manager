@@ -44,7 +44,7 @@ type Config struct {
 	FactorioRconPass        string `json:"rcon_pass,omitempty"`
 	FactorioCredentialsFile string `json:"factorio_credentials_file,omitempty"`
 	FactorioIP              string `json:"factorio_ip,omitempty"`
-	FactorioAdminFile       string `json:"-"`
+	FactorioAdminFile       string `json:"factorio_admin_file,omitempty"`
 	ServerIP                string `json:"server_ip,omitempty"`
 	ServerPort              string `json:"server_port,omitempty"`
 	MaxUploadSize           int64  `json:"max_upload_size,omitempty"`
@@ -59,6 +59,7 @@ type Config struct {
 	GlibcLibLoc             string `json:"-"`
 	Autostart               string `json:"-"`
 	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
+	ConsoleLogFile          string `json:"console_log_file,omitempty"`
 	Secure                  bool   `json:"secure"` // set to `false` to use this tool without SSL/TLS (Default: `true`)
 }
 
@@ -156,7 +157,7 @@ func (config *Config) loadServerConfig() {
 	// load and potentially update conf.json
 	config.updateConfigFile()
 
-	file, err := os.OpenFile(config.ConfFile, os.O_RDWR, 0)
+	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
 	failOnError(err, "Error loading config file.")
 	defer file.Close()
 
@@ -172,8 +173,14 @@ func (config *Config) loadServerConfig() {
 		config.FactorioBaseModDir = filepath.Join(config.FactorioDir, "data", "base")
 	}
 
-	// Set random port as rconPort
-	config.FactorioRconPort = randomPort()
+	if !filepath.IsAbs(config.FactorioAdminFile) {
+		config.FactorioAdminFile = filepath.Join(config.FactorioConfigDir, config.FactorioAdminFile)
+	}
+
+	if config.FactorioRconPort == 0 {
+		config.FactorioRconPort = randomPort()
+		log.Println("Rcon port is empty, generated new one:", config.FactorioRconPort)
+	}
 }
 
 // Returns random port to use for rcon connection
@@ -202,6 +209,7 @@ func (config *Config) mapFlags(flags Flags) {
 	config.FactorioCredentialsFile = "./factorio.auth"
 	config.FactorioAdminFile = "server-adminlist.json"
 	config.MaxUploadSize = flags.FactorioMaxUpload
+	config.ConsoleLogFile = filepath.Join(flags.FactorioDir, "factorio-server-console.log")
 
 	if filepath.IsAbs(flags.FactorioBinary) {
 		config.FactorioBinary = flags.FactorioBinary
