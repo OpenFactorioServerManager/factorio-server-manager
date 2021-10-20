@@ -11,9 +11,9 @@ env:
   factorio_password: ${{ secrets.FACTORIO_PASSWORD }}
   factorio_username: ${{ secrets.FACTORIO_USERNAME }}
   mod_dir: 'dev'
-  mod_pack_dir: 'dev_pack'
-  dir: '../'
-  conf: '../../conf.json.example'
+  FSM_MODPACK_DIR: 'dev_pack'
+  FSM_DIR: '../'
+  FSM_CONF: '../../conf.json.example'
 jobs:
   test-npm:
     strategy:
