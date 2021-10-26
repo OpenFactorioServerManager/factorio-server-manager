@@ -4,25 +4,27 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/securecookie"
-	"github.com/jessevdk/go-flags"
 	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/gorilla/securecookie"
+	"github.com/jessevdk/go-flags"
 )
 
 type Flags struct {
 	ConfFile           string `long:"conf" default:"./conf.json" description:"Specify location of Factorio Server Manager config file."`
 	FactorioDir        string `long:"dir" default:"./" description:"Specify location of Factorio directory."`
 	ServerIP           string `long:"host" default:"0.0.0.0" description:"Specify IP for webserver to listen on."`
-	FactorioIP         string `long:"game-bind-address" default:"0.0.0.0" description:"Specify IP for Fcatorio gamer server to listen on."`
+	FactorioIP         string `long:"game-bind-address" default:"0.0.0.0" description:"Specify IP for Factorio gamer server to listen on."`
 	FactorioPort       string `long:"port" default:"80" description:"Specify a port for the server."`
 	FactorioConfigFile string `long:"config" default:"config/config.ini" description:"Specify location of Factorio config.ini file"`
 	FactorioMaxUpload  int64  `long:"max-upload" default:"20.971.520" description:"Maximum filesize for uploaded files (default 20MB)."`
 	FactorioBinary     string `long:"bin" default:"bin/x64/factorio" description:"Location of Factorio Server binary file"`
+	FactorioRconPort   int    `long:"rcon-port" default:"0" description:"Specify port for rcon admin console."`
 	GlibcCustom        string `long:"glibc-custom" default:"false" description:"By default false, if custom glibc is required set this to true and add glibc-loc and glibc-lib-loc parameters"`
 	GlibcLocation      string `long:"glibc-loc" default:"/opt/glibc-2.18/lib/ld-2.18.so" description:"Location glibc ld.so file if needed (ex. /opt/glibc-2.18/lib/ld-2.18.so)"`
 	GlibcLibLoc        string `long:"glibc-lib-loc" default:"/opt/glibc-2.18/lib" description:"Location of glibc lib folder (ex. /opt/glibc-2.18/lib)"`
@@ -210,6 +212,7 @@ func (config *Config) mapFlags(flags Flags) {
 	config.FactorioAdminFile = "server-adminlist.json"
 	config.MaxUploadSize = flags.FactorioMaxUpload
 	config.ConsoleLogFile = filepath.Join(flags.FactorioDir, "factorio-server-console.log")
+	config.FactorioRconPort = flags.FactorioRconPort
 
 	if filepath.IsAbs(flags.FactorioBinary) {
 		config.FactorioBinary = flags.FactorioBinary
