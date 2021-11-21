@@ -4,14 +4,15 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/securecookie"
-	"github.com/jessevdk/go-flags"
 	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/gorilla/securecookie"
+	"github.com/jessevdk/go-flags"
 )
 
 type Flags struct {
@@ -60,7 +61,7 @@ type Config struct {
 	Autostart               string `json:"-"`
 	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
 	ConsoleLogFile          string `json:"console_log_file,omitempty"`
-	Secure                  bool   `json:"secure"` // set to `false` to use this tool without SSL/TLS (Default: `true`)
+	Secure                  bool   `json:"secure"`                       // set to `false` to use this tool without SSL/TLS (Default: `true`)
 }
 
 // set Configs default values. JSON unmarshal will replace when it found something different
@@ -89,7 +90,7 @@ func GetConfig() Config {
 }
 
 func (config *Config) updateConfigFile() {
-	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
+	file, err := os.Open(config.ConfFile)
 	failOnError(err, "Error opening file")
 	defer file.Close()
 
@@ -139,7 +140,7 @@ func (config *Config) updateConfigFile() {
 
 	if resave {
 		// save json file again
-		file, err = os.OpenFile(config.ConfFile, os.O_WRONLY, 0)
+		file, err = os.Create(config.ConfFile)
 		failOnError(err, "Error opening file for writing")
 		defer file.Close()
 
@@ -157,7 +158,7 @@ func (config *Config) loadServerConfig() {
 	// load and potentially update conf.json
 	config.updateConfigFile()
 
-	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
+	file, err := os.Open(config.ConfFile)
 	failOnError(err, "Error loading config file.")
 	defer file.Close()
 
