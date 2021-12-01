@@ -19,7 +19,7 @@ type Flags struct {
 	ConfFile           string `long:"conf" default:"./conf.json" description:"Specify location of Factorio Server Manager config file." env:"FSM_CONF"`
 	FactorioDir        string `long:"dir" default:"./" description:"Specify location of Factorio directory." env:"FSM_DIR"`
 	ServerIP           string `long:"host" default:"0.0.0.0" description:"Specify IP for webserver to listen on." env:"FSM_SERVER_IP"`
-	FactorioIP         string `long:"game-bind-address" default:"0.0.0.0" description:"Specify IP for Fcatorio gamer server to listen on." env:"FSM_FACTORIO_IP"`
+	FactorioIP         string `long:"game-bind-address" default:"0.0.0.0" description:"Specify IP for Factorio game server to listen on." env:"FSM_FACTORIO_IP"`
 	FactorioPort       string `long:"port" default:"80" description:"Specify a port for the server." env:"FSM_PORT"`
 	FactorioConfigFile string `long:"config" default:"config/config.ini" description:"Specify location of Factorio config.ini file." env:"FSM_FACTORIO_CONFIG_FILE"`
 	FactorioMaxUpload  int64  `long:"max-upload" default:"20" description:"Maximum filesize for uploaded files in MB." env:"FSM_MAX_UPLOAD"`
@@ -221,6 +221,7 @@ func (config *Config) mapFlags(flags Flags) {
 	config.FactorioCredentialsFile = "./factorio.auth"
 	config.FactorioAdminFile = "server-adminlist.json"
 	config.ConsoleLogFile = filepath.Join(flags.FactorioDir, "factorio-server-console.log")
+	config.FactorioRconPort = flags.FactorioRconPort
 
 	config.MaxUploadSize = flags.FactorioMaxUpload * 100000
 	log.Printf("Max upload: %d", config.MaxUploadSize)
