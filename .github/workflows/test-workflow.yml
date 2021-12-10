@@ -10,10 +10,9 @@ on:
 env:
   factorio_password: ${{ secrets.FACTORIO_PASSWORD }}
   factorio_username: ${{ secrets.FACTORIO_USERNAME }}
-  mod_dir: 'dev'
-  mod_pack_dir: 'dev_pack'
-  dir: '../'
-  conf: '../../conf.json.example'
+  FSM_MODPACK_DIR: 'dev_pack'
+  FSM_DIR: '../'
+  FSM_CONF: '../../conf.json.example'
 jobs:
   test-npm:
     strategy:
@@ -28,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        go: ['1.14', '1.15', '1']
+        go: ['1.15', '1.16', '1.17', '1']
     runs-on: ${{ matrix.os }}
     name: test-go ${{ matrix.go }} (${{ matrix.os }})
     steps:
