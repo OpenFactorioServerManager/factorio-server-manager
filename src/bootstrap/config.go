@@ -101,7 +101,7 @@ func GetConfig() Config {
 }
 
 func (config *Config) updateConfigFile() {
-	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
+	file, err := os.Open(config.ConfFile)
 	failOnError(err, "Error opening file")
 	defer file.Close()
 
@@ -151,7 +151,7 @@ func (config *Config) updateConfigFile() {
 
 	if resave {
 		// save json file again
-		file, err = os.OpenFile(config.ConfFile, os.O_WRONLY, 0)
+		file, err = os.Create(config.ConfFile)
 		failOnError(err, "Error opening file for writing")
 		defer file.Close()
 
@@ -169,7 +169,7 @@ func (config *Config) loadServerConfig() {
 	// load and potentially update conf.json
 	config.updateConfigFile()
 
-	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
+	file, err := os.Open(config.ConfFile)
 	failOnError(err, "Error loading config file.")
 	defer file.Close()
 
