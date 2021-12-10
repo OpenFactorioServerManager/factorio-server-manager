@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.11.0] - TBD
+### Changed
+- Configuration environment variables are now uppercase and prefixed with FSM
+
 ## [0.10.1] - 2021-03-09
 ### Fixed
 - Single admin user can no longer be deleted (so there is always a user)
