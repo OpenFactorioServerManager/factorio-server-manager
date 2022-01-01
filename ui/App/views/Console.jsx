@@ -7,7 +7,6 @@ const Console = ({serverStatus}) => {
 
     const [logs, setLogs] = useState([]);
     const consoleInput = useRef(null);
-    const isRunning = serverStatus.status === 'running';
 
     useEffect(() => {
 
@@ -29,7 +28,7 @@ const Console = ({serverStatus}) => {
         <Panel
             title="Console"
             content={
-                isRunning
+                serverStatus.running
                     ? <>
                         <ul>
                             {logs?.map((log, i) => (<li key={i}>{log}</li>))}
