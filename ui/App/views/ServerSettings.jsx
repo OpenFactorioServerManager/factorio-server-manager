@@ -13,7 +13,7 @@ const ServerSettings = () => {
     const [settings, setSettings] = useState();
     const [numberInputs, setNumberInputs] = useState([]);
 
-    const {register, handleSubmit, errors, control} = useForm();
+    const {register, handleSubmit, formState: {errors}, control} = useForm();
 
     const fetchSettings = async () => {
         const res = await settingsResource.server.list();
@@ -67,7 +67,7 @@ const ServerSettings = () => {
                 return (
                     <>
                         <Label htmlFor={name} text={label}/>
-                        <Input type="number" name={name} inputRef={register} valueAsNumber="double" defaultValue={value} />
+                        <Input type="number" register={register} valueAsNumber="double" defaultValue={value} />
                     </>
                 )
             case "string":
@@ -75,27 +75,27 @@ const ServerSettings = () => {
                     return (
                         <>
                             <Label htmlFor={name} text={label}/>
-                            <InputPassword name={name} inputRef={register} defaultValue={value}/>
+                            <InputPassword name={name} register={register} defaultValue={value}/>
                         </>
                     )
                 } else {
                     return (
                         <>
                             <Label htmlFor={name} text={label}/>
-                            <Input name={name} inputRef={register} defaultValue={value}/>
+                            <Input name={name} register={register} defaultValue={value}/>
                         </>
                     )
                 }
             case "boolean":
                 return (
-                    <Checkbox checked={value} text={label} inputRef={register} name={name}/>
+                    <Checkbox checked={value} text={label} register={register} name={name}/>
                 )
             case "object":
                 if (Array.isArray(value)) {
                     return (
                         <>
                             <Label htmlFor={name} text={label}/>
-                            <Input name={name} inputRef={register} defaultValue={value}/>
+                            <Input name={name} register={register} defaultValue={value}/>
                         </>
                     )
                 } else if (name.includes("visibility")) {
@@ -104,7 +104,7 @@ const ServerSettings = () => {
                             <Label text="Visibility"/>
                             <div className="flex">
                                 {Object.keys(value).map(key => <div className="mr-4" key={`visibility-${key}`}>
-                                    <Checkbox checked={value[key]} inputRef={register} text={key} name={`visibility[${key}]`}/>
+                                    <Checkbox checked={value[key]} register={register} text={key} name={`visibility[${key}]`}/>
                                 </div>)}
                             </div>
                         </>
@@ -115,7 +115,7 @@ const ServerSettings = () => {
                 return (
                     <>
                         <Label htmlFor={name} text={label}/>
-                        <Input name={name} inputRef={register} defaultValue={value}/>
+                        <Input name={name} register={register} defaultValue={value}/>
                     </>
                 )
         }

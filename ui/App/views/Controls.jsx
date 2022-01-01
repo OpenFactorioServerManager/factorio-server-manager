@@ -16,7 +16,7 @@ const Controls = ({serverStatus}) => {
     const [isStarting, setIsStarting] = useState(false);
     const [isKilling, setIsKilling] = useState(false);
 
-    const { handleSubmit, register, errors } = useForm();
+    const { handleSubmit, register, formState: {errors} } = useForm();
 
     const startServer = async (data) => {
         if(saves.length === 1 && saves[0].name === "Load Latest") {
@@ -79,20 +79,18 @@ const Controls = ({serverStatus}) => {
                             <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
                                 <div className="font-bold">IP</div>
                                 <Input
-                                    name="ip"
                                     defaultValue={"0.0.0.0"}
-                                    inputRef={register({required: true, pattern: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'})}
+                                    register={register('ip',{required: true, pattern: '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'})}
                                 />
                                 <Error error={errors.ip} message="IP is required and must be valid."/>
                             </div>
                             <div className="lg:w-1/5 mb-2 mr-0 lg:mr-4">
                                 <div className="font-bold">Port</div>
                                 <Input
-                                    name="port"
                                     type="number"
                                     min={1}
                                     defaultValue={"34197"}
-                                    inputRef={register({required: true})}
+                                    register={register('port',{required: true})}
                                 />
                                 <Error error={errors.port} message="Port is required"/>
                             </div>
@@ -104,8 +102,7 @@ const Controls = ({serverStatus}) => {
                                 <div className="font-bold">Save</div>
                                 <div className="relative">
                                     <Select
-                                        name="save"
-                                        inputRef={register({required: true})}
+                                        register={register('save',{required: true})}
                                         defaultValue="Load Latest"
                                         options={saves.map(save => new Object({
                                             value: save.name,

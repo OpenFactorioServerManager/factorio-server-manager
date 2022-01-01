@@ -1,8 +1,7 @@
 import React from "react";
 
 const Input = ({
-                   name,
-                   inputRef,
+                   register,
                    placeholder = null,
                    type = "text",
                    defaultValue = null,
@@ -16,9 +15,7 @@ const Input = ({
         <input
             className="shadow appearance-none border w-full py-2 px-3 text-black"
             placeholder={placeholder}
-            ref={inputRef}
-            name={name}
-            id={name}
+            {...register}
             type={type}
             onKeyDown={onKeyDown}
             autoComplete={hasAutoComplete ? "on" : "off"}

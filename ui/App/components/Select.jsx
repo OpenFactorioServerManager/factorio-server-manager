@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 
-const Select = ({name, inputRef, options, className = "", defaultValue = ""}) => {
+const Select = ({register, options, className = "", defaultValue = ""}) => {
 
     const [value, setValue] = useState(defaultValue);
 
@@ -9,8 +9,7 @@ const Select = ({name, inputRef, options, className = "", defaultValue = ""}) =>
         <select
             className="shadow appearance-none border w-full py-2 px-3 text-black"
             name={name}
-            ref={inputRef}
-            id={name}
+            {...register}
             value={value}
             onChange={optionElement => setValue(optionElement.target.value)}
         >

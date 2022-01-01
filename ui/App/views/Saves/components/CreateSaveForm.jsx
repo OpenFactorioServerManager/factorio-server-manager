@@ -4,12 +4,10 @@ import React, {useState} from "react";
 import saves from "../../../../api/resources/saves";
 import Label from "../../../components/Label";
 import Input from "../../../components/Input";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSpinner} from "@fortawesome/free-solid-svg-icons";
 import Error from "../../../components/Error";
 
 const CreateSaveForm = ({onSuccess}) => {
-    const {register, handleSubmit, errors} = useForm();
+    const {register, handleSubmit, formState: {errors}} = useForm();
     const [isLoading, setIsLoading] = useState(false);
 
     const onSubmit = async (data, e) => {
@@ -26,7 +24,7 @@ const CreateSaveForm = ({onSuccess}) => {
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-6">
                 <Label text="Savefile Name" htmlFor="savefile"/>
-                <Input inputRef={register({required: true})} name="savefile"/>
+                <Input register={register('savefile', {required: true})}/>
                 <Error error={errors.savefile} message="Savefile Name is required"/>
             </div>
             <Button type="success" isLoading={isLoading} isSubmit={true}>Create Save</Button>

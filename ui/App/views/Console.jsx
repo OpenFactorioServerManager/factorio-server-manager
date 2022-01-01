@@ -1,7 +1,6 @@
 import Panel from "../components/Panel";
 import React, {useEffect, useRef, useState} from "react";
 import socket from "../../api/socket";
-import Input from "../components/Input";
 
 const Console = ({serverStatus}) => {
 
@@ -33,8 +32,9 @@ const Console = ({serverStatus}) => {
                         <ul>
                             {logs?.map((log, i) => (<li key={i}>{log}</li>))}
                         </ul>
-                        <Input type="text"
-                               inputRef={consoleInput}
+                        <input type="text"
+                               className="shadow appearance-none border w-full py-2 px-3 text-black"
+                               ref={consoleInput}
                                onKeyDown={e => {
                                    if (e.key === "Enter" && socket) {
                                        socket.emit("command send", consoleInput.current.value);
