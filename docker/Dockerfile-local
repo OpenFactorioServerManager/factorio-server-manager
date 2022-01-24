@@ -1,7 +1,7 @@
 # Glibc is required for Factorio Server binaries to run
 FROM ubuntu
 
-ENV FACTORIO_VERSION=latest \
+ENV FACTORIO_VERSION=stable \
     RCON_PASS=""
 
 VOLUME /opt/fsm-data /opt/factorio/saves /opt/factorio/mods /opt/factorio/config
