@@ -273,6 +273,11 @@ func (server *Server) Run() error {
 		server.Cmd = exec.Command(config.FactorioBinary, args...)
 	}
 
+	// Write chat log to a different file if requested (if not it will be mixed-in with the default logfile)
+	if config.ChatLogFile != "" {
+		args = append(args, "--console-log", config.ChatLogFile)
+	}
+
 	server.StdOut, err = server.Cmd.StdoutPipe()
 	if err != nil {
 		log.Printf("Error opening stdout pipe: %s", err)

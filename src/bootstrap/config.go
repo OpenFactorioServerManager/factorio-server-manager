@@ -62,7 +62,8 @@ type Config struct {
 	Autostart               string `json:"-"`
 	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
 	ConsoleLogFile          string `json:"console_log_file,omitempty"`
-	Secure                  bool   `json:"secure"` // set to `false` to use this tool without SSL/TLS (Default: `true`)
+	ChatLogFile             string `json:"chat_log_file,omitempty"` // separate log file for chat (incl join/quit)
+	Secure                  bool   `json:"secure"`                  // set to `false` to use this tool without SSL/TLS (Default: `true`)
 }
 
 // set Configs default values. JSON unmarshal will replace when it found something different
