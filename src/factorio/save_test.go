@@ -4,6 +4,55 @@ import (
 	"testing"
 )
 
+// 1.1.14 changed the format of the saves, so new test has to be done
+func Test1_1_14(t *testing.T) {
+	file, err := OpenArchiveFile("../factorio_testfiles/test_1_1_14.zip", "level-init.dat")
+	if err != nil {
+		t.Fatalf("Error opening level.datmetadata: %s", err)
+	}
+	defer file.Close()
+
+	var header SaveHeader
+	err = header.ReadFrom(file)
+	if err != nil {
+		t.Fatalf("Error reading header: %s", err)
+	}
+
+	testHeader := SaveHeader{
+		FactorioVersion:           Version{1, 1, 19, 0},
+		Campaign:                  "transport-belt-madness",
+		Name:                      "level-01",
+		BaseMod:                   "base",
+		Difficulty:                1,
+		Finished:                  false,
+		PlayerWon:                 false,
+		NextLevel:                 "",
+		CanContinue:               false,
+		FinishedButContinuing:     false,
+		SavingReplay:              false,
+		AllowNonAdminDebugOptions: true,
+		LoadedFrom:                Version{1, 1, 19},
+		LoadedFromBuild:           57957,
+		AllowedCommands:           1,
+		Mods: []Mod{
+			{
+				Version: Version{1, 1, 19},
+				Name:    "base",
+			},
+			{
+				Version: Version{3, 0, 0},
+				Name:    "belt-balancer",
+			},
+			{
+				Version: Version{3, 0, 0},
+				Name:    "train-station-overview",
+			},
+		},
+	}
+
+	header.Equals(testHeader, t)
+}
+
 // 1.1 Binary seems equal to 0.18/1.0 binary, just the default values changed
 func Test1_1(t *testing.T) {
 	file, err := OpenArchiveFile("../factorio_testfiles/test_1_1.zip", "level.dat")

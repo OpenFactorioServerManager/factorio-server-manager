@@ -3,10 +3,11 @@ package factorio
 import (
 	"encoding/json"
 	"errors"
-	"github.com/mroote/factorio-server-manager/bootstrap"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 )
 
 type Credentials struct {

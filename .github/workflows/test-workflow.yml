@@ -10,10 +10,9 @@ on:
 env:
   factorio_password: ${{ secrets.FACTORIO_PASSWORD }}
   factorio_username: ${{ secrets.FACTORIO_USERNAME }}
-  mod_dir: 'dev'
-  mod_pack_dir: 'dev_pack'
-  dir: '../'
-  conf: '../../conf.json.example'
+  FSM_MODPACK_DIR: 'dev_pack'
+  FSM_DIR: '../'
+  FSM_CONF: '../../conf.json.example'
 jobs:
   test-npm:
     strategy:
@@ -28,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        go: ['1.14', '1.15', '1']
+        go: ['1.15', '1.16', '1.17', '1']
     runs-on: ${{ matrix.os }}
     name: test-go ${{ matrix.go }} (${{ matrix.os }})
     steps:
@@ -60,10 +59,13 @@ jobs:
   docker-push:
     needs:  [test-npm, test-go]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: rlespinasse/github-slug-action@v3.x
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
       - uses: actions/setup-go@v2
       - uses: docker/setup-buildx-action@v1
       - name: Login to dockerhub
@@ -78,4 +80,4 @@ jobs:
           context: ./docker/
           file: ./docker/Dockerfile-local
           push: true
-          tags: ofsm/ofsm:develop
+          tags: ofsm/ofsm:${{ env.GITHUB_REF_SLUG }}

@@ -3,6 +3,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.11.0] - TBD
+### Changed
+- Configuration environment variables are now uppercase and prefixed with FSM
+
+## [0.10.1] - 2021-03-09
+### Fixed
+- Single admin user can no longer be deleted (so there is always a user)
+- fixed incompatibility to glibc 2.32 by linking dynamic on linux
+- Moved from alpine to ubuntu docker image base, to prevent factorio not running correctly
+
+## [0.10.0] - 2021-02-10
+### Added
+- Config files can be defined with absolute paths. - Thanks to @FoxAmes
+- Support for >= 1.1.14 factorio saves - Thanks to @knoxfighter
+- Setting in `info.json` to allow usage without ssl/tls - Thanks to @knoxfighter
+
+### Changed
+- Rework of the authentication, to have a bit more security. - Thanks to @knoxfighter
+- Changed from leveldb to sqlite3 as backend database. - Thanks to @knoxfighter
+- generate new random passwords, if no exist, or if they are "factorio". - Thanks to @knoxfighter
+- Use "OpenFactorioServerManager" instead of "mroote" as go package name. - Thanks to @mroote
+- Disable mods-page, while server is running - Thanks to @knoxfighter
+- Renamed GO-package from `mroote` to `OpenFactorioServerManager` to match git repo - Thanks to @mroote
+
+### Fixed
+- old factorio versions depended by mods always shown as compatible - Thanks to @knoxfighter
+- Crosscompilation with mingw-w64 on linux. (Broke with sqlite3) - Thanks to @knoxfighter
+- Crash on async writing to websocket room array. - Thanks to @knoxfighter
+
 ## [0.9.0] - 2021-01-07
 ### Added
 - Autostart factorio, when starting the server-manager - Thanks to @Psychomantis71
@@ -13,7 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Rework of the docker image, so it allows easy updating of factorio - Thanks to @ita-sammann
 
 ### Fixed
-- Console page is now working correctly (directly reloading still bugged until new UI) - Thanks to @jannaahs
+- Console page is now working correctly - Thanks to @jannaahs
 - Mod Search fixed by new implementation, which does not rely on the search endpoint of the mod portal - Thanks to @jannaahs
 - Listen on port 80, previously port 8080 was used. Can be changed with `--port <port>`
 - Update version numbers in Docker containers

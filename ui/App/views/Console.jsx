@@ -1,6 +1,7 @@
 import Panel from "../components/Panel";
 import React, {useEffect, useRef, useState} from "react";
 import socket from "../../api/socket";
+import Input from "../components/Input";
 
 const Console = ({serverStatus}) => {
 
@@ -33,14 +34,15 @@ const Console = ({serverStatus}) => {
                         <ul>
                             {logs?.map((log, i) => (<li key={i}>{log}</li>))}
                         </ul>
-                        <input type="text" ref={consoleInput}
-                               className="shadow appearance-none border w-full py-2 px-3 text-black" onKeyPress={e => {
-                            if (e.key === "Enter" && socket) {
-                                socket.emit("command send", consoleInput.current.value);
-                                consoleInput.current.value = ""
-                            }
-                        }
-                        }/>
+                        <Input type="text"
+                               inputRef={consoleInput}
+                               onKeyDown={e => {
+                                   if (e.key === "Enter" && socket) {
+                                       socket.emit("command send", consoleInput.current.value);
+                                       consoleInput.current.value = ""
+                                   }
+                               }}
+                        />
                     </>
                     : <p className="text-red-light pt-4">
                         The console is not available, because Factorio is not running.

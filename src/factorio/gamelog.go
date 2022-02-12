@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hpcloud/tail"
-	"github.com/mroote/factorio-server-manager/bootstrap"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 )
 
 // TailLog tails the Factorio game log file

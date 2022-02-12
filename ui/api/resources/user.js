@@ -24,5 +24,9 @@ export default {
     delete: async (username) => {
         const response = await client.post('/api/user/remove', JSON.stringify({username}));
         return response.data;
+    },
+    changePassword: async data => {
+        const response = await client.post('/api/user/password', data);
+        return response.data;
     }
 }

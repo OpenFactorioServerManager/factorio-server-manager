@@ -96,7 +96,7 @@ func ModPortalModDetails(modId string) (ModPortalStruct, error, int) {
 
 	for key, release := range mod.Releases {
 		requiredVersion = release.InfoJSON.FactorioVersion
-		release.Compatibility = installedBaseVersion.GreaterC(requiredVersion)
+		release.Compatibility = installedBaseVersion.Compatible(requiredVersion, ">=")
 		mod.Releases[key] = release
 	}
 

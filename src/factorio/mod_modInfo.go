@@ -4,13 +4,14 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"errors"
-	"github.com/mroote/factorio-server-manager/lockfile"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/lockfile"
 )
 
 type ModInfoList struct {
@@ -111,7 +112,7 @@ func (modInfoList *ModInfoList) listInstalledMods() error {
 			server := GetFactorioServer()
 
 			// check both the factorio-version and the base mod dependency
-			modInfo.Compatibility = server.Version.GreaterC(modInfo.FactorioVersion)
+			modInfo.Compatibility = server.Version.GEC(modInfo.FactorioVersion)
 			if modInfo.Compatibility && !base.Equals(NilVersion) {
 				modInfo.Compatibility = server.Version.Compatible(base, op)
 			}

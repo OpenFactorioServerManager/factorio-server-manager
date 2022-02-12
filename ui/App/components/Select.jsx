@@ -1,6 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 
-const Select = ({name, inputRef, children, className}) => {
+const Select = ({name, inputRef, options, className = "", defaultValue = ""}) => {
+
+    const [value, setValue] = useState(defaultValue);
+
     return (
         <div className={`${className} relative`}>
         <select
@@ -8,8 +11,10 @@ const Select = ({name, inputRef, children, className}) => {
             name={name}
             ref={inputRef}
             id={name}
+            value={value}
+            onChange={optionElement => setValue(optionElement.target.value)}
         >
-            {children.map(child => child)}
+            {options.map(option => <option value={option.value} key={option.value}>{option.name}</option>)}
         </select>
         <div
             className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-black">

@@ -6,6 +6,7 @@ import Label from "../../../components/Label";
 import Input from "../../../components/Input";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSpinner} from "@fortawesome/free-solid-svg-icons";
+import Error from "../../../components/Error";
 
 const CreateSaveForm = ({onSuccess}) => {
     const {register, handleSubmit, errors} = useForm();
@@ -26,7 +27,7 @@ const CreateSaveForm = ({onSuccess}) => {
             <div className="mb-6">
                 <Label text="Savefile Name" htmlFor="savefile"/>
                 <Input inputRef={register({required: true})} name="savefile"/>
-                {errors.savefile && <span className="block text-red">Savefile Name is required</span>}
+                <Error error={errors.savefile} message="Savefile Name is required"/>
             </div>
             <Button type="success" isLoading={isLoading} isSubmit={true}>Create Save</Button>
         </form>

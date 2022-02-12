@@ -4,49 +4,49 @@ import (
 	"archive/zip"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/mroote/factorio-server-manager/bootstrap"
-	"github.com/mroote/factorio-server-manager/factorio"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/OpenFactorioServerManager/factorio-server-manager/factorio"
+	"github.com/gorilla/mux"
 )
 
-func CheckModPackExists(modPackMap factorio.ModPackMap, modPackName string, w http.ResponseWriter, resp interface{}) error {
+func CheckModPackExists(modPackMap factorio.ModPackMap, modPackName string, w http.ResponseWriter) (resp interface{}, err error) {
 	exists := modPackMap.CheckModPackExists(modPackName)
 	if !exists {
 		resp = fmt.Sprintf("requested modPack {%s} does not exist", modPackName)
 		log.Println(resp)
 		w.WriteHeader(http.StatusNotFound)
-		return errors.New("requested modPack does not exist")
-	}
-	return nil
-}
-
-func CreateNewModPackMap(w http.ResponseWriter, resp *interface{}) (modPackMap factorio.ModPackMap, err error) {
-	modPackMap, err = factorio.NewModPackMap()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		*resp = fmt.Sprintf("Error creating modpackmap aka. list of all modpacks files : %s", err)
-		log.Println(*resp)
+		err = errors.New("requested modPack does not exist")
 	}
 	return
 }
 
-func ReadModPackRequest(w http.ResponseWriter, r *http.Request, resp *interface{}) (err error, packMap factorio.ModPackMap, modPackName string) {
+func CreateNewModPackMap(w http.ResponseWriter) (modPackMap factorio.ModPackMap, resp interface{}, err error) {
+	modPackMap, err = factorio.NewModPackMap()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		resp = fmt.Sprintf("Error creating modpackmap aka. list of all modpacks files : %s", err)
+		log.Println(resp)
+	}
+	return
+}
+
+func ReadModPackRequest(w http.ResponseWriter, r *http.Request) (err error, packMap factorio.ModPackMap, modPackName string, resp interface{}) {
 	vars := mux.Vars(r)
 	modPackName = vars["modpack"]
 
-	packMap, err = CreateNewModPackMap(w, resp)
+	packMap, resp, err = CreateNewModPackMap(w)
 	if err != nil {
 		return
 	}
 
-	if err = CheckModPackExists(packMap, modPackName, w, resp); err != nil {
-		return
-	}
+	resp, err = CheckModPackExists(packMap, modPackName, w)
+
 	return
 }
 
@@ -64,7 +64,7 @@ func ModPackListHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	modPackMap, err := CreateNewModPackMap(w, &resp)
+	modPackMap, resp, err := CreateNewModPackMap(w)
 	if err != nil {
 		return
 	}
@@ -85,12 +85,12 @@ func ModPackCreateHandler(w http.ResponseWriter, r *http.Request) {
 	var modPackStruct struct {
 		Name string `json:"name"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &modPackStruct)
+	resp, err = ReadFromRequestBody(w, r, &modPackStruct)
 	if err != nil {
 		return
 	}
 
-	modPackMap, err := CreateNewModPackMap(w, &resp)
+	modPackMap, resp, err := CreateNewModPackMap(w)
 	if err != nil {
 		return
 	}
@@ -116,7 +116,9 @@ func ModPackDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	err, modPackMap, modPackName := ReadModPackRequest(w, r, &resp)
+	var modPackMap factorio.ModPackMap
+	var modPackName string
+	err, modPackMap, modPackName, resp = ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}
@@ -136,7 +138,7 @@ func ModPackDownloadHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var resp interface{}
 
-	err, _, modPackName := ReadModPackRequest(w, r, &resp)
+	err, _, modPackName, resp := ReadModPackRequest(w, r)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 		WriteResponse(w, resp)
@@ -204,7 +206,9 @@ func ModPackLoadHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	err, modPackMap, modPackName := ReadModPackRequest(w, r, &resp)
+	var modPackMap factorio.ModPackMap
+	var modPackName string
+	err, modPackMap, modPackName, resp = ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}
@@ -232,7 +236,7 @@ func ModPackModListHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	err, modPackMap, modPackName := ReadModPackRequest(w, r, &resp)
+	err, modPackMap, modPackName, resp := ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}
@@ -250,7 +254,7 @@ func ModPackModToggleHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	err, packMap, packName, resp := ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}
@@ -258,7 +262,7 @@ func ModPackModToggleHandler(w http.ResponseWriter, r *http.Request) {
 	var modPackStruct struct {
 		ModName string `json:"name"`
 	}
-	ReadFromRequestBody(w, r, &resp, &modPackStruct)
+	resp, err = ReadFromRequestBody(w, r, &modPackStruct)
 	if err != nil {
 		return
 	}
@@ -282,7 +286,7 @@ func ModPackModDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 
-	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	err, packMap, packName, resp := ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}
@@ -290,7 +294,7 @@ func ModPackModDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	var modPackStruct struct {
 		Name string `json:"name"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &modPackStruct)
+	resp, err = ReadFromRequestBody(w, r, &modPackStruct)
 	if err != nil {
 		return
 	}
@@ -322,12 +326,12 @@ func ModPackModUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		DownloadUrl string `json:"downloadUrl"`
 		Filename    string `json:"filename"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &modPackStruct)
+	resp, err = ReadFromRequestBody(w, r, &modPackStruct)
 	if err != nil {
 		return
 	}
 
-	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	err, packMap, packName, resp := ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}
@@ -366,7 +370,7 @@ func ModPackModDeleteAllHandler(w http.ResponseWriter, r *http.Request) {
 		WriteResponse(w, resp)
 	}()
 
-	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	err, packMap, packName, resp := ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}
@@ -409,7 +413,7 @@ func ModPackModUploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer formFile.Close()
 
-	err, modPackMap, modPackName := ReadModPackRequest(w, r, &resp)
+	err, modPackMap, modPackName, resp := ReadModPackRequest(w, r)
 
 	err = modPackMap[modPackName].Mods.UploadMod(formFile, fileHeader)
 	if err != nil {
@@ -438,12 +442,12 @@ func ModPackModPortalInstallHandler(w http.ResponseWriter, r *http.Request) {
 		Filename    string `json:"fileName"`
 		ModName     string `json:"modName"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &data)
+	resp, err = ReadFromRequestBody(w, r, &data)
 	if err != nil {
 		return
 	}
 
-	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	err, packMap, packName, resp := ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}
@@ -475,12 +479,12 @@ func ModPackModPortalInstallMultipleHandler(w http.ResponseWriter, r *http.Reque
 		Name    string           `json:"name"`
 		Version factorio.Version `json:"version"`
 	}
-	err = ReadFromRequestBody(w, r, &resp, &data)
+	resp, err = ReadFromRequestBody(w, r, &data)
 	if err != nil {
 		return
 	}
 
-	err, packMap, packName := ReadModPackRequest(w, r, &resp)
+	err, packMap, packName, resp := ReadModPackRequest(w, r)
 	if err != nil {
 		return
 	}

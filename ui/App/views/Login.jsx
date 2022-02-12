@@ -7,26 +7,33 @@ import Panel from "../components/Panel";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import {Flash} from "../components/Flash";
+import Error from "../components/Error";
 
 const Login = ({handleLogin}) => {
     const {register, handleSubmit, errors} = useForm();
     const history = useHistory();
-    const location = useLocation()
+    const location = useLocation();
 
     const onSubmit = async data => {
-        const loginAttempt = await user.login(data)
-        if (loginAttempt?.Username) {
-            await handleLogin();
-            history.push('/');
+        try {
+            const loginAttempt = await user.login(data)
+            if (loginAttempt?.username) {
+                await handleLogin(loginAttempt);
+                history.push('/');
+            }
+        } catch (e) {
+            console.log(e);
+            window.flash("Login failed. Username or Password wrong.", "red");
+            throw e;
         }
     };
 
     // on mount check if user is authenticated
     useEffect(() => {
         (async () => {
-            const status = await user.status()
-            if (status?.Username) {
-                await handleLogin();
+            const status = await user.status();
+            if (status?.username) {
+                await handleLogin(status);
                 history.push(location?.state?.from || '/');
             }
         })();
@@ -41,7 +48,7 @@ const Login = ({handleLogin}) => {
                         <div className="mb-4">
                             <Label text="Username" htmlFor="username"/>
                             <Input inputRef={register({required: true})} name="username" placeholder="Username"/>
-                            {errors.username && <span className="block text-red">Username is required</span>}
+                            <Error error={errors.username} message="Username is required"/>
                         </div>
                         <div className="mb-6">
                             <Label text="Password" htmlFor="password"/>
@@ -51,7 +58,7 @@ const Login = ({handleLogin}) => {
                                 type="password"
                                 placeholder="******************"
                             />
-                            {errors.password && <span className="block text-red">Password is required</span>}
+                            <Error error={errors.password} message="Password is required"/>
                         </div>
                         <div className="text-center">
                             <Button type="success" className="w-full" isSubmit={true}>Sign In</Button>

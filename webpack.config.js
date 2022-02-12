@@ -1,18 +1,5 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-/**
- * TODO remove when webpack fixed this error:
- * Links to this error:
- * https://github.com/webpack/webpack/issues/7300
- * https://github.com/JeffreyWay/laravel-mix/pull/1495
- * https://github.com/webpack-contrib/mini-css-extract-plugin/issues/151
- * and more...
- *
- * As far as i know, this will be fixed in webpack 5
- * ~knoxfighter
- */
-const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 
 module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
@@ -33,7 +20,7 @@ module.exports = (env, argv) => {
             },
             extensions: ['.js', '.json', '.jsx']
         },
-        devtool: isProduction ? "none" : "source-map",
+        devtool: isProduction ? false : "source-map",
         module: {
             rules: [
                 {
@@ -74,11 +61,12 @@ module.exports = (env, argv) => {
                         {
                             loader: 'postcss-loader',
                             options: {
-                                ident: 'postcss',
-                                plugins: [
-                                    require('tailwindcss'),
-                                    require('autoprefixer'),
-                                ],
+                                postcssOptions: {
+                                    plugins: [
+                                        require('tailwindcss'),
+                                        require('autoprefixer'),
+                                    ],
+                                }
                             },
                         }
                     ]
@@ -136,17 +124,15 @@ module.exports = (env, argv) => {
         stats: {
             children: false
         },
-        plugins: [
-            new FixStyleOnlyEntriesPlugin(),
-            new MiniCssExtractPlugin({
-                filename: "[name].css"
-            }),
-            (isProduction) ?
-                new OptimizeCssAssetsPlugin({
-                    cssProcessorPluginOptions: {
-                        preset: ['default', { discardComments: { removeAll: true } }],
-                    },
-                }) : () => {}
-        ]
+        plugins: [new MiniCssExtractPlugin()],
+        optimization: {
+            minimizer: [
+                new MiniCssExtractPlugin(
+                    {
+                        filename: "[name].css"
+                    }
+                ),
+            ],
+        }
     }
 }
