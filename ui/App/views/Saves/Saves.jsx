@@ -38,7 +38,7 @@ const Saves = ({serverStatus}) => {
                     title="Create Save"
                     className="lg:w-1/2 lg:mr-3 mb-6 lg:mb-0"
                     content={
-                        serverStatus.status === "running"
+                        serverStatus.running
                             ? <p className="text-red-light pt-4 pb-24">
                                 Create a new Save is only possible if the Factorio server is
                                 not running.

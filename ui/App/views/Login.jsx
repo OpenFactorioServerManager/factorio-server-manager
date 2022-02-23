@@ -10,7 +10,7 @@ import {Flash} from "../components/Flash";
 import Error from "../components/Error";
 
 const Login = ({handleLogin}) => {
-    const {register, handleSubmit, errors} = useForm();
+    const {register, handleSubmit, formState: { errors }} = useForm();
     const history = useHistory();
     const location = useLocation();
 
@@ -47,14 +47,13 @@ const Login = ({handleLogin}) => {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="mb-4">
                             <Label text="Username" htmlFor="username"/>
-                            <Input inputRef={register({required: true})} name="username" placeholder="Username"/>
+                            <Input register={register('username', {required: true})} placeholder="Username"/>
                             <Error error={errors.username} message="Username is required"/>
                         </div>
                         <div className="mb-6">
                             <Label text="Password" htmlFor="password"/>
                             <Input
-                                inputRef={register({required: true})}
-                                name="password"
+                                register={register('password',{required: true})}
                                 type="password"
                                 placeholder="******************"
                             />

@@ -59,9 +59,8 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse, refetchInstalledMods}) =>
 
     const openSelectVersionModal = async data => {
         const mod = await modsResource.portal.info(selectedMod.item.name);
-        setReleases(mod.releases || [])
-        console.log(releases)
-        setIsModalOpen(true)
+        setReleases(mod.releases || []);
+        setIsModalOpen(true);
     }
 
     const install = async release => {
@@ -104,7 +103,7 @@ const AddModForm = ({setIsFactorioAuthenticated, fuse, refetchInstalledMods}) =>
             <div className="mb-4 relative" >
                 <Label text="Mod" htmlFor="mod"/>
                 { typeof fuse !== "undefined"
-                    ? <Input inputRef={register({required: true})} hasAutoComplete={false} name="mod" onKeyDown={handleKeyDown}/>
+                    ? <Input register={register('mod',{required: true})} hasAutoComplete={false} onKeyDown={handleKeyDown}/>
                     : <div className="border border-gray-medium w-full py-2 px-3 text-white">
                         <FontAwesomeIcon icon={faSpinner} spin={true}/> Loading List of Mods from <LinkModPortal/>
                     </div>

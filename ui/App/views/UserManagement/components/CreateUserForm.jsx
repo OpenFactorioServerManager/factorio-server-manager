@@ -8,7 +8,7 @@ import Error from "../../../components/Error";
 
 const CreateUserForm = ({updateUserList}) => {
 
-    const {register, handleSubmit, errors, watch} = useForm();
+    const {register, handleSubmit, formState: {errors}, watch} = useForm();
     const password = watch('password');
 
     const onSubmit = async (data) => {
@@ -22,8 +22,7 @@ const CreateUserForm = ({updateUserList}) => {
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-4">
                 <Label htmlFor="username" text="Username"/>
-                <Input inputRef={register({required: true})}
-                       name="username"
+                <Input register={register('username',{required: true})}
                        type="text"
                        placeholder="Username"
                 />
@@ -32,9 +31,7 @@ const CreateUserForm = ({updateUserList}) => {
             <div className="mb-4">
                 <Label htmlFor="role" text="Role" />
                 <input className="shadow appearance-none border w-full py-2 px-3 text-black"
-                       ref={register({required: true})}
-                       id="role"
-                       name="role"
+                       {...register('role',{required: true})}
                        value="admin"
                        disabled={true}
                        type="text"
@@ -44,8 +41,7 @@ const CreateUserForm = ({updateUserList}) => {
             </div>
             <div className="mb-4">
                 <Label htmlFor="email" text="Email"/>
-                <Input inputRef={register({required: true})}
-                       name="email"
+                <Input register={register('email',{required: true})}
                        type="email"
                        placeholder="Email"
                 />
@@ -53,8 +49,7 @@ const CreateUserForm = ({updateUserList}) => {
             </div>
             <div className="mb-4">
                 <Label htmlFor="password" text="Password"/>
-                <Input inputRef={register({required: true})}
-                       name="password"
+                <Input register={register('password',{required: true})}
                        type="password"
                        placeholder="Password"
                 />
@@ -62,8 +57,8 @@ const CreateUserForm = ({updateUserList}) => {
             </div>
             <div className="mb-4">
                 <Label htmlFor="password_confirmation" text="Password Confirmation"/>
-                <Input inputRef={register({required: true, validate: conformation => conformation === password})}
-                       name="password_confirmation"
+                <Input register={register('password_confirmation',{required: true, validate: conformation => conformation === password})}
+
                        type="password"
                        placeholder="Password Confirmation"
                 />
