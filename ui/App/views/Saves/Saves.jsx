@@ -71,7 +71,7 @@ const Saves = ({serverStatus}) => {
                             {saves.map(save =>
                                 <tr className="py-2 md:py-1" key={save.name}>
                                     <td className="pr-4">{save.name}</td>
-                                    <td className="pr-4">{(new Date(save.last_mod)).toISOString().replace('T', ' ').split('.')[0]}</td>
+                                    <td className="pr-4">{(new Date(save.last_mod)).toLocaleString()}</td>
                                     <td className="pr-4">{parseFloat(save.size / 1024 / 1024).toFixed(3)} MB</td>
                                     <td>
                                         { save.name !== 'Load Latest' && <>
