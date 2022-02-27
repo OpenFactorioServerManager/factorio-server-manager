@@ -1,11 +1,11 @@
 version: "3"
 services:
   factorio-server-manager:
-    image: "ofsm/ofsm:stable"
+    image: "ofsm/ofsm:latest"
     container_name: "factorio-server-manager"
     restart: "unless-stopped"
     environment:
-      - "FACTORIO_VERSION=latest"
+      - "FACTORIO_VERSION=stable"
       - "RCON_PASS"
     ports:
       - "80:80"
