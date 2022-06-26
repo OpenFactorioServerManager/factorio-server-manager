@@ -36,8 +36,7 @@ const LoadMods = ({refreshMods}) => {
         <form onSubmit={handleSubmit(loadMods)}>
             <Label text="Save" htmlFor="save"/>
             <Select
-                name="save"
-                inputRef={register}
+                register={register('save')}
                 className="mb-4"
                 options={saves?.map(save => new Object({
                     name: save.name,

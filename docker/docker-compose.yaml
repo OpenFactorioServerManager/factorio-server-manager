@@ -5,7 +5,7 @@ services:
     container_name: "factorio-server-manager"
     restart: "unless-stopped"
     environment:
-      - "FACTORIO_VERSION=latest"
+      - "FACTORIO_VERSION=stable"
       - "RCON_PASS"
     volumes:
       - "./fsm-data:/opt/fsm-data"

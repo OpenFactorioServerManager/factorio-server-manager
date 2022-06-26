@@ -24,21 +24,18 @@ const App = () => {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [serverStatus, setServerStatus] = useState(null);
-    const history = useHistory();
-
-    const updateServerStatus = async () => {
-        const status = await server.status();
-        if (status) {
-            setServerStatus(status)
-        }
-    }
 
     const handleAuthenticationStatus = useCallback(async (status) => {
         if (status?.username) {
             setIsAuthenticated(true);
-            await updateServerStatus()
+
+            const status = await server.status();
+            setServerStatus(status);
+
             socket.emit('server status subscribe');
-            socket.on('server_status', updateServerStatus);
+            socket.on('server_status', status => {
+                setServerStatus(JSON.parse(status));
+            });
         }
     },[]);
 
@@ -52,7 +49,7 @@ const App = () => {
     const ProtectedRoute = ({component: Component, ...rest}) => (
         <Route {...rest} render={(props) => (
             isAuthenticated && Component
-                ? <Component serverStatus={serverStatus} updateServerStatus={updateServerStatus} {...props} />
+                ? <Component serverStatus={serverStatus} {...props} />
                 : <Redirect to={{
                     pathname: '/login',
                     state: {from: props.location}

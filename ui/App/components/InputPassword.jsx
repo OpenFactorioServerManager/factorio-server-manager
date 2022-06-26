@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-const InputPassword = ({name, inputRef, defaultValue}) => {
+const InputPassword = ({register, defaultValue}) => {
 
     const [type, setType] = useState("password");
 
@@ -16,7 +16,7 @@ const InputPassword = ({name, inputRef, defaultValue}) => {
 
     return (
         <div className="flex">
-            <Input type={type} name={name} defaultValue={defaultValue} inputRef={inputRef} placeholder="*************"/>
+            <Input type={type} defaultValue={defaultValue} {...register} placeholder="*************"/>
             <div
                 className="accentuated cursor-pointer bg-gray-light flex items-center px-2 text-black"
                 onClick={() => setType(type === "password" ? "text" : "password")}

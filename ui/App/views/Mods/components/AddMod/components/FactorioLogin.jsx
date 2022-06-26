@@ -22,11 +22,11 @@ const FactorioLogin = ({setIsFactorioAuthenticated}) => {
             <div className="flex mb-4">
                 <div className="w-1/2 mr-2">
                     <Label text="Username" htmlFor="username"/>
-                    <Input name="username" inputRef={register({required: true})}/>
+                    <Input register={register('username',{required: true})}/>
                 </div>
                 <div className="w-1/2 ml-2">
                     <Label text="Password" htmlFor="password"/>
-                    <Input name="password" type="password" inputRef={register({required: true})}/>
+                    <Input type="password" register={register('password',{required: true})}/>
                 </div>
             </div>
             <Button isSubmit={true}>Login</Button>

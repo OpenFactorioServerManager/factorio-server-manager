@@ -103,7 +103,7 @@ const Mods = ({serverStatus}) => {
             .then(fetchInstalledMods)
     }
 
-    let disabled = serverStatus.status !== "stopped"
+    let disabled = serverStatus.running
 
     return (
         <div>

@@ -4,30 +4,32 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/securecookie"
-	"github.com/jessevdk/go-flags"
 	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/gorilla/securecookie"
+	"github.com/jessevdk/go-flags"
 )
 
 type Flags struct {
-	ConfFile           string `long:"conf" default:"./conf.json" description:"Specify location of Factorio Server Manager config file."`
-	FactorioDir        string `long:"dir" default:"./" description:"Specify location of Factorio directory."`
-	ServerIP           string `long:"host" default:"0.0.0.0" description:"Specify IP for webserver to listen on."`
-	FactorioIP         string `long:"game-bind-address" default:"0.0.0.0" description:"Specify IP for Fcatorio gamer server to listen on."`
-	FactorioPort       string `long:"port" default:"80" description:"Specify a port for the server."`
-	FactorioConfigFile string `long:"config" default:"config/config.ini" description:"Specify location of Factorio config.ini file"`
-	FactorioMaxUpload  int64  `long:"max-upload" default:"20.971.520" description:"Maximum filesize for uploaded files (default 20MB)."`
-	FactorioBinary     string `long:"bin" default:"bin/x64/factorio" description:"Location of Factorio Server binary file"`
-	GlibcCustom        string `long:"glibc-custom" default:"false" description:"By default false, if custom glibc is required set this to true and add glibc-loc and glibc-lib-loc parameters"`
-	GlibcLocation      string `long:"glibc-loc" default:"/opt/glibc-2.18/lib/ld-2.18.so" description:"Location glibc ld.so file if needed (ex. /opt/glibc-2.18/lib/ld-2.18.so)"`
-	GlibcLibLoc        string `long:"glibc-lib-loc" default:"/opt/glibc-2.18/lib" description:"Location of glibc lib folder (ex. /opt/glibc-2.18/lib)"`
-	Autostart          string `long:"autostart" default:"false" description:"Autostart factorio server on bootup of FSM, default false [true/false]"`
-	ModPackDir         string `long:"mod-pack-dir" default:"./mod_packs" description:"Directory to store mod packs."`
+	ConfFile           string `long:"conf" default:"./conf.json" description:"Specify location of Factorio Server Manager config file." env:"FSM_CONF"`
+	FactorioDir        string `long:"dir" default:"./" description:"Specify location of Factorio directory." env:"FSM_DIR"`
+	ServerIP           string `long:"host" default:"0.0.0.0" description:"Specify IP for webserver to listen on." env:"FSM_SERVER_IP"`
+	FactorioIP         string `long:"game-bind-address" default:"0.0.0.0" description:"Specify IP for Factorio game server to listen on." env:"FSM_FACTORIO_IP"`
+	FactorioPort       string `long:"port" default:"80" description:"Specify a port for the server." env:"FSM_PORT"`
+	FactorioConfigFile string `long:"config" default:"config/config.ini" description:"Specify location of Factorio config.ini file." env:"FSM_FACTORIO_CONFIG_FILE"`
+	FactorioMaxUpload  int64  `long:"max-upload" default:"20" description:"Maximum filesize for uploaded files in MB." env:"FSM_MAX_UPLOAD"`
+	FactorioBinary     string `long:"bin" default:"bin/x64/factorio" description:"Location of Factorio Server binary file." env:"FSM_BINARY"`
+	FactorioRconPort   int    `long:"rcon-port" default:"0" description:"Specify port for rcon admin console." env:"FSM_RCON_PORT"`
+	GlibcCustom        string `long:"glibc-custom" default:"false" description:"By default false, if custom glibc is required set this to true and add glibc-loc and glibc-lib-loc parameters." env:"FSM_GLIBC_CUSTOM"`
+	GlibcLocation      string `long:"glibc-loc" default:"/opt/glibc-2.18/lib/ld-2.18.so" description:"Location glibc ld.so file if needed (ex. /opt/glibc-2.18/lib/ld-2.18.so)." env:"FSM_GLIBC_LOCATION"`
+	GlibcLibLoc        string `long:"glibc-lib-loc" default:"/opt/glibc-2.18/lib" description:"Location of glibc lib folder (ex. /opt/glibc-2.18/lib)." env:"FSM_GLIBC_LIB"`
+	Autostart          string `long:"autostart" default:"false" description:"Autostart factorio server on bootup of FSM, default false [true/false]." env:"FSM_AUTOSTART"`
+	ModPackDir         string `long:"mod-pack-dir" default:"./mod_packs" description:"Directory to store mod packs." env:"FSM_MODPACK_DIR"`
 }
 
 type Config struct {
@@ -60,7 +62,8 @@ type Config struct {
 	Autostart               string `json:"-"`
 	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
 	ConsoleLogFile          string `json:"console_log_file,omitempty"`
-	Secure                  bool   `json:"secure"` // set to `false` to use this tool without SSL/TLS (Default: `true`)
+	ChatLogFile             string `json:"chat_log_file,omitempty"` // separate log file for chat (incl join/quit)
+	Secure                  bool   `json:"secure"`                  // set to `false` to use this tool without SSL/TLS (Default: `true`)
 }
 
 // set Configs default values. JSON unmarshal will replace when it found something different
@@ -71,10 +74,20 @@ var instantiated = Config{
 
 func NewConfig(args []string) Config {
 	var opts Flags
-	_, err := flags.NewParser(&opts, flags.IgnoreUnknown).ParseArgs(args)
+	parser := flags.NewParser(&opts, flags.Default|flags.IgnoreUnknown)
+
+	_, err := parser.Parse()
 	if err != nil {
-		failOnError(err, "Failed to parse arguments")
+		switch flagsErr := err.(type) {
+		case flags.ErrorType:
+			if flagsErr == flags.ErrHelp {
+				os.Exit(0)
+			}
+		default:
+			os.Exit(1)
+		}
 	}
+
 	instantiated.mapFlags(opts)
 	instantiated.loadServerConfig()
 
@@ -89,7 +102,7 @@ func GetConfig() Config {
 }
 
 func (config *Config) updateConfigFile() {
-	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
+	file, err := os.Open(config.ConfFile)
 	failOnError(err, "Error opening file")
 	defer file.Close()
 
@@ -139,7 +152,7 @@ func (config *Config) updateConfigFile() {
 
 	if resave {
 		// save json file again
-		file, err = os.OpenFile(config.ConfFile, os.O_WRONLY, 0)
+		file, err = os.Create(config.ConfFile)
 		failOnError(err, "Error opening file for writing")
 		defer file.Close()
 
@@ -157,7 +170,7 @@ func (config *Config) loadServerConfig() {
 	// load and potentially update conf.json
 	config.updateConfigFile()
 
-	file, err := os.OpenFile(config.ConfFile, os.O_RDONLY, 0)
+	file, err := os.Open(config.ConfFile)
 	failOnError(err, "Error loading config file.")
 	defer file.Close()
 
@@ -208,8 +221,12 @@ func (config *Config) mapFlags(flags Flags) {
 	config.FactorioConfigFile = filepath.Join(flags.FactorioDir, flags.FactorioConfigFile)
 	config.FactorioCredentialsFile = "./factorio.auth"
 	config.FactorioAdminFile = "server-adminlist.json"
-	config.MaxUploadSize = flags.FactorioMaxUpload
 	config.ConsoleLogFile = filepath.Join(flags.FactorioDir, "factorio-server-console.log")
+	config.FactorioRconPort = flags.FactorioRconPort
+
+	config.MaxUploadSize = flags.FactorioMaxUpload * 100000
+	log.Printf("Max upload: %d", config.MaxUploadSize)
+	log.Printf("Conffile: %s", config.ConfFile)
 
 	if filepath.IsAbs(flags.FactorioBinary) {
 		config.FactorioBinary = flags.FactorioBinary

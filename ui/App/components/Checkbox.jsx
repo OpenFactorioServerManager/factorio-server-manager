@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 
-const Checkbox = ({name, text, inputRef, checked, className, textSize = 'sm', onChange = null}) => {
+const Checkbox = ({name, text, register = {}, checked, className, textSize = 'sm', onChange = null}) => {
 
     const [value, setValue] = useState(false);
 
@@ -22,7 +22,7 @@ const Checkbox = ({name, text, inputRef, checked, className, textSize = 'sm', on
         <label className={`block text-gray-500 font-bold ${className}`}>
             <input
                 className="mr-2 leading-tight"
-                ref={inputRef}
+                {...register}
                 name={name}
                 id={name}
                 onChange={updateChecked}

@@ -1,8 +1,7 @@
 import React from "react";
 
 const Input = ({
-                   name,
-                   inputRef,
+                   register,
                    placeholder = null,
                    isInline = false,
                    type = "text",
@@ -37,9 +36,7 @@ const Input = ({
                 + (disabled ? 'bg-gray-dark text-gray-light cursor-not-allowed' : 'bg-gray-light text-black')
             }
             placeholder={placeholder}
-            ref={inputRef}
-            name={name}
-            id={name}
+            {...register}
             type={type}
             onKeyDown={onKeyDown}
             onChange={onChange}

@@ -29,8 +29,7 @@ const UploadMod = ({refetchInstalledMods}) => {
                 <input
                     className="absolute left-0 top-0 opacity-0 cursor-pointer w-full h-full"
                     onChange={e => setFileName(e.currentTarget.files[0].name)}
-                    name="mod_file"
-                    ref={register}
+                    ref={register('mod_file')}
                     id="mod_file"
                     type="file"
                 />

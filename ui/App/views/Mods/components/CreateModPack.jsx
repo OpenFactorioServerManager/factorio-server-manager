@@ -31,7 +31,7 @@ const CreateModPack = ({onSuccess}) => {
             <form onSubmit={handleSubmit(createModPack)}>
                 <div className="mb-4">
                     <Label text="Name" htmlFor="name"/>
-                    <Input name="name" inputRef={register({required: true})}/>
+                    <Input register={register('name',{required: true})}/>
                 </div>
                 <Button size="sm" isLoading={isCreating} isSubmit={true}>Create</Button>
             </form>
