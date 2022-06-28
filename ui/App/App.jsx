@@ -2,9 +2,9 @@ import React, {useCallback, useState} from 'react';
 
 import user from "../api/resources/user";
 import Login from "./views/Login";
-import {Redirect, Route, Switch, useHistory} from "react-router";
+import {Navigate, Routes} from "react-router";
 import Controls from "./views/Controls";
-import {BrowserRouter} from "react-router-dom";
+import {BrowserRouter, Link} from "react-router-dom";
 import Logs from "./views/Logs";
 import Saves from "./views/Saves/Saves";
 import Layout from "./components/Layout";
@@ -46,10 +46,10 @@ const App = () => {
     }, []);
 
     const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
-        <Route {...rest} render={(props) => (
+        <Link {...rest} render={(props) => (
             isAuthenticated && Component
                 ? <Component serverStatus={serverStatus} {...props} />
-                : <Redirect to={{
+                : <Navigate to={{
                     pathname: '/login',
                     state: {from: props.location}
                 }}/>
@@ -58,22 +58,22 @@ const App = () => {
 
     return (
         <BrowserRouter basename="/">
-            <Switch>
-                <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
+            <Routes>
+                <Link to="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
 
                 <Layout handleLogout={handleLogout} serverStatus={serverStatus}>
-                    <ProtectedRoute exact path="/" component={Controls}/>
-                    <ProtectedRoute path="/saves" component={Saves}/>
-                    <ProtectedRoute path="/mods" component={Mods}/>
-                    <ProtectedRoute path="/server-settings" component={ServerSettings}/>
-                    <ProtectedRoute path="/game-settings" component={GameSettings}/>
-                    <ProtectedRoute path="/console" component={Console}/>
-                    <ProtectedRoute path="/logs" component={Logs}/>
-                    <ProtectedRoute path="/user-management" component={UserManagement}/>
-                    <ProtectedRoute path="/help" component={Help}/>
+                    <ProtectedRoute end to="/" component={Controls}/>
+                    <ProtectedRoute to="/saves" component={Saves}/>
+                    <ProtectedRoute to="/mods" component={Mods}/>
+                    <ProtectedRoute to="/server-settings" component={ServerSettings}/>
+                    <ProtectedRoute to="/game-settings" component={GameSettings}/>
+                    <ProtectedRoute to="/console" component={Console}/>
+                    <ProtectedRoute to="/logs" component={Logs}/>
+                    <ProtectedRoute to="/user-management" component={UserManagement}/>
+                    <ProtectedRoute to="/help" component={Help}/>
                     <Flash/>
                 </Layout>
-            </Switch>
+            </Routes>
         </BrowserRouter>
     );
 }
