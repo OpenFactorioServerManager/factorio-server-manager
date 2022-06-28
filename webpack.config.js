@@ -63,6 +63,7 @@ module.exports = (env, argv) => {
                             options: {
                                 postcssOptions: {
                                     plugins: [
+                                        require('postcss-import'),
                                         require('tailwindcss'),
                                         require('autoprefixer'),
                                     ],
