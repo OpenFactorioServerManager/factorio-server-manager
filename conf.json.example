@@ -3,5 +3,7 @@
 	"sq_lite_database_file": "sqlite.db",
 	"cookie_encryption_key": "",
 	"settings_file": "server-settings.json",
-	"log_file": "factorio-server-manager.log"
+	"log_file": "factorio-server-manager.log",
+	"factorio_port": 34197,
+	"factorio_port_lock": false,
 }

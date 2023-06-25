@@ -48,6 +48,7 @@ type Config struct {
 	FactorioCredentialsFile string `json:"factorio_credentials_file,omitempty"`
 	FactorioIP              string `json:"factorio_ip,omitempty"`
 	FactorioPort            string `json:"factorio_port,omitempty"`
+	FactorioPortLock        bool   `json:"factorio_port_lock,omitempty"`
 	FactorioAdminFile       string `json:"factorio_admin_file,omitempty"`
 	ServerIP                string `json:"server_ip,omitempty"`
 	ServerPort              string `json:"server_port,omitempty"`

@@ -9,6 +9,7 @@ const Input = ({
                    onKeyDown = () => null,
                    min = null,
                    value = undefined,
+                   readOnly = false,
                    disabled = false
                }) => {
     return (
@@ -22,6 +23,7 @@ const Input = ({
             defaultValue={defaultValue}
             min={min}
             value={value}
+            readonly={readOnly}
             disabled={disabled}
         />
     )

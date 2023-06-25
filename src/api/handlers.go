@@ -410,6 +410,7 @@ func CheckServer(w http.ResponseWriter, r *http.Request) {
 
 	config := bootstrap.GetConfig()
 	serverInfo.DefaultPort = config.FactorioPort
+	serverInfo.PortLock = config.FactorioPortLock
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 }
