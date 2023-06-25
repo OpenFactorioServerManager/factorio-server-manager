@@ -403,9 +403,13 @@ func KillServer(w http.ResponseWriter, r *http.Request) {
 }
 
 func CheckServer(w http.ResponseWriter, r *http.Request) {
+	var serverInfo = factorio.GetFactorioServer()
 	defer func() {
-		WriteResponse(w, factorio.GetFactorioServer())
+		WriteResponse(w, serverInfo)
 	}()
+
+	config := bootstrap.GetConfig()
+	serverInfo.DefaultPort = config.FactorioPort
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 }

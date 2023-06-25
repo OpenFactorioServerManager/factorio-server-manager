@@ -26,6 +26,7 @@ type Server struct {
 	Latency        int                    `json:"latency"`
 	BindIP         string                 `json:"bindip"`
 	Port           int                    `json:"port"`
+	DefaultPort    string                 `json:"default_port"`
 	Running        bool                   `json:"running"`
 	Version        Version                `json:"fac_version"`
 	BaseModVersion string                 `json:"base_mod_version"`
@@ -265,7 +266,7 @@ func (server *Server) Run() error {
 	} else {
 		args = append(args, "--start-server", filepath.Join(config.FactorioSavesDir, server.Savefile))
 	}
-	
+
 	// Write chat log to a different file if requested (if not it will be mixed-in with the default logfile)
 	if config.ChatLogFile != "" {
 		args = append(args, "--console-log", config.ChatLogFile)
@@ -278,7 +279,7 @@ func (server *Server) Run() error {
 		log.Println("Starting server with command: ", config.FactorioBinary, args)
 		server.Cmd = exec.Command(config.FactorioBinary, args...)
 	}
-	
+
 	server.StdOut, err = server.Cmd.StdoutPipe()
 	if err != nil {
 		log.Printf("Error opening stdout pipe: %s", err)
