@@ -34,7 +34,7 @@ const Login = ({handleLogin}) => {
             const status = await user.status();
             if (status?.username) {
                 await handleLogin(status);
-                history.push(location?.state?.from || '/');
+                navigate(location?.state?.from || '/');
             }
         })();
     }, [])

@@ -34,7 +34,7 @@ const Layout = ({handleLogout, serverStatus}) => {
                 end
                 to={to}
                 className={({isActive}) => {
-                    [
+                    return [
                         isActive ? "bg-orange" : "",
                         `hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 w-full block${last ? '' : ' mb-1'}`,
                     ].join(" ")
