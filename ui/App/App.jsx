@@ -4,7 +4,7 @@ import user from "../api/resources/user";
 import Login from "./views/Login";
 import {Navigate, Route, Routes} from "react-router";
 import Controls from "./views/Controls";
-import {BrowserRouter, Link, Outlet} from "react-router-dom";
+import {BrowserRouter, Outlet} from "react-router-dom";
 import Logs from "./views/Logs";
 import Saves from "./views/Saves/Saves";
 import Layout from "./components/Layout";
@@ -53,7 +53,7 @@ const App = () => {
     }
 
     return (
-        <BrowserRouter basename="/">
+        <BrowserRouter>
             <Routes>
                 <Route path="login" element={<Login handleLogin={handleAuthenticationStatus}/>}/>
 
