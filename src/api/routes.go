@@ -32,28 +32,28 @@ func ServerOffMiddleware(next http.Handler) http.Handler {
 }
 
 func NewRouter() *mux.Router {
-	r := mux.NewRouter().StrictSlash(true)
+	mainRouter := mux.NewRouter().StrictSlash(true)
 
 	// create subrouter for authenticated calls
-	sr := r.NewRoute().Subrouter()
-	sr.Use(AuthMiddleware)
+	subRouter := mainRouter.NewRoute().Subrouter()
+	subRouter.Use(AuthMiddleware)
 
 	// API subrouter
 	// Serves all JSON REST handlers prefixed with /api
-	s := r.PathPrefix("/api").Subrouter()
-	s.Use(AuthMiddleware)
+	apiRouter := mainRouter.PathPrefix("/api").Subrouter()
+	apiRouter.Use(AuthMiddleware)
 
 	// use subrouter for calls, that run only, when server is turned off
-	so := s.NewRoute().Subrouter()
+	so := apiRouter.NewRoute().Subrouter()
 	so.Use(ServerOffMiddleware)
 
-	s.NewRoute().Subrouter()
+	apiRouter.NewRoute().Subrouter()
 	for _, route := range apiRoutes {
 		var router *mux.Router
 		if route.ServerOff {
 			router = so
 		} else {
-			router = s
+			router = apiRouter
 		}
 		router.Methods(route.Method).
 			Path(route.Pattern).
@@ -62,7 +62,7 @@ func NewRouter() *mux.Router {
 	}
 
 	// The login handler does not check for authentication.
-	r.Path("/api/login").
+	mainRouter.Path("/api/login").
 		Methods("POST").
 		Name("LoginUser").
 		HandlerFunc(LoginUser)
@@ -71,7 +71,7 @@ func NewRouter() *mux.Router {
 	// Clients connecting to /ws establish websocket connection by upgrading
 	// HTTP session.
 	// Ensure user is logged in with the AuthorizeHandler middleware
-	sr.Path("/ws").
+	subRouter.Path("/ws").
 		Methods("GET").
 		Name("Websocket").
 		Handler(
@@ -85,51 +85,51 @@ func NewRouter() *mux.Router {
 	// Serves the frontend application from the app directory
 	// Uses basic file server to serve index.html and Javascript application
 	// Routes match the ones defined in React frontend application
-	r.Path("/login").
+	mainRouter.Path("/login").
 		Methods("GET").
 		Name("Login").
 		Handler(http.StripPrefix("/login", http.FileServer(http.Dir("./app/"))))
 
-	sr.Path("/saves").
+	subRouter.Path("/saves").
 		Methods("GET").
 		Name("Saves").
 		Handler(http.StripPrefix("/saves", http.FileServer(http.Dir("./app/"))))
-	sr.Path("/mods").
+	subRouter.Path("/mods").
 		Methods("GET").
 		Name("Mods").
 		Handler(http.StripPrefix("/mods", http.FileServer(http.Dir("./app/"))))
-	sr.Path("/server-settings").
+	subRouter.Path("/server-settings").
 		Methods("GET").
 		Name("Server settings").
 		Handler(http.StripPrefix("/server-settings", http.FileServer(http.Dir("./app/"))))
-	sr.Path("/game-settings").
+	subRouter.Path("/game-settings").
 		Methods("GET").
 		Name("Game settings").
 		Handler(http.StripPrefix("/game-settings", http.FileServer(http.Dir("./app/"))))
-	sr.Path("/console").
+	subRouter.Path("/console").
 		Methods("GET").
 		Name("Console").
 		Handler(http.StripPrefix("/console", http.FileServer(http.Dir("./app/"))))
-	sr.Path("/logs").
+	subRouter.Path("/logs").
 		Methods("GET").
 		Name("Logs").
 		Handler(http.StripPrefix("/logs", http.FileServer(http.Dir("./app/"))))
-	sr.Path("/user-management").
+	subRouter.Path("/user-management").
 		Methods("GET").
 		Name("User management").
 		Handler(http.StripPrefix("/user-management", http.FileServer(http.Dir("./app/"))))
-	sr.Path("/help").
+	subRouter.Path("/help").
 		Methods("GET").
 		Name("Help").
 		Handler(http.StripPrefix("/help", http.FileServer(http.Dir("./app/"))))
 
 	// catch all route
-	r.PathPrefix("/").
+	mainRouter.PathPrefix("/").
 		Methods("GET").
 		Name("Index").
 		Handler(http.FileServer(http.Dir("./app/")))
 
-	return r
+	return mainRouter
 }
 
 // Defines all API REST endpoints

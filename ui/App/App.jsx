@@ -2,9 +2,9 @@ import React, {useCallback, useState} from 'react';
 
 import user from "../api/resources/user";
 import Login from "./views/Login";
-import {Navigate, Routes} from "react-router";
+import {Navigate, Route, Routes} from "react-router";
 import Controls from "./views/Controls";
-import {BrowserRouter, Link} from "react-router-dom";
+import {BrowserRouter, Link, Outlet} from "react-router-dom";
 import Logs from "./views/Logs";
 import Saves from "./views/Saves/Saves";
 import Layout from "./components/Layout";
@@ -45,34 +45,32 @@ const App = () => {
         }
     }, []);
 
-    const ProtectedRoute = useCallback(({component: Component, ...rest}) => (
-        <Link {...rest} render={(props) => (
-            isAuthenticated && Component
-                ? <Component serverStatus={serverStatus} {...props} />
-                : <Navigate to={{
-                    pathname: '/login',
-                    state: {from: props.location}
-                }}/>
-        )}/>
-    ), [isAuthenticated, serverStatus]);
+    const ProtectedRoute = ({isAuthenticated}) => {
+        if (!isAuthenticated) {
+            return <Navigate to="/login" replace />;
+        }
+        return <Outlet/>;
+    }
 
     return (
         <BrowserRouter basename="/">
             <Routes>
-                <Link to="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
+                <Route path="login" element={<Login handleLogin={handleAuthenticationStatus}/>}/>
 
-                <Layout handleLogout={handleLogout} serverStatus={serverStatus}>
-                    <ProtectedRoute end to="/" component={Controls}/>
-                    <ProtectedRoute to="/saves" component={Saves}/>
-                    <ProtectedRoute to="/mods" component={Mods}/>
-                    <ProtectedRoute to="/server-settings" component={ServerSettings}/>
-                    <ProtectedRoute to="/game-settings" component={GameSettings}/>
-                    <ProtectedRoute to="/console" component={Console}/>
-                    <ProtectedRoute to="/logs" component={Logs}/>
-                    <ProtectedRoute to="/user-management" component={UserManagement}/>
-                    <ProtectedRoute to="/help" component={Help}/>
-                    <Flash/>
-                </Layout>
+                {/* route with only `element` will cause the proper children to be place in `<Outlet/>` */}
+                <Route element={<ProtectedRoute isAuthenticated={isAuthenticated}/> }>
+                    <Route element={<Layout handleLogout={handleLogout} serverStatus={serverStatus} />}>
+                        <Route index element={<Controls serverStatus={serverStatus}/>}/>
+                        <Route path="saves" element={<Saves serverStatus={serverStatus}/>}/>
+                        <Route path="mods" element={<Mods serverStatus={serverStatus}/>}/>
+                        <Route path="server-settings" element={<ServerSettings serverStatus={serverStatus}/>}/>
+                        <Route path="game-settings" element={<GameSettings serverStatus={serverStatus}/>}/>
+                        <Route path="console" element={<Console serverStatus={serverStatus}/>}/>
+                        <Route path="logs" element={<Logs serverStatus={serverStatus}/>}/>
+                        <Route path="user-management" element={<UserManagement serverStatus={serverStatus}/>}/>
+                        <Route path="help" element={<Help serverStatus={serverStatus}/>}/>
+                    </Route>
+                </Route>
             </Routes>
         </BrowserRouter>
     );
