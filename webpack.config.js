@@ -1,5 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
@@ -126,12 +127,14 @@ module.exports = (env, argv) => {
         },
         plugins: [new MiniCssExtractPlugin()],
         optimization: {
+            minimize: isProduction,
             minimizer: [
                 new MiniCssExtractPlugin(
                     {
                         filename: "[name].css"
                     }
                 ),
+                new TerserPlugin()
             ],
         }
     }

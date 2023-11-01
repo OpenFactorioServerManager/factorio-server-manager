@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {NavLink} from "react-router-dom";
+import {NavLink, Outlet} from "react-router-dom";
 import Button from "./Button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBars} from "@fortawesome/free-solid-svg-icons";
+import {Flash} from "./Flash";
 
-const Layout = ({children, handleLogout, serverStatus}) => {
+const Layout = ({handleLogout, serverStatus}) => {
 
     const [isNavCollapsed, setIsNavCollapsed] = useState(true);
 
@@ -30,10 +31,14 @@ const Layout = ({children, handleLogout, serverStatus}) => {
         return (
             <NavLink
                 onClick={() => setIsNavCollapsed(true)}
-                exact={true}
+                end
                 to={to}
-                activeClassName="bg-orange"
-                className={`hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 w-full block${last ? '' : ' mb-1'}`}
+                className={({isActive}) => {
+                    return [
+                        isActive ? "bg-orange" : "",
+                        `hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 w-full block${last ? '' : ' mb-1'}`,
+                    ].join(" ")
+                }}
             >{children}</NavLink>)
     }
 
@@ -90,7 +95,8 @@ const Layout = ({children, handleLogout, serverStatus}) => {
             {/*Main*/}
             <div className="md:ml-88 min-h-screen">
                 <div className="container md:mx-auto pt-16 md:px-6">
-                    {children}
+                    <Outlet />
+                    <Flash/>
                 </div>
             </div>
         </>
