@@ -76,7 +76,7 @@ func NewConfig(args []string) Config {
 	var opts Flags
 	parser := flags.NewParser(&opts, flags.Default|flags.IgnoreUnknown)
 
-	_, err := parser.Parse()
+	_, err := parser.ParseArgs(args)
 	if err != nil {
 		switch flagsErr := err.(type) {
 		case flags.ErrorType:

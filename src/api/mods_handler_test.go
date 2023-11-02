@@ -23,7 +23,10 @@ import (
 func TestMain(m *testing.M) {
 	var err error
 
-	godotenv.Load("../.env")
+	err = godotenv.Load("../.env")
+	if err != nil {
+		panic(err)
+	}
 
 	// basic setup stuff
 	bootstrap.NewConfig([]string{
