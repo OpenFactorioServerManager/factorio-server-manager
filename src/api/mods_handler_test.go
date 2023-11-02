@@ -23,13 +23,16 @@ import (
 func TestMain(m *testing.M) {
 	var err error
 
-	godotenv.Load("../.env")
+	err = godotenv.Load("../.env")
+	if err != nil {
+		log.Println("WARN: wasn't able to load env: ", err)
+	}
 
 	// basic setup stuff
 	bootstrap.NewConfig([]string{
-		"--dir", os.Getenv("dir"),
-		"--conf", os.Getenv("conf"),
-		"--mod-pack-dir", os.Getenv("mod_pack_dir"),
+		"--dir", os.Getenv("FSM_DIR"),
+		"--conf", os.Getenv("FSM_CONF"),
+		"--mod-pack-dir", os.Getenv("FSM_MODPACK_DIR"),
 		"--mod-dir", os.Getenv("mod_dir"),
 	})
 
