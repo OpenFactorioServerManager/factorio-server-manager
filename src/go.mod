@@ -1,6 +1,6 @@
 module github.com/OpenFactorioServerManager/factorio-server-manager
 
-go 1.17
+go 1.18
 
 require (
 	github.com/OpenFactorioServerManager/rcon v0.0.0-20120923215419-8fbb8268b60a
