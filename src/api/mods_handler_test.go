@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 
 	err = godotenv.Load("../.env")
 	if err != nil {
-		panic(err)
+		log.Println("WARN: wasn't able to load env: ", err)
 	}
 
 	// basic setup stuff
