@@ -3,9 +3,9 @@ package bootstrap
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/glebarez/sqlite"
 	"github.com/syndtr/goleveldb/leveldb"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
 	"math/rand"
