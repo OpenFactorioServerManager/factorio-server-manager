@@ -28,13 +28,13 @@ factorio-server-manager-linux:
 	@echo "Building Backend - Linux"
 	@mkdir -p factorio-server-manager
 	@cd src; \
-	CGO_ENABLED=1 GO111MODULE=on GOOS=linux GOARCH=amd64 go build -o ../factorio-server-manager/factorio-server-manager .
+	CGO_ENABLED=0 GO111MODULE=on GOOS=linux GOARCH=amd64 go build -o ../factorio-server-manager/factorio-server-manager .
 
 factorio-server-manager-windows:
 	@echo "Building Backend - Windows"
 	@mkdir -p factorio-server-manager
 	@cd src; \
-	GO111MODULE=on GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc go build -ldflags="-extldflags=-static" -o ../factorio-server-manager/factorio-server-manager.exe .
+	GO111MODULE=on GOOS=windows GOARCH=amd64 CGO_ENABLED=0 CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc go build -ldflags="-extldflags=-static" -o ../factorio-server-manager/factorio-server-manager.exe .
 
 gen_release: build/factorio-server-manager-linux.zip build/factorio-server-manager-windows.zip
 	@echo "Done"
