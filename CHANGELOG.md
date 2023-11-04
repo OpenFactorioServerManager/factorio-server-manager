@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.11.0] - TBD
 ### Changed
 - Configuration environment variables are now uppercase and prefixed with FSM
+- updated all dependencies - Thanks to @jannaahs and @knoxfighter
+- removed CGO as dependency
 
 ## [0.10.1] - 2021-03-09
 ### Fixed
