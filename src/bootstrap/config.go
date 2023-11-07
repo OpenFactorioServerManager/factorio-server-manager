@@ -59,7 +59,7 @@ type Config struct {
 	GlibcCustom             string `json:"-"`
 	GlibcLocation           string `json:"-"`
 	GlibcLibLoc             string `json:"-"`
-	Autostart               string `json:"-"`
+	Autostart               string `json:"autostart,omitempty"`
 	ConsoleCacheSize        int    `json:"console_cache_size,omitempty"` // the amount of cached lines, inside the factorio output cache
 	ConsoleLogFile          string `json:"console_log_file,omitempty"`
 	ChatLogFile             string `json:"chat_log_file,omitempty"` // separate log file for chat (incl join/quit)
