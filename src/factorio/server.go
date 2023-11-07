@@ -26,6 +26,8 @@ type Server struct {
 	Latency        int                    `json:"latency"`
 	BindIP         string                 `json:"bindip"`
 	Port           int                    `json:"port"`
+	DefaultPort    string                 `json:"default_port"`
+	PortLock       bool                   `json:"port_lock"`
 	Running        bool                   `json:"running"`
 	Version        Version                `json:"fac_version"`
 	BaseModVersion string                 `json:"base_mod_version"`
@@ -249,9 +251,15 @@ func (server *Server) Run() error {
 		args = append(args, "--library-path", config.GlibcLibLoc, config.FactorioBinary, "--executable-path", config.FactorioBinary)
 	}
 
+	game_port := strconv.Itoa(server.Port)
+	if (config.FactorioPortLock) {
+		// Force the game to run with --game-port when "factorio_port_lock" is set to true in conf.json.
+		game_port = config.FactorioPort
+	}
+
 	args = append(args,
 		"--bind", server.BindIP,
-		"--port", strconv.Itoa(server.Port),
+		"--port", game_port,
 		"--server-settings", config.SettingsFile,
 		"--rcon-port", strconv.Itoa(config.FactorioRconPort),
 		"--rcon-password", config.FactorioRconPass)
@@ -265,7 +273,7 @@ func (server *Server) Run() error {
 	} else {
 		args = append(args, "--start-server", filepath.Join(config.FactorioSavesDir, server.Savefile))
 	}
-	
+
 	// Write chat log to a different file if requested (if not it will be mixed-in with the default logfile)
 	if config.ChatLogFile != "" {
 		args = append(args, "--console-log", config.ChatLogFile)
@@ -278,7 +286,7 @@ func (server *Server) Run() error {
 		log.Println("Starting server with command: ", config.FactorioBinary, args)
 		server.Cmd = exec.Command(config.FactorioBinary, args...)
 	}
-	
+
 	server.StdOut, err = server.Cmd.StdoutPipe()
 	if err != nil {
 		log.Printf("Error opening stdout pipe: %s", err)

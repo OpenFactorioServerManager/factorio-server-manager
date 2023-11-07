@@ -89,7 +89,8 @@ const Controls = ({serverStatus}) => {
                                 <Input
                                     type="number"
                                     min={1}
-                                    defaultValue={"34197"}
+                                    defaultValue={serverStatus.default_port}
+                                    readOnly={serverStatus.port_freeze}
                                     register={register('port',{required: true})}
                                 />
                                 <Error error={errors.port} message="Port is required"/>
