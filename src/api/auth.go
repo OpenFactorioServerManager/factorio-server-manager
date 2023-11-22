@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
+	"github.com/glebarez/sqlite"
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 

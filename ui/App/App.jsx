@@ -2,9 +2,9 @@ import React, {useCallback, useState, useEffect} from 'react';
 
 import user from "../api/resources/user";
 import Login from "./views/Login";
-import {Redirect, Route, Switch, useHistory} from "react-router";
+import {Navigate, Route, Routes} from "react-router";
 import Controls from "./views/Controls";
-import {BrowserRouter} from "react-router-dom";
+import {BrowserRouter, Outlet} from "react-router-dom";
 import Logs from "./views/Logs";
 import Saves from "./views/Saves/Saves";
 import Layout from "./components/Layout";
@@ -46,16 +46,12 @@ const App = () => {
         }
     }, []);
 
-    const ProtectedRoute = ({component: Component, ...rest}) => (
-        <Route {...rest} render={(props) => (
-            isAuthenticated && Component
-                ? <Component serverStatus={serverStatus} {...props} />
-                : <Redirect to={{
-                    pathname: '/login',
-                    state: {from: props.location}
-                }}/>
-        )}/>
-    );
+    const ProtectedRoute = ({isAuthenticated}) => {
+        if (!isAuthenticated) {
+            return <Navigate to="/login" state={{from: window.location.pathname}} />;
+        }
+        return <Outlet/>;
+    }
 
     useEffect(() => {
         (async () => {
@@ -64,24 +60,27 @@ const App = () => {
     }, []);
 
     return (
-        <BrowserRouter basename="/">
-            <Switch>
-                <Route path="/login" render={() => (<Login handleLogin={handleAuthenticationStatus}/>)}/>
+        <BrowserRouter>
+            <Routes>
+                <Route path="login" element={<Login handleLogin={handleAuthenticationStatus}/>}/>
 
-                <Layout handleLogout={handleLogout} serverStatus={serverStatus}>
-                    <ProtectedRoute exact path="/" component={Controls}/>
-                    <ProtectedRoute path="/saves" component={Saves}/>
-                    <ProtectedRoute path="/map-generator" component={MapGenerator}/>
-                    <ProtectedRoute path="/mods" component={Mods}/>
-                    <ProtectedRoute path="/server-settings" component={ServerSettings}/>
-                    <ProtectedRoute path="/game-settings" component={GameSettings}/>
-                    <ProtectedRoute path="/console" component={Console}/>
-                    <ProtectedRoute path="/logs" component={Logs}/>
-                    <ProtectedRoute path="/user-management" component={UserManagement}/>
-                    <ProtectedRoute path="/help" component={Help}/>
-                    <Flash/>
-                </Layout>
-            </Switch>
+                {/* route with only `element` will cause the proper children to be place in `<Outlet/>` */}
+                <Route element={<ProtectedRoute isAuthenticated={isAuthenticated}/> }>
+                    <Route element={<Layout handleLogout={handleLogout} serverStatus={serverStatus} />}>
+                        <Route index element={<Controls serverStatus={serverStatus}/>}/>
+                        <Route path="saves" element={<Saves serverStatus={serverStatus}/>}/>
+                        <Route path="/map-generator" element={<MapGenerator />}/>
+                        <Route path="mods" element={<Mods serverStatus={serverStatus}/>}/>
+                        <Route path="server-settings" element={<ServerSettings serverStatus={serverStatus}/>}/>
+                        <Route path="game-settings" element={<GameSettings serverStatus={serverStatus}/>}/>
+                        <Route path="console" element={<Console serverStatus={serverStatus}/>}/>
+                        <Route path="logs" element={<Logs serverStatus={serverStatus}/>}/>
+                        <Route path="user-management" element={<UserManagement serverStatus={serverStatus}/>}/>
+                        <Route path="help" element={<Help serverStatus={serverStatus}/>}/>
+                        <Flash />
+                    </Route>
+                </Route>
+            </Routes>
         </BrowserRouter>
     );
 }

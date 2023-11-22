@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// get the all configs based on the flags
-	config := bootstrap.NewConfig(os.Args)
+	config := bootstrap.NewConfig(os.Args[1:])
 
 	// setup the required files for the mods
 	factorio.ModStartUp()
