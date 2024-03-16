@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useState, useEffect} from 'react';
 
 import user from "../api/resources/user";
 import Login from "./views/Login";
@@ -17,6 +17,7 @@ import Console from "./views/Console";
 import Help from "./views/Help";
 import socket from "../api/socket";
 import {Flash} from "./components/Flash";
+import MapGenerator from "./views/MapGenerator/MapGenerator";
 
 
 const App = () => {
@@ -52,6 +53,12 @@ const App = () => {
         return <Outlet/>;
     }
 
+    useEffect(() => {
+        (async () => {
+            updateServerStatus()
+        })();
+    }, []);
+
     return (
         <BrowserRouter>
             <Routes>
@@ -62,6 +69,7 @@ const App = () => {
                     <Route element={<Layout handleLogout={handleLogout} serverStatus={serverStatus} />}>
                         <Route index element={<Controls serverStatus={serverStatus}/>}/>
                         <Route path="saves" element={<Saves serverStatus={serverStatus}/>}/>
+                        <Route path="/map-generator" element={<MapGenerator />}/>
                         <Route path="mods" element={<Mods serverStatus={serverStatus}/>}/>
                         <Route path="server-settings" element={<ServerSettings serverStatus={serverStatus}/>}/>
                         <Route path="game-settings" element={<GameSettings serverStatus={serverStatus}/>}/>
@@ -69,6 +77,7 @@ const App = () => {
                         <Route path="logs" element={<Logs serverStatus={serverStatus}/>}/>
                         <Route path="user-management" element={<UserManagement serverStatus={serverStatus}/>}/>
                         <Route path="help" element={<Help serverStatus={serverStatus}/>}/>
+                        <Flash />
                     </Route>
                 </Route>
             </Routes>

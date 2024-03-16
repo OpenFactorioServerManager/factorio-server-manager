@@ -1,34 +1,26 @@
 import React, {useEffect, useState} from "react";
 import savesResource from "../../../api/resources/saves";
 import Panel from "../../components/Panel";
-import CreateSaveForm from "./components/CreateSaveForm";
-import UploadSaveForm from "./components/UploadSaveForm";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faTrashAlt} from "@fortawesome/free-solid-svg-icons";
+import Button from "../../components/Button";
+import UploadSaveModal from "./components/UploadSaveModal";
 
-const Saves = ({serverStatus}) => {
+const Saves = () => {
 
     const [saves, setSaves] = useState([]);
+    const [isSaveUploadModalOpen, setIsSaveUploadModalOpen] = useState(false);
 
     const updateList = () => {
         savesResource.list()
-            .then(res => {
-                if (res) {
-                    setSaves(res);
-                }
-            })
-
+            .then(setSaves)
     }
 
-    useEffect(() => {
-        updateList()
-    }, []);
+    useEffect(updateList, []);
 
-    const deleteSave = async (save) => {
-        const res = await savesResource.delete(save);
-        if (res) {
-            updateList()
-        }
+    const deleteSave = save => {
+        savesResource.delete(save)
+            .then(updateList);
     }
 
     return (
