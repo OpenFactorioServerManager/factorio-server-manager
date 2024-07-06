@@ -19,8 +19,9 @@ type Flags struct {
 	ConfFile           string `long:"conf" default:"./conf.json" description:"Specify location of Factorio Server Manager config file." env:"FSM_CONF"`
 	FactorioDir        string `long:"dir" default:"./" description:"Specify location of Factorio directory." env:"FSM_DIR"`
 	ServerIP           string `long:"host" default:"0.0.0.0" description:"Specify IP for webserver to listen on." env:"FSM_SERVER_IP"`
+	ServerPort         string `long:"port" default:"80" description:"Specify a port for the server." env:"FSM_PORT"`
 	FactorioIP         string `long:"game-bind-address" default:"0.0.0.0" description:"Specify IP for Factorio game server to listen on." env:"FSM_FACTORIO_IP"`
-	FactorioPort       string `long:"port" default:"80" description:"Specify a port for the server." env:"FSM_PORT"`
+	FactorioPort       string `long:"game-port" default:"34197" description:"Default port for the Factorio game server." env:"FSM_FACTORIO_PORT"`
 	FactorioConfigFile string `long:"config" default:"config/config.ini" description:"Specify location of Factorio config.ini file." env:"FSM_FACTORIO_CONFIG_FILE"`
 	FactorioMaxUpload  int64  `long:"max-upload" default:"20" description:"Maximum filesize for uploaded files in MB." env:"FSM_MAX_UPLOAD"`
 	FactorioBinary     string `long:"bin" default:"bin/x64/factorio" description:"Location of Factorio Server binary file." env:"FSM_BINARY"`
@@ -46,6 +47,8 @@ type Config struct {
 	FactorioRconPass        string `json:"rcon_pass,omitempty"`
 	FactorioCredentialsFile string `json:"factorio_credentials_file,omitempty"`
 	FactorioIP              string `json:"factorio_ip,omitempty"`
+	FactorioPort            string `json:"factorio_port,omitempty"`
+	FactorioPortLock        bool   `json:"factorio_port_lock,omitempty"`
 	FactorioAdminFile       string `json:"factorio_admin_file,omitempty"`
 	ServerIP                string `json:"server_ip,omitempty"`
 	ServerPort              string `json:"server_port,omitempty"`
@@ -212,8 +215,9 @@ func (config *Config) mapFlags(flags Flags) {
 	config.ConfFile = flags.ConfFile
 	config.FactorioDir = flags.FactorioDir
 	config.ServerIP = flags.ServerIP
-	config.ServerPort = flags.FactorioPort
+	config.ServerPort = flags.ServerPort
 	config.FactorioIP = flags.FactorioIP
+	config.FactorioPort = flags.FactorioPort
 	config.FactorioSavesDir = filepath.Join(flags.FactorioDir, "saves")
 	config.FactorioModsDir = filepath.Join(flags.FactorioDir, "mods")
 	config.FactorioModPackDir = flags.ModPackDir
