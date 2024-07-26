@@ -13,12 +13,10 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
 	"github.com/OpenFactorioServerManager/factorio-server-manager/bootstrap"
 	"github.com/OpenFactorioServerManager/factorio-server-manager/factorio"
+  "github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-
-	"github.com/gorilla/mux"
 )
 
 const readHttpBodyError = "Could not read the Request Body."
@@ -272,7 +270,7 @@ func LogTail(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	config := bootstrap.GetConfig()
-	resp, err = factorio.TailLog()
+	resp, err = factorio.TailLog(config.FactorioLog)
 	if err != nil {
 		resp = fmt.Sprintf("Could not tail %s: %s", config.FactorioLog, err)
 		return
