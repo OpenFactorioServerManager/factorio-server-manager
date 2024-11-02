@@ -13,7 +13,7 @@ const ServerSettings = () => {
     const [settings, setSettings] = useState();
     const [numberInputs, setNumberInputs] = useState([]);
 
-    const {register, handleSubmit, formState: {errors}, control} = useForm();
+    const {register: registerForm, handleSubmit, formState: {errors}, control} = useForm();
 
     const fetchSettings = async () => {
         const res = await settingsResource.server.list();
@@ -49,6 +49,8 @@ const ServerSettings = () => {
             return null;
         }
 
+        const register = registerForm(name) 
+        
         switch (typeof value) {
             case "undefined":
                 break;
@@ -103,9 +105,14 @@ const ServerSettings = () => {
                         <>
                             <Label text="Visibility"/>
                             <div className="flex">
-                                {Object.keys(value).map(key => <div className="mr-4" key={`visibility-${key}`}>
-                                    <Checkbox checked={value[key]} register={register} text={key} name={`visibility[${key}]`}/>
-                                </div>)}
+                                {Object.keys(value).map(key => {
+                                    const register = registerForm(`visibility[${key}]`)
+                                    return (
+                                    <div className="mr-4" key={`visibility-${key}`}>
+                                        <Checkbox checked={value[key]} register={register} text={key}/>
+                                    </div>
+                                    )
+                                })}
                             </div>
                         </>
                     )
