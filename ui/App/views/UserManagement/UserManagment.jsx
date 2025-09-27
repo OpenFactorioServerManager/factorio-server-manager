@@ -5,8 +5,11 @@ import CreateUserForm from "./components/CreateUserForm";
 import ChangePasswordForm from "./components/ChangePasswordForm"
 import {faTrashAlt} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { useTranslation } from "react-i18next";
 
 const UserManagement = () => {
+
+    const { t, i18n } = useTranslation();
 
     const [users, setUsers] = useState([]);
 
@@ -29,15 +32,15 @@ const UserManagement = () => {
     return (
         <>
             <Panel
-                title="List of Users"
+                title={t("users.user_list")}
                 content={
                     <table className="w-full">
                         <thead>
                         <tr className="text-left py-1">
-                            <th>Name</th>
-                            <th>Role</th>
-                            <th>Email</th>
-                            <th>Actions</th>
+                            <th>{t("name")}</th>
+                            <th>{t("role")}</th>
+                            <th>{t("email")}</th>
+                            <th>{t("actions")}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -57,12 +60,12 @@ const UserManagement = () => {
                 className="mb-4"
             />
             <Panel
-                title="Change Password"
+                title={t("users.change_password.title")}
                 content={<ChangePasswordForm/>}
                 className="mb-4"
             />
             <Panel
-                title="Create User"
+                title={t("users.create_user.title")}
                 content={<CreateUserForm updateUserList={updateList}/>}
                 className="mb-4"
             />

@@ -12,8 +12,11 @@ import Fuse from "fuse.js";
 import CreateModPack from "./components/CreateModPack";
 import ModPack from "./components/ModPack";
 import ModList from "./components/ModList";
+import { useTranslation } from "react-i18next";
 
 const Mods = ({serverStatus}) => {
+
+    const { t, i18n } = useTranslation();
 
     const [installedMods, setInstalledMods] = useState([]);
     const [modPacks, setModPacks] = useState([])
@@ -111,25 +114,25 @@ const Mods = ({serverStatus}) => {
                 <Panel className="mb-6"
                        content={
                            <div className="text-red font-bold text-xl">
-                               Changing mods is disabled while the server is running!
+                                {t("mods.change_mods_while_running_error_message")}
                            </div>
                        }
                 />
                 :
                 <TabControl>
-                    <Tab title="Install Mod">
+                    <Tab title={t("mods.install_mod")}>
                         <AddMod refetchInstalledMods={fetchInstalledMods} fuse={fuse}/>
                     </Tab>
-                    <Tab title="Upload Mod">
+                    <Tab title={t("mods.upload_mod")}>
                         <UploadMod refetchInstalledMods={fetchInstalledMods}/>
                     </Tab>
-                    <Tab title="Load Mods from Save">
+                    <Tab title={t("mods.load_mods")}>
                         <LoadMods refreshMods={fetchInstalledMods}/>
                     </Tab>
                 </TabControl>
             }
             <Panel
-                title="Mods"
+                title={t("mods.title")}
                 className="mb-6"
                 content={
                     <ModList addUpdatableMod={addUpdatableMod}
@@ -146,18 +149,18 @@ const Mods = ({serverStatus}) => {
                         {
                             !disabled &&
                             <Button size="sm" className="mr-2" type="danger" isLoading={isDeletingAllMods}
-                                    onClick={deleteAllMods}>Delete all Mods</Button> &&
+                                    onClick={deleteAllMods}>{t("mods.delete_all")}</Button> &&
                             <Button size="sm" className="mr-2" isLoading={isUpdatingAllMods}
-                                    onClick={updateAllMods}>Update all Mods</Button>
+                                    onClick={updateAllMods}>{t("mods.update_all")}</Button>
                         }
                         <a className="bg-gray-light py-1 px-2 hover:glow-orange hover:bg-orange inline-block accentuated text-black font-bold"
-                           href={modsResource.downloadAllURL}>Download all Mods</a>
+                           href={modsResource.downloadAllURL}>{t("mods.download_all")}</a>
                     </>
                 }
             />
 
             <Panel
-                title="Mod packs"
+                title={t("mods.mod_packs")}
                 className="mb-6"
                 content={
                     modPacks.map(

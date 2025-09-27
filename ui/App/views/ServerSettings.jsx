@@ -7,8 +7,11 @@ import Checkbox from "../components/Checkbox";
 import InputPassword from "../components/InputPassword";
 import Button from "../components/Button";
 import {useForm} from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 const ServerSettings = () => {
+
+    const { t, i18n } = useTranslation();
 
     const [settings, setSettings] = useState();
     const [numberInputs, setNumberInputs] = useState([]);
@@ -36,7 +39,7 @@ const ServerSettings = () => {
        settingsResource.server.update(data)
            .then(() => {
                fetchSettings()
-                   .then(() => window.flash("Settings saved.", "green"))
+                   .then(() => window.flash(t("saved"), "green"))
            });
     }
 
@@ -101,7 +104,7 @@ const ServerSettings = () => {
                 } else if (name.includes("visibility")) {
                     return (
                         <>
-                            <Label text="Visibility"/>
+                            <Label text={t("server_settings.visibility")}/>
                             <div className="flex">
                                 {Object.keys(value).map(key => <div className="mr-4" key={`visibility-${key}`}>
                                     <Checkbox checked={value[key]} register={register} text={key} name={`visibility[${key}]`}/>
@@ -124,7 +127,7 @@ const ServerSettings = () => {
     return (
         <form className="mb-4" onSubmit={handleSubmit(saveServerSettings)}>
             <Panel
-                title="Server Settings"
+                title={t("server_settings.title")}
                 content={
                     <>
                         {settings && Object.keys(settings).map(key => {
@@ -136,9 +139,10 @@ const ServerSettings = () => {
                                 );
                             }
 
+
                             const value = settings[key]
-                            const label = key.replaceAll('_', ' ')
-                            const comment = settings["_comment_" + key]
+                            const label = t("server_settings." + key)
+                            const comment = settings["_comment_" + key] != null ? t("server_settings._comment_" + key) : null;
 
                             return (
                                 <div className="mb-4" key={`wrapper-${key}`}>
@@ -150,7 +154,7 @@ const ServerSettings = () => {
                     </>
                 }
                 actions={
-                    <Button isSubmit={true} type="success">Save</Button>
+                    <Button isSubmit={true} type="success">{t('save')}</Button>
                 }
             />
         </form>
