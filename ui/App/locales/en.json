@@ -1,0 +1,214 @@
+{
+    "save": "Save",
+    "upload": "Upload",
+    "saved": "Settings saved.",
+    "create": "Create",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "name": "Name",
+    "username": "Username",
+    "password": "Password",
+    "logout": "Logout",
+    "install": "Install",
+    "actions": "Actions",
+    "role": "Role",
+    "email": "Email",
+    "change": "Change",
+    "load": "Load",
+    "server_status": "Server Status",
+    "server_management": "Server Management",
+    "FSM_administration": "FSM Administration",
+    "main_title": "Factorio Server Manager",
+    "server_settings":
+    {
+        "title": "Server settings",
+        "admins": "Admins",
+        "name": "Name",
+        "description": "Description",
+        "tags": "Tags",
+        "_comment_max_players": "Maximum number of players allowed, admins can join even a full server. 0 means unlimited.",
+        "max_players": "Max players",
+        "_comment_visibility": "Public: Game will be published on the official Factorio matching server. Lan: Game will be broadcast on LAN",
+        "visibility______":
+        {
+            "public_": "Public",
+            "lan_": "Lan"
+        },
+        "visibility": "Visibility",
+        "_comment_credentials": "Your factorio.com login credentials. Required for games with visibility public",
+        "username": "Username",
+        "password": "Password",
+        "_comment_token": "Authentication token. May be used instead of 'password' above.",
+        "token": "Token",
+        "game_password": "Game password",
+        "_comment_require_user_verification": "When set to true, the server will only allow clients that have a valid Factorio.com account",
+        "require_user_verification": "Require user verification",
+        "_comment_max_upload_in_kilobytes_per_second": "Optional, default value is 0. 0 means unlimited.",
+        "max_upload_in_kilobytes_per_second": "Max upload in kilobytes per second",
+        "_comment_max_upload_slots": "Optional, default value is 5. 0 means unlimited.",
+        "max_upload_slots": "Max upload slots",
+        "_comment_minimum_latency_in_ticks": "Optional one tick is 16ms in default speed, default value is 0. 0 means no minimum.",
+        "minimum_latency_in_ticks": "Minimum latency in ticks",
+        "_comment_max_heartbeats_per_second": "Network tick rate. Maximum rate game updates packets are sent at before bundling them together. Minimum value is 6, maximum value is 240.",
+        "max_heartbeats_per_second": "Max heartbeats per second",
+        "_comment_ignore_player_limit_for_returning_players": "Players that played on this map already can join even when the max player limit was reached.",
+        "ignore_player_limit_for_returning_players": "Ignore player limit for returning players",
+        "_comment_allow_commands": "Possible values are: true, false and admins-only",
+        "allow_commands": "Allow commands",
+        "_comment_autosave_interval": "Autosave interval in minutes",
+        "autosave_interval": "Autosave interval",
+        "_comment_autosave_slots": "Server autosave slots, it is cycled through when the server autosaves.",
+        "autosave_slots": "Autosave slots",
+        "_comment_afk_autokick_interval": "How many minutes until someone is kicked when doing nothing, 0 for never.",
+        "afk_autokick_interval": "Afk autokick interval",
+        "_comment_auto_pause": "Whether should the server be paused when no players are present.",
+        "auto_pause": "Auto pause",
+        "_comment_auto_pause_when_players_connect": "Whether should the server be paused when someone is connecting to the server.",
+        "auto_pause_when_players_connect": "Auto pause when players connect",
+        "only_admins_can_pause_the_game": "Only admins can pause the game",
+        "_comment_autosave_only_on_server": "Whether autosaves should be saved only on server or also on all connected clients. Default is true.",
+        "autosave_only_on_server": "Autosave only on server",
+        "_comment_non_blocking_saving": "Highly experimental feature, enable only at your own risk of losing your saves. On UNIX systems, server will fork itself to create an autosave. Autosaving on connected Windows clients will be disabled regardless of autosave_only_on_server option.",
+        "non_blocking_saving": "Non blocking saving",
+        "_comment_segment_sizes": "Long network messages are split into segments that are sent over multiple ticks. Their size depends on the number of peers currently connected. Increasing the segment size will increase upload bandwidth requirement for the server and download bandwidth requirement for clients. This setting only affects server outbound messages. Changing these settings can have a negative impact on connection stability for some clients.",
+        "minimum_segment_size": "Minimum segment size",
+        "minimum_segment_size_peer_count": "Minimum segment size peer count",
+        "maximum_segment_size": "Maximum segment size",
+        "maximum_segment_size_peer_count": "Maximum segment size peer count"
+    },
+    "saves":
+    {
+        "create_save": "Create Save",
+        "upload_save": "Upload Save",
+        "title": "Saves",
+        "last_modified": "Last Modified At",
+        "size": "Size",
+        "actions": "Actions",
+        "create_new_save_only_when_server_not_running": "Create a new Save is only possible if the Factorio server is not running.",
+        "save_form":
+        {
+            "file_name": "Savefile Name",
+            "save_file_error_message": "Savefile Name is required",
+            "create_save": "Create Save"
+        },
+        "upload_form":
+        {
+            "select_file": "Select File ...",
+            "file_name": "Savefile",
+            "save_file_error_message": "Savefile is required",
+            "upload": "Upload"
+        }
+    },
+    "controls":
+    {
+        "title": "Server Status",
+        "status": "Status",
+        "unknown": "Unknown",
+        "running": "Running",
+        "stopped": "Stopped",
+        "port": "Port",
+        "IP_error_message": "IP is required and must be valid.",
+        "port_error_message": "Port is required within range 1-65535",
+        "save_error_message": "Save is required and must be valid.",
+        "f_version": "Factorio version",
+        "save": "Save",
+        "save&stop": "Save & Stop Server",
+        "kill_server": "Kill Server",
+        "start_server": "Start Server"
+    },
+    "mods":
+    {
+        "change_mods_while_running_error_message": "Changing mods is disabled while the server is running!",
+        "install_mod": "Install Mod",
+        "upload_mod": "Upload Mod",
+        "load_mods": "Load Mods from Save",
+        "title": "Mods",
+        "delete_all": "Delete all Mods",
+        "update_all": "Update all Mods",
+        "download_all": "Download all Mods",
+        "mod_packs": "Mod packs",
+        "select_file": "Select File ...",
+        "mods_loaded_from_save": "Mods are loaded from save file @@@.",
+        "load_mods_from_save": "Load Mods from Save",
+        "load_confirm_dialog": "Loading the Mods from Save @@@ will remove all currently installed Mods.",
+        "add_modpack_with_current_mods": "Add ModPack with current installed Mods",
+        "add_mod":
+        {
+            "loading_mod_list": "Loading List of Mods from",
+            "version": "Version",
+            "compatibility": "Compatibility"
+        },
+        "mod_list":
+        {
+            "enabled": "Enabled",
+            "compatibility": "Compatibility",
+            "mod_version": "Mod Version",
+            "factorio_version": "Factorio Version"
+        },
+        "mod_pack":
+        {
+            "load_modpack": "Load ModPack",
+            "load_confirm_dialog": "Loading the ModPack @@@ will remove all installed Mods."
+        }
+    },
+    "login":
+    {
+        "login_failed_message": "Login failed. Username or Password wrong.",
+        "title": "Login",
+        "login": "Login",
+        "username_error_message": "Username is required",
+        "password_error_message": "Password is required",
+        "sign_in": "Sign In",
+        "factorio_login_error_message": "Given username or email and password do not match any account."
+    },
+    "console":
+    {
+        "title": "Console",
+        "error": "The console is not available, because Factorio is not running."
+    },
+    "logs":
+    {
+        "title": "Logs"
+    },
+    "help":
+    {
+        "title": "Help",
+        "fsm": "Factorio Server Manager",
+        "fsm_content": "The Factorio Server Manager (FSM) is an open source project and is not affiliated to the game Factorio or Wube Software.",
+        "bugs_help": "Bugs and Help",
+        "bugs_help_content": "Please use the <0>GitHub repository</0> to report bugs or seek for help.",
+        "helpful_resources": "Helpful Resources",
+        "factorio_link_text": "Official Factorio Wiki about Multiplayer"
+    },
+    "users":
+    {
+        "title": "Users",
+        "user_list": "List of Users",
+        "change_password":
+        {
+            "title": "Change Password",
+            "update_successful": "Password changed",
+            "old_password": "Old Password",
+            "old_password_error": "Old Password is required",
+            "new_password": "New Password",
+            "new_password_error": "New Password is required",
+            "new_password_confirmation": "New Password Confirmation",
+            "new_password_confirmation_error": "New Password Confirmation is required"
+        },
+        "create_user":
+        {
+            "title": "Create User",
+            "username_error": "Username is required",
+            "role_error": "Role is required",
+            "email_error": "Email is required",
+            "password_error": "Password is required",
+            "password_confirmation": "Password Confirmation",
+            "password_confirmation_error": "Password Confirmation is required and must match the Password"
+        }
+    },
+    "game_settings":
+    {
+        "title": "Game Settings"
+    },
+    "lang": "Language"
+}

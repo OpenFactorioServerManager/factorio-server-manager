@@ -5,8 +5,12 @@ import Button from "../../../components/Button";
 import Label from "../../../components/Label";
 import Input from "../../../components/Input";
 import Error from "../../../components/Error";
+import { useTranslation } from "react-i18next";
 
 const CreateUserForm = ({updateUserList}) => {
+
+    const { t, i18n } = useTranslation();
+
     const roleValue = "admin";
 
     const {
@@ -31,52 +35,52 @@ const CreateUserForm = ({updateUserList}) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-4">
-                <Label htmlFor="username" text="Username"/>
+                <Label htmlFor="username" text={t("username")}/>
                 <Input register={register('username', {required: true})}
                        type="text"
-                       placeholder="Username"
+                       placeholder={t("username")}
                 />
-                <Error error={errors.username} message="Username is required"/>
+                <Error error={errors.username} message={t("users.create_user.username_error")}/>
             </div>
             <div className="mb-4">
-                <Label htmlFor="role" text="Role"/>
+                <Label htmlFor="role" text={t("role")}/>
                 <Input register={register('role', {required: true})}
                        value={roleValue}
                        disabled={true}
-                       placeholder="Role"
+                       placeholder={t("Role")}
                 />
-                <Error error={errors.role} message="Role is required"/>
+                <Error error={errors.role} message={t("users.create_user.role_error")}/>
             </div>
             <div className="mb-4">
-                <Label htmlFor="email" text="Email"/>
+                <Label htmlFor="email" text={t("email")}/>
                 <Input register={register('email', {required: true})}
                        type="email"
-                       placeholder="Email"
+                       placeholder={t("email")}
                 />
-                <Error error={errors.email} message="Email is required"/>
+                <Error error={errors.email} message={t("users.create_user.email_error")}/>
             </div>
             <div className="mb-4">
-                <Label htmlFor="password" text="Password"/>
+                <Label htmlFor="password" text={t("password")}/>
                 <Input register={register('password', {required: true})}
                        type="password"
-                       placeholder="Password"
+                       placeholder={t("password")}
                 />
-                <Error error={errors.password} message="Password is required"/>
+                <Error error={errors.password} message={t("users.create_user.password_error")}/>
             </div>
             <div className="mb-4">
-                <Label htmlFor="password_confirmation" text="Password Confirmation"/>
+                <Label htmlFor="password_confirmation" text={t("users.create_user.password_confirmation")}/>
                 <Input register={register('password_confirmation', {
                             required: true,
                             validate: conformation => conformation === password
                         })}
 
                        type="password"
-                       placeholder="Password Confirmation"
+                       placeholder={t("users.create_user.password_confirmation")}
                 />
                 <Error error={errors.password_confirmation}
-                       message="Password Confirmation is required and must match the Password"/>
+                       message={t("users.create_user.password_confirmation")}/>
             </div>
-            <Button isSubmit={true} type="success">Save</Button>
+            <Button isSubmit={true} type="success">{t("save")}</Button>
         </form>
     )
 }

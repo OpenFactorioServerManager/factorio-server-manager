@@ -5,8 +5,11 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCloudDownloadAlt} from "@fortawesome/free-solid-svg-icons/faCloudDownloadAlt";
 import {faCheck} from "@fortawesome/free-solid-svg-icons/faCheck";
 import {faTimes} from "@fortawesome/free-solid-svg-icons/faTimes";
+import { useTranslation } from "react-i18next";
 
 const SelectVersionForm = ({releases, isOpen, close, install}) => {
+
+    const { t, i18n } = useTranslation();
 
     const download = release => {
         install(release)
@@ -22,9 +25,9 @@ const SelectVersionForm = ({releases, isOpen, close, install}) => {
                     <table className="w-full">
                         <thead>
                         <tr className="text-left py-1">
-                            <th>Version</th>
-                            <th>Compatibility</th>
-                            <th>Actions</th>
+                            <th>{t("mods.add_mod.version")}</th>
+                            <th>{t("mods.add_mod.vompatibility")}</th>
+                            <th>{t("actions")}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -45,7 +48,7 @@ const SelectVersionForm = ({releases, isOpen, close, install}) => {
                 </div>
             }
             actions={
-                <Button onClick={close} size="sm" type="danger">Cancel</Button>
+                <Button onClick={close} size="sm" type="danger">{t("cancel")}</Button>
             }
         />
     )

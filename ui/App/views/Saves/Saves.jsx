@@ -5,8 +5,11 @@ import CreateSaveForm from "./components/CreateSaveForm";
 import UploadSaveForm from "./components/UploadSaveForm";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faDownload, faTrashAlt} from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
 const Saves = ({serverStatus}) => {
+
+    const { t, i18n } = useTranslation();
 
     const [saves, setSaves] = useState([]);
 
@@ -35,19 +38,18 @@ const Saves = ({serverStatus}) => {
         <>
             <div className="lg:flex mb-6">
                 <Panel
-                    title="Create Save"
+                    title={t("saves.create_save")}
                     className="lg:w-1/2 lg:mr-3 mb-6 lg:mb-0"
                     content={
                         serverStatus.running
                             ? <p className="text-red-light pt-4 pb-24">
-                                Create a new Save is only possible if the Factorio server is
-                                not running.
+                                {t("saves.create_new_save_only_when_server_not_running")}
                             </p>
                             : <CreateSaveForm onSuccess={updateList}/>
                     }
                 />
                 <Panel
-                    title="Upload Save"
+                    title={t("saves.upload_save")}
                     className="lg:w-1/2 lg:ml-3"
                     content={<UploadSaveForm onSuccess={updateList}/>}
                 />
@@ -55,16 +57,16 @@ const Saves = ({serverStatus}) => {
 
             <Panel
                 className="mb-4"
-                title="Saves"
+                title={t("saves.title")}
                 content={
                     <div className="overflow-x-auto w-full">
                         <table className="w-full">
                             <thead>
                             <tr className="text-left py-1">
-                                <th>Name</th>
-                                <th>Last Modified At</th>
-                                <th>Size</th>
-                                <th>Actions</th>
+                                <th>{t("name")}</th>
+                                <th>{t("saves.last_modified")}</th>
+                                <th>{t("saves.size")}</th>
+                                <th>{t("saves.actions")}</th>
                             </tr>
                             </thead>
                             <tbody>

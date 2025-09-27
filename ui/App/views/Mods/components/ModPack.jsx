@@ -4,8 +4,11 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import modsResource from "../../../../api/resources/mods";
 import ModList from "./ModList";
 import ConfirmDialog from "../../../components/ConfirmDialog";
+import { useTranslation } from "react-i18next";
 
 const ModPack = ({modPack, reloadModPacks, factorioVersion, reloadMods, disabled = false}) => {
+
+    const { t, i18n } = useTranslation();
 
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadModPackDialogOpen, setIsLoadModPackDialogOpen] = useState(false);
@@ -63,8 +66,8 @@ const ModPack = ({modPack, reloadModPacks, factorioVersion, reloadMods, disabled
                                              icon={isLoading ? faSpinner : faUpload}
                             />
                             <ConfirmDialog
-                                title="Load ModPack"
-                                content={`Loading the ModPack ${modPack.name} will remove all installed Mods.`}
+                                title={t("mods.mod_pack.load_modpack")}
+                                content={t("mods.mod_pack.load_confirm_dialog")}
                                 isOpen={isLoadModPackDialogOpen}
                                 close={() => setIsLoadModPackDialogOpen(false)}
                                 onSuccess={() => loadModPack(modPack.name)}
