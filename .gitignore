@@ -8,6 +8,9 @@ conf.json
 *.exe
 build/
 /mod_packs/*
+/config/*
+/mods/*
+/saves/*
 npm-debug.log
 .idea/
 factorio.auth
